@@ -2,6 +2,12 @@
 | Changelog |
  -----------
 
+August 18, 2009 - Jerome
+
+  o Switched Galax to SVN server on sourceforge.
+  o A number of bug fixes at various places (hard to locate without
+    old CVS).
+
 ***** Tagged with galax-1-1 for GODI O'Caml release 3.10 *****
 
 March 24, 2008 - Mary
