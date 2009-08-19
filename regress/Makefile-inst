@@ -1,0 +1,224 @@
+#########################################################################
+#                                                                       #
+#                                  GALAX                                #
+#                               XQuery Engine                           #
+#                                                                       #
+#   Copyright 2001-2007.                                                #
+#   Distributed only by permission.                                     #
+#                                                                       #
+#########################################################################
+
+# $Id: Makefile-inst,v 1.7 2007/02/12 22:57:21 simeon Exp $ #
+
+#########################################################################
+# Author:	Christopher A. Rath (AT&T Labs Research)
+# Descripton:
+#		This is a Makefile for the installed Galax regression suite
+# History:
+#	$Log: Makefile-inst,v $
+#	Revision 1.7  2007/02/12 22:57:21  simeon
+#	February 12, 2007 - Jerome
+#	
+#	  o Testing:
+#	     - Fixed small bug in Makefile.
+#	
+#	Revision 1.6  2007/02/01 22:08:53  simeon
+#	February 1, 2007 - Jerome
+#	
+#	  o Code cleanup:
+#	     - Cleaned up all the source file headers. Added module
+#	       descriptions when missing, as well as CVS Id.
+#	     - Removed obsolete modules: Optimization_rules_treepattern_old,
+#	       Factorize_sideeffects.
+#	
+#	  o AST Walker:
+#	     - Added support for a generic fold operation on the AST (useful
+#	       to compute a boolean property on the AST for instance).
+#	
+#	  o Normalization:
+#	     - Small fix to the normalization of comparisons to re-enable join
+#	       detection, not using let bindings for the comparator
+#	       anymore. [hack]
+#	
+#	  o Rewriting:
+#	     - Added a judgment to check for side-effects, removed
+#	       corresponding obsolete judgment in Factorization.
+#	     - Moved the snap removal rule from optimization to rewriting,
+#	       cleaning up the plans as early as possible.
+#	
+#	Revision 1.5  2006/12/14 04:53:20  simeon
+#	December 13, 2006 - Jerome
+#	
+#	  Current testing results on XQTS 1.0.2:
+#	
+#	  Feature Galax
+#	  Minimal Conformance	          14497 / 114 / 14637  (99.1%)
+#	  Optional Features
+#	    Schema Import Feature	  0   	/ 0   / 174
+#	    Schema Validation Feature	  0   	/ 0   / 25
+#	    Static Typing Feature	  46  	/ 0   / 46
+#	    Full Axis Feature	 	  130 	/ 0   / 130
+#	    Module Feature	 	  0 	/ 0   / 32
+#	    Trivial XML Embedding Feature 0 	/ 0   / 4
+#	
+#	  o Compilation:
+#	     - Added support for separate -galax-regression option to indicate
+#	       where the Galax Test Suite is installed.
+#	     - Fixed circular dependency in optimization walker/judge modules,
+#	       resulting from the latest reorg.
+#	
+#	  o Testing:
+#	     - Fixed support for multiple test units, generating distinct
+#	       files instead of overriding them. Fixed printing for multiple
+#	       test units.
+#	     - Added support for comparison of query plans.
+#	
+#	  o Updates:
+#	     - Fixed 'do rename' to properly handle xs:string and xs:untyped
+#	       values for the name expression.
+#	
+#	  o F&O:
+#	     - Fixed fn:dateTime to support empty sequence parameters.
+#	
+#	  o Pragmas:
+#	     - Now properly resolving Pragmas QNames.
+#	     - Fixed serious parsing and lexing issues with pragmas (wrong
+#	       lexical state created in some cases).
+#	     - Fixed bug, now raising an error when there is no expression.
+#	     - Added check that the pragma QName and content is separated by
+#	       at least a whitespace character.
+#	
+#	  o Parsing:
+#	
+#	    Long over-due cleanup of the lexers. This fixes two major
+#	    problems: (1) we now have keyword tables which makes for a more
+#	    easily extensible parser, and smaller lexing tables.  (2) we don't
+#	    rely on long keywords anymore which means we properly implement
+#	    comments within keywords. [ Note that it's not completely true, we
+#	    still have a few long keywords hanging around, notably those with
+#	    QNames inside... This still need some work, but should get us
+#	    going. ]
+#	
+#	     - Removing numerous unused lexing rules in some of the states,
+#	       notably in the operator's state.
+#	     - Moved part of the keywords used in prolog declarations from the
+#	       operator's state to the declaration state.
+#	     - Consolidated duplicated string literals and comments lexing
+#	       rules to use the same lexer.
+#	     - Added support for simple kind of look ahead in lexing handlers.
+#	     - Added keyword tables for the operator, default, and namespace
+#	       declaration states.
+#	     - Removed (almost) all long keywords from the default,
+#	       operators, and namespace declaration state.
+#	     - Fixed bug, 'as' not recognized as a qname in the default state.
+#	
+#	Revision 1.4  2006/08/17 14:09:29  simeon
+#	August 17, 2006 - Jerome
+#	
+#	  o Testing:
+#	    - Added cleaner diff for expected vs. actual test results using
+#	      XQuery.
+#	
+#	Revision 1.3  2006/08/16 19:55:52  mff
+#	
+#	Added reference test results to regress/
+#	
+#	Revision 1.2  2006/08/15 18:03:58  simeon
+#	August 15, 2006 - Jerome
+#	
+#	  o Testing:
+#	    - Added knownbugs.xml in the dependencies for testresults.xml
+#	    - Added query file information in test results for wrongly
+#	      succeeding tests.
+#	  o Type matching:
+#	    - Added missing checks for undeclared types during type matching.
+#	  o Lexing:
+#	    - Further fix to the lexer dealing with numeric literal followed
+#	      by a qname without separating whitespace.
+#	
+#	Revision 1.1  2006/04/17 18:10:40  car
+#	April 17, 2006 - Chris Rath
+#	  o Changes necessary to align with GODI
+#	
+#########################################################################
+
+#########################################################################
+# Section:	Default target
+# Description:
+#		The default target for this Makefile is "all"
+#########################################################################
+
+default:	all
+
+#########################################################################
+# Section:	Makefile pre-includes
+# Description:
+#		This is where the file(s) generated during by the Configure script
+#		are included.  If config/Makefile.conf does not exist, the
+#		make will fail.
+#
+#		Makefile.galax:	Variables defined for compiling and linking Galax
+#								applications in the build environment
+#########################################################################
+LOCALPREFIX=..
+
+include $(LOCALPREFIX)/config/Makefile.galax
+
+#########################################################################
+# Section:  Main targets
+# Description:
+#     This is where all of the named toplevel targets are placed.
+#
+#  all:        This target builds the GALAX_CAPI_TARGETS
+#  clean::     This target cleans files created in the all section
+#########################################################################
+
+all: testresults-W3C.xml testresults-Galax.xml
+
+clean: 
+	$(RM) testresults-W3C.xml
+	$(RM) testresults-Galax.xml
+
+#########################################################################
+# Sub-Section:  Secondary targets
+# Description:
+#     These are the supporting targets for "all"
+#########################################################################
+
+w3c-diff:
+	echo ""
+	echo "******************************************"
+	echo "*** Tests which differ from expected run: "
+	echo "******************************************"
+	echo ""
+	$(CONF_GALAX_BIN)/galax-run -var unit=W3C diff.xq
+	echo ""
+	echo "******************************************"
+
+galax-diff:
+	echo ""
+	echo "******************************************"
+	echo "*** Tests which differ from expected run: "
+	echo "******************************************"
+	echo ""
+	$(CONF_GALAX_BIN)/galax-run -var unit=Galax diff.xq
+	echo ""
+	echo "******************************************"
+
+silent-diff:
+	if test -f testresults-W3C.xml; then $(MAKE) w3c-diff; fi
+	if test -f testresults-Galax.xml; then $(MAKE) galax-diff; fi
+
+diff:
+	$(MAKE) -s silent-diff
+
+testresults-W3C.xml testresults-Galax.xml: $(CONF_GALAX_BIN)/galax-test testconfig.xml knownbugs.xml
+	$(CONF_GALAX_BIN)/galax-test testconfig.xml
+	$(MAKE) diff
+
+#########################################################################
+# Section:  Makefile post-includes
+# Description:
+#		There are currently no post-includes for this Makefile
+#########################################################################
+

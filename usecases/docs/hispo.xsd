@@ -1,0 +1,80 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.hispo.com/"
+            xmlns="http://www.hispo.com/">
+
+  <xsd:element name="purchaseOrder" type="PurchaseOrderType"/>  
+  <xsd:element name="comment" type="xsd:string"/>  
+
+  <xsd:complexType name="PurchaseOrderType">
+    <xsd:sequence>
+      <xsd:element name="shipTo" type="USAddress"/>
+      <xsd:element name="billTo" type="USAddress"/>
+      <xsd:element ref="comment" minOccurs="0"/>
+      <xsd:element name="items"  type="Items"/>
+    </xsd:sequence>
+    <xsd:attribute name="orderDate" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="USAddress">
+    <xsd:sequence>
+      <xsd:element name="name"   type="xsd:string"/>
+      <xsd:element name="street" type="xsd:string"/>
+      <xsd:element name="city"   type="xsd:string"/>
+      <xsd:element name="state"  type="xsd:string"/>
+      <xsd:element name="zip"    type="xsd:int"/>
+    </xsd:sequence>
+    <xsd:attribute name="country"
+                   type="xsd:string"
+                   fixed="US"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Items">
+    <xsd:sequence>
+      <xsd:element name="item" minOccurs="0" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="productName" type="xsd:string"/>
+            <xsd:element name="quantity">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:maxExclusive value="100"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="USPrice"  type="xsd:string"/>
+            <xsd:element ref="comment"   minOccurs="0"/>
+            <xsd:element name="shipDate" type="xsd:string" minOccurs="0"/>
+          </xsd:sequence>
+          <xsd:attribute name="partNum" type="SKU" use="required"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>  <!-- Stock Keeping Unit, a code for identifying products -->
+
+  <xsd:simpleType name="SKU">
+    <xsd:restriction base="xsd:string">
+    </xsd:restriction>
+  </xsd:simpleType> 
+
+  <xsd:element name="smallorder" type="SmallPurchaseOrderType"/>  
+
+  <xsd:complexType name="SmallPurchaseOrderType">
+    <xsd:sequence>
+      <xsd:element name="smallitem" minOccurs="0" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="productName" type="xsd:string"/>
+            <xsd:element name="quantity">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:maxExclusive value="100"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

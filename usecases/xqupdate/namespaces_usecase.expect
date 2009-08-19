@@ -1,0 +1,18 @@
+
+<nara:grant xmlns:nara="http://www.anr.fr/nara"> 
+  <nara:lab name="AgroPlus"> 
+     <nara:address>Saclay, France</nara:address> 
+     <nara:researcher rid="r1" name="Fred" position="technical staff"/> 
+     <nara:researcher rid="r2" name="Liz" position="lab assistant"/> 
+     <nara:PhD xmlns:coop="http://www.gouv.fr/univ-industry-coop/" name="Marie" advisor="r1"/> 
+     <nara:lab xmlns:agro="http://www.agroplus.com" name="Dairy Dept"> 
+       <nara:engineer name="Marc"/> 
+     </nara:lab> 
+  </nara:lab> 
+  <nara:lab xmlns:univ="http://www.education.gouv.fr" name="Food Engineering Dept, Orsay U."> 
+    <nara:address>Orsay, France</nara:address> 
+    <nara:researcher rid="r3" name="Henry" position="associate professor"/> 
+    <nara:PhD name="Robert" advisor="r3"/> 
+    <nara:PhD name="Julia" advisor="r1"/> 
+  </nara:lab> 
+</nara:grant>

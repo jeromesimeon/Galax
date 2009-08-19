@@ -1,0 +1,71 @@
+
+May 27, 2004 - Mary
+
+To test Galax/XButler support for Web services, we just use the
+GoogleSearch.wsdl from as a dummy WSDL description:
+
+  http://www.google.com/apis/
+
+
+How to deploy an XQuery module as a Web Service
+===============================================
+
+1. Install and deploy Apache server as described in
+   galax/extensions/apache/README. 
+
+2. Export a WSDL interface as an XQuery module:
+
+     galax-mapwsdl -s google-server.xq GoogleSearch.wsdl -namespace google
+
+   This creates google-server.xq with empty body functions.
+   We fill in ours with "hello world".
+
+   This is only a provisional solution until we have xquery modules.
+
+3. From the XQuery module, create a SOAP module that is run in Apache server:
+
+    xquery2soap -wsdl GoogleSearch.wsdl -nms google ./google-server.xq
+
+   This creates google-server.xqs
+
+   Both galax-mapwsdl and xquery2soap print their usage when called
+   with --help. I think I should correct some parameters in
+   xquery2soap (installdir, for instance). When I wrote it, I was not
+   sure about the final usage and about our final environment.
+
+4. Copy google-server.xqs to your Apache server's DocumentRoot
+   directory, e.g., /usr/local/apache_1.3.31/htdocs/
+
+     cp google-server.xqs /usr/local/apache_1.3.31/htdocs/
+     chmod 777 /usr/local/apache_1.3.31/htdocs/google-server.xqs
+
+How to import a Web Service into XQuery
+=======================================
+
+1. Import a WSDL service into an XQuery module.
+
+   Use the example in google_import_test.xq :
+
+     import service namespace google = "/home/mff/lib/googleapi/GoogleSearch.wsdl";
+     google:doGetCachedPage.1("foo", "bar",xsd:anyURI("http://localhost:8080/google-server.xqs"))
+
+   Note that google-server.xqs must be in Apache's DocumentRoot directory
+   and the default port is 8080.
+
+   Then run WSDL client from XQuery:
+
+     galax-run google-import-test.xq
+
+2. Or you can create a separate WSDL client XQuery module:
+
+     galax-mapwsdl -c google-client.xq /home/pkg/googleapi/GoogleSearch.wsdl -namespace google
+
+   which creates the google_context.xq file that calls the given
+   service. 
+
+   Then run WSDL client from XQuery:
+
+     galax-run -context google-client.xq google-test.xq
+
+
+

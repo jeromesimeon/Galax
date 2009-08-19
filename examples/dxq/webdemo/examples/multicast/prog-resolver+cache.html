@@ -1,0 +1,181 @@
+<html><head><title>resolver+cache</title></head>
+<body><h1>Program for resolver+cache</h1>
+<a href='1.html'>Back to main</a>
+<pre><code>
+(: A DNS resolver.
+
+   If $x is the IP address of a nameserver,
+   and $n is a hostname, then
+
+     R:lookup($x,$n)
+
+   should return all the address records for $n.
+:)
+
+module namespace R = "resolver";
+import module namespace S = "dxq:dns" at "dns.xqi";
+
+declare variable $cache := &lt;cache/&gt;;
+
+declare updating function local:lookup-cache($n){
+  let $ans := 
+    $cache/entry[a/@hostname=$n] 
+  return
+    if ($ans) then (
+       let $dif := $ans/expires - glx:gettime() return
+         if ( $dif &gt; 0)
+           then ( 
+             let $adr := $ans/a return (: now, update the TTL :)
+              ( snap { do replace value of $adr/@ttl with $dif },
+                $adr )      
+         ) else (   (: expired entry :)
+             snap { do delete $ans } 
+         )
+    ) else ()
+};
+
+declare updating function local:update-cache($r){
+  snap { do insert 
+   &lt;entry&gt;
+      &lt;expires&gt;{glx:gettime() + data($r/@ttl)}&lt;/expires&gt; 
+      {$r}
+   &lt;/entry&gt; into $cache }      
+};
+
+
+declare function R:lookup-no-cache($x,$n) {
+  &lt;rr&gt;{ 
+      exec { $x } { S:RR()/a[@hostname=$n] },
+      for $ns in exec { $x } { S:RR()/ns }
+      for $a in exec { $x } { S:RR()/a }
+
+      where $ns/@nameserver=$a/@hostname
+      and fn:not($ns/@domain=".")
+      and glx:dns-lt($ns/@domain,$n)
+      return
+      R:lookup-no-cache($a/@address,$n)/a
+  }&lt;/rr&gt;
+};
+
+
+declare function local:get-adr-lt($domain, $names) {
+  for $n in $names return
+    if (glx:dns-lt($domain,$n)) then $n
+    else ()
+};
+
+declare function local:not-cached-addresses($names, $found){
+  if (empty ($found)) then $names
+  else
+    for $n in $names return
+      if (not ($n = $found/@hostname)) then $n else ()
+};
+
+(: Do a batch lookup inside the cache. :)
+
+declare updating function local:batch-lookup-cache($names){
+    for $n in $names
+      for $e in $cache/entry
+        where $n = $e/a/@hostname
+      return
+       let $dif := $e/expires - glx:gettime() return
+         if ( $dif &gt; 0)
+           then ( 
+             let $adr := $e/a return (: update the TTL :)
+              ( snap { do replace value of $adr/@ttl with $dif },
+                $adr )      
+         ) else (   (: expired entry :)
+             snap { do delete $e } 
+         )         
+};
+
+(::::::::::::::::::::::::::::::::::::::::::::::::::)
+(:                                                :)
+(:                                                :)
+(:                                                :)
+(: public functions                               :)
+(:                                                :)
+(:                                                :)
+(:                                                :)
+(::::::::::::::::::::::::::::::::::::::::::::::::::)
+
+
+(: The initial lookup function, but with caching. :) 
+
+declare updating function R:lookup($x,$n) {
+  &lt;rr&gt;{ 
+      let $ad := local:lookup-cache($n) return
+      if (empty ($ad)) then (
+        let $ans :=   exec { $x } { S:RR()/a[@hostname=$n] }
+        return 
+           if (not (empty($ans))) then
+             (local:update-cache($ans), $ans)
+           else ()
+        ,
+        for $ns in exec { $x } { S:RR()/ns }
+        for $a in exec { $x } { S:RR()/a }
+
+        where $ns/@nameserver=$a/@hostname
+        and fn:not($ns/@domain=".")
+        and glx:dns-lt($ns/@domain,$n)
+        return
+        R:lookup($a/@address,$n)/a 
+     ) else (
+         $ad
+     )
+  }&lt;/rr&gt;
+};
+
+
+(: Does a batch lookup, looking first if some of the items are not in
+   the local cache. :)
+
+declare updating function R:batch-lookup($x,$names) {
+  &lt;rr&gt;{ 
+      let $addresses := local:batch-lookup-cache($names) 
+      let $notcached := local:not-cached-addresses($names, $addresses)
+      return
+       ($addresses, 
+        if (not (empty ($notcached))) then (
+          let $ans :=   exec { $x } { S:RR()/a[@hostname=$notcached] }
+          return
+           if (not (empty($ans))) then (
+              for $adr in $ans return
+                (local:update-cache($adr), $adr)
+           ) else ()
+
+          ,
+          for $ns in exec { $x } { S:RR()/ns }
+          for $a in exec { $x } { S:RR()/a }
+
+          where $ns/@nameserver=$a/@hostname
+          and fn:not($ns/@domain=".")
+          return
+            let $n2 := local:get-adr-lt($ns/@domain, $notcached) 
+            return 
+              if (not (empty ($n2))) then
+                 R:batch-lookup($a/@address,$n2)/a  
+              else ()
+       ) else ())
+  }&lt;/rr&gt;
+};
+
+
+(: ---- test functions ---- :)
+declare function R:test($x) {
+  &lt;rr&gt;
+    { exec { $x } { S:RR()/a } }
+  &lt;/rr&gt;
+};
+
+declare function R:test1($x) {
+  &lt;rr&gt;
+    { for $ns in exec { $x } { S:RR()/ns }
+      for $a in exec { $x } { S:RR()/a }
+      return $a 
+    }
+  &lt;/rr&gt;
+};
+
+
+</code></pre></body></html>

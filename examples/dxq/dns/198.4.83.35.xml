@@ -1,0 +1,5 @@
+<rr>    
+  <soa domain="ibm.com" nameserver="ns.almaden.ibm.com" />
+  <ns domain="." nameserver="a.root-servers.net" />
+  <a hostname="a.root-servers.net" address="198.41.0.4" ttl="3600"/>
+</rr>

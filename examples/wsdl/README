@@ -1,0 +1,17 @@
+Directories:
+
+  jabber/
+     Tests for synchronous calls to jabber service
+     README contains how to set up jabber server/client
+
+  usecases/ 
+     Various WSDL usecases that call Web services:
+     Google
+     ping
+     Forecast 
+
+  apache/
+
+     Tests for creating and deploying an XQuery web service and XQuery
+     client.  See apache/README
+

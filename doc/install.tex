@@ -1,0 +1,489 @@
+This chapter contains the following sections:
+\begin{itemize}
+\item Prerequisites (Section~\ref{sec:prelim}) : prerequisites for
+  Galax installation.
+\item Source Distribution (Section~\ref{sec:src-dist}) :  
+  Installation instructions for the source distribution.
+\eat{
+\item Binary Distribution (Section~\ref{sec:bin-dist}) : requirements and
+  installation instructions for the binary distribution.
+\item Operating-System Installation Notes (Section~\ref{sec:os-notes})
+  : detailed  installation notes for each supported target.
+}
+\item Running the W3C XQuery Test Suite (XQTS)
+(Section~\ref{sec:testsuite}).
+\item Web-form interface (Section~\ref{sec:website}) : installation
+instructions for Galax's web-form interface.
+\end{itemize}
+
+\section{Prerequisites}
+\label{sec:prelim}
+\begin{itemize}
+\item PCRE 5.0 or higher is required. If you do not have PCRE version
+  5.0 or higher\footnote{\ahrefurl{http://www.pcre.org/}} installed.
+\item (Optional) If you plan to use Jungle, Galax's secondary storage
+  manager, you will need Berkeley DB version 4.4 or
+  higher\footnote{\ahrefurl{http://dev.sleepycat.com/downloads/releasehistorybdb.html}}
+  installed.
+\end{itemize}
+
+\section{Source Installation}
+\label{sec:src-dist}
+
+There are two methods for installing Galax from source:
+
+\begin{enumerate}
+\item \textbf{RECOMMENDED METHOD:} Use GODI installation and configuration tool
+     to automatically install Galax and all the libraries on which it
+     depends.
+
+\item Install Galax and the libraries on which it depends manually.
+
+This method may be preferable if you are an OCaml user, already have
+an installation of OCaml and its libraries, and do not want to install
+a new version of OCaml.  Even if you are already an OCaml user, the
+first method is always recommended.
+\end{enumerate}
+
+\subsection{
+Installing Galax using GODI installation and configuration tool}
+
+\textbf{Warning:} Installing packages using GODI is an ON-LINE process, so
+preferably, you should be connected to the Net by a fast, hard-wire
+connection.
+
+\begin{enumerate}
+\item Download GODI from : \ahrefurl{http://godi.ocaml-programming.de/}
+
+Follow GODI installation instructions through "bootstrap\_stage2"
+command, adding the\\\verb+<godi-prefix-path>/bin+ and
+\verb+<godi-prefix-path>/sbin+ directories to your PATH as instructed.
+
+\textbf{Note:} For OCaml users, after GODI bootstrapping phase, the
+OCaml executables are located in \verb+<godi-prefix-path>/bin+ and the
+OCaml libraries are located in \verb+<godi-prefix-path>/lib/ocaml+.
+
+\item Run \cmd{godi\_console}
+
+  \begin{enumerate}
+    \item Select \cmd{conf-pcre} package (Packages are listed in
+         alphabetical order.)
+
+    Select [b]uild \& install, then e[x]it.
+
+    GODI will give you the PCRE library configure options:
+
+\begin{verbatim}
+        [ 1] GODI_BASEPKG_PCRE = no
+        [ 2]  GODI_PCRE_INCDIR =
+        [ 3]  GODI_PCRE_LIBDIR =
+\end{verbatim}
+
+Select 2 to set the path to the directory containing pcre.h (version 5.0 or higher).
+
+Select 3 to set the path to the directory containing libpcre.a (version 5.0 or higher).
+
+Select e[x]it twice to return to the main menu.
+
+\item (Optional) If you are planning to include support for Jungle,
+Galax's secondary storage manager, then select \cmd{conf-bdb}.
+
+     Select [b]uild \& install, then e[x]it.
+
+     GODI will give you the BDB library configure options:
+
+\begin{verbatim}
+        [ 1] GODI_BDB_INCDIR =
+        [ 2] GODI_BDB_LIBDIR =
+\end{verbatim}
+
+Select 1 to set the path to the directory containing db.h. (version 4.4 or higher).
+
+Select 2 to set the path to the directory containing libdb.a (version 4.4 or higher).
+
+Select e[x]it twice to return to the main menu.
+
+     \item  Select \cmd{godi-galax} package.
+
+     Select [b]uild \& install, then e[x]it.
+
+     This will add all of Galax's dependencies to your GODI configuration. GODI will give you Galax's configure options:
+
+\begin{verbatim}
+		[ 1] GODI_GALAX_INCLUDE_JUNGLE = no
+		[ 2]  GODI_GALAX_INCLUDE_C_API = no
+		[ 3] GODI_GALAX_INCLUDE_JAVA_$ = no
+		[ 4]   GODI_GALAX_INCLUDE_UTF8 = yes
+		[ 5] GODI_GALAX_INCLUDE_ISO88$ = yes
+		[ 6]      GODI_GALAX_JAVA_HOME = unset
+		[ 7]       GODI_GALAX_JAVA_BIN = unset
+		[ 8]   GODI_GALAX_JAVA_INCLUDE = unset
+		[ 9] GODI_GALAX_REGRESSION_SU$ = unset
+\end{verbatim}
+%$
+
+        You can change the default Galax configuration as follows:
+
+        Select 1 to include Jungle, Galax's secondary storage manager.
+
+        Select 2 to include Galax's C API. 
+
+        Select 3 to include Galax's Java API (requires the C API).
+
+        Select 4(5) to exclude UTF8(ISO88) character set (reduces sizes of executables).
+
+        Select 6(7,8) to set the Java home(bin,include) directories.
+
+        Select 9 to set directory where XQuery 1.0 test suite is installed.
+
+        Select e[xi]t.
+
+        Select [s]tart/continue, which will report all dependencies.
+
+        Then select [s]tart/continue, which will report actual dependencies based on your current GODI installation.
+
+         Then select [o]k.
+  \end{enumerate}
+
+\item Take a long coffee break...while GODI downloads and installs
+      packages. 
+
+\item Finish
+
+Add \cmd{<godi-prefix-path>/bin} to your \cmd{PATH}.
+        
+When installation has completed, Galax will be installed in
+\cmd{<godi-prefix-path>/} with the following subdirectories:
+
+\begin{center}
+{\small
+\begin{tabular}{|l|l|l|}
+  \hline
+  Directory & Sub-directory & Content\\
+  \hline
+  \cmd{bin/}  && Galax's command-line executables\\
+  \cmd{lib/}  && \\
+  &  \cmd{pervasive.xq} & Signatures of XQuery 1.0 Function and Operators  \\
+  &  \cmd{c/}           & C libraries and API header files\\
+  & \cmd{java/}        & Java libraries and API interfaces\\
+  &  \cmd{ocaml/pkg-lib/galax/}  & OCaml libraries and interfaces\\
+  \cmd{share/galax/} && \\
+  &   \cmd{examples/}&  Examples of using C, Java, and OCaml APIs\\
+  &   \cmd{regress/}&   Test harness and configuration for the W3C XQuery Test Suite\\
+  &   \cmd{usecases/}&  XQuery 1.0 usecases\\
+  \hline
+\end{tabular}
+}
+\end{center}
+
+\end{enumerate}
+\subsection{Installing Galax source by hand}
+
+If you already have an OCaml installation, you can install the
+Galax source by hand.  To do so, you need the following versions
+of the OCaml compiler and libraries, and C libraries:
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+Library & Version & GODI-Package\\
+\hline
+{OCaml compiler}\footnote{\ahrefurl{http://caml.inria.fr/ocaml/release.en.html}} & 3.10 & godi-ocaml\\
+\hline
+\multicolumn{3}{|c|}{OCaml Libraries}\\
+\hline
+findlib\footnote{\ahrefurl{http://www.ocaml-programming.de/packages/findlib-1.1.2pl1.tar.gz}} & 1.1.2pl1 & godi-findlib\\
+Pcre-ocaml\footnote{\ahrefurl{http://www.ocaml.info/ocaml\_sources/pcre-ocaml-5.12.2.tar.gz}} & 5.12.2 & godi-pcre\\
+Ocamlnet\footnote{\ahrefurl{http://www.ocaml-programming.de/packages/ocamlnet-2.2.8.1.tar.gz}} & 2.2.8.1 & godi-ocamlnet\\
+Caml IDL\footnote{\ahrefurl{http://caml.inria.fr/pub/old\_caml\_site/distrib/bazar-ocaml/camlidl-1.05.tar.gz}} & 1.05 & godi-camlidl\\
+PXP\footnote{\ahrefurl{http://www.ocaml-programming.de/packages/pxp-1.2.0test1.tar.gz}} & 1.2.0test1 & godi-pxp\\
+Camomile\footnote{\ahrefurl{http://prdownloads.sourceforge.net/camomile/camomile-0.7.1.tar.bz2}} & 0.7.1 & godi-camomile\\
+\hline
+\multicolumn{3}{|c|}{C Libraries}\\
+\hline
+	Berkeley DB (libdb) &4.3 & Only for Jungle\\
+	PCRE & \verb+>+4.5 & \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{enumerate}
+\item Download Galax source from \ahref{http://www.galaxquery.org/galax-\version.tar.gz}.
+\item Unzip and untar Galax in a directory of your choice.
+%$
+      \cmd{gunzip galax-\version.tar.gz}
+
+      \cmd{tar xvf galax-\version.tar}
+
+\item Configure Galax.
+
+From the \verb+galax/+ you just created, run:
+
+      \verb+./configure -galax-home $GALAXHOME+%$
+
+      Where \verb+$GALAXHOME+ is the target installation directory.%$
+
+      If you want the C API, add \cmd{-with-c}.
+
+      If you want the Java API, add  \cmd{-with-java -java-home <Top-level Java directory>}.
+
+      The configure script will try to find your OCaml installation
+      and other necessary libraries by itself.  Review the default
+      configuration before proceeding.  If you need to change the
+      default configuration, run \cmd{./configure -help} for all
+      options.
+
+\item Build Galax.
+
+      In \verb+galax/+ run: 
+  
+        \cmd{make world}
+
+      Go get more coffee...
+
+\item Install Galax.
+
+      In \verb+galax/+ run: 
+  
+        \cmd{make install}
+
+\item Finish
+
+  Add \verb+$GALAXHOME/bin+ to your \cmd{PATH} environment variable.%$
+
+      When installation has completed, Galax will be installed in
+      \verb+$GALAXHOME+ with these subdirectories:%$
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Directory & Content\\
+\hline
+         \cmd{bin/}       & Command-line executables	 \\
+         \cmd{examples/}  & Examples of using C, Java, and OCaml APIs \\
+         \cmd{regress/}   & Test harness and configuration for the W3C XQuery Test Suite\\
+         \cmd{usecases/}  & XQuery 1.0 usecases \\
+\hline
+\end{tabular}
+\end{center}
+
+\end{enumerate}
+        
+\eat{
+\section{Operating-System Installation Notes}
+\label{sec:os-notes}
+
+\subsection{Linux}
+\label{sec:os-notes-linux}
+
+\subsubsection{ocamlnet}                                                                                                   If you have compiled OCaml with no shared libraries, you will get an
+error when compiling ocamlnet, because 
+the \cmd{src/netstring/tools/unimap\_to\_ocaml/unimap\_to\_ocaml} executable 
+is a pre-compiled ocamlrun (bytecode) executable that assumes 
+OCaml supports shared libraries.
+
+Remove \cmd{src/netstring/tools/unimap\_to\_ocaml/unimap\_to\_ocaml}, remake in
+that directory, then proceed with compilation and installation.
+
+\subsection{Solaris}
+\label{sec:os-notes-solaris}
+
+\subsection{APIs}
+
+The Solaris implementation requires gcc and the GNU binary utilities. 
+If your gcc compiler is configured to invoke the native
+binary utilities (e.g., as, ld, etc.) and not the GNU utilities, you
+need to set up your environment so gcc will use the GNU utilities. 
+Set \cmd{\$LD\_LIBRARY\_PATH} to gcc library directory and 
+\cmd{\$GCC\_EXEC\_PREFIX} to the gcc binary utilities directory.
+
+\subsection{MacOS}
+\label{sec:os-notes-mac}
+
+\subsubsection{OCaml:}  We recommend that when you configure the OCaml
+compiler, use the \textbf{-no-shared-libs} options, which means that
+the OCaml compiler will only create static libraries.
+
+If you get linking errors when compiling the C API, you may have to
+rebuild your OCaml compiler using the \textbf{-fno-common} compiler
+option.  Edit your OCaml config/Makefile and add \textbf{-fno-common}
+to 
+\cmd{BYTECCCOMPOPTS} and \cmd{NATIVECCCOMPOPTS}.
+
+\subsubsection{ocamlnet}                                                                                                                                          
+If you have compiled OCaml with no shared libraries, you will get an
+error when compiling ocamlnet, because 
+the \cmd{src/netstring/tools/unimap\_to\_ocaml/unimap\_to\_ocaml} executable 
+is a pre-compiled ocamlrun (bytecode) executable that assumes 
+OCaml supports shared libraries.
+
+Remove \cmd{src/netstring/tools/unimap\_to\_ocaml/unimap\_to\_ocaml}, 
+remake in that directory, then proceed with ocamlnet compilation and installation.
+
+If you get errors from ocamlfind, try:
+
+\cmd{ocamlopt -o unimap\_to\_ocaml \$OCAMLHOME/str.cmxa unimap\_to\_ocaml.ml}
+
+I had to generate unimap\_to\_ocaml by hand, because ocamlfind
+did note find str.cmxa correctly. 
+
+\subsubsection{pxp}
+
+I was not able to build PXP successfully using the wlex and ulex
+lexers and all the character encodings.  Instead, I configured PXP
+with just two character encodings and the standard lexers:
+
+\cmd{./configure -without-wlex -without-ulex -lexlist utf8,iso88591 -without-pp}
+
+Then proceed with compilation and installation.
+
+\subsection{Windows}
+\label{sec:os-notes-mingw}
+}
+
+\section{XQuery Test Suite}
+\label{sec:testsuite}
+
+The Galax distribution includes a test harness for the W3C XQuery
+tests suite. It can be run by following the steps listed below.
+
+\begin{enumerate}
+\item {\bf Download and install the XQuery Test Suite.} The latest
+version of the XQuery Test Suite can be found on the W3C XQuery Web
+page at the following address:
+
+\ahrefurl{http://www.w3.org/XML/Query/test-suite/}
+
+The Test Suite comes as a \verb+zip+ archive, which can be unzipped in
+a directory of your choice (We use \verb+$XQTS+ in the following
+instructions).
+%$
+\item {\bf Configure Galax's test harness.} If you followed the GODI
+installation path, you need to select option 9 as indicated above to
+specify the directory in which the test suite has been installed. If
+you followed the ``by hand'' installation path, you must specify the
+directory in which the test suite has been installed using the
+following configure option:
+\begin{verbatim}
+-regression $XQTS
+\end{verbatim}
+%$
+\item {\bf Run the test suite.} You can run the test suite by
+calling:
+
+\cmd{make}
+
+from the \verb+$GALAXHOME/regress+ directory. This will produce a file
+called:
+
+\cmd{testresults-W3C.xml}
+
+which contains the result of running the test suite (following the
+format required for test results by the XQTS).
+%$
+\item {\bf Generate a test suite summary.} The XQTS distribution
+contains an XSLT style sheet which can be used to produced a summary
+of the test results in HTML form. The corresponding style sheet is
+located in the directory:
+\begin{verbatim}
+$XQTS/ReportingResults
+\end{verbatim}
+%$
+The stylesheet can be run by:
+\begin{enumerate}
+\item Specifying the path to the test results obtained from the
+previous step in the configuration file:
+\begin{verbatim}
+$XQTS/ReportingResults/Results.xml
+\end{verbatim}
+%$
+as follows:
+\begin{alltt}
+<results>
+   <result>{\em\$GALAXHOME}/regress/testresults-W3C.xml</result>
+</results>
+\end{alltt}
+%$
+\item Changing to the directory:
+\begin{verbatim}
+$XQTS/ReportingResults/Results.xml
+\end{verbatim}
+%$
+and running one of the two following commands (you will need a working
+installation of ant, and of an XSLT processor):
+\begin{verbatim}
+ant -f Build.xml create
+ant -f Build.xml createsimple
+\end{verbatim}
+which should respectively produce the following HTML files:
+\begin{verbatim}
+XQTSReportSimple.html
+XQTSReport.html
+\end{verbatim}
+\end{enumerate}
+\end{enumerate}
+
+\section{Web Site Interface}
+\label{sec:website}
+  The Galax Web site and on-line demo are bundled with the source
+  distribution (only).
+
+\subsection{Prerequisites}
+
+The Galax Web site has only been tested with Apache Web servers. We
+recommend you use Apache as some of the CGI scripts might be sensitive
+to the server you are using. Apache is commonly installed with most
+Linux distributions, or can be downloaded from:
+\ahrefurl{http://www.apache.org/}.
+
+\subsection{Installation of Website Interface}
+\begin{enumerate}
+\item From the source directory, edit
+\cmd{galax/website/Makefile.config} and initialize the following
+variables:
+\begin{description}
+\item[\cmd{WEBSITE}]   Location of the Apache directory for Galax.
+\item[\cmd{CGIBIN\_PREFIX}] Prefix of directory that may contain CGI
+  executables.  If empty, then they are placed in \cmd{WEBSITE}. 
+\end{description}
+\item Compile the the demo scripts: \cmd{make}
+\item Install the web site and demo scripts: \cmd{sudo make install}
+
+\item Configure your own Apache server: If all the galax demo files
+     (HTML, XML and CGIs) are placed in one directory where the HTTP
+     daemon is expecting to find them, then it is necessary to add the
+     following config info to the proper \cmd{http.conf} file:
+\begin{verbatim}
+  <Directory "/var/www/html/galax">
+    Options All
+    AllowOverride None
+    AddHandler cgi-script .cgi 
+    Order allow,deny
+    Allow from all
+  </Directory>
+\end{verbatim}
+     This permits scripts with suffix .cgi in
+     \cmd{/var/www/html/galax} to be executed.  The Galax demo is
+     available at \cmd{http://localhost/galax}.
+\item OR Configure an existing multi-user Apache server.
+
+     Your sysadmin may already have set up an Apache server for
+     general use, and allows CGI programs by any user.  You can verify
+     by finding directives similar to the following in httpd.conf
+     (wherever it might be located on your system),
+
+\begin{verbatim}
+  AddHandler cgi-script .cgi
+  <DirectoryMatch "/galax/cgi-bin">
+    AllowOverride AuthConfig
+    Options ExecCGI
+    SetHandler cgi-script
+  </DirectoryMatch>
+\end{verbatim}
+
+In that case, simply follow the comments in
+\cmd{website/Makefile.config} to choose installation destinations for
+your CGI programs and the HTML documents should suffice.  The URL for
+accessing the installed site will depend on how your webserver is set
+up.  Consult your sysadmin or webadmin for further help.
+\end{enumerate}

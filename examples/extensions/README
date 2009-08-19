@@ -1,0 +1,25 @@
+Galax supports several extensions to XQuery 1.0, notably XML updates
+and a procedural extensions. Here is a short summary of the supported
+extensions:
+
+    * The July 11th 2006 version of the W3C XQuery Update Facility
+      (http://www.w3.org/TR/xqupdate/). Note, that this allows updates
+      everywhere though :). Usecases for that language can be found in
+      the Galax usecases directory.
+
+    * The XQuery! language (http://xquerybang.cs.washington.edu/), in
+      which the syntax for atomic updates has been aligned with the
+      July 11th 2006 version of the W3C XQuery Update Facility.
+
+    * The XQueryP language
+      (http://www.ximep-2006.org/papers/Paper-Chamberlin-Carey.pdf).
+
+Some examples of each of the three languages are provided in the
+examples/extensions directory. To run one of those languages, you must
+use the corresponding language level option on the command line, as
+follows:
+
+  galax-run -language ultf xquery_updates.xq    (: For the W3C Update Facility :)
+  galax-run -language xquerybang xquery_bang.xq (: For the XQuery! Language :)
+  galax-run -language xqueryp xquery_p.xq       (: For the XQueryP Language :)
+

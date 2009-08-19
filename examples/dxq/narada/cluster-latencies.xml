@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<config xmlns="narada">
+<!-- Two rings connected by one very slow link -->
+<graph name="Neighbors">
+  <edge s="cactus181" t="cactus191"/>
+  <edge s="cactus191" t="cactus231"/>
+  <edge s="cactus201" t="cactus211"/>
+  <edge s="cactus211" t="cactus231"/>
+  <edge s="cactus231" t="cactus241"/>
+  <edge s="cactus241" t="cactus231"/>
+  <edge s="cactus251" t="cactus241"/>
+  <edge s="cactus261" t="cactus251"/>
+  <edge s="cactus271" t="cactus281"/>
+  <edge s="cactus281" t="cactus291"/>
+  <edge s="cactus291" t="cactus241"/>
+<!--  <edge s="cactus261" t="cactus271"/> -->
+</graph>
+<graph name="Latencies">
+  <!-- edge latencies -->
+  <edge s="cactus181" t="cactus191" w="0.0"/>
+  <edge s="cactus191" t="cactus231" w="0.0"/>
+  <edge s="cactus201" t="cactus211" w="0.0"/>
+  <edge s="cactus211" t="cactus231" w="0.0"/>
+  <edge s="cactus231" t="cactus241" w="1.5"/>
+  <edge s="cactus241" t="cactus251" w="0.0"/>
+  <edge s="cactus251" t="cactus261" w="0.0"/>
+  <edge s="cactus261" t="cactus271" w="0.0"/>
+  <edge s="cactus271" t="cactus281" w="0.0"/>
+  <edge s="cactus281" t="cactus291" w="0.0"/>
+  <!-- cheaper cross-edge latencies: might become neighbors -->
+  <edge s="cactus181" t="cactus291" w="0.0"/>
+  <edge s="cactus181" t="cactus251" w="0.0"/>
+  <edge s="cactus191" t="cactus281" w="0.0"/>
+  <edge s="cactus191" t="cactus261" w="0.0"/>
+  <edge s="cactus201" t="cactus271" w="0.0"/>
+  <edge s="cactus201" t="cactus281" w="0.0"/>
+  <edge s="cactus211" t="cactus261" w="0.0"/>
+  <edge s="cactus211" t="cactus291" w="0.0"/>
+  <edge s="cactus231" t="cactus251" w="0.0"/>
+  <!-- expensive cross-edge latencies: should not become neighbors -->
+  <edge s="cactus181" t="cactus261" w="5.0"/>
+  <edge s="cactus181" t="cactus271" w="5.0"/>
+  <edge s="cactus181" t="cactus281" w="5.0"/>
+  <edge s="cactus191" t="cactus251" w="5.0"/>
+  <edge s="cactus191" t="cactus271" w="5.0"/>
+  <edge s="cactus201" t="cactus251" w="5.0"/>
+  <edge s="cactus201" t="cactus261" w="5.0"/>
+  <edge s="cactus201" t="cactus291" w="5.0"/>
+  <edge s="cactus211" t="cactus251" w="5.0"/>
+  <edge s="cactus211" t="cactus271" w="5.0"/>
+  <edge s="cactus211" t="cactus281" w="5.0"/>
+  <edge s="cactus231" t="cactus261" w="5.0"/>
+  <edge s="cactus231" t="cactus271" w="5.0"/>
+  <edge s="cactus231" t="cactus281" w="5.0"/>
+  <edge s="cactus231" t="cactus291" w="5.0"/>
+</graph>
+<!-- A ring with symmetric latencies -->
+<!--
+<graph name="Neighbors">
+  <edge s="cactus181" t="cactus191"/>
+  <edge s="cactus191" t="cactus201"/>
+  <edge s="cactus201" t="cactus211"/>
+  <edge s="cactus211" t="cactus231"/>
+  <edge s="cactus231" t="cactus181"/>
+  <edge s="cactus241" t="cactus231"/>
+  <edge s="cactus241" t="cactus251"/>
+  <edge s="cactus251" t="cactus261"/>
+  <edge s="cactus261" t="cactus271"/>
+  <edge s="cactus271" t="cactus281"/>
+  <edge s="cactus281" t="cactus291"/>
+  <edge s="cactus291" t="cactus181"/>
+</graph>
+<graph name="Latencies">
+  <edge s="cactus181" t="cactus191" w="0.0"/>
+  <edge s="cactus191" t="cactus201" w="0.0"/>
+  <edge s="cactus201" t="cactus211" w="0.0"/>
+  <edge s="cactus211" t="cactus231" w="0.0"/>
+  <edge s="cactus231" t="cactus241" w="0.0"/>
+  <edge s="cactus241" t="cactus251" w="0.0"/>
+  <edge s="cactus251" t="cactus261" w="0.0"/>
+  <edge s="cactus261" t="cactus271" w="0.0"/>
+  <edge s="cactus271" t="cactus281" w="0.0"/>
+  <edge s="cactus281" t="cactus291" w="0.0"/>
+  <edge s="cactus291" t="cactus181" w="0.0"/>
+</graph>
+-->
+</config>
+

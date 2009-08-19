@@ -1,0 +1,9 @@
+(: Interface to DNS nameservers :)
+interface namespace Server = "dns";
+
+declare function Server:f($x as xs:string) external;
+declare function Server:RR() external;
+declare updating function Server:delegate($hostname as xs:string) external;
+declare updating function Server:forward($from,$hostname as xs:string) external;
+declare updating function Server:resolved($hostname as xs:string, $addrs) external;
+declare updating function Server:multicast($from as xs:string, $x as xs:string) external;

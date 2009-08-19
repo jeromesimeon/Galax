@@ -1,0 +1,179 @@
+
+7 June 2004 - Mary
+
+Jabber configuration
+====================
+
+My Jabber server has three main accounts, which represent three YooHoo
+user accounts:
+
+  account            password
+  ---------------------------
+  jerome@localhost   jerome
+  mary@localhost     mary
+  nicola@localhost   nicola
+
+For each main user account, there are three secondary accounts, each
+of which "simulate" that user on some remote service (replace USER by
+jerome, mary or nicola):
+
+  account              password
+  ------------------------------
+  USER-im@localhost    USER-im
+  USER-cell@localhost  USER-cell
+  USER-work@localhost  USER-work
+
+I associate the main account with the secondary accounts by putting all
+the accounts for a user in the main account's buddy list.   So,
+mary-im, mary-cell, and mary-work are all buddies of mary.
+
+I also added several new "Away" messages to represent changes in state
+of the services, e.g., "On Hook" for work phone, "Extended Area" for
+cell, etc.
+
+During the demo, we can simulate a service changing state by
+activating a particular "Away" message.
+
+YooHoo application files
+========================
+
+Server files
+------------
+YooHoo.wsdl:       YooHoo server interface
+yoohoo-impl.xq:    Implementation of YooHoo server
+
+Client files
+------------
+yoohoo_context.xq: Context for client queries  
+yoohoo_usecase.xq: Client queries
+
+Right now, there are three service calls: 
+
+  yoohoo:accounts() : return all accounts
+  yoohoo:status()   : return activity status of all accounts
+  yoohoo:presence($userName as xsd:string) : 
+                      return presence of a particular user
+
+Only yoohoo:accounts and yoohoo:presence should be called from
+Web-service client, because yoohoo:status returns an XML document in
+which not all namespaces are defined, which raises an error.  
+You can run yoohoo:status() from the local (non-Web server) client,
+e.g., 
+   galax-run -serialize wf client-local.xq
+
+I will probably add more features during the week, but this should be
+enough to make our points.
+
+YooHoo application configuration
+================================
+
+0. Start up your Jabber server (as yourself)
+   Start up your Apache server (usually as root)
+  
+   Don't forget to export LD_LIBRARY_PATH=<path to libiksemel>:$(GALAXHOME)/lib/c
+   before starting servers.
+
+   In my environment, I export:
+
+     export LD_LIBRARY_PATH=/usr/local/lib:/home/mff/Galax/lib/c
+
+   If you forget to start the Jabber or Apache servers, you will get
+   useless messages from Galax.
+
+1. Edit examples/wsdl/yoohoo/Makefile
+
+   Set APACHEHOME to directory where YooHoo files should be installed
+
+2. Edit yoohoo_context.xq 
+
+   Change /var/www/html to APACHEHOME directory 
+
+3. Run 'make install'
+
+   Install will copy YooHoo application files to APACHEHOME and will
+   make links in galax/usecases to yoohoo_context.xq and
+   yoohoo_usecase.xq (see Web site config below)
+
+4. Test YooHoo by running:
+
+   galax-run -serialize wf -context yoohoo_context.xq yoohoo_usecase.xq
+
+   You should get something like the following: 
+
+     <return xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+             xmlns:typens="urn:YooHoo" 
+             xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+             xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" 
+             xmlns:yoohoo="yoohoo" xmlns:jbrdelay="jabber:x:delay" 
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:jbroster="jabber:iq:roster">
+        <accounts>
+          <user id="jerome">
+            <service id="jerome-cell@localhost"/>
+            <service id="jerome-im@localhost"/>
+            <service id="jerome-work@localhost"/>
+          </user>
+          <user id="mary">
+            <service id="mary-cell@localhost"/>
+            <service id="mary-work@localhost"/>
+            <service id="mary-im@localhost"/>
+          </user>
+          <user id="nicola">
+            <service id="nicola-work@localhost"/>
+            <service id="nicola-im@localhost"/>
+            <service id="nicola-cell@localhost"/>
+          </user>
+        </accounts>
+      </return>
+
+      <return xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+              xmlns:typens="urn:YooHoo" 
+              xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+              xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" 
+              xmlns:yoohoo="yoohoo" xmlns:jbrdelay="jabber:x:delay" 
+              xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:jbroster="jabber:iq:roster">
+        <user id="mary"><status>No Services Available</status></user>
+      </return>
+
+5. Run one gaim client for each 'service' account that you want to
+   make active, then repeat step 4 and see what you get.
+
+6. Problems running with Web service?  
+
+   Try running YooHoo implementation without the Apache server:
+
+     galax-run -serialize wf client-local.xq
+
+   This just uses 'import module' to import the yoohoo server
+   implementation into a client.
+
+Galax demo Web site configuration
+=================================
+
+I added a "YooHoo Web Service" usecase to the Galax Web site so that
+we can run the demo from the Web interface.   
+
+1. In galax/examples/wsdl/yoohoo, run 'make install'
+
+   This will make the appropriate links in galax/usecases to
+   yoohoo_context.xq and yoohoo_usecase.xq
+
+2. In galax/website, run 'make opt'
+
+   This will rebuild the Galax demo Web site
+
+3. In galax/website, as root or whomever has permission to write
+   APACHEHOME, run 'make install'
+
+   Make sure that WEBSITE in galax/website/Makefile.config points to
+   directory where Apache files are found. 
+
+4. Try running YooHoo client queries from Galax demo Web site
+
+
+
+
+22 June 2004 - Nicola
+
+2'. You need to run both 'make opt' and 'make all' in galax/website
+in order to build the proper binaries.
+

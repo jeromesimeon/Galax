@@ -1,0 +1,2184 @@
+#########################################################################
+#                                                                       #
+#                                  GALAX                                #
+#                               XQuery Engine                           #
+#                                                                       #
+#   Copyright 2001-2007.                                                #
+#   Distributed only by permission.                                     #
+#                                                                       #
+#########################################################################
+
+# $Id: Makefile.galax,v 1.50 2008/03/12 22:30:57 simeon Exp $ #
+
+#########################################################################
+# Author:   Christopher A. Rath (AT&T Labs Research)
+# Descripton:
+#		This Makefile is included in the toplevel Galax Makefile and any
+#		component Makefiles beneath the toplevel.
+# History:
+#  $Log: Makefile.galax,v $
+#  Revision 1.50  2008/03/12 22:30:57  simeon
+#  March 12, 2008 - Jerome
+#
+#    o Installation:
+#       - Now installing the extensions examples directory.
+#       - Added missing META.in.
+#
+#    o Serialization:
+#       - Fixed a few issues with serialization (showing up while doing
+#         the tutorial).
+#
+#    o Documentation:
+#       - Added table of contents back.
+#       - Pass on installation chapter. Added section on how to run the
+#         W3C XQuery test suite.
+#       - Removed the 'accessing and storing XML' part relating to Jungle
+#         and datamodel, empty or obsolete.
+#       - Added back chapter on APIs.
+#       - Shuffled the chapters in the reference part (alignment is
+#         renamed conformance and comes first, 'general' last).
+#       - Removed tutorial part on serialization as well-formed,
+#         buggy. Added text for more useful 'standard' mode.
+#       - Pass on tutorial chapter added a short tutorial section on
+#         printing compilation phases.
+#
+#    o Testing:
+#       - Fixed the default config file to not point to the
+#         Galax-specific test suite. (for distribution).
+#
+#  Revision 1.49  2007/12/06 02:19:14  mff
+#
+#  December 5, 2007 - Mary
+#
+#    o Java API
+#      - Changes to get Java API to link
+#
+#      TODO: align examples/galapi/java_api
+#
+#  Revision 1.48  2007/11/26 18:55:08  mff
+#  November 26, 2007 - Mary
+#
+#    o C API
+#
+#      Makefile.galax: Had to add "-lrt" and CONF_C_LIBPCRE to C-API link
+#      options
+#
+#  Revision 1.47  2007/11/16 21:16:52  mff
+#  November 16, 2007 - Mary [DXQ]
+#
+#    o Changed syntax of box-closure expression to:
+#        for server P implement Q box { E }
+#
+#      Assumption is that closure will be evaluated at some server P
+#      that implements interface Q, but we do not know the ultimate
+#      destination.
+#
+#      NB: Now that we ship arbitrary code in closure, we have even more
+#      motivation to distinguish between functions that are (1) location
+#      dependent and/or (2) updating.  We ue 'updating' modifier to
+#      describe both, which conflates meaning.  This will eventually bite
+#      us when we want to optimize an expression for a particular server.
+#
+#    o Updated Willow example
+#      - Changes friend for a domain based on latency
+#
+#  Revision 1.46  2007/10/25 00:08:41  mff
+#  ***** Tagged with galax-0-9-9 for Debian Release to Stefano Zacchiroli <zack@bononia.it> *****
+#
+#  October 24, 2007 - Mary
+#
+#    o Documentation:
+#
+#      Woefully incomplete vis a vis Updates, XQueryP, APIs, etc.
+#
+#    o Code_selection:
+#
+#      Fixed insidious bug in code selection for references to imported
+#      variable or imported function: Incorrectly returned
+#      code-selection-context of imported module instead of importing
+#      module.
+#
+#    o configure script
+#
+#      Disabled C and Java APIs until we figure out what we want to do
+#      with them.
+#
+#    o OCaml API examples
+#
+#      Aligned with new processing model
+#
+#  Revision 1.45  2007/10/16 21:22:29  mff
+#
+#  October 16, 2007 - Mary [DXQ]
+#
+#    o Typing_expr:
+#
+#      Added default typing rules for update expressions so that
+#      sub-expressions are also typed.
+#
+#    o Conf.mlp:
+#
+#      XQueryP is containted in DXQ: Fixed is_xqueryp() to account for
+#      inclusion.
+#
+#    o Narada:
+#
+#      Initialized global variables to be non-empty, to avoid this bug:
+#
+#      [TODO : There is a nasty stack overflow bug in Subtyping_gluskov.includes:
+#       Internal Error: Subtyping_gluskov.includes
+#         small = element route of type xs:untyped, text?, element route of type xs:untyped (min 0) (max 0)
+#         big = attribute *  of type, (...rest of item()*...)
+#      ]
+#
+#  Revision 1.44  2007/10/16 01:25:34  mff
+#  October 15, 2007 - Mary [DXQ]
+#
+#    o Added two new constructs to DXQ: boxing an expression in a closure
+#      and evaluating a boxed closure.  This expression:
+#
+#        for server S box Expr
+#
+#      constructs a closure for Expr in the context of server
+#      implementation S.  The closure is an XML tree.  This expression:
+#
+#        eval box Expr
+#
+#      unboxes the closure in Expr and evaluates the closure.  A
+#      rough definition of at-server-do (similarly, for-server-return) in terms
+#      of box and eval:
+#
+#          at server S do E
+#        ===
+#          let $v := for server S box E return
+#          at server S do { eval box $v }
+#
+#      Semantics of these constructs still a bit fuzzy.
+#
+#    o Implementation required changes all the way from parser to code
+#      selection and plan serialization.
+#
+#  Revision 1.43  2007/09/11 01:20:50  mff
+#  Sept 10, 2007 - Mary
+#
+#    o General clean-up of DXQ server code
+#
+#      Galax_server_util:
+#      - Contains server utility functions shared by Galax_server,
+#        Galaxd, Webgui: server logging, signatures for server functions,
+#        etc.
+#
+#      Galax_server:
+#      - Consolidated GADS of replicated code:
+#        queries from peers, queries from GUIs, error handling
+#      - Defines HTTP/TCP and UDP server functions
+#      - Builtin DXQ functions other than those depending on
+#        Thread/Mutex/Condition modules
+#      - All calls to Browser/GUI isolated here
+#
+#      Galaxd:
+#      - Thread server definition and definitions of thread primitives
+#        exposed as builtin DXQ functions.
+#
+#      - Mainline for server start-up: reads directories, parses files,
+#        etc., but does not handle query evaluation or call GUI.  All
+#        query evaluation and GUI I/O in Galax_server.
+#
+#  Revision 1.42  2007/09/07 19:03:40  mff
+#  Sept 7, 2007 - Mary
+#
+#    (Warning: NS,SGML,XMP usecases currently failing regression)
+#
+#    o General clean-up of HTTP code
+#
+#      Http :
+#
+#        All HTTP functions (client-side, server-side, and rpc-like) are
+#        now in http.ml.  This module is in a "hybrid" state: the HTTP
+#        get function is implemented using Http_client; all others are
+#        implemented using home-grown HTTP request code.
+#
+#        Client-side functions only return HTTP message payloads (no
+#        status or headers) and an raise exception if any status other
+#        than 200/"OK" is received.
+#
+#      Galax_http :
+#
+#         Is replaced by Galax_url, which only handles URL decoding and
+#         user-installed schemes.
+#
+#  Revision 1.41  2007/09/04 20:08:09  ndonose
+#
+#  Sept 4, 2007 - Nicola
+#
+#    o added a new function, glx:http-get-request() that (temporarily)
+#      implements HTTP get calls with full HTTP/1.1 features (using Netclient),
+#      until we fix and unify the HTTP support.
+#
+#  Revision 1.40  2007/08/15 18:53:48  mgreenberg
+#  August 15, 2007 - Michael
+#
+#    o Galapi:
+#      - Added validate_document Caml API function
+#
+#    o Ast_printer:
+#      - Print_type_core's output should now be parseable as an XQuery type
+#
+#    o Ast_walker:
+#      - Added fold_over_cxtype
+#
+#    o Config:
+#      - Combiner the printer and walker in Makefile.galax so allow for
+#        Print_type_core's use of fold_over_cxtype
+#
+#    o Datamodel:
+#      - Fixed comment
+#
+#  Revision 1.39  2007/08/01 18:06:30  simeon
+#  August 1, 2007 - Jerome
+#
+#    o XQueryX: First-cut support for XQueryX with trivial embedding
+#      in Galax. It supports the following features:
+#
+#       (1) Compiling XQueryX to XQuery using a command line tool called
+#           xqueryx2xquery.
+#
+#       (2) Running XQueryX with galax-run with the flag '-syntax
+#           xqueryx'.
+#
+#       (3) Embedding XQueryX expressions directly within XQuery.
+#
+#    (1) and (2) work on whole modules, while (3) only works with
+#    expressions since it has to be integrated with the rest of the
+#    grammar.
+#
+#    o Processing model:
+#       - Fixed ugly bug in the way parse handlers were built. Now
+#         properly taking configuration into account.
+#
+#  Revision 1.38  2007/07/31 17:34:08  simeon
+#  July 31, 2007 - Jerome
+#
+#    o Parsing:
+#       - Fixed another lurking bug in the lexing of sequence types,
+#         transitioning to the wrong state... (Was tripped by e.g.,
+#         instance of or typeswitch inside a constructor).
+#
+#         [Replaced old hack by better working new hack...sigh
+#
+#          Queries to test:
+#          <a>{1 instance of item()}</a>
+#          <a>{1 instance of item()*}</a>
+#          <a>{1 instance of item()(::)*}</a>
+#          every $a as item()* in (1, 2), $b as item()* in $a satisfies $b]
+#
+#    o Prolog:
+#       - Fixed another lurking bug in cyclic variable dependency
+#         checking (not clearing up the previous variable table in
+#         parallel branches of the dependency graph).
+#
+#    o XQueryX Trivial Embedding:
+#       - Started prepare for it. Added hook in normalization.
+#
+#  Revision 1.37  2007/07/18 16:54:18  simeon
+#  July 18, 2007 - Jerome
+#
+#    Feature Galax
+#    Minimal Conformance	          14528 / 96 / 14637  (99.3%)
+#    Optional Features
+#      Schema Import Feature	  0   	/ 0   / 174
+#      Schema Validation Feature	  0   	/ 0   / 25
+#      Static Typing Feature	  46  	/ 0   / 46
+#      Full Axis Feature	 	  130 	/ 0   / 130
+#      Module Feature	 	  0 	/ 0   / 32
+#      Trivial XML Embedding Feature 0 	/ 0   / 4
+#
+#    o WSDL:
+#       - Removing wsdl_load.ml at cleanup-time, since it's being
+#         generated.
+#
+#    o Prolog:
+#       - Added check for cyclic definitions of global variable in
+#         modules.
+#
+#    o Testing:
+#       - Added group testing for the XQuery Appendices.
+#
+#  Revision 1.36  2007/05/16 15:32:10  mff
+#
+#
+#  May 16, 2007 - Mary
+#
+#    MODULES and INTERFACES
+#    *** PLEASE READ THE WHOLE MESSAGE ***
+#
+#    o Deep changes to support separate module interfaces and module
+#      implementations.
+#
+#      - Compilation/evaluation now occur within context of a "compiled
+#        program".  (In new module code_selection/Compiled_program_units)
+#
+#        A compiled program consists of imported module interfaces,
+#        imported library modules, and an optional main module.
+#
+#      - All program units (statements,prologs,modules) are compiled in
+#        context of a compiled_program unit.
+#
+#      - New pre-processing phase (before normalization), computes
+#        transitive closure of imported library modules.  Used to
+#        populate compiled_program unit.
+#
+#      - Recursive module imports (as per standard) are prohibited.
+#
+#     o Changes to ASTs:
+#
+#       We distinguish between "external" functions/vars (which are
+#       defined in external programming environment) from "imported"
+#       functions/vars (which are defined in imported XQuery modules)
+#
+#       New kinds of declarations:
+#       Xquery_ast : EFunctionInterface and EVarInterface
+#       Xquery_core_ast : CEFunctionInterface and CEVarInterface
+#       Xquery_algebra_ast : AOEFunctionInterface and AOEVarDeclInterface
+#
+#     o Importing interfaces and modules
+#
+#       Module interfaces are imported during normalization.  Variable
+#       and function declarations in the Core rep of the imported
+#       interface are merged into the Core rep of the importing module.
+#
+#       If a module does not have an interface, an interface is created
+#       for it during the pre-processing stage.
+#
+#     o New interface stdlib/pervasive.xqi replaces stdlib/pervasive.xq
+#
+#       - Removed stdlib/pervasive.xq
+#       - NB: new file suffix ".xqi" for module interfaces.
+#
+#     o Code selection
+#
+#       References to imported variables and functions are resolved
+#       during code selection of the importing module.
+#
+#       The code_selection_context for a module points to the
+#       code_selection_contexts of the modules that it imports to resolve
+#       references to imported variables/functions.
+#
+#     o What works:
+#
+#       - Usecase, XQuery testsuite, and Galax regressions all pass
+#
+#     o What doesn't work:
+#
+#       - examples/caml_api/test.ml
+#       - C or Java APIs
+#       - Any DXQ program
+#
+#     o TODO:
+#
+#       - Physical types for external and imported variables: Right now,
+#       they are completely materialized XML values.
+#
+#  Revision 1.35  2007/05/02 19:30:59  mff
+#  May 2, 2007 - Mary
+#
+#    Changes to prepare for separate compilation of modules:
+#
+#    o Processing_context:
+#      - processing_context now contains STATIC context for
+#        PROGRAM unit, i.e., configuration options and values.
+#
+#      - module_processing_context contains STATIC context for
+#        MODULE unit & is contained in norm_context.
+#        name_generators moved here from processing_context.
+#
+#    o Algebra_context:
+#      - algebra_context contains DYNAMIC context for PROGRAM unit.
+#        alive_documents moved here from processing_context.
+#
+#  Revision 1.34  2007/02/28 18:48:06  mff
+#
+#  February 28, 2007 - Mary (DXQ)
+#
+#    o Clean-up of Galax Server code
+#
+#      - New module Galax_server_util:
+#
+#        Factorized functionality shared by Galax_server, Galaxd, and
+#        Webgui into Galax_server_util.  Contains:
+#          * Server UDP defaults
+#          * Server-name management (maps from virtual to actual names)
+#          * Shared GUI utilities
+#
+#      - Moved file and directory management utilities into Gmisc.
+#
+#      - Moved DXQ options into Top_options.
+#
+#      - Processing_context contains "short" hostname and port of server.
+#
+#  Revision 1.33  2007/02/12 21:15:33  simeon
+#  February 12, 2007 - Jerome
+#
+#    o Code clean up:
+#       - Removed obsolete modules: Factorize_update, Factorize_util.
+#
+#    o Galax Test Suite:
+#       - Added a first version of the Galax test suite in the CVS
+#         repository. This currently contains a few tests for: plan
+#         stability of the use cases, and join detection tests.
+#
+#    o Testing:
+#       - Finalized support for comparing query plans in the test
+#         harness.
+#       - Added an option to automatically generate expected results in
+#         case the file for that expected result is missing.
+#
+#         Usage: [galax-test -generate-results] to generate results.
+#
+#    o Toplevel:
+#       - Added three plan conversion utilities for convenience.
+#          [xquery2plan] generates a plan from an XQuery. **
+#          [xquery2xmlplan] generates an XML plan from an XQuery.
+#          [xmlplan2plan] generates a plan from an XML plan.
+#
+#        **you can turn optimization on by writing -optimization on.
+#
+#    o Updates/Parsing:
+#       - Removed 'snap delete' etc. variants for the update
+#         operations. Fixing shift/reduce conflicts. (e.g., WITH could
+#         parse as either a do replace or a snap replace).
+#
+#         The changes are:
+#           MapFromItem[$x]{P1}(P2) --> Map{P1}(P2) where occurrence of $x
+#           in P1 is turned into ID.
+#           MapToItem{P1}(P2) --> Map{P1}(P2)
+#           INPUT --> ID
+#           snap { P } --> Snap(P), same for Delete,Replace,Insert,Rename.
+#
+#    o Pretty printer:
+#       - Fixed the algebraic pretty-printer to align with the current
+#         formalization of the algebra [Ghelli,Onose,Rose,Simeon].
+#
+#    o Compiler:
+#       - Consolidated name creation (variables, tuple fields, etc.)
+#         throughout the compiler. This is now handled by a proper module
+#         [Namespace_generate]. This is important notably for the
+#         regression tests to ensure stability of variable names accross
+#         separate sets of compilation.
+#
+#  Revision 1.32  2007/02/05 20:05:46  mff
+#  February 5, 2007 - Mary
+#    o Release:
+#      - Set config/Makefile.galax RELEASE number to 0.7.2
+#
+#  Revision 1.31  2007/02/01 22:08:46  simeon
+#  February 1, 2007 - Jerome
+#
+#    o Code cleanup:
+#       - Cleaned up all the source file headers. Added module
+#         descriptions when missing, as well as CVS Id.
+#       - Removed obsolete modules: Optimization_rules_treepattern_old,
+#         Factorize_sideeffects.
+#
+#    o AST Walker:
+#       - Added support for a generic fold operation on the AST (useful
+#         to compute a boolean property on the AST for instance).
+#
+#    o Normalization:
+#       - Small fix to the normalization of comparisons to re-enable join
+#         detection, not using let bindings for the comparator
+#         anymore. [hack]
+#
+#    o Rewriting:
+#       - Added a judgment to check for side-effects, removed
+#         corresponding obsolete judgment in Factorization.
+#       - Moved the snap removal rule from optimization to rewriting,
+#         cleaning up the plans as early as possible.
+#
+#  Revision 1.30  2007/02/01 21:24:26  mff
+#  February 1, 2007 - Mary
+#
+#   ***
+#   Warning: You need to re-run ./configure before compiling
+#   ***
+#
+#    o Changes to configure script, config/Makefile.galax
+#      to align with O'Caml 3.09.3.
+#
+#      Added conditional linking of Netsys library.
+#      In preparation for godi-galax package release.
+#
+#  Revision 1.29  2007/01/31 03:17:55  simeon
+#  January 30, 2007 - Jerome
+#
+#    Current testing results on XQTS 1.0.2:
+#
+#    Feature Galax
+#    Minimal Conformance	          14514 / 110 / 14637  (99.1%)
+#    Optional Features
+#      Schema Import Feature	  0   	/ 0   / 174
+#      Schema Validation Feature	  0   	/ 0   / 25
+#      Static Typing Feature	  46  	/ 0   / 46
+#      Full Axis Feature	 	  130 	/ 0   / 130
+#      Module Feature	 	  0 	/ 0   / 32
+#      Trivial XML Embedding Feature 0 	/ 0   / 4
+#
+#    o Normalization:
+#       - Now properly detecting mal-formed option declarations
+#         (unresolved prefixes notably).
+#
+#    o Optimizer:
+#       - Fixed bug in selection pushdown rule, bogus when pushing down
+#         over a concatenation (expecting a single tuple). Bug triggered
+#         when variable inlining is on.
+#
+#    o Namespace declarations:
+#       - Fixed bug: now handling undeclaration of non-declared prefixes
+#         properly.
+#
+#    o Parser:
+#       - Fixed bug in lexing of typeswitch case branches.
+#       - Fixed wrong transition for DECLAREVALUEINDEX and DECLARENAMEINDEX.
+#
+#    o Value index support:
+#       - Fixed code selection to first perform code selection for global
+#         variables before indices, allowing indices to access global
+#         variables.
+#       - Turned glx:keyref to a standard built-in Galax function,
+#         providing direct support for static typing, and cleaning up the
+#         corresponding code.
+#
+#  Revision 1.28  2006/12/23 20:08:25  simeon
+#  December 23, 2006 - Jerome
+#
+#    o Testing:
+#       - One more step toward support for comparison of Query
+#         plans. Still not fully functions.
+#
+#    o Compilation:
+#       - Removed separate compilation of single let expressions into
+#         AOELet, now uniformly compiling FLWORs to the tuple part of the
+#         algebra.
+#       - Changed AOELet to AOELetvar, which are now handled separately.
+#
+#    o Optimization/Rewriting:
+#       - Fixed function inlining to handle return types properly.
+#       - Started moving function inlining from optimization to
+#         rewriting.
+#       - Removed obsolete rewriting_ddo_* modules.
+#       - Removed "Double Null Index Removal" optimization rule, both
+#         buggy and wrong!
+#       - Fixed several bugs in "Map item on Singeton tuple, inline"
+#         optimization rule, ignoring the presence of type assertion in
+#         the tuple constructor, and removing computation that may have
+#         side effects of raising errors.
+#       - Turned off "Combine Groups" optimization rule, wrong! (sigh...)
+#
+#    o Code:
+#       - Fixed bug in NullMap operator not returning a tuple in case of
+#         the empty sequence.
+#
+#  Revision 1.27  2006/12/14 04:53:18  simeon
+#  December 13, 2006 - Jerome
+#
+#    Current testing results on XQTS 1.0.2:
+#
+#    Feature Galax
+#    Minimal Conformance	          14497 / 114 / 14637  (99.1%)
+#    Optional Features
+#      Schema Import Feature	  0   	/ 0   / 174
+#      Schema Validation Feature	  0   	/ 0   / 25
+#      Static Typing Feature	  46  	/ 0   / 46
+#      Full Axis Feature	 	  130 	/ 0   / 130
+#      Module Feature	 	  0 	/ 0   / 32
+#      Trivial XML Embedding Feature 0 	/ 0   / 4
+#
+#    o Compilation:
+#       - Added support for separate -galax-regression option to indicate
+#         where the Galax Test Suite is installed.
+#       - Fixed circular dependency in optimization walker/judge modules,
+#         resulting from the latest reorg.
+#
+#    o Testing:
+#       - Fixed support for multiple test units, generating distinct
+#         files instead of overriding them. Fixed printing for multiple
+#         test units.
+#       - Added support for comparison of query plans.
+#
+#    o Updates:
+#       - Fixed 'do rename' to properly handle xs:string and xs:untyped
+#         values for the name expression.
+#
+#    o F&O:
+#       - Fixed fn:dateTime to support empty sequence parameters.
+#
+#    o Pragmas:
+#       - Now properly resolving Pragmas QNames.
+#       - Fixed serious parsing and lexing issues with pragmas (wrong
+#         lexical state created in some cases).
+#       - Fixed bug, now raising an error when there is no expression.
+#       - Added check that the pragma QName and content is separated by
+#         at least a whitespace character.
+#
+#    o Parsing:
+#
+#      Long over-due cleanup of the lexers. This fixes two major
+#      problems: (1) we now have keyword tables which makes for a more
+#      easily extensible parser, and smaller lexing tables.  (2) we don't
+#      rely on long keywords anymore which means we properly implement
+#      comments within keywords. [ Note that it's not completely true, we
+#      still have a few long keywords hanging around, notably those with
+#      QNames inside... This still need some work, but should get us
+#      going. ]
+#
+#       - Removing numerous unused lexing rules in some of the states,
+#         notably in the operator's state.
+#       - Moved part of the keywords used in prolog declarations from the
+#         operator's state to the declaration state.
+#       - Consolidated duplicated string literals and comments lexing
+#         rules to use the same lexer.
+#       - Added support for simple kind of look ahead in lexing handlers.
+#       - Added keyword tables for the operator, default, and namespace
+#         declaration states.
+#       - Removed (almost) all long keywords from the default,
+#         operators, and namespace declaration state.
+#       - Fixed bug, 'as' not recognized as a qname in the default state.
+#
+#  Revision 1.26  2006/11/27 16:52:37  simeon
+#  November 21, 2006 - Jerome
+#
+#    o Code cleanup:
+#       - Removed obsolete module: Xquery_physical_algebra_ast_util
+#
+#    o Dynamic typing:
+#       - Fixed bug in handling of type assertions in tuple constructors.
+#       - Fixed bug in type assertion code for attributes.
+#       - Fixed bug in type assertion for processing instructions with a
+#         name.
+#
+#    o Testing:
+#       - Fixed bug in test harness when handling input-URIs.
+#       - Removed some left-over debug printings for modules.
+#
+#  Revision 1.25  2006/10/20 13:17:05  pmichiel
+#  October 20, 2006 - Philippe
+#    The reorganization of the optimizer is not expected to cause any
+#    trouble. All the XQTS tests pass as before. Let me know if you
+#    run in trouble anyway.
+#    o Created new module Optimization_walker and factored out AST walker
+#      functionality from Optimization_rewqrite to it
+#    o Factored out the Tree Pattern, Treejoin and Cleanup rewrites into
+#      respectively Optimization_rules_treepattern,
+#      Optimization_rules_treejoin and Optimization_rules_cleanup
+#    o TODO: Lots!
+#        - Try to factorize out most of the rules in separate modules, so
+#          that the optimizer becomes manageable again, i.e., we should
+#          add separate modules for the group-by and join rewrites
+#        - Either merge Optimzation_jugde and Optimization_util or push
+#          the functions in both to the appropriate module
+#
+#    o Fixed Streaming bug: attribute axis failed to test for label on
+#      parent, giving weird results for some MemBeR benchmarks
+#
+#  Revision 1.24  2006/10/09 15:28:40  mff
+#  ***** Tagged with galax-0-6-10 *****
+#
+#  October 10, 2006 - Mary
+#
+#    o Release:
+#      - Set config/Makefile.galax RELEASE number to 0.6.10
+#
+#  Revision 1.23  2006/10/04 18:49:54  mff
+#
+#
+#  October 4, 2006 - Mary
+#    o planio/ cleanup
+#
+#      Re-organized directory to align with other directories.
+#      Contains:
+#        Planio_common: shared QNames, symbols
+#        Planio_util: utility functions
+#        Planio_physical_value: Boxing & unboxing of physical values
+#        Planio_top: Boxing & unboxing of closures/modules/algebraic plans
+#
+#      TODO: Cleanup serialization of tables
+#
+#  Revision 1.22  2006/10/03 18:46:47  mff
+#
+#
+#  October 3, 2006 - Mary
+#
+#    o Extricated threads module/options from all modules except Galaxd.
+#
+#      Galax_server is now a functor, which takes the "kind" of server
+#      module (Thread or Forked) as an argument.
+#
+#      Extended processing context to include the server function to
+#      invoke a remote query, because it depends on the kind of
+#      Galax_server.  The "toplevel" program (galaxd) determines what
+#      kind of server to use.
+#
+#      The server's query function must be available to the Execute
+#      operator, so I extended the Processing_context to include it.
+#
+#  Revision 1.21  2006/10/02 23:51:33  simeon
+#  October 2, 2006 - Jerome
+#
+#  A few more Galax bugs fixed, which were lurking in the tests listed in
+#  knownbugs.xml. This does not change the results for XQTS 1.0.
+#
+#    o Testing:
+#       - Cleaned up and updated the known-bugs files, reported
+#         corresponding bugs to Galax or XQTS bugzilla as appropriate.
+#
+#    o Galax Compilation:
+#       - Directing ocaml compilers to not raise overridden methods
+#         warnings.
+#       - Cleaned up unused variables throughout the code.
+#
+#    o Type promotion:
+#       - Finished implementing support for type promotion of xs:anyURI
+#         to xs:string.
+#
+#    o F&O:
+#       - Properly implementing fn:resolve-uri, notably checking for
+#         absolute URI when necessary.
+#       - Fixed fn:local-name-from-QName to return a value of type
+#         xs:NCName instead of xs:string.
+#
+#  Revision 1.20  2006/09/28 02:05:35  mff
+#  September 27, 2006 - Mary
+#     o More date,time,duration fixes
+#     o Static context checks
+#     o Handling whitespace in QNames, hexBinary, etc.
+#     o testconfig-tmpl.xml:
+#       Minimal Conformance	 14182 / 197 / 14618
+#       Optional Features
+#           Schema Import Feature	 0 / 0 / 174
+#  	 Schema Validation Feature 0 / 0 / 25
+#  	 Static Typing Feature	 46 / 0 / 46
+#  	 Full Axis Feature	 130 / 0 / 130
+#  	 Module Feature		 0 / 0 / 32
+#  	 Trivial XML Embedding Feature	 0 / 0 / 4
+#
+#  Revision 1.19  2006/09/22 02:15:41  mff
+#  September 21, 2006 - Mary
+#   o Makefile fixes
+#
+#  Revision 1.18  2006/09/21 16:52:33  mff
+#  **********************************
+#  *** You must re-run configure. ***
+#  **********************************
+#
+#  September 21, 2006 - Mary
+#
+#   o Removed "-with-galaxd" option from configure script.  Switch no
+#     longer necessary.  Makefile now compiles & links all top-level
+#     targets appropriately: galaxd links with galax-threads.cm*a and all
+#     other targets with galax.cm*a
+#
+#     Removed toplevel/top_server.ml from CVS b/c it's generated.
+#
+#  Revision 1.17  2006/09/15 08:56:38  pmichiel
+#  September 15, 2006 - Philippe
+#
+#   o Normalization: XPath annotations are now replaced by scrambling
+#     annotations.
+#   o Overhaul of factorization phase for TPNF
+#
+#  Revision 1.16  2006/09/13 19:04:27  mff
+#  **********************************
+#  *** You must re-run configure. ***
+#  **********************************
+#
+#  September 13, 2006 - Mary
+#
+#   o Added "-with-galaxd" option to configure script (default without)
+#
+#     -with-galaxd (re)compiles all modules with threads enabled,
+#      link with threads library, and creates galaxd.
+#
+#     !!NB!!: All top-level executables will be thread-enabled and
+#     therefore *RUN SLOW*.  Only use -with-galaxd if you really need it.
+#
+#
+#   o Added toplevel/{top,thread,unix}_server.  Makefile selects
+#     appropriate server based on config options.
+#
+#  Revision 1.15  2006/09/06 17:44:14  mff
+#  September 6, 2006 - Mary & Chris R
+#
+#   o Added -lthreadsnat -lpthread to C-API link options to support
+#     threaded Galax.
+#
+#  Revision 1.14  2006/08/18 01:04:55  trevor
+#   o The galax server is now threaded.
+#
+#  Revision 1.13  2006/08/16 20:30:08  simeon
+#  August 16, 2006 - Jerome
+#
+#    o Release:
+#      - Set the version number to 0.6.8.
+#      - Added 0.6.8 entries in the documentation and Web sites.
+#      - Some minor fixes the documentation, notably updating the
+#        contributor's list.
+#      - Added some text for support for ULTF, XQueryP in the release
+#        notes.
+#      - Fixed the ns_usecase expected result to match the one generated
+#        by Galax. Namespace handling in constructors may be fixed at
+#        some point and result in subsequent changes.
+#      - Fixed usecase Makefile to not set monitoring on.
+#    o ULTF/XQuery!/XQueryP Trilogy:
+#      - Added -language ultf option for W3C Update Facility.
+#      - Added minimalistic tutorial in the documentation for how to run
+#        those.
+#      - Added examples in ./examples/extensions for each of the 3
+#        languages.
+#    o F&O:
+#      - Fixed fn:matches function to not take optional second and third
+#        arguments anymore.
+#
+#  Revision 1.12  2006/08/16 18:33:31  mff
+#  August 16, 2006 - Mary
+#
+#    o Configure script
+#      - Sets $ocaml_home if not set by default
+#
+#    o Code_selection_context:
+#      - Added enter/exit_closure_context
+#
+#    o Cs_code_selection_top
+#      Galapi/galax
+#      Procmod_compiler
+#      Procmod_phases
+#      Procmod_types
+#
+#      Cs_code_selection_top.code_selection_statement now correctly
+#      returns updated code_selection_context.  Previously, it was
+#      dumped.
+#
+#      Corresponding changes in modules listed above to propagate and
+#      return updated code_selection_context.
+#
+#    o Cs_code_typing_top:
+#      type annotation of top-level expression stored as a global
+#      annotation so available to caller.
+#
+#    o Cs_util_coercion:
+#      Added missing coercion functions
+#
+#    o Code_binding:
+#      Tuple fields contain physical_xml_values, not physical_values:
+#      minor changes to support this change
+#
+#    o Code_execute:
+#      Added support for shipping plans that return tables/tuple-streams
+#
+#    o Code_util_materialize:
+#      Changed names of functions to reflect type of materialization,
+#      e.g., materialize_cursor_to_dom_value_array
+#
+#      Many files updated to reflect name change:
+#      code_group_order.ml
+#      code_hash_join.ml
+#      code_join.ml
+#      code_nestedloop.ml
+#      code_sort_join.ml
+#      code_tuple.ml
+#
+#    o Parse_xquery.mly:
+#      Fixed long-standing bug: EOF missing from end of library and main
+#      modules.
+#
+#    o Website/demo/querycgi.ml : alignment
+#
+#  August 16, 2006 - Mary (DXQ)
+#
+#    o DNS examples:
+#      Changed name of module interface to dns.xqi
+#
+#    o Optimization_dxq:
+#      Working on DXQ opts
+#
+#    o Planio/*:
+#      Added support for serializing and parsing.
+#      ***All these files need to be reorganized.  They are a mess***
+#
+#    o Galax_server: fixed error-return XML
+#
+#    o Galaxd: yet another debug log bug
+#
+#  Revision 1.11  2006/07/25 17:35:40  simeon
+#  July 25, 2006 - Jerome
+#
+#    o Patched SBDO stuff (makefile and call to
+#      Optimization_sbdo_automaton instead of Sbdo_automaton) so that
+#      Galax compiles again. SORRY PHILIPPE, you'll have to look this
+#      over again.
+#
+#  Revision 1.10  2006/07/25 09:17:03  pmichiel
+#
+#  July 25, 2006 - Philippe
+#    o Added factorization plugin module for rewriting CXQ expressions
+#      into TPNF normal form. Files:
+#      - factorization/factorize_tpnf.ml(i)
+#      - factorization/factorize_tpnf_rules.ml(i)
+#      The rules are of course only triggered when factorization is
+#      turned on.
+#
+#  Revision 1.9  2006/07/05 21:54:04  mff
+#
+#  July 5, 2006 - Mary and Kristi (Distributed XQuery)
+#
+#   o Changed Code_execute/build_default_ceexecute_code() to detect when
+#     a Galaxd server issues a remote plan to itself: Now circumvents
+#     server and evaluates plan locally.
+#
+#   o Processing_context: added procctxt fields to identify Galaxd
+#     host/port.
+#
+#   o Questions:
+#
+#     - In processing_context, why are monitor_context, external_nsenv
+#       not copied?
+#
+#     - In Print_xquery_algebra, line 730, handle two cases for
+#       AOEExecute. See comments there.
+#
+#  Revision 1.8  2006/06/16 18:19:53  car
+#  June 18, 2006 - Chris Rath
+#   o Fixed configure script to work with Solaris /bin/sh
+#   o Updated RELEASE number in Makefile.galax to 0.6.8
+#
+#  Revision 1.7  2006/06/16 15:04:46  mff
+#  June 16, 2006 - Mary (Distributed XQuery)
+#
+#   o Optimization rules
+#
+#     Added new Optimization_dxq module for Distributed XQuery.
+#     Uncomment rules in Optimization_rewrite to enable.
+#
+#   o Usecases
+#
+#     Changed expected outputs to align with "ugly" (non-pretty-printed)
+#     serialized XML output.
+#
+#   o Working on fn:collection() -- see comment in Galax_io on how to
+#     create a PXP entity manager for document fragments.  Also
+#     Pxp_ev_parser.
+#
+#  Revision 1.6  2006/05/25 16:23:42  mff
+#
+#  May 25, 2006 - Mary
+#
+#    o Added implementation(s) for fs:item-sequence-to-node-sequence on
+#      DOM tree & XML-token cursors.
+#
+#      This function is only necessary for typing purposes, but if
+#      rewriting is off, it must be implemented as the identity function
+#      on both DOM trees and XML-token cursors.
+#
+#    o galax-parse command-line options:
+#
+#      -dm       => All phases through loading
+#      -validate => All phases through validation
+#
+#    o Documentation - some updates
+#
+#  Revision 1.5  2006/05/16 23:33:59  simeon
+#  May 16, 2006 - Jerome
+#
+#    *** Test suite change: we now run 0.9.0.
+#       WARNINGS:
+#         - 0.8.6 will NOT run, because of xdt: to xs: namespace changes.
+#         - several Galax bugs are being exposed by 0.9.0 which are not
+#           fixed yet. ***
+#
+#    o Printing:
+#       - Fixed issue with flushing of formatters in pretty-printing
+#         stubs. (Gmisc module).
+#
+#    o Alignment:
+#       - Removed xdt: namespace, now replaced by xs: namespace.
+#       - Added support for 'encoding' option in the XQuery version
+#         declaration.
+#       - Implemented fn:codepoint-equal() function.
+#       - Fixed bug in parsing for 'castable as' expression with an
+#         optional type.
+#
+#    o Arithmetics:
+#       - Fixed long-standing bug in arithmetics of dates and time not
+#         dealing with the empty sequence properly, both in the type
+#         signatures and evaluation code.
+#       - Short-circuits the evaluation in the case one of the operand is
+#         the empty sequence.
+#
+#    o Constructor functions:
+#       - Constructor functions are now properly normalized to cast based
+#         on whether the function name derives from xs:anyAtomicType,
+#         instead of just as being in the xs: namespace.
+#       - Constructor functions now properly normalized to a cast
+#         expression with an optional type.
+#
+#    o Testing:
+#       - Fixed test harness to handle cases where the error comes out of
+#         serialization rather than evaluation.
+#
+#  Revision 1.4  2006/05/12 18:15:00  car
+#  May 12, 2006 - Chris Rath
+#    o Fixed missing files and typos in Makefile.galax
+#    o Added "regression" target to top level Makefile.
+#    o Removed regress/testconfig.xml from CVS; this file is now generated from testconfig-tmpl.xml
+#    o Updated all lower-level Makefiles to ensure they all have the standard targets
+#
+#  Revision 1.3  2006/05/08 12:09:39  simeon
+#  May 8, 2006 - Jerome
+#
+#    o New compiler:
+#       - Started cleaning up unused variable detected by the latest Caml
+#         compiler.
+#
+#    o Streaming:
+#       - Removed unnecessary file id lookups during stream parsing.
+#       - Fixed expensive QName parsing calls during stream parsing.
+#
+#    o Toplevel:
+#       - Added support for intermediate parsing phases in
+#         galax-parse. Command-line options allow to individually call
+#         the following XML processing phase operations: PXP parsing,
+#         Galax stream parsing, Namespace resolution, Type annotation,
+#         Load, Export, Erasure, prefixing the stream, and serialization.
+#
+#  Revision 1.2  2006/04/26 14:25:04  car
+#  April 26, 2006 - Chris Rath
+#    o Added toplevel command sources to the .depend target.
+#    o Updated the configure script to support -enable-profiling option.
+#    o Updated Makefile.galax to support profiling.
+#
+#  Revision 1.1  2006/04/17 18:10:12  car
+#  April 17, 2006 - Chris Rath
+#    o Changes necessary to align with GODI
+#
+#########################################################################
+
+$(LOCALPREFIX)/config/Makefile.conf:
+	@echo
+	@echo "You must run the Configure script before attempting to build Galax!"
+	@echo "  e.g. $(LOCALPREFIX)/Configure"
+	@echo
+	@echo "Read the INSTALL file for more details!"
+	@echo
+
+include $(LOCALPREFIX)/config/Makefile.conf
+
+###########################################################################
+# Section:	Namespace configuration
+# Description:
+#		These variables are used to set the URI values for namespaces
+###########################################################################
+
+XMLURI=http://www.w3.org/XML/1998/namespace
+XMLNSURI=http://www.w3.org/2000/xmlns/
+XSURI=http://www.w3.org/2001/XMLSchema
+XSDURI=http://www.w3.org/2001/XMLSchema-datatypes
+XSIURI=http://www.w3.org/2001/XMLSchema-instance
+FNURI=http://www.w3.org/2005/xpath-functions
+XQUERYXURI=http://www.w3.org/2005/XQueryX
+OPURI=http://www.w3.org/2005/xpath-operators
+FSURI=http://www.w3.org/2004/10/xquery-semantics
+COLLURI=http://www.w3.org/2005/xpath-functions/collation/codepoint
+LOCALURI=http://www.w3.org/2005/xquery-local-functions
+GLXURI=http://www.galaxquery.org
+ERRURI=http://www.w3.org/2005/xqt-errors
+
+#########################################################################
+# Section:	Variables
+# Description:
+#		These are variables used by various Makefiles
+#
+#	GALAX_INCLUDES:		All of the directories to search for Galax MLI files
+#	OCAML_LIB_INCLUDES:	All of the directories to search for OCAML library MLI files
+#	ALL_INCLUDES:			All of the directories to search for MLI files
+#########################################################################
+HERE:=`pwd`
+
+#########################################################################
+# Sub-Section: Compilation flags
+# Description:
+#		This section defines the flags to the O'Caml compiler.
+#########################################################################
+OCAMLC_FLAGS+=-w m
+OCAMLOPT_FLAGS+=-w m
+
+#########################################################################
+# Sub-Section:	INCLUDE directory flags
+# Description:
+#		This section sets up the list of directories to search for mli and cmi
+#		files.
+#########################################################################
+
+GALAX_TOOLS_INCLUDES=\
+-I $(LOCALPREFIX)/tools/http \
+-I $(LOCALPREFIX)/tools/stemmer
+
+GALAX_INCLUDES=\
+-I $(LOCALPREFIX)/base \
+-I $(LOCALPREFIX)/fsa \
+-I $(LOCALPREFIX)/namespace \
+-I $(LOCALPREFIX)/datatypes \
+-I $(LOCALPREFIX)/ast \
+-I $(LOCALPREFIX)/ast_walker \
+-I $(LOCALPREFIX)/ast_printer \
+-I $(LOCALPREFIX)/procctxt \
+-I $(LOCALPREFIX)/lexing \
+-I $(LOCALPREFIX)/parsing \
+-I $(LOCALPREFIX)/dm/base \
+-I $(LOCALPREFIX)/dm/atomic \
+-I $(LOCALPREFIX)/streaming \
+-I $(LOCALPREFIX)/serialization \
+-I $(LOCALPREFIX)/schema \
+-I $(LOCALPREFIX)/dm \
+-I $(LOCALPREFIX)/subtyping \
+-I $(LOCALPREFIX)/wsdl \
+-I $(LOCALPREFIX)/normalization \
+-I $(LOCALPREFIX)/projection \
+-I $(LOCALPREFIX)/code_util \
+-I $(LOCALPREFIX)/streaming_xpath \
+-I $(LOCALPREFIX)/datamodel \
+-I $(LOCALPREFIX)/monitor \
+-I $(LOCALPREFIX)/stdlib \
+-I $(LOCALPREFIX)/typing \
+-I $(LOCALPREFIX)/rewriting \
+-I $(LOCALPREFIX)/factorization \
+-I $(LOCALPREFIX)/physicaldm \
+-I $(LOCALPREFIX)/compile \
+-I $(LOCALPREFIX)/optimization \
+-I $(LOCALPREFIX)/code_selection/code \
+-I $(LOCALPREFIX)/code_selection \
+-I $(LOCALPREFIX)/planio \
+-I $(LOCALPREFIX)/evaluation \
+-I $(LOCALPREFIX)/procmod \
+-I $(LOCALPREFIX)/toplevel \
+-I $(LOCALPREFIX)/galapi/caml_api \
+-I $(LOCALPREFIX)/extensions/jabber \
+-I $(LOCALPREFIX)/extensions/apache \
+-I $(LOCALPREFIX)/shredded \
+-I $(LOCALPREFIX)/shredded/shredded_main_memory \
+-I $(LOCALPREFIX)/shredded/shredded_common \
+-I $(LOCALPREFIX)/regress
+
+# Note: We may remove LIBPXP_UTF8 and LIBPXP_ISO88591 and make them
+# dependent on WITH_CHARSET_UTF8 and WITH_CHARSET_ISO88591
+# -I $(CONF_OCAML_STDLIB) 
+#
+OCAML_LIB_INCLUDES=\
+-I $(CONF_OCAML_STDLIB) \
+-I $(CONF_OCAML_LIBPCRE) \
+-I $(CONF_OCAML_LIBNETSTRING) \
+-I $(CONF_OCAML_EQUEUE) \
+-I $(CONF_OCAML_LIBNETCLIENT) \
+-I $(CONF_OCAML_LIBPXP) \
+-I $(CONF_OCAML_LIBPXP_UTF8) \
+-I $(CONF_OCAML_LIBPXP_ISO88591) \
+-I $(CONF_OCAML_LIBCAMOMILE)
+
+# Unfortunately, the netsys library depends on the O'Caml version
+ifeq ($(CONF_WITH_NETSYS), true)
+OCAML_LIB_INCLUDES+=-I $(CONF_OCAML_LIBNETSYS) 
+endif
+
+# If Jungle has been enabled, include it in the include search path
+# and make sure the BDB libraries are included as well.
+#
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+GALAX_INCLUDES+=-I $(LOCALPREFIX)/tools/Jungle
+endif
+
+# GALAX_ALL_INCLUDES:	All of the directories to search for MLI files
+#
+GALAX_ALL_INCLUDES=-I . -I $(LOCALPREFIX) $(OCAML_LIB_INCLUDES) $(GALAX_TOOLS_INCLUDES) $(GALAX_INCLUDES)
+GALAX_CAPI_INCLUDES=-I $(LOCALPREFIX)/galapi/c_api $(GALAX_ALL_INCLUDES)
+GALAX_JAVAAPI_INCLUDES=-I $(JAVAINCLUDE) -I $(LOCALPREFIX)/galapi/c_api -I $(LOCALPREFIX)/galapi/java_api $(GALAX_ALL_INCLUDES)
+ifdef JAVASYSINC
+GALAX_JAVAAPI_INCLUDES+=-I $(JAVASYSINC)
+endif
+
+#########################################################################
+# Sub-Section:	library search flags
+# Description:
+#		This section sets up the library names and link command line options
+#########################################################################
+
+#########################################################################
+# Sub-Sub-Section:   library names
+# Description:
+#     Here are the names of the various library files in Galax
+#########################################################################
+
+GALAX_LIB=galax.cma
+GALAX_OPTLIB=galax.cmxa
+
+GALAX_CLIB=galax.a
+GALAX_LIB_PATH=$(LOCALPREFIX)/$(GALAX_LIB)
+GALAX_OPTLIB_PATH=$(LOCALPREFIX)/$(GALAX_OPTLIB)
+GALAX_CAPI_OPTLIB=libgalaxopt.a
+GALAX_CAPI_OPTSHAREDLIB=libgalaxopt$(DLL)
+GALAX_JAVAAPI_OPTSHAREDLIB=libgalaxoptj$(JNIDLL)
+GALAX_JAVAAPI_ARCHIVE=$(GALAX_JAVA_PACKAGE).jar
+GALAX_JAVA_PACKAGE=galapi
+
+ifeq ($(SUPPORTS_RPATH), true)
+	GALAX_OCAML_RPATH_OPTIONS=$(OCAML_RPATHFLAGS)$(CONF_C_LIBPCRE)
+	ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+		GALAX_OCAML_RPATH_OPTIONS+=$(OCAML_RPATHFLAGS)$(CONF_C_LIBBDB)
+	endif
+endif
+
+#########################################################################
+# Sub-Sub-Section:   OCaml byte-code libraries
+# Description:
+#     This section contains the command line flags for linking in
+#     OCaml byte-code libraries.
+#########################################################################
+GALAX_LIBS=\
+$(GALAX_LIB)
+
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+GALAX_LIBS+=jungle.cma
+endif
+
+OCAML_LIBS=\
+nums.cma \
+unix.cma \
+str.cma \
+bigarray.cma \
+pcre.cma 
+ifeq ($(CONF_WITH_NETSYS), true)
+OCAML_LIBS+=netsys.cma 
+endif
+OCAML_LIBS+=\
+netstring.cma \
+equeue.cma \
+netclient.cma \
+pxp_engine.cma \
+pxp_lex_utf8.cma pxp_lex_link_utf8.cmo \
+pxp_lex_iso88591.cma pxp_lex_link_iso88591.cmo \
+camomile.cma
+
+GALAX_ALL_LIBS=$(OCAML_LIBS) $(GALAX_LIBS) $(GALAX_OCAML_RPATH_OPTIONS)
+GALAXD_ALL_LIBS=$(OCAML_LIBS) threads/threads.cma $(GALAX_LIBS) $(GALAX_OCAML_RPATH_OPTIONS)
+
+#########################################################################
+# Sub-Sub-Section:   OCaml native-code libraries
+# Description:
+#     This section contains the command line flags for linking in
+#     OCaml native-code libraries.
+#########################################################################
+GALAX_OPTLIBS=\
+$(GALAX_OPTLIB)
+
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+GALAX_OPTLIBS+=jungle.cmxa
+endif
+
+OCAML_OPTLIBS=\
+nums.cmxa \
+unix.cmxa \
+str.cmxa \
+bigarray.cmxa \
+pcre.cmxa 
+ifeq ($(CONF_WITH_NETSYS), true)
+OCAML_OPTLIBS+=netsys.cmxa 
+endif
+OCAML_OPTLIBS+=\
+netstring.cmxa \
+equeue.cmxa \
+netclient.cmxa \
+pxp_engine.cmxa \
+pxp_lex_utf8.cmxa pxp_lex_link_utf8.cmx \
+pxp_lex_iso88591.cmxa pxp_lex_link_iso88591.cmx \
+camomile.cmxa
+
+GALAX_ALL_OPTLIBS=$(OCAML_OPTLIBS) $(GALAX_OPTLIBS) $(GALAX_OCAML_RPATH_OPTIONS)
+GALAXD_ALL_OPTLIBS=$(OCAML_OPTLIBS) threads/threads.cmxa $(GALAX_OPTLIBS) $(GALAX_OCAML_RPATH_OPTIONS)
+
+#########################################################################
+# Sub-Sub-Section:   C API library flags
+# Description:
+#     This section contains the command line flags for linking applications
+#     and shared libraries using the Galax C API static libraries.
+#########################################################################
+GALAX_CAPI_OPTLIB_PATHS=\
+-L$(LOCALPREFIX)/galapi/c_api
+
+GALAX_CAPI_OPTLIBS=\
+-lgalaxopt
+
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+GALAX_CAPI_OPTLIB_PATHS+=-L$(CONF_C_LIBBDB) -L$(HERE)/$(LOCALPREFIX)/tools/Jungle -L$(CONF_OCAML_IDL)
+GALAX_CAPI_OPTLIBS+=-l$(CONF_C_LIBBDB_NAME) -ljungle -lcamlidl -lm
+endif
+
+OCAML_CAPI_OPTLIB_PATHS=\
+-L$(CONF_OCAML_STDLIB) 
+
+ifeq ($(CONF_WITH_NETSYS), true)
+OCAML_CAPI_OPTLIB_PATHS+=-L$(CONF_OCAML_LIBNETSYS) 
+endif 
+
+OCAML_CAPI_OPTLIB_PATHS+=\
+-L$(CONF_OCAML_LIBPCRE) \
+-L$(CONF_C_LIBPCRE) \
+-L$(CONF_C_LIBASMRUN)
+
+OCAML_CAPI_OPTLIBS=\
+-lnums -lunix -lstr -lbigarray \
+-lpcre_stubs \
+-lpcre \
+-lnetsys \
+-lrt \
+-lasmrun
+
+# If we ever provide the C API for the Galax Daemon, we need to
+# include these flags.                   
+# ifeq ($(CONF_WITH_GALAXD), true)
+# OCAML_CAPI_OPTLIBS+=-lthreadsnat -lpthread 
+# endif
+
+ifeq ($(SUPPORTS_STARTGROUP), true)
+GALAX_ALL_CAPI_OPTLIBS=$(GALAX_CAPI_OPTLIB_PATHS) $(OCAML_CAPI_OPTLIB_PATHS) $(STARTGROUP) $(OCAML_CAPI_OPTLIBS) $(GALAX_CAPI_OPTLIBS) $(ENDGROUP)
+else
+GALAX_ALL_CAPI_OPTLIBS=$(GALAX_CAPI_OPTLIB_PATHS) $(OCAML_CAPI_OPTLIB_PATHS) $(OCAML_CAPI_OPTLIBS) $(GALAX_CAPI_OPTLIBS) $(OCAML_CAPI_OPTLIBS) -lm
+endif
+
+#########################################################################
+# Sub-Sub-Section:   OCaml C API shared libraries
+# Description:
+#     This section contains the command line flags for linking applications
+#     and shared libraries using the Galax C API static libraries.
+#########################################################################
+ifeq ($(SUPPORTS_RPATH), true)
+	_GALAX_RPATH:=$(LOCALPREFIX)/galapi/c_api
+	ifeq ($(CONF_WITH_EXT_JUNGLE),true)
+		_GALAX_RPATH:=$(_GALAX_RPATH):$(CONF_C_LIBBDB)
+		GALAX_CAPI_RPATH_OPTIONS=$(RPATHFLAGS)$(CONF_C_LIBBDB)
+	endif
+	GALAX_RPATH_OPTIONS=$(RPATHFLAGS)$(_GALAX_RPATH) $(RPATHFLAGS)$(CONF_C_LIBPCRE)
+endif
+
+# C API shared library compile flags
+GALAX_CAPI_OPTSHAREDLIBS=\
+-L$(LOCALPREFIX)/galapi/c_api -lgalaxopt $(GALAX_RPATH_OPTIONS) 
+
+GALAX_ALL_CAPI_OPTSHAREDLIBS=$(GALAX_CAPI_OPTSHAREDLIBS)
+
+# This is for the galapi development only
+#
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+GALAX_CAPI_SHAREDLIBFLAGS=-L$(HERE)/$(LOCALPREFIX)/tools/Jungle -ljungle \
+-L$(CONF_C_LIBBDB) -l$(CONF_C_LIBBDB_NAME) \
+-L$(CONF_OCAML_IDL) -lcamlidl
+endif
+
+GALAX_CAPI_SHAREDLIBFLAGS+=-lm $(LIBDL) $(GALAX_CAPI_RPATH_OPTIONS)
+
+#########################################################################
+# Sub-Sub-Section:   Jungle library flags
+# Description:
+#		This section is only used in the development environment.  The
+#		variables are shared between Jungle and the C API.
+#
+#	GALAX_JUNGLE_LIBFLAGS:	extra flags used when building OCaml libs
+#	GALAX_JUNGLE_SHAREDLIBFLAGS:	extra flags used when building shared native libs
+#########################################################################
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+
+GALAX_JUNGLE_LIBFLAGS=-ccopt -L$(CONF_GALAX_OCAMLLIB) -ccopt -L. -ccopt -L$(HERE)/$(LOCALPREFIX)/tools/Jungle -cclib -ljungle \
+-ccopt -L$(CONF_C_LIBBDB) -cclib -l$(CONF_C_LIBBDB_NAME) \
+-ccopt -L$(CONF_OCAML_IDL) -cclib -lcamlidl \
+-cclib -lm
+
+ifeq ($(NEEDLIBDL), true)
+GALAX_JUNGLE_LIBFLAGS+=-cclib $(LIBDL)
+endif
+
+endif
+
+
+#########################################################################
+# Section:	subcomponent variable setup
+# Description:
+#		This section sets up the GALAX_ALL_SUBCOMPONENTS
+#########################################################################
+
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+GALAX_ALL_SUBCOMPONENTS=tools/Jungle
+else
+GALAX_ALL_SUBCOMPONENTS=
+endif
+GALAX_ALL_SUBCOMPONENTS+=galapi doc examples usecases regress
+
+#########################################################################
+# Section:	installation directory targets
+# Description:
+#########################################################################
+ALL_GALAX_DIRS=\
+$(CONF_GALAX_BIN) \
+$(CONF_GALAX_LIB) \
+$(CONF_GALAX_MAN) \
+$(CONF_GALAX_OCAMLLIB) \
+$(CONF_GALAX_CONFIG) \
+$(CONF_GALAX_EXAMPLES) \
+$(CONF_GALAX_USECASES) \
+$(CONF_GALAX_REGRESS) \
+$(CONF_GALAX_C_API) \
+$(CONF_GALAX_JAVA_API)
+
+$(ALL_GALAX_DIRS):
+	$(MKDIR) $@
+
+#########################################################################
+# Section:	Configuration options for APIs and examples
+# Description:
+#		These are variables used by the galapi and examples subdirectory
+#########################################################################
+GALAX_APIS=caml_api
+ifeq ($(CONF_WITH_API_C), true)
+GALAX_APIS+=c_api
+endif
+
+ifeq ($(CONF_WITH_API_JAVA), true)
+GALAX_APIS+=java_api
+endif
+
+GALAX_EXAMPLE_DIRS=$(GALAX_APIS) docs extensions
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+GALAX_EXAMPLE_DIRS+=jungle
+endif
+
+#########################################################################
+# Section:	GALAX CAML API files
+# Description:
+#		These are variables used by the galapi/caml_api and toplevel
+#		Makefile.
+#########################################################################
+
+ifeq ($(CONF_WITH_CHARSET_UTF8), true)
+GALAX_UTF8_NAMESPACE_OBJECTS=namespace/qname_lexer_utf8.cmo
+GALAX_UTF8_LEXING_OBJECTS=\
+lexing/opening_tag_lexer_utf8.cmo \
+lexing/closing_tag_lexer_utf8.cmo \
+lexing/text_lexer_utf8.cmo
+GALAX_UTF8_INIT_OBJECTS=parsing/lexers_utf8.cmo
+GALAX_UTF8_MLLFILES=\
+namespace/qname_lexer_utf8.mll \
+lexing/opening_tag_lexer_utf8.mll \
+lexing/closing_tag_lexer_utf8.mll \
+lexing/text_lexer_utf8.mll
+endif
+
+ifeq ($(CONF_WITH_CHARSET_ISO88591), true)
+GALAX_ISO88591_NAMESPACE_OBJECTS=namespace/qname_lexer_iso88591.cmo
+GALAX_ISO88591_LEXING_OBJECTS=\
+lexing/opening_tag_lexer_iso88591.cmo \
+lexing/closing_tag_lexer_iso88591.cmo \
+lexing/text_lexer_iso88591.cmo
+GALAX_ISO88591_INIT_OBJECTS=parsing/lexers_iso88591.cmo
+GALAX_ISO88591_MLLFILES=\
+namespace/qname_lexer_iso88591.mll \
+lexing/opening_tag_lexer_iso88591.mll \
+lexing/closing_tag_lexer_iso88591.mll \
+lexing/text_lexer_iso88591.mll
+endif
+
+#########################################################################
+# Section:	Variables
+# Description:
+#		This is where variables are initialized that are used throughout
+#		the Makefile and are not configuration-dependent.
+#########################################################################
+
+GALAX_TOOLS=\
+tools/http/http.cmo \
+tools/stemmer/stemmer.cmo
+
+GALAX_BASE=base/pervasive.cmo base/conf.cmo \
+base/gmisc.cmo base/id.cmo \
+base/pool.cmo base/dynamic_buffer.cmo \
+base/finfo.cmo base/debug.cmo \
+base/error.cmo base/encoding.cmo base/galax_pxp.cmo base/whitespace.cmo \
+base/galax_url.cmo base/galax_camomile.cmo \
+base/args.cmo base/occurrence.cmo \
+base/galax_io.cmo base/register_handlers.cmo \
+base/dynamic_stack.cmo
+
+GALAX_NAMESPACE=$(GALAX_UTF8_NAMESPACE_OBJECTS) $(GALAX_ISO88591_NAMESPACE_OBJECTS) \
+namespace/qname_lexer.cmo namespace/namespace_names.cmo \
+namespace/namespace_util.cmo namespace/namespace_builtin.cmo \
+namespace/namespace_context.cmo namespace/namespace_symbols.cmo \
+namespace/namespace_symbols_builtin.cmo namespace/namespace_generate.cmo \
+namespace/namespace_symbols_util.cmo namespace/namespace_resolve.cmo
+
+GALAX_FSA=fsa/fsautil.cmo fsa/nfa.cmo \
+fsa/dfa.cmo fsa/regexp.cmo
+
+GALAX_DATATYPES=datatypes/decimal.cmo datatypes/dateTime.cmo \
+datatypes/anyURI.cmo datatypes/datatypes_lexer.cmo \
+datatypes/datatypes_util.cmo datatypes/regularexp.cmo
+
+GALAX_DM_BASE=dm/base/cursor.cmo dm/base/nodeid.cmo \
+dm/base/nodeid_context.cmo
+
+GALAX_DM_ATOMIC=dm/atomic/dm_atomic.cmo \
+dm/atomic/dm_atomic_util.cmo \
+dm/atomic/dm_atomic_btree.cmo \
+dm/atomic/dm_atomic_btree_util.cmo
+
+GALAX_STREAMING=streaming/sax_annot.cmo streaming/streaming_util.cmo \
+streaming/resolve_stream_context.cmo \
+streaming/streaming_ordered_context.cmo \
+streaming/prefix_context.cmo streaming/small_stream_context.cmo \
+streaming/streaming_ops.cmo streaming/streaming_diff.cmo \
+streaming/streaming_conv.cmo streaming/streaming_constructors.cmo \
+streaming/streaming_parse.cmo
+
+GALAX_AST=ast/xquery_common_ast.cmo ast/xquery_common_ast_util.cmo \
+ast/xquery_ast_util.cmo ast/xquery_type_ast_util.cmo \
+ast/xquery_core_ast_annotation.cmo \
+ast/xquery_type_core_ast_annotation.cmo \
+ast/xquery_type_core_ast_util.cmo \
+ast/xquery_algebra_ast_util.cmo \
+ast/xquery_physical_type_ast_util.cmo \
+ast/xquery_algebra_ast_annotation_util.cmo
+
+GALAX_AST_PRINTER_AND_WALKER=ast_printer/print_common.cmo ast_printer/print_type.cmo \
+ast_walker/ast_walker_rewrite_context.cmo \
+ast_walker/ast_walker_fold.cmo \
+ast_walker/ast_walker_annotate_context.cmo \
+ast_walker/ast_walker_annotate.cmo \
+ast_printer/print_xquery.cmo \
+ast_printer/print_xquery_physical_type.cmo \
+ast_printer/print_xquery_algebra.cmo \
+ast_printer/print_xquery_core.cmo \
+ast_printer/print_type_core.cmo \
+ast_printer/print_top.cmo \
+ast/xquery_core_ast_util.cmo \
+ast_walker/ast_walker_rewrite.cmo
+
+GALAX_PROCESSINGCONTEXT=toplevel/galax_server_util.cmo procctxt/monitoring_context.cmo procctxt/processing_context.cmo
+
+GALAX_SCHEMA=schema/schema_util.cmo schema/schema_builtin.cmo \
+schema/schema_prefix_manager.cmo schema/schema_import.cmo \
+schema/schema_namer.cmo schema/schema_norm.cmo \
+schema/schema_judge.cmo schema/schema_simplification.cmo \
+schema/schema_validation_context.cmo schema/schema_validation.cmo \
+schema/schema_dtd_import.cmo schema/schema_norm_util.cmo
+
+GALAX_DM=dm/cursor_context.cmo dm/cursor_descendant.cmo \
+dm/dm_step.cmo dm/dm.cmo dm/dm_util.cmo
+
+GALAX_LEXING=lexing/lexing_util.cmo lexing/default_lexer.cmo \
+$(GALAX_UTF8_LEXING_OBJECTS) $(GALAX_ISO88591_LEXING_OBJECTS) \
+lexing/xmldecl_lexer.cmo lexing/type_lexer.cmo lexing/schema_lexer.cmo \
+lexing/itemtype_lexer.cmo \
+lexing/kindtest_lexer.cmo lexing/varname_lexer.cmo \
+lexing/pragma_lexer.cmo lexing/operator_lexer.cmo \
+lexing/namespacedecl_lexer.cmo lexing/namespacekeyword_lexer.cmo \
+lexing/copynamespaces_lexer.cmo
+
+GALAX_PARSING=parsing/parse_io.cmo \
+parsing/parse_context.cmo \
+parsing/parse_xquery.cmo \
+parsing/parse_util.cmo \
+parsing/parse_top.cmo \
+parsing/parse_xqueryx.cmo \
+$(GALAX_UTF8_INIT_OBJECTS) $(GALAX_ISO88591_INIT_OBJECTS)
+
+GALAX_SUBGALAX_TYPING=subtyping/subtyping_letter.cmo \
+subtyping/subtyping_glushkov.cmo \
+subtyping/subtyping_build_regexp.cmo \
+subtyping/subtyping_top.cmo
+
+GALAX_WSDL=wsdl/xquery_type_ast_map.cmo wsdl/wsdl_astutil.cmo \
+wsdl/wsdl_util.cmo wsdl/wsdl_load.cmo \
+wsdl/wsdl_import.cmo wsdl/wsdl_export.cmo wsdl/wsdl_apache.cmo \
+wsdl/wsdl_printer.cmo wsdl/wsdl_maker.cmo
+
+GALAX_NORMALIZATION=normalization/norm_var_graph.cmo normalization/norm_context.cmo \
+normalization/norm_overloaded.cmo normalization/norm_util.cmo \
+normalization/norm_expr.cmo normalization/norm_top.cmo normalization/norm_ident_expr.cmo \
+normalization/norm_ident_top.cmo
+
+GALAX_PHYSICALDM=physicaldm/physical_list.cmo physicaldm/physical_sequence.cmo \
+physicaldm/physical_item.cmo physicaldm/physical_item_util.cmo \
+physicaldm/physical_export_context.cmo physicaldm/physical_export.cmo \
+physicaldm/physical_load.cmo \
+physicaldm/physical_util.cmo physicaldm/physical_xml_value.cmo \
+physicaldm/physical_table.cmo physicaldm/physical_value_util.cmo \
+physicaldm/physical_name_index.cmo \
+physicaldm/physical_value_index.cmo \
+physicaldm/physical_index_load.cmo 
+
+
+GALAX_SERIALIZATION=serialization/serialization_context.cmo \
+serialization/serialization.cmo
+
+GALAX_GALAXDM=datamodel/galax_nodeid.cmo datamodel/galax_dm.cmo \
+datamodel/galax_load_context.cmo datamodel/galax_load.cmo \
+datamodel/galax_copy_node.cmo
+
+# Add your own data model here! - Jerome
+EXTERNAL_DMS=$(UDDATAMODEL)
+
+GALAX_MONITOR=monitor/monitor.cmo
+
+GALAX_STDLIB=stdlib/fn_doc.cmo stdlib/fn_error.cmo
+
+GALAX_TYPING=typing/typing_util.cmo typing/typing_context.cmo \
+typing/typing_notyping.cmo typing/typing_errors.cmo \
+typing/typing_fn.cmo typing/typing_call.cmo typing/typing_step.cmo \
+typing/typing_expr.cmo typing/typing_top.cmo 
+
+GALAX_REWRITING=rewriting/rewriting_judgments.cmo \
+rewriting/rewriting_rules_notyping.cmo rewriting/rewriting_top.cmo \
+rewriting/rewriting_rules_typing.cmo
+
+GALAX_CODE_UTIL=code_util/code_util_matching.cmo code_util/code_util_xpath.cmo \
+code_util/code_util.cmo
+
+GALAX_STREAMING_XPATH=streaming_xpath/df_struct.cmo \
+streaming_xpath/df_analysis_context.cmo \
+streaming_xpath/df_analysis.cmo \
+streaming_xpath/sxp_context.cmo \
+streaming_xpath/streaming_xpath.cmo
+#                streaming_xpath/stream_analysis_builtin.cmo \
+#                streaming_xpath/stream_analysis.cmo \
+
+GALAX_PROJECTION=projection/path_structutil.cmo projection/optim_vars.cmo \
+projection/analysis_context.cmo projection/function_analysis.cmo \
+projection/path_analysis.cmo projection/project_context.cmo \
+projection/stream_project.cmo \
+projection/alg_path_structutil.cmo \
+projection/alg_analysis_context.cmo projection/alg_path_analysis.cmo \
+projection/alg_project_context.cmo \
+projection/alg_stream_project.cmo
+
+GALAX_FACTORIZATION=factorization/factorize_unique.cmo \
+factorization/factorize_free_var.cmo \
+factorization/factorize_iteration.cmo \
+factorization/factorize_flwor.cmo \
+factorization/factorize_tpnf_util.cmo \
+factorization/factorize_tpnf_rules.cmo \
+factorization/factorize_tpnf.cmo \
+factorization/factorize_top.cmo
+
+#factorization/factorize_globals.cmo \
+
+GALAX_COMPILE=compile/compile_util.cmo compile/compile_context.cmo \
+compile/compile_annotate.cmo compile/compile_expr.cmo compile/compile_top.cmo \
+compile/compile_context_util.cmo
+
+GALAX_PLANIO=planio/planio_common.cmo \
+planio/planio_util.cmo \
+planio/planio_physical_value.cmo \
+planio/planio_top.cmo 
+
+GALAX_OPTIMIZATION=optimization/optimization_predicates.cmo \
+optimization/optimization_judge.cmo\
+optimization/optimization_walker.cmo\
+optimization/optimization_util.cmo\
+optimization/optimization_rules_sbdo_automaton.cmo \
+optimization/optimization_rules_sbdo.cmo \
+optimization/optimization_dxq.cmo\
+optimization/optimization_rules_cleanup.cmo\
+optimization/optimization_rules_treejoin.cmo\
+optimization/optimization_rules_treepattern.cmo\
+optimization/optimization_rewrite.cmo\
+optimization/optimization_top.cmo\
+
+GALAX_CODE=code_selection/code/code_binding.cmo \
+code_selection/code/code_util_ridlist.cmo \
+code_selection/code/code_util_predicates.cmo \
+code_selection/code/code_util_pattern_matcher.cmo \
+code_selection/code/code_util_materialize.cmo \
+code_selection/code/code_fn.cmo \
+code_selection/code/code_builtin_fn.cmo \
+code_selection/code/code_constructors.cmo \
+code_selection/code/code_functional_ops.cmo \
+code_selection/code/code_overloaded_fn.cmo \
+code_selection/code/code_group_order.cmo \
+code_selection/code/code_item_tuple.cmo \
+code_selection/code/code_util_join.cmo \
+code_selection/code/code_hash_join.cmo \
+code_selection/code/code_sort_join.cmo \
+code_selection/code/code_join.cmo \
+code_selection/code/code_execute.cmo \
+code_selection/code/code_map.cmo \
+code_selection/code/code_prune.cmo \
+code_selection/code/code_nestedloop.cmo \
+code_selection/code/code_parse.cmo \
+code_selection/code/code_util_tj.cmo\
+code_selection/code/code_tj_pathstack.cmo \
+code_selection/code/code_tj_twigstack.cmo \
+code_selection/code/code_sc_join.cmo \
+code_selection/code/code_treejoin.cmo \
+code_selection/code/code_tuple.cmo \
+code_selection/code/code_tuple_tree_pattern.cmo \
+code_selection/code/code_typeswitch.cmo \
+code_selection/code/code_type_operators.cmo \
+code_selection/code/code_update.cmo \
+code_selection/code/code_user_defined_fn.cmo
+
+GALAX_CODE_CONTEXT=code_selection/code_typing_context.cmo \
+code_selection/cs_annotate.cmo\
+code_selection/update_ordering.cmo \
+code_selection/execution_context.cmo \
+code_selection/tuple_context_manager.cmo \
+code_selection/variable_context_manager.cmo \
+code_selection/code_selection_context.cmo \
+code_selection/cs_util_coercion.cmo \
+code_selection/cs_util.cmo \
+code_selection/compiled_program_units.cmo \
+code_selection/cs_code_top.cmo 
+
+GALAX_CODE_SELECTION=$(GALAX_CODE) \
+code_selection/cs_code_typing_top.cmo \
+code_selection/cs_code_selection_expr.cmo \
+code_selection/cs_code_selection_top.cmo 
+
+GALAX_SHREDDED=shredded/shredded_file_util.cmo \
+shredded/shredded_renumber.cmo \
+shredded/shredded_load_context.cmo \
+shredded/shredded_load.cmo \
+shredded/shredded_qname_mapping.cmo \
+shredded/shredded_dm_step.cmo \
+shredded/shredded_store.cmo \
+shredded/shredded_register.cmo \
+shredded/shredded_dm.cmo 
+
+GALAX_SHREDDED_COMMON=shredded/shredded_common/shredded_encode.cmo \
+shredded/shredded_common/shredded_common.cmo 
+
+
+GALAX_SHREDDED_MAIN_MEMORY=$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_record.cmo \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_basetypes.cmo \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_recno.cmo \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_btree.cmo \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_hash.cmo \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_store.cmo \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_dm.cmo
+
+GALAX_EVALUATION=evaluation/evaluation_expr.cmo evaluation/evaluation_top.cmo
+
+GALAX_PROCESSINGMODEL=procmod/procmod_phases.cmo procmod/procmod_compiler.cmo
+
+GALAX_API=galapi/caml_api/dm_functions.cmo galapi/caml_api/galax.cmo
+
+GALAX_TOPLEVEL=toplevel/top_config.cmo toplevel/top_util.cmo toplevel/top_options.cmo toplevel/galax_server.cmo 
+
+GALAX_TESTING=regress/test_core.cmo
+GALAX_TESTING_OPTOBJECTS=$(GALAX_TESTING:.cmo=.cmx)
+
+GALAX_ALL_OBJECTS=$(GALAX_TOOLS) $(GALAX_BASE) $(GALAX_NAMESPACE) $(GALAX_FSA) \
+$(GALAX_DATATYPES) \
+$(GALAX_DM_BASE) $(GALAX_DM_ATOMIC) $(GALAX_STREAMING) \
+$(GALAX_AST) $(GALAX_AST_PRINTER_AND_WALKER) $(GALAX_PROCESSINGCONTEXT) \
+$(GALAX_SCHEMA) $(GALAX_DM) \
+$(GALAX_LEXING) $(GALAX_PARSING) \
+$(GALAX_SUBGALAX_TYPING) $(GALAX_WSDL) $(GALAX_NORMALIZATION) \
+$(GALAX_PHYSICALDM) $(GALAX_SERIALIZATION) $(GALAX_GALAXDM) $(EXTERNAL_DMS) \
+$(GALAX_MONITOR) $(GALAX_STDLIB) \
+$(GALAX_SHREDDED) $(GALAX_SHREDDED_COMMON) $(GALAX_SHREDDED_MAIN_MEMORY) \
+$(GALAX_TYPING) $(GALAX_REWRITING) $(GALAX_CODE_UTIL) $(GALAX_STREAMING_XPATH) \
+$(GALAX_PROJECTION) $(GALAX_FACTORIZATION) $(GALAX_COMPILE) \
+$(GALAX_PLANIO) $(GALAX_OPTIMIZATION) $(GALAX_CODE_CONTEXT) \
+$(GALAX_EVALUATION) $(GALAX_CODE_SELECTION) \
+$(GALAX_PROCESSINGMODEL) $(GALAX_API) $(GALAX_TOPLEVEL) 
+
+GALAX_ALL_OPTOBJECTS=$(GALAX_ALL_OBJECTS:.cmo=.cmx)
+
+GALAX_MLFILES=$(GALAX_ALL_OBJECTS:.cmo=.ml) $(GALAX_TESTING:.cmo=.ml)
+
+GALAX_MLLFILES=\
+datatypes/datatypes_lexer.mll \
+lexing/copynamespaces_lexer.mll \
+lexing/default_lexer.mll \
+lexing/itemtype_lexer.mll \
+lexing/kindtest_lexer.mll \
+lexing/namespacedecl_lexer.mll \
+lexing/namespacekeyword_lexer.mll \
+lexing/operator_lexer.mll \
+lexing/pragma_lexer.mll \
+lexing/schema_lexer.mll \
+lexing/type_lexer.mll \
+lexing/varname_lexer.mll \
+lexing/xmldecl_lexer.mll \
+$(GALAX_UTF8_MLLFILES) \
+$(GALAX_ISO88591_MLLFILES)
+
+GALAX_CMIFILES=\
+$(LOCALPREFIX)/ast/xquery_algebra_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_algebra_ast_annotation.cmi \
+$(LOCALPREFIX)/ast/xquery_algebra_ast_annotation_util.cmi \
+$(LOCALPREFIX)/ast/xquery_algebra_ast_util.cmi \
+$(LOCALPREFIX)/ast/xquery_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_ast_util.cmi \
+$(LOCALPREFIX)/ast/xquery_common_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_common_ast_util.cmi \
+$(LOCALPREFIX)/ast/xquery_core_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_core_ast_annotation.cmi \
+$(LOCALPREFIX)/ast/xquery_core_ast_util.cmi \
+$(LOCALPREFIX)/ast/xquery_physical_algebra_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_physical_type_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_physical_type_ast_util.cmi \
+$(LOCALPREFIX)/ast/xquery_type_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_type_ast_util.cmi \
+$(LOCALPREFIX)/ast/xquery_type_core_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_type_core_ast_util.cmi \
+$(LOCALPREFIX)/ast/xquery_type_core_ast_annotation.cmi \
+$(LOCALPREFIX)/ast_printer/print_common.cmi \
+$(LOCALPREFIX)/ast_printer/print_top.cmi \
+$(LOCALPREFIX)/ast_printer/print_type.cmi \
+$(LOCALPREFIX)/ast_printer/print_type_core.cmi \
+$(LOCALPREFIX)/ast_printer/print_xquery.cmi \
+$(LOCALPREFIX)/ast_printer/print_xquery_algebra.cmi \
+$(LOCALPREFIX)/ast_printer/print_xquery_core.cmi \
+$(LOCALPREFIX)/ast_printer/print_xquery_physical_type.cmi \
+$(LOCALPREFIX)/ast_walker/ast_walker_annotate.cmi \
+$(LOCALPREFIX)/ast_walker/ast_walker_annotate_context.cmi \
+$(LOCALPREFIX)/ast_walker/ast_walker_fold.cmi \
+$(LOCALPREFIX)/ast_walker/ast_walker_rewrite.cmi \
+$(LOCALPREFIX)/ast_walker/ast_walker_rewrite_context.cmi \
+$(LOCALPREFIX)/base/args.cmi \
+$(LOCALPREFIX)/base/conf.cmi \
+$(LOCALPREFIX)/base/debug.cmi \
+$(LOCALPREFIX)/base/dynamic_buffer.cmi \
+$(LOCALPREFIX)/base/dynamic_stack.cmi \
+$(LOCALPREFIX)/base/encoding.cmi \
+$(LOCALPREFIX)/base/error.cmi \
+$(LOCALPREFIX)/base/finfo.cmi \
+$(LOCALPREFIX)/base/galax_camomile.cmi \
+$(LOCALPREFIX)/base/galax_url.cmi \
+$(LOCALPREFIX)/base/galax_io.cmi \
+$(LOCALPREFIX)/base/galax_pxp.cmi \
+$(LOCALPREFIX)/base/gmisc.cmi \
+$(LOCALPREFIX)/base/id.cmi \
+$(LOCALPREFIX)/base/occurrence.cmi \
+$(LOCALPREFIX)/base/pervasive.cmi \
+$(LOCALPREFIX)/base/pool.cmi \
+$(LOCALPREFIX)/base/register_handlers.cmi \
+$(LOCALPREFIX)/base/whitespace.cmi \
+$(LOCALPREFIX)/code_selection/algebra_type.cmi \
+$(LOCALPREFIX)/code_selection/code_selection_context.cmi \
+$(LOCALPREFIX)/code_selection/code_typing_context.cmi \
+$(LOCALPREFIX)/code_selection/cs_annotate.cmi \
+$(LOCALPREFIX)/code_selection/cs_code_selection_expr.cmi \
+$(LOCALPREFIX)/code_selection/cs_code_selection_top.cmi \
+$(LOCALPREFIX)/code_selection/cs_code_top.cmi \
+$(LOCALPREFIX)/code_selection/cs_code_typing_top.cmi \
+$(LOCALPREFIX)/code_selection/cs_util.cmi \
+$(LOCALPREFIX)/code_selection/cs_util_coercion.cmi \
+$(LOCALPREFIX)/code_selection/execution_context.cmi \
+$(LOCALPREFIX)/code_selection/tuple_context_manager.cmi \
+$(LOCALPREFIX)/code_selection/update_ordering.cmi \
+$(LOCALPREFIX)/code_selection/compiled_program_units.cmi \
+$(LOCALPREFIX)/code_selection/variable_context_manager.cmi \
+$(LOCALPREFIX)/code_selection/code/code_builtin_fn.cmi \
+$(LOCALPREFIX)/code_selection/code/code_constructors.cmi \
+$(LOCALPREFIX)/code_selection/code/code_fn.cmi \
+$(LOCALPREFIX)/code_selection/code/code_functional_ops.cmi \
+$(LOCALPREFIX)/code_selection/code/code_group_order.cmi \
+$(LOCALPREFIX)/code_selection/code/code_hash_join.cmi \
+$(LOCALPREFIX)/code_selection/code/code_item_tuple.cmi \
+$(LOCALPREFIX)/code_selection/code/code_join.cmi \
+$(LOCALPREFIX)/code_selection/code/code_map.cmi \
+$(LOCALPREFIX)/code_selection/code/code_nestedloop.cmi \
+$(LOCALPREFIX)/code_selection/code/code_overloaded_fn.cmi \
+$(LOCALPREFIX)/code_selection/code/code_parse.cmi \
+$(LOCALPREFIX)/code_selection/code/code_prune.cmi \
+$(LOCALPREFIX)/code_selection/code/code_sc_join.cmi \
+$(LOCALPREFIX)/code_selection/code/code_sort_join.cmi \
+$(LOCALPREFIX)/code_selection/code/code_tj_pathstack.cmi \
+$(LOCALPREFIX)/code_selection/code/code_tj_twigstack.cmi \
+$(LOCALPREFIX)/code_selection/code/code_treejoin.cmi \
+$(LOCALPREFIX)/code_selection/code/code_tuple.cmi \
+$(LOCALPREFIX)/code_selection/code/code_tuple_tree_pattern.cmi \
+$(LOCALPREFIX)/code_selection/code/code_type_operators.cmi \
+$(LOCALPREFIX)/code_selection/code/code_typeswitch.cmi \
+$(LOCALPREFIX)/code_selection/code/code_update.cmi \
+$(LOCALPREFIX)/code_selection/code/code_user_defined_fn.cmi \
+$(LOCALPREFIX)/code_selection/code/code_util_join.cmi \
+$(LOCALPREFIX)/code_selection/code/code_util_materialize.cmi \
+$(LOCALPREFIX)/code_selection/code/code_util_pattern_matcher.cmi \
+$(LOCALPREFIX)/code_selection/code/code_util_predicates.cmi \
+$(LOCALPREFIX)/code_selection/code/code_util_ridlist.cmi \
+$(LOCALPREFIX)/code_selection/code/code_util_tj.cmi \
+$(LOCALPREFIX)/code_selection/code/code_binding.cmi \
+$(LOCALPREFIX)/code_selection/code/code_execute.cmi \
+$(LOCALPREFIX)/code_util/code_util.cmi \
+$(LOCALPREFIX)/code_util/code_util_matching.cmi \
+$(LOCALPREFIX)/code_util/code_util_xpath.cmi \
+$(LOCALPREFIX)/compile/compile_annotate.cmi \
+$(LOCALPREFIX)/compile/compile_context.cmi \
+$(LOCALPREFIX)/compile/compile_context_util.cmi \
+$(LOCALPREFIX)/compile/compile_expr.cmi \
+$(LOCALPREFIX)/compile/compile_top.cmi \
+$(LOCALPREFIX)/compile/compile_util.cmi \
+$(LOCALPREFIX)/compile/logical_algebra_types.cmi \
+$(LOCALPREFIX)/datamodel/galax_copy_node.cmi \
+$(LOCALPREFIX)/datamodel/galax_dm.cmi \
+$(LOCALPREFIX)/datamodel/galax_load.cmi \
+$(LOCALPREFIX)/datamodel/galax_load_context.cmi \
+$(LOCALPREFIX)/datamodel/galax_nodeid.cmi \
+$(LOCALPREFIX)/datatypes/anyURI.cmi \
+$(LOCALPREFIX)/datatypes/datatypes.cmi \
+$(LOCALPREFIX)/datatypes/datatypes_util.cmi \
+$(LOCALPREFIX)/datatypes/dateTime.cmi \
+$(LOCALPREFIX)/datatypes/decimal.cmi \
+$(LOCALPREFIX)/datatypes/regularexp.cmi \
+$(LOCALPREFIX)/dm/cursor_context.cmi \
+$(LOCALPREFIX)/dm/cursor_descendant.cmi \
+$(LOCALPREFIX)/dm/dm.cmi \
+$(LOCALPREFIX)/dm/dm_step.cmi \
+$(LOCALPREFIX)/dm/dm_util.cmi \
+$(LOCALPREFIX)/dm/atomic/dm_atomic.cmi \
+$(LOCALPREFIX)/dm/atomic/dm_atomic_btree.cmi \
+$(LOCALPREFIX)/dm/atomic/dm_atomic_btree_util.cmi \
+$(LOCALPREFIX)/dm/atomic/dm_atomic_util.cmi \
+$(LOCALPREFIX)/dm/base/cursor.cmi \
+$(LOCALPREFIX)/dm/base/dm_types.cmi \
+$(LOCALPREFIX)/dm/base/nodeid.cmi \
+$(LOCALPREFIX)/dm/base/nodeid_context.cmi \
+$(LOCALPREFIX)/evaluation/evaluation_expr.cmi \
+$(LOCALPREFIX)/evaluation/evaluation_top.cmi \
+$(LOCALPREFIX)/extensions/jabber/glx_jabber.cmi \
+$(LOCALPREFIX)/factorization/factorize_tpnf_util.cmi \
+$(LOCALPREFIX)/factorization/factorize_tpnf_rules.cmi \
+$(LOCALPREFIX)/factorization/factorize_tpnf.cmi \
+$(LOCALPREFIX)/factorization/factorize_flwor.cmi \
+$(LOCALPREFIX)/factorization/factorize_free_var.cmi \
+$(LOCALPREFIX)/factorization/factorize_globals.cmi \
+$(LOCALPREFIX)/factorization/factorize_iteration.cmi \
+$(LOCALPREFIX)/factorization/factorize_top.cmi \
+$(LOCALPREFIX)/factorization/factorize_unique.cmi \
+$(LOCALPREFIX)/fsa/dfa.cmi \
+$(LOCALPREFIX)/fsa/fsautil.cmi \
+$(LOCALPREFIX)/fsa/nfa.cmi \
+$(LOCALPREFIX)/fsa/regexp.cmi \
+$(LOCALPREFIX)/galapi/c_api/galax_wrap.cmi \
+$(LOCALPREFIX)/galapi/caml_api/dm_functions.cmi \
+$(LOCALPREFIX)/galapi/caml_api/galax.cmi \
+$(LOCALPREFIX)/lexing/lexing_util.cmi \
+$(LOCALPREFIX)/monitor/monitor.cmi \
+$(LOCALPREFIX)/namespace/namespace_generate.cmi \
+$(LOCALPREFIX)/namespace/namespace_builtin.cmi \
+$(LOCALPREFIX)/namespace/namespace_context.cmi \
+$(LOCALPREFIX)/namespace/namespace_names.cmi \
+$(LOCALPREFIX)/namespace/namespace_resolve.cmi \
+$(LOCALPREFIX)/namespace/namespace_symbols.cmi \
+$(LOCALPREFIX)/namespace/namespace_symbols_builtin.cmi \
+$(LOCALPREFIX)/namespace/namespace_symbols_util.cmi \
+$(LOCALPREFIX)/namespace/namespace_util.cmi \
+$(LOCALPREFIX)/namespace/qname_lexer.cmi \
+$(LOCALPREFIX)/normalization/norm_var_graph.cmi \
+$(LOCALPREFIX)/normalization/norm_context.cmi \
+$(LOCALPREFIX)/normalization/norm_util.cmi \
+$(LOCALPREFIX)/normalization/norm_expr.cmi \
+$(LOCALPREFIX)/normalization/norm_ident_expr.cmi \
+$(LOCALPREFIX)/normalization/norm_ident_top.cmi \
+$(LOCALPREFIX)/normalization/norm_top.cmi \
+$(LOCALPREFIX)/normalization/norm_overloaded.cmi \
+$(LOCALPREFIX)/optimization/optimization_judge.cmi \
+$(LOCALPREFIX)/optimization/optimization_walker.cmi \
+$(LOCALPREFIX)/optimization/optimization_util.cmi \
+$(LOCALPREFIX)/optimization/optimization_predicates.cmi \
+$(LOCALPREFIX)/optimization/optimization_dxq.cmi \
+$(LOCALPREFIX)/optimization/optimization_rules_cleanup.cmi \
+$(LOCALPREFIX)/optimization/optimization_rules_treejoin.cmi \
+$(LOCALPREFIX)/optimization/optimization_rules_treepattern.cmi \
+$(LOCALPREFIX)/optimization/optimization_rewrite.cmi \
+$(LOCALPREFIX)/optimization/optimization_top.cmi \
+$(LOCALPREFIX)/optimization/optimization_rules_sbdo_automaton.cmi \
+$(LOCALPREFIX)/optimization/optimization_rules_sbdo.cmi \
+$(LOCALPREFIX)/parsing/lexers_iso88591.cmi \
+$(LOCALPREFIX)/parsing/lexers_utf8.cmi \
+$(LOCALPREFIX)/parsing/parse_context.cmi \
+$(LOCALPREFIX)/parsing/parse_io.cmi \
+$(LOCALPREFIX)/parsing/parse_top.cmi \
+$(LOCALPREFIX)/parsing/parse_xquery.cmi \
+$(LOCALPREFIX)/parsing/parse_util.cmi \
+$(LOCALPREFIX)/parsing/parse_xquery.cmi \
+$(LOCALPREFIX)/parsing/parse_xqueryx.cmi \
+$(LOCALPREFIX)/physicaldm/physical_export.cmi \
+$(LOCALPREFIX)/physicaldm/physical_export_context.cmi \
+$(LOCALPREFIX)/physicaldm/physical_index_load.cmi \
+$(LOCALPREFIX)/physicaldm/physical_item.cmi \
+$(LOCALPREFIX)/physicaldm/physical_item_util.cmi \
+$(LOCALPREFIX)/physicaldm/physical_list.cmi \
+$(LOCALPREFIX)/physicaldm/physical_load.cmi \
+$(LOCALPREFIX)/physicaldm/physical_name_index.cmi \
+$(LOCALPREFIX)/physicaldm/physical_sequence.cmi \
+$(LOCALPREFIX)/physicaldm/physical_table.cmi \
+$(LOCALPREFIX)/physicaldm/physical_util.cmi \
+$(LOCALPREFIX)/physicaldm/physical_value.cmi \
+$(LOCALPREFIX)/physicaldm/physical_value_index.cmi \
+$(LOCALPREFIX)/physicaldm/physical_value_util.cmi \
+$(LOCALPREFIX)/physicaldm/physical_xml_value.cmi \
+$(LOCALPREFIX)/planio/planio_common.cmi \
+$(LOCALPREFIX)/planio/planio_util.cmi \
+$(LOCALPREFIX)/planio/planio_physical_value.cmi \
+$(LOCALPREFIX)/planio/planio_top.cmi \
+$(LOCALPREFIX)/procctxt/monitoring_context.cmi \
+$(LOCALPREFIX)/procctxt/processing_context.cmi \
+$(LOCALPREFIX)/procmod/procmod_compiler.cmi \
+$(LOCALPREFIX)/procmod/procmod_phases.cmi \
+$(LOCALPREFIX)/procmod/procmod_types.cmi \
+$(LOCALPREFIX)/projection/alg_analysis_context.cmi \
+$(LOCALPREFIX)/projection/alg_path_analysis.cmi \
+$(LOCALPREFIX)/projection/alg_path_struct.cmi \
+$(LOCALPREFIX)/projection/alg_path_structutil.cmi \
+$(LOCALPREFIX)/projection/analysis_context.cmi \
+$(LOCALPREFIX)/projection/function_analysis.cmi \
+$(LOCALPREFIX)/projection/optim_vars.cmi \
+$(LOCALPREFIX)/projection/path_analysis.cmi \
+$(LOCALPREFIX)/projection/path_struct.cmi \
+$(LOCALPREFIX)/projection/path_structutil.cmi \
+$(LOCALPREFIX)/projection/project_context.cmi \
+$(LOCALPREFIX)/projection/stream_project.cmi \
+$(LOCALPREFIX)/projection/alg_project_context.cmi \
+$(LOCALPREFIX)/projection/alg_stream_project.cmi \
+$(LOCALPREFIX)/rewriting/rewriting_judgments.cmi \
+$(LOCALPREFIX)/rewriting/rewriting_rules_notyping.cmi \
+$(LOCALPREFIX)/rewriting/rewriting_rules_typing.cmi \
+$(LOCALPREFIX)/rewriting/rewriting_top.cmi \
+$(LOCALPREFIX)/schema/schema_builtin.cmi \
+$(LOCALPREFIX)/schema/schema_dtd_import.cmi \
+$(LOCALPREFIX)/schema/schema_import.cmi \
+$(LOCALPREFIX)/schema/schema_judge.cmi \
+$(LOCALPREFIX)/schema/schema_namer.cmi \
+$(LOCALPREFIX)/schema/schema_norm.cmi \
+$(LOCALPREFIX)/schema/schema_norm_util.cmi \
+$(LOCALPREFIX)/schema/schema_prefix_manager.cmi \
+$(LOCALPREFIX)/schema/schema_simplification.cmi \
+$(LOCALPREFIX)/schema/schema_util.cmi \
+$(LOCALPREFIX)/schema/schema_validation.cmi \
+$(LOCALPREFIX)/schema/schema_validation_context.cmi \
+$(LOCALPREFIX)/serialization/serialization.cmi \
+$(LOCALPREFIX)/serialization/serialization_context.cmi \
+$(LOCALPREFIX)/shredded/shredded_dm_step.cmi \
+$(LOCALPREFIX)/shredded/shredded_file_util.cmi \
+$(LOCALPREFIX)/shredded/shredded_load.cmi \
+$(LOCALPREFIX)/shredded/shredded_load_context.cmi \
+$(LOCALPREFIX)/shredded/shredded_load_sigs.cmi \
+$(LOCALPREFIX)/shredded/shredded_load_update.cmi \
+$(LOCALPREFIX)/shredded/shredded_store.cmi \
+$(LOCALPREFIX)/shredded/shredded_store_sigs.cmi \
+$(LOCALPREFIX)/shredded/shredded_common/shredded_encode.cmi \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_basetypes.cmi \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_btree.cmi \
+$(LOCALPREFIX)/stdlib/fn_doc.cmi \
+$(LOCALPREFIX)/stdlib/fn_error.cmi \
+$(LOCALPREFIX)/streaming/prefix_context.cmi \
+$(LOCALPREFIX)/streaming/resolve_stream_context.cmi \
+$(LOCALPREFIX)/streaming/sax_annot.cmi \
+$(LOCALPREFIX)/streaming/small_stream_ast.cmi \
+$(LOCALPREFIX)/streaming/small_stream_context.cmi \
+$(LOCALPREFIX)/streaming/streaming_constructors.cmi \
+$(LOCALPREFIX)/streaming/streaming_conv.cmi \
+$(LOCALPREFIX)/streaming/streaming_diff.cmi \
+$(LOCALPREFIX)/streaming/streaming_ops.cmi \
+$(LOCALPREFIX)/streaming/streaming_ordered_context.cmi \
+$(LOCALPREFIX)/streaming/streaming_parse.cmi \
+$(LOCALPREFIX)/streaming/streaming_types.cmi \
+$(LOCALPREFIX)/streaming/streaming_util.cmi \
+$(LOCALPREFIX)/streaming_xpath/df_analysis.cmi \
+$(LOCALPREFIX)/streaming_xpath/df_analysis_context.cmi \
+$(LOCALPREFIX)/streaming_xpath/df_struct.cmi \
+$(LOCALPREFIX)/streaming_xpath/stream_analysis.cmi \
+$(LOCALPREFIX)/streaming_xpath/stream_analysis_builtin.cmi \
+$(LOCALPREFIX)/streaming_xpath/streaming_xpath.cmi \
+$(LOCALPREFIX)/streaming_xpath/sxp_context.cmi \
+$(LOCALPREFIX)/subtyping/subtyping_build_regexp.cmi \
+$(LOCALPREFIX)/subtyping/subtyping_glushkov.cmi \
+$(LOCALPREFIX)/subtyping/subtyping_letter.cmi \
+$(LOCALPREFIX)/subtyping/subtyping_top.cmi \
+$(LOCALPREFIX)/tools/stemmer/stemmer.cmi \
+$(LOCALPREFIX)/toplevel/top_config.cmi \
+$(LOCALPREFIX)/toplevel/top_options.cmi \
+$(LOCALPREFIX)/toplevel/top_util.cmi \
+$(LOCALPREFIX)/toplevel/galax_server_util.cmi \
+$(LOCALPREFIX)/toplevel/galax_server.cmi \
+$(LOCALPREFIX)/typing/typing_call.cmi \
+$(LOCALPREFIX)/typing/typing_context.cmi \
+$(LOCALPREFIX)/typing/typing_errors.cmi \
+$(LOCALPREFIX)/typing/typing_expr.cmi \
+$(LOCALPREFIX)/typing/typing_fn.cmi \
+$(LOCALPREFIX)/typing/typing_notyping.cmi \
+$(LOCALPREFIX)/typing/typing_step.cmi \
+$(LOCALPREFIX)/typing/typing_top.cmi \
+$(LOCALPREFIX)/typing/typing_util.cmi \
+$(LOCALPREFIX)/website/demo/demo_conf.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_apache.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_ast.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_export.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_import.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_load.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_maker.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_printer.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_util.cmi \
+$(LOCALPREFIX)/wsdl/xquery_type_ast_map.cmi
+
+GALAX_MLIFILES=$(GALAX_CMIFILES:.cmi=.mli)
+
+#########################################################################
+# Section:	Standard targets for checking Galax results
+# Description:
+#		These are targets that various other Makefiles rely on to
+#		compare results with expected values.
+#########################################################################
+
+check:
+	if [ -f $${T}.xml ]; then cmp $${T}.xml $${E}.expect >$${T}.cmp 2>&1; if [ -s $${T}.cmp ]; then $(MAKE) error  T=$${T};  else $(MAKE) ok T=$${T}; fi; else $(MAKE) error T=$${T}; fi; \
+
+error:
+	@echo "******"
+	@echo "* $${T} failed : $${T}.xml $${E}.expect differ"
+	@echo "******"
+
+ok: 
+	@echo "$${T} passed :-)"
+
+#########################################################################
+# Section:	base/conf.ml generation variables
+# Description:
+#		These variables are used to generate base/conf.ml
+#########################################################################
+RELEASE=1.0
+STATUS=Stable
+
+#########################################################################
+# Section:	Make rules
+# Description:
+#		These are the rules for compiling OCaml programs
+#########################################################################
+.SUFFIXES:	.ml .mli .mll .cmo .cmi .cmx .java .class
+
+.mll.ml:
+	$(OCAMLLEX) $<
+
+.ml.cmo:
+	$(OCAMLC) $(OCAMLC_FLAGS) $(GALAX_ALL_INCLUDES) -c $<
+
+.mli.cmi:
+	$(OCAMLC) $(OCAMLC_FLAGS) $(GALAX_ALL_INCLUDES) -c $<
+
+.ml.cmx:
+	$(OCAMLOPT) $(OCAMLOPT_FLAGS) $(GALAX_ALL_INCLUDES) -c $<
+
+.java.class:
+	$(JAVAC) $(JAVAC_FLAGS) $(JAVACLASSPATH) $<
+
+updatedepend::
+
+clobber::	clean
+

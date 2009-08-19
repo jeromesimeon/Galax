@@ -1,0 +1,4 @@
+This example distributed XQuery program has three hosts,
+b, c, and summary.  b and c export site statistics (sizes of queries
+and responses made by the site) and summary calculates a summary of
+the statistics of b and c.

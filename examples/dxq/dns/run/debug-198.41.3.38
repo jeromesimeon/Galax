@@ -1,0 +1,324 @@
+**********************************
+[WARNING] 
+Expression 'dxq:gui-report(
+  fn:concat(
+    fn:string-join("Resolved", $n, "to", " "),
+    fn:string-join($addrs/@address, " ")
+  )
+)' at characters 1572-1677 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression ' { 
+    
+    dxq:gui-report(
+      fn:concat(
+        fn:string-join("Resolved", $n, "to", " "),
+        fn:string-join($addrs/@address, " ")
+      )
+    )
+ }' at characters 1587-1676 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression '???' at characters 1555-1677 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'at server U do {U:forward($from, $n)}' at characters 2111-2142 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'let
+  server
+  U
+  implement S at $a/@address
+  return at server U do {U:forward($from, $n)}' at characters 2056-2142 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'let
+  server
+  U
+  implement S at $a/@address
+  return at server U do {U:forward($from, $n)}' at characters 2056-2142 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'for $ns in D:RR()/ns,
+    $a in D:RR()/a
+where
+  $ns/@nameserver = $a/@hostname and fn:not($ns/@domain = ".")
+   and dxq:dns-lt($ns/@domain, $n)
+return
+  let
+    server
+    U
+    implement S at $a/@address
+    return at server U do {U:forward($from, $n)}' at characters 1873-2142 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'at server T do {T:forward($from, $n)}' at characters 2387-2418 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'let
+  server
+  T
+  implement S at $root/@address
+  return at server T do {T:forward($from, $n)}' at characters 2329-2418 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression ' { 
+    
+    let
+      server
+      T
+      implement S at $root/@address
+      return at server T do {T:forward($from, $n)}
+ }' at characters 2329-2418 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'let $root := D:RR()/a[@hostname = D:RR()/ns[@domain = "."]/@nameserver]
+return
+   { 
+      
+      let
+        server
+        T
+        implement S at $root/@address
+        return at server T do {T:forward($from, $n)}
+   }' at characters 2163-2426 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'if (dxq:dns-lt(D:RR()/soa/@domain, $n))
+then
+  for $ns in D:RR()/ns,
+      $a in D:RR()/a
+  where
+    $ns/@nameserver = $a/@hostname and fn:not($ns/@domain = ".")
+     and dxq:dns-lt($ns/@domain, $n)
+  return
+    let
+      server
+      U
+      implement S at $a/@address
+      return at server U do {U:forward($from, $n)}
+else
+  let $root := D:RR()/a[@hostname = D:RR()/ns[@domain = "."]/@nameserver]
+  return
+     { 
+        
+        let
+          server
+          T
+          implement S at $root/@address
+          return at server T do {T:forward($from, $n)}
+     }' at characters 1822-2426 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'at server T do {T:resolved($n, $addrs)}' at characters 2525-2558 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'let
+  server
+  T
+  implement S at $from
+  return at server T do {T:resolved($n, $addrs)}' at characters 2478-2558 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'let
+  server
+  T
+  implement S at $from
+  return at server T do {T:resolved($n, $addrs)}' at characters 2478-2558 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'if (fn:not(fn:empty($addrs)))
+then
+  let
+    server
+    T
+    implement S at $from
+    return at server T do {T:resolved($n, $addrs)}
+else ()' at characters 2435-2570 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression ' { 
+    
+    if (dxq:dns-lt(D:RR()/soa/@domain, $n))
+    then
+      for $ns in D:RR()/ns,
+          $a in D:RR()/a
+      where
+        $ns/@nameserver = $a/@hostname and fn:not($ns/@domain = ".")
+         and dxq:dns-lt($ns/@domain, $n)
+      return
+        let
+          server
+          U
+          implement S at $a/@address
+          return at server U do {U:forward($from, $n)}
+    else
+      let $root := D:RR()/a[@hostname = D:RR()/ns[@domain = "."]/@nameserver]
+      return
+         { 
+            
+            let
+              server
+              T
+              implement S at $root/@address
+              return at server T do {T:forward($from, $n)}
+         };
+    if (fn:not(fn:empty($addrs)))
+    then
+      let
+        server
+        T
+        implement S at $from
+        return at server T do {T:resolved($n, $addrs)}
+    else ()
+ }' at characters 1814-2570 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression ' { 
+    
+    let $addrs := D:RR()/a[@hostname = $n]
+    return
+       { 
+          
+          if (dxq:dns-lt(D:RR()/soa/@domain, $n))
+          then
+            for $ns in D:RR()/ns,
+                $a in D:RR()/a
+            where
+              $ns/@nameserver = $a/@hostname and fn:not($ns/@domain = ".")
+               and dxq:dns-lt($ns/@domain, $n)
+            return
+              let
+                server
+                U
+                implement S at $a/@address
+                return at server U do {U:forward($from, $n)}
+          else
+            let $root :=
+              D:RR()/a[@hostname = D:RR()/ns[@domain = "."]/@nameserver]
+            return
+               { 
+                  
+                  let
+                    server
+                    T
+                    implement S at $root/@address
+                    return at server T do {T:forward($from, $n)}
+               };
+          if (fn:not(fn:empty($addrs)))
+          then
+            let
+              server
+              T
+              implement S at $from
+              return at server T do {T:resolved($n, $addrs)}
+          else ()
+       }
+ }' at characters 1770-2574 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression '???' at characters 1763-2574 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'dxq:gui-report($msg)' at characters 2748-2754 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'dxq:gui-report($msg)' at characters 2749-2753 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'let $msg := fn:string-join($local:self, "received", $msg, "from", $from, " ")
+return dxq:gui-report($msg)' at characters 2652-2754 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'at server T do {T:multicast($local:self, $msg)}' at characters 3034-3075 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'let
+  server
+  T
+  implement S at $a/@address
+  return at server T do {T:multicast($local:self, $msg)}' at characters 2976-3075 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'let
+  server
+  T
+  implement S at $a/@address
+  return at server T do {T:multicast($local:self, $msg)}' at characters 2976-3075 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'for $a in D:RR()/a
+where
+  fn:empty(D:RR()/ns[@nameserver = $a/@hostname])
+   and dxq:dns-lt(D:RR()/soa/@domain, $a/@hostname)
+return
+  let
+    server
+    T
+    implement S at $a/@address
+    return at server T do {T:multicast($local:self, $msg)}' at characters 2833-3075 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression ' { 
+    
+    let $msg :=
+      fn:string-join($local:self, "received", $msg, "from", $from, " ")
+    return dxq:gui-report($msg);
+    for $a in D:RR()/a
+    where
+      fn:empty(D:RR()/ns[@nameserver = $a/@hostname])
+       and dxq:dns-lt(D:RR()/soa/@domain, $a/@hostname)
+    return
+      let
+        server
+        T
+        implement S at $a/@address
+        return at server T do {T:multicast($local:self, $msg)}
+ }' at characters 2644-3075 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression '???' at characters 2644-3075 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'at server T do {T:multicast($local:self, $x)}' at characters 3459-3499 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'let
+  server
+  T
+  implement S at $a/@address
+  return at server T do {T:multicast($local:self, $x)}' at characters 3402-3499 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'let
+  server
+  T
+  implement S at $a/@address
+  return at server T do {T:multicast($local:self, $x)}' at characters 3402-3499 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'for $ns in D:RR()/ns,
+    $a in D:RR()/a
+where
+  $ns/@nameserver = $a/@hostname
+   and dxq:dns-lt(D:RR()/soa/@domain, $ns/@domain)
+return
+  let
+    server
+    T
+    implement S at $a/@address
+    return at server T do {T:multicast($local:self, $x)}' at characters 3259-3499 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'dxq:gui-status("l", N:neighborGraph())' at characters 4097-4121 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'N:neighborGraph()' at characters 4118-4120 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression ' { dxq:gui-status("l", N:neighborGraph())}' at characters 4100-4101 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression '???' at characters 4080-4121 has empty type, but is not the empty expression
+
+

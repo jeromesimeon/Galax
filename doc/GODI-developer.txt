@@ -1,0 +1,86 @@
+
+[Note: Mary recommends this following installation process!]
+
+These installation instructions are for Galax developers who want to
+use GODI to install the O'Caml compiler and all libraries on which
+Galax depends and who are working on a development copy of Galax
+source code.
+
+I.  Installing GODI and GODI-Galax package 
+
+  [Warning: Installing packages using GODI is an ON-LINE process, so
+   preferably, you should be connected to the Net by a fast hard-wire
+   connection.]
+
+  1. Download GODI from : http://godi.ocaml-programming.de/
+
+     1a. Follow GODI installation instructions through
+         "bootstrap_stage2" command, adding GODI bin/sbin directories
+         to your PATH as instructed.
+
+         [Note: As an O'Caml user, you will find all the O'Caml
+          executables in <your-godi-directory>/bin and the O'Caml
+          libraries in <your-godi-directory>/lib/ocaml.]
+
+  2. Run godi_console 
+
+     2a. Select godi-galax package (#83)
+
+     2b. Select [b]uild & install, then e[x]it
+
+         This will add all of Galax's dependencies to your GODI configuration.
+
+     2c. GODI will give you Galax's configure options:
+
+		[ 1] GODI_GALAX_INCLUDE_JUNGLE = no
+		[ 2]  GODI_GALAX_INCLUDE_C_API = no
+		[ 3] GODI_GALAX_INCLUDE_JAVA_$ = no
+		[ 4]   GODI_GALAX_INCLUDE_UTF8 = yes
+		[ 5] GODI_GALAX_INCLUDE_ISO88$ = yes
+		[ 6]      GODI_GALAX_JAVA_HOME = unset
+		[ 7]       GODI_GALAX_JAVA_BIN = unset
+		[ 8]   GODI_GALAX_JAVA_INCLUDE = unset
+		[ 9] GODI_GALAX_REGRESSION_SU$ = unset
+
+         Select e[xi]t.
+
+         [Note: You do not need to make any changes here, because we are
+         installing the GODI-Galax package just for bootstrapping
+         purposes. ]
+
+     2d. Select [s]tart/continue, which will report all dependencies.
+
+         Then select [s]tart/continue, which will report actual
+         dependencies based on your current GODI installation.
+
+         Then select [o]k.
+
+   3. Take a long coffee break...while GODI downloads and installs
+      packages. 
+
+      [Note: As a Galax user, you can find the Galax command-line
+       tools in <your-godi-directory>/bin and the Galax examples and
+       usecases in <your-godi-directory>/godi/share.]
+
+II. Installing Galax source 
+
+   1. Checkout Galax from cvs-graphviz.research.att.com:/cvsroot.
+
+      cvs checkout galax 
+
+   2. Configure Galax.
+
+      In galax/ run: 
+
+        ./configure -ocaml-home <your-godi-directory>
+
+      If you want any of the APIs, add options -with-c, -with-java, etc. 
+
+      Run "./configure -help" for all configuration options. 
+
+   3. Build Galax.
+
+      In galax/ run: 
+  
+        make world
+

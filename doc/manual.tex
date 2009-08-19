@@ -1,0 +1,110 @@
+\documentclass{book}[11pt]
+
+\usepackage{hevea}
+\usepackage{fullpage}
+\usepackage{alltt}
+\usepackage[latin1]{inputenc}
+\newcommand{\eat}[1]{}
+\newcommand{\term}[1]{\textbf{#1}}
+\newcommand{\func}[1]{\texttt{#1}}
+\newcommand{\cmd}[1]{\textbf{\texttt{#1}}}
+\newcommand{\code}[1]{\textbf{\texttt{#1}}}
+\newcommand{\note}[1]{\textbf{Note:} #1}
+\newcommand{\scream}[1]{\textbf{*** } #1 \textbf{***}}
+\newcommand{\version}{1.0}
+% Version of XQuery to which Galax is aligned 
+\newcommand{\xqueryrec}{January, 2007} 
+\newcommand{\xqueryversion}{\xqueryrec} 
+\newcommand{\xquerytestsuiteurl}{\ahrefurl{http://www.w3.org/XML/Query/test-suite/}}
+\newcommand{\xquerytestsuiteversion}{1.0.2}
+\newcommand{\totaltests}{10,055}
+\newcommand{\galaxtotaltests}{7917}
+\newcommand{\galaxpassestests}{7852}
+\newcommand{\xqueryurl}{\ahrefurl{http://www.w3c.org/TR/xquery}}
+\newcommand{\xquerywgurl}{\ahrefurl{http://www.w3c.org/XML/Query}}
+\newcommand{\galaxurl}{\ahrefurl{http://www.galaxquery.org}}
+\newcommand{\galaxdistrib}{\galaxurl/distrib.html}
+\newcommand{\datamodelurl}{\ahrefurl{http://www.w3c.org/TR/query-datamodel}}
+\newcommand{\fandourl}{\ahrefurl{http://www.w3c.org/TR/xpath-functions}}
+\newcommand{\fsurl}{\ahrefurl{http://www.w3c.org/TR/xquery-semantics}}
+\newcommand{\usecasesurl}{\ahrefurl{http://www.w3c.org/TR/xquery-use-cases}}
+\newcommand{\xmlurl}{\ahrefurl{http://www.w3.org/TR/2000/REC-xml-20001006}}
+\newcommand{\xmlnsurl}{\ahrefurl{http://www.w3.org/TR/1999/REC-xml-names-19990114/}}
+\newcommand{\xmlschemaoneurl}{\ahrefurl{http://www.w3.org/TR/2001/REC-xmlschema-1-20010502/}}
+\newcommand{\xmlschematwourl}{\ahrefurl{http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/}}
+\newcommand{\xquerybangurl}{\ahrefurl{http://xquerybang.cs.washington.edu/}}
+\newcommand{\godiurl}{\ahrefurl{http://godi.ocaml-programming.de/}}
+\newcommand{\ultfurl}{\ahrefurl{http://www.w3.org/TR/xquery-update-10/}}
+\newcommand{\ultfwd}{August, 2007}
+\newcommand{\xqueryp}{\ahrefurl{http://www.ximep-2006.org/papers/Paper-Chamberlin-Carey.pdf}}
+\newcommand{\galaxusers}{\mailto{galax-users@research.att.com}}
+\newcommand{\galaxrequestusers}{\mailto{galax-users-request@research.att.com}}
+\newcommand{\bugzillaurl}{\ahrefurl{http://bugzilla.galaxquery.net/}}
+
+\htmlprefix{Galax Manual: }
+\title{\Large\bf {\LARGE Galax Version
+\version\ Documentation}\\[0.5cm] \textit{``The XQuery Implementation
+for Discriminating Hackers''}}
+\author{Mary Fern\'andez, AT\&T Labs Research \\ J\'er\^ome Sim\'eon, IBM T.J. Watson Research Center}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\part{User's Manual}
+\chapter{Getting Started}
+\label{sec:readme}
+\cutname{readme.html}
+\input{readme}
+
+\chapter{Installation}
+\label{sec:install}
+\cutname{install.html}
+\input{install}
+
+\chapter{Tutorial}
+\label{sec:tutorial}
+\cutname{tutorial.html}
+\input{tutorial}
+
+\part{Reference Manual}
+
+\chapter{XQuery 1.0 Conformance}
+\label{sec:alignment}
+\cutname{alignment.html}
+\input{alignment}
+
+\chapter{Command Line Tools}
+\label{sec:commandline}
+\cutname{commandline.html}
+\input{commandline}
+
+\chapter{Application Programming Interfaces (APIS)}
+\label{sec:api}
+\input{api}
+\cutname{api.html}
+
+\eat{
+\chapter{Accessing and Storing XML}
+\label{sec:documents}
+\cutname{documents.html}
+\input{documents}
+}
+
+\chapter{For Galax Developers}
+\label{sec:developers}
+\cutname{developers.html}
+\input{developers}
+
+\chapter{Release Notes}
+\label{sec:releasenotes}
+\cutname{release_notes.html}
+\input{release_notes}
+
+\chapter{General}
+\label{sec:general}
+\cutname{general.html}
+\input{general}
+
+\end{document}

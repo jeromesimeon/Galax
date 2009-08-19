@@ -1,0 +1,229 @@
+<!-- This is a configuration file for Galax's test harness. -->
+
+<config>
+  <!-- Galax testing configuration -->
+  <galax-test>
+    <!-- Where is the galax regression test directory -->
+    <testdir>REGRESS</testdir>
+
+    <!-- List of known bugs -->
+    <bugfile>knownbugs.xml</bugfile>
+
+  </galax-test>
+
+  <test-unit id="W3C" name="W3C Test Suite">
+    <!-- Where is the W3C test-suite installed? -->
+    <testdir>XQUERYUNIT</testdir>
+
+    <!-- Where should the results go? -->
+    <resultfile>testresults-W3C.xml</resultfile>
+
+    <!-- Other important locations, relative to the test-unit -->
+    <catalogdir></catalogdir>
+    <catalog>XQTSCatalog.xml</catalog>
+    <querydir>Queries/XQuery</querydir>
+    <expecteddir>ExpectedTestResults</expecteddir>
+
+    <!-- Which test group should be run? -->
+    <groups>
+
+<!-- These are largely unimplemented, but don't cause any problems -->
+      <test-group name="SeqIDFunc"/>
+      <test-group name="SeqIDREFFunc"/>
+
+<!--  These groups have failed tests -->
+      <test-group name="InternalVariablesWithout"/>
+      <test-group name="DirectConElemAttr"/>
+      <test-group name="DirectConElem"/>
+      <test-group name="DirectConElemContent"/>
+      <test-group name="DirectConElemWhitespace"/>
+      <test-group name="MatchesFunc"/>
+      <test-group name="InScopePrefixesFunc"/>
+      <test-group name="ExtensionExpression"/>
+      <test-group name="OptionDeclarationProlog"/>
+      <test-group name="XQueryComment"/>
+      <test-group name="ForExprWith"/>
+      <test-group name="InScopePrefixesFunc"/>
+      <test-group name="OrderbyExprWith"/>
+      <test-group name="OrderbyExprWithout"/>
+      <test-group name="SeqExprCastable"/>
+
+<!-- These groups should all pass  -->
+      <test-group name="CombinedErrorCodes"/>
+      <test-group name="SeqDocAvailableFunc"/>
+      <test-group name="SeqDocFunc"/>
+      <test-group name="SeqExprCastWithinBranch"/>
+      <test-group name="SeqExprCastToDerivedParents"/>
+      <test-group name="SeqExprCastToDerived"/>
+      <test-group name="SeqExprCast"/>
+      <test-group name="SeqExprTreat"/>
+      <test-group name="SeqDeepEqualFunc"/>
+      <test-group name="StaticContext"/>
+      <test-group name="StringComp"/>
+      <test-group name="ValCompTypeChecking"/>
+      <test-group name="AnyURIComp"/>
+      <test-group name="QNameConstructFunc"/>
+      <test-group name="StringFunc"/>
+      <test-group name="DirectConOther"/>
+      <test-group name="SeqExprCast"/>
+      <test-group name="SeqExprCastable"/>
+      <test-group name="Types"/>
+      <test-group name="PrimaryExpr"/>
+      <test-group name="PathExpr"/>
+      <test-group name="SeqExpr"/>
+      <test-group name="ArithExpr"/>
+      <test-group name="NumericComp"/>
+      <test-group name="BooleanOp"/>
+      <test-group name="YearMonthDurationEQ"/>
+      <test-group name="YearMonthDurationLT"/>
+      <test-group name="YearMonthDurationGT"/>
+      <test-group name="DayTimeDurationEQ"/>
+      <test-group name="DayTimeDurationLT"/>
+      <test-group name="DayTimeDurationGT"/>
+      <test-group name="DurationEQ"/>
+      <test-group name="DateTimeEQ"/>
+      <test-group name="DateTimeLT"/>
+      <test-group name="DateTimeGT"/>
+      <test-group name="DateEQ"/>
+      <test-group name="DateLT"/>
+      <test-group name="DateGT"/>
+      <test-group name="TimeEQ"/>
+      <test-group name="TimeLT"/>
+      <test-group name="TimeGT"/>
+      <test-group name="gMonthDayEQ"/>
+      <test-group name="gDayEQ"/>
+      <test-group name="gMonthEQ"/>
+      <test-group name="QNameOp"/>
+      <test-group name="BinaryOp"/>
+      <test-group name="NotationOp"/>
+      <test-group name="GenComprsn"/>
+      <test-group name="NodeComp"/>
+      <test-group name="SeqOp"/>
+      <test-group name="LogicExpr"/>
+      <test-group name="DirectConElemAttr"/>
+      <test-group name="DirectConElem"/>
+      <test-group name="DirectConElemContent"/>
+      <test-group name="DirectConElemWhitespace"/>
+      <test-group name="DirectConOther"/>
+      <test-group name="ComputeCon"/>
+      <test-group name="ConInScopeNamespace"/>
+      <test-group name="ForExprWithout"/>
+      <test-group name="ForExprPositionalVar"/>
+      <test-group name="LetExpr"/>
+      <test-group name="WhereExpr"/>
+      <test-group name="ReturnExpr"/>
+      <test-group name="OrderExpr"/>
+      <test-group name="CondExpr"/>
+      <test-group name="QuantExpr"/>
+      <test-group name="SeqExprInstanceOf"/>
+      <test-group name="sequenceExprTypeswitch"/>
+      <test-group name="SeqExprTreat"/>
+      <test-group name="VersionProlog"/>
+      <test-group name="BoundarySpaceProlog"/>
+      <test-group name="CollationProlog"/>
+      <test-group name="ConstructionProlog"/>
+      <test-group name="DefaultNamespaceProlog"/>
+      <test-group name="DefaultOrderingProlog"/>
+      <test-group name="NamespaceProlog"/>
+      <test-group name="CopyNamespacesProlog"/>
+      <test-group name="BaseURIProlog"/>
+      <test-group name="EmptyOrderProlog"/>
+      <test-group name="InternalVariablesWith"/>
+      <test-group name="ExternalVariablesWithout"/>
+      <test-group name="ExternalVariablesWith"/>
+      <test-group name="FunctionProlog"/>
+      <test-group name="NodeNameFunc"/>
+      <test-group name="AllStringFunc"/>
+      <test-group name="DataFunc"/>
+      <test-group name="CeilingFunc"/>
+      <test-group name="FloorFunc"/>
+      <test-group name="RoundFunc"/>
+      <test-group name="RoundEvenFunc"/>
+      <test-group name="GeneralStringFunc"/>
+      <test-group name="BooleanFunc"/>
+      <test-group name="DurationDateTimeFunc"/>
+      <test-group name="QNameConstructFunc"/>
+      <test-group name="NameFunc"/>
+      <test-group name="NodeLocalNameFunc"/>
+      <test-group name="NodeNamespaceURIFunc"/>
+      <test-group name="NamespaceURIForPrefixFunc"/>
+      <test-group name="StringFunc"/>
+      <test-group name="NodeLangFunc"/>
+      <test-group name="ErrorFunc"/>
+      <test-group name="TraceFunc"/>
+      <test-group name="ConstructFunc"/>
+      <test-group name="NodeRootFunc"/>
+      <test-group name="SeqBooleanFunc"/>
+      <test-group name="SeqIndexOfFunc"/>
+      <test-group name="SeqEmptyFunc"/>
+      <test-group name="SeqExistsFunc"/>
+      <test-group name="SeqDistinctValuesFunc"/>
+      <test-group name="SeqRemoveFunc"/>
+      <test-group name="SeqReverseFunc"/>
+      <test-group name="SeqSubsequenceFunc"/>
+      <test-group name="SeqUnorderedFunc"/>
+      <test-group name="CardinalitySeqFunc"/>
+      <test-group name="SeqCountFunc"/>
+      <test-group name="SeqMAXFunc"/>
+      <test-group name="SeqMINFunc"/>
+      <test-group name="ContextFunc"/>
+      <test-group name="FullAxis"/>
+      <test-group name="UseCase"/>
+      <test-group name="Catalog"/>
+      <test-group name="SeqAVGFunc"/>
+      <test-group name="NodeNumberFunc"/>
+      <test-group name="SeqInsertBeforeFunc"/>
+      <test-group name="SeqSUMFunc"/>
+      <test-group name="gYearMonthEQ"/>
+      <test-group name="gYearEQ"/>
+      <test-group name="ConDocNode"/>
+      <test-group name="NilledFunc"/>
+      <test-group name="ResolveURIFunc"/>
+      <test-group name="BaseURIFunc"/>
+      <test-group name="StaticBaseURIFunc"/>
+      <test-group name="DocumentURIFunc"/>
+      <test-group name="ABSFunc"/>
+      <test-group name="LocalNameFromQNameFunc"/>
+      <test-group name="NamespaceURIFromQNameFunc"/>
+      <test-group name="StaticTyping"/>
+      <test-group name="Appendices"/>
+      <test-group name="Modules"/>
+
+<!-- The following test group seem to pass, but the test-suite
+     contains bugs in for some of the tests. The corresponding bugs
+     are listed in the Public W3C Bugzilla for the XQuery
+     test-suite. (See also ./knownbugs.xml)
+-->
+
+<!-- UNTESTED or FATAL BUGS
+      <test-group name="SchemaImport"/>
+      <test-group name="SeqCollectionFunc"/> don't run this one b/c
+      the test-harness does not handle it properly.
+      <test-group name="TrivialEmbedding"/>
+-->
+
+    </groups>
+  </test-unit>
+
+  <test-unit id="Galax" name="Galax Test Suite">
+    <!-- Where is the Galax test-suite installed? -->
+    <testdir>GALAXUNIT</testdir>
+
+    <!-- Where should the results go? -->
+    <resultfile>testresults-Galax.xml</resultfile>
+
+    <!-- Other important locations, relative to the test-unit -->
+    <catalogdir></catalogdir>
+    <catalog>GLXTSCatalog.xml</catalog>
+    <querydir>Queries/XQuery</querydir>
+    <expecteddir>ExpectedTestResults</expecteddir>
+
+    <!-- Which test group should be run? -->
+    <groups>
+      <test-group name="UseCase"/>
+      <test-group name="Optimization"/>
+      <test-group name="Interfaces"/>
+    </groups>
+  </test-unit>
+</config>
+

@@ -1,0 +1,110 @@
+
+To configure Jabber support in XQuery, see instructions in
+galax/tools/jabber/README.
+
+This file explains how to set up a jabber server and client.
+
+May, 2004 -- Nicola 
+May 27, 2004 - Mary
+
+REQUIREMENTS
+============
+
+  1. Jabber 1.4
+     See "How to install a Jabber server" below
+
+  2. Gaim Client
+
+     Gaim is installed by default on RedHat
+     See "How to configure a GAIM Jabber client"
+
+How to install a Jabber server
+==============================
+
+1. General Jabber info at : http://www.jabber.org 
+
+2. Download server from:
+
+   http://jabberd.jabberstudio.org/1.4/
+
+3. You will need the GNU Portable Threads Library to compile Jabber
+   server
+
+   Download from:
+
+     http://www.gnu.org/software/pth/
+
+  The PTH library by default is installed in /usr/local/lib.  
+
+4. You will need the Iksemel library, which is used for stub generation.
+
+   This package may or may not be installed by default. 
+
+   If not, download from: 
+
+     http://iksemel.jabberstudio.org/
+
+   Follow installation instructions
+
+   (From Nicola: When you install the Jabber server, this library should be included.)
+   (From Mary: I had to download it separately)
+
+5. To install and test Jabber server, follow instructions in:
+
+     http://jabberd.jabberstudio.org/1.4/doc/adminguide
+
+   No need to assign a domain name to this Jabber server -- just use
+   default 'localhost ' for demo.
+
+
+  (From Nicola:
+  
+   I have jabberd v1.4.3 which comes with the jabber package in the
+   Debian unstable distribution. There are also packages for transports
+   towards other IM protocols: jabber-msn, jabber-yahoo etc.
+
+   All these packages do not normally require any special
+   configuration. The main configuration file is usually stored in
+   /etc/jabber/jabber.cfg
+
+   By default, a jabber server listens on port 5222 for normal
+   connections and on port 5223 or 5224 for encrypted connections.
+
+   All this options are set in /etc/jabber/jabber.xml Sometimes, the
+   configuration for the SSL port is commented: line 418 in my default
+   installation.)
+
+6. Run jabberd 
+
+   Make sure path to PTH library is in LD_LIBRARY_PATH:
+
+   export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
+
+   Run jabberd
+
+   <path to jabber>/jabberd/jabberd
+
+   Add -D for debug mode
+
+How to configure a GAIM Jabber client
+=====================================
+
+0. export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
+   Startup jabber server <jabber-directory>/jabberd/jabberd
+
+1. Startup gaim
+
+[ Steps 2-4 only done once, to set up plugin: ]
+2. Go to "Plugins" menu
+   2a. Add jabber plugin (should be in /usr/lib/gaim/libjabber.so)
+   2b. Close window
+
+3. Go to "Accounts" menu
+
+   3a. Add new user(s), make sure you use username@localhost (if you have not
+   given your Jabber server a domain name) or use username@jabber-domain-name
+
+4. Sign-on to server
+5. Set up buddy list 
+
+

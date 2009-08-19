@@ -1,0 +1,20 @@
+interface namespace Narada = "narada";
+
+(: Coding convention : functions with name *Msg implies they are
+   typically called asynchronously and return the empty sequence.
+ :)
+declare updating function Narada:pingMsg($y, $t) as empty-sequence() external;
+declare updating function Narada:pongMsg($y, $t) as empty-sequence() external;
+declare function Narada:multicastMsg($msg) as empty-sequence() external; 
+
+declare updating function Narada:refreshMsg($y, $address, $seq, $live) as empty-sequence() external;
+declare updating function Narada:neighborDepartMsg($y) as empty-sequence() external;
+declare updating function Narada:routingTableMsg($neighbor, $routes) as empty-sequence() external;
+
+(: Top-level functions :)
+
+declare updating function Narada:depart() as empty-sequence() external;
+declare updating function Narada:die() as empty-sequence() external;
+declare updating function Narada:go() as empty-sequence() external;
+
+

@@ -1,0 +1,142 @@
+\section{Executing a query}
+
+The simplest way to use Galax is by calling the \term{galax-run}
+interpreter from the command line.  This chapter describes the most
+frequently used command-line options.  Chapter~\ref{sec:commandline}
+enumerates all the command-line options.
+
+Before you begin, follow the instructions in
+Section~\ref{sec:src-dist} and run the following query to make sure
+your environment is set-up correctly:
+\begin{verbatim}
+% echo '<two>{ 1+1 }</two>' > test.xq
+% galax-run test.xq
+<two>2</two>
+\end{verbatim}
+
+Galax evaluates expression \verb|<two>{ 1+1 }</two>| in file
+\code{test.xq} and prints the result \verb|<two>2</two>|.
+
+By default, Galax parses and evaluates an XQuery main module, which
+contains both a prolog and an expression.  Sometimes it is useful to
+separate the prolog from an expression, for example, if the same
+prolog is used by multiple expressions.   The \code{-context} option
+specifies a file that contains a query prolog.  
+
+All of the XQuery use cases in \cmd{\$GALAXHOME/usecases} are
+implemented by separating the query prolog from the query expressions.
+Here is how to execute the Parts usecase:
+\begin{alltt}
+% cd $GALAXHOME/usecases 
+% galax-run -context parts_context.xq parts_usecase.xq
+\end{alltt}
+
+The other use cases are executed similarly, for example:
+\begin{alltt}
+% galax-run -context rel_context.xq rel_usecase.xq
+\end{alltt}
+
+\section{Accessing Input}
+
+You can access an input document by calling the
+\code{fn:doc()} function and passing the file name as an argument:
+\begin{alltt}
+% cd $GALAXHOME/usecases 
+% echo 'fn:doc("docs/books.xml")' > doc.xq
+% galax-run doc.xq
+\end{alltt}
+
+You can access an input document by referring to the context item (the
+``.'' dot variable), whose value is the document's content:
+\begin{alltt}
+% echo '.' >dot.xq
+% galax-run -context-item docs/books.xml dot.xq
+\end{alltt}
+
+You can also access an input document by using the \cmd{-doc}
+argument, which binds an external variable to the content of the given
+document file:
+\begin{alltt}
+% echo 'declare variable $x external; $x' > var.xq
+% galax-run -doc x=docs/books.xml var.xq
+\end{alltt}
+
+\section{Controlling Output}
+
+By default, Galax serializes the result of a query in a format that
+reflects the precise data model instance. For example, the result of
+this query is serialized as the literal \code{2}:
+\begin{alltt}
+% echo "document \{ 1+1 \}"> docnode.xq
+% galax-run docnode.xq
+document \{ 2 \}
+\end{alltt}
+
+If you want the output of your query to be as the standard prescribes, 
+then use the \code{-serialize standard} option:
+\begin{alltt}
+% galax-run docnode.xq -serialize standard
+2
+\end{alltt}
+
+\eat{
+If you want the output of your query to be a well-formed XML value,
+then use the \code{-serialize wf} option:
+\begin{alltt}
+% galax-run docnode.xq -serialize wf
+\end{alltt}
+The result of this query is:
+\begin{alltt}
+<?xml version="1.0" encoding="UTF-8"?>
+<glx:result xmlns:glx="http://www.galaxquery.org">2</glx:result>
+\end{alltt}
+}
+
+By default, Galax serializes the result value to standard output.  Use
+the \cmd{-output-xml} option to serialize the result value to an output
+file.
+\begin{alltt}
+% galax-run docnode.xq -serialize standard -output-xml output.xml
+% cat output.xml
+2
+\end{alltt}
+
+\section{Controlling Compilation}
+
+By default, Galax compiles the given query an returns the
+corresponding result. The following options can be set to print the
+query as it progresses through the compilation pipeline .
+
+\begin{alltt}
+  -print-expr [on/off] \emph{Print input expression}
+  -print-normalized-expr [on/off] \emph{Print expression after normalization}
+  -print-rewritten-expr [on/off] \emph{Print expression after rewriting}
+  -print-logical-plan [on/off] \emph{Print logical plan}
+  -print-optimized-plan [on/off] \emph{Print logical plan after optimization}
+  -print-physical-plan [on/off] \emph{Print physical plan}
+\end{alltt}
+
+As the output for the compiled query can be quite large, it is often
+convenient to set the output to verbose using \code{-verbose on},
+which prints headers for each phase. For instance, the following
+command prints the original query, and the optimized logical plan for
+the query.
+
+\begin{alltt}
+% galax-run docnode.xq -verbose on -print-expr on -print-optimized-plan on
+\end{alltt}
+
+\section{Updates and Procedural Extensions}
+
+Galax supports several extensions to XQuery 1.0, notably XML updates
+and a procedural extensions. To enable one of those extensions, you
+must use the corresponding language level option on the command line:
+
+\begin{alltt}
+galax-run -language ultf       (: W3C Update Facility :)
+galax-run -language xquerybang (: XQuery! Language :)
+galax-run -language xqueryp    (: XQueryP Language :)
+\end{alltt}
+
+Some examples of each of the three languages are provided in the
+\verb+$GALAXHOME/examples/extensions+ directory.

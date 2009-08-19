@@ -1,0 +1,228 @@
+=====================
+Issues/Questions/Bugs
+=====================
+
+Requirements for Release 
+------------------------
+1. Installation 
+
+2. Joins
+
+3. Weak Typing
+
+   a. Clean up all calls to check_type_* : check their semantics; make
+      sure whatever subtype checks there are necessary.
+
+   b. Partition subtype checks for selection inference rules from
+      those used to report actual subtyping errors
+
+      NO subtype checks in presence of weak typing
+
+   c. Short circuit rules for types at top of lattice : xs:anyType, 
+      element()* etc. in subtyping_top.ml
+
+   d. Cache constructed NFA in subtyping_top.ml; Also cache results of
+      previous type comparisons. 
+
+   e. Implement the named type hierarchy. 
+
+   f. In rewriting_rules_typing, remove call to intersects_with and
+      replace w/ simpler subtype check. 
+
+4. Streaming performance
+
+Typing
+------
+1. Representation of named type hierarchy
+
+     The named sub-type relationships should be represented by a
+     labeled tree, in which each type is associated with a node and
+     its immediate subtypes are the node's children.   The tree's nodes
+     are labeled with (pre, post) depth-first numbers.  
+     (Just as when this schema is used to label XML nodes), 
+     this will permit fast sub-type comparison and fast simplification
+     of choices of types: Sort all types by preorder, then remove, in
+     order, any nodes whose label is in bounds of the nodes before it
+     in the list.  E.g.,
+
+     (1,4) | (2,2) | (3,3) | (5,7) | (6,6) simplifies to: 
+     (1,4) | (5,7)
+
+     Need to implement Schema_util.least_common_type based on this
+     representation. 
+
+2. simplify_ty is VERY SLOW.  Why?  Need to add in fast
+   subtype-lookups for named types.  See 1. above.
+
+3. Interleave types not supported in subtyping.
+
+4. Changed Subtyping_letter.subname, which did not handle xs_anyType
+   case correctly.  Need to review change with Jerome.
+
+   OK 
+
+5. Subtyping_letter.expand_wildcards: 
+
+   Unsure about how document() type should be handled when expanding
+   wildcards.  Should document() be treated like other complex
+   constructors (e.g., CSeq -> RSeq), which contains a regular
+   expression, or should it be treated like a symbol (e.g., RSym
+   (DocumentType letter)?
+
+   OK 
+
+6. Schema : we don't check subtyping on derived types
+
+Constructors
+------------
+1. In Norm_expr.ml and Streaming_constructors
+
+   (NB: Jerome found following bug: <a>{1}{2}</a>
+    evaluates to <a>1 2</a> but should evaluate to <a>12</a>.
+
+    Run <test-group is-XPath2="false" name="Construct"
+    featureOwner="IBM"> & associated subgroups.
+   )
+
+   The fs:item-sequence-to-node-sequence and
+   fs:item-sequence-to-untypedAtomic are used in definitions of
+   constructors to (1) convert item sequences to appropriate node
+   content and (2) check type of node content. 
+
+   The static semantics of these functions are implemented with
+   special typing rules in Typing_fn.
+
+   The dynamic semantics of these functions are implemented in
+   Streaming_constructors. 
+
+   a. Need to compare implementation of fs:item-sequence-to-untypedAtomic with
+     semantics defined in:
+     http://www.w3.org/TR/xquery/#id-computedAttributes and
+     shared-semantics.html#sec_item_seq_to_untypedAtomic
+
+   b. We don't implement the following as they are all similar to 
+      fs:item-sequence-to-untypedAtomic.  Check for differences.
+
+        7.1.7 The fs:item-sequence-to-untypedAtomic-PI function
+        7.1.8 The fs:item-sequence-to-untypedAtomic-text function
+        7.1.9 The fs:item-sequence-to-untypedAtomic-comment function
+
+   c. The fs:item-sequence-to-untypedAtomic function
+
+       We have two implementations of this function: one on Node
+       values in cs_code_fn and one in Streaming_constructors.  We
+       should only have one implementation in Streaming_constructors. 
+
+       It should be removed like fs:item-seq-to-node-seq after
+       typing. 
+
+2. Why is the can_be_promoted_to_judge in Typing_util so messy?
+
+3. Why is entity reference resolution handled differently in the
+   default_lexer for strings and in the text_lexer?  One delegates to
+   Parser_context.  The other one doesn't. 
+    let entity_ref_text = Parse_context.get_general_entity xquery_parse_context (Finfo.parsing_locinfo ()) entityref in
+
+Incompletenesses/Bugs
+---------------------
+
+1. Rule in FS Static typing rule for fs:item_sequence_to_node_sequence
+   is wrong. In particular, document nodes are permitted in element
+   content.  Here is the corrected rule.
+
+   statEnv |- Type : attribute*, (document|element|text|PI|comment|xs:string|xs:float| ...|xs:NOTATION)*
+   ----------------------------------------------------------------------------------------------------
+   statEnv |- (FS-URI,"item-sequence-to-node-sequence") (Type) : attribute*, (element|text|PI|comment)*
+
+2. Implementation of order by spec is wrong in
+   Cs_code.build_default_tuple_order_by_code.
+
+   All keys should have a least-common type, after promotion, that
+   supports the greater than operator.  This function requires that
+   types all be the same, i.e., it does not supporting promotion.
+
+   [Chris.]
+
+3. [FIXED] Added this missing production for document-node(element-kind-test)
+   to the grammar but it is still not parsing
+   document-node(schema-element(foo:a)) or 
+   document-node(element(foo:a)).
+
+  documentnode_kindtest:
+  | ELEMENTLPAR optelementref RPAR
+      { (ElementTest $2) }
+  | SCHEMAELEMENTLPAR qname RPAR
+      { (SchemaElementTest $2) }
+  | DOCUMENTNODELPAR documentnode_kindtest
+      { DocumentKind (Some ($2)) }
+
+4.  Interleave types :
+
+    We don't support them in Subtyping module yet, but instead of
+    approximating them, I just removed them the one critical place in
+    Typing_step.axis_type_of_judge so I could get typing of axes done.
+
+    Need to add support for interleave types to subtyping. 
+   
+5.  Rewriting_rules_notyping:
+
+     There is still a long-standing problem: the notyping rewrite rules for
+     let-clauses, when applied, trip an infinite-loop bug in the
+     optimization phase.  The problem occurs when there is a let-bound
+     variable that is _never_ used in the dependent expression, e.g, 
+
+       let $x := fn:trace("foo", "bar")
+       return "whatever"
+
+     The correct rewrite rule is: 
+
+       let $x := E1 in E2
+       $x cannot fail and not used in E2 
+       ---------------------------------
+       E2
+
+     But if we leave let-expressions in place that have independent
+     expressions with side effects(i.e., can fail), but the variable
+     is never used, then the optimizer goes into an infinite loop. 
+
+     To trip this bug, uncomment the following lines in
+     rewriting_rules_notyping.ml, recompile, then run the example
+     above. 
+
+(*
+	      let stat_ctxt = get_context rewrite_ctxt in 
+ 	      if not(can_fail stat_ctxt cexpr1) then 
+*)
+ 		match (cfl_clause_list, other_clauses, opt_where, opt_orderby) with
+ 		| ([], [],  None, None) -> ([], ret_expr, true)
+ 		| _ -> (cfl_clause_list, ce, true)
+(*	      else (cfl_clause_list@[cfl_clause], ce, false)   *)
+
+    
+     Need Chris' help w/ this.
+
+6. Unimplemented functions:
+
+    fs:apply-ordering-mode function
+    fn:min/max not implemented for string
+    fn:round-half-to-even  [ DONE by Jerome ]
+
+7. AOEAccessTuple should have one independent sub-expression, which is
+   the input tuple.  Right now, the input tuple is hard-wired into the
+   operator, but should be explicit
+
+   Making this change will make path-analysis cleaner. 
+
+   Requires changes to Optimization module---rewrite rules. 
+
+   [Chris]
+
+8. Path analysis  
+
+   Open question : can we use static typing 
+
+9. Bugs in XQuery test suite:
+
+   o ComputeConComment/Constr-compcomment-doubledash-4 is wrong.  There
+     is no double dash in the corresponding description in
+     XQTSCatalog.xml. 

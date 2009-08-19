@@ -1,0 +1,28 @@
+#! /bin/sh
+#########################################################################
+#                                                                       #
+#                                Galax                                  #
+#                             XQuery Engine                             #
+#                                                                       #
+#   Copyright 2001-2007.                                                #
+#   Distributed only by permission.                                     #
+#                                                                       #
+#########################################################################
+
+# $Id: config.findpath,v 1.2 2007/02/01 22:08:46 simeon Exp $   #
+
+IFS=':'
+for dir in $PATH 
+do
+	if [ -z "$dir" ] 
+	then 
+		dir=.
+	fi
+	if [ -f $dir/$1 ]
+	then
+		echo "$dir/$1"
+		exit 0
+	fi
+done
+exit 1
+

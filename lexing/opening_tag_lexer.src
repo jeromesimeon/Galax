@@ -1,0 +1,168 @@
+(***********************************************************************)
+(*                                                                     *)
+(*                                 GALAX                               *)
+(*                              XQuery Engine                          *)
+(*                                                                     *)
+(*  Copyright 2001-2007.                                               *)
+(*  Distributed only by permission.                                    *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* $Id: opening_tag_lexer.src,v 1.9 2007/02/01 22:08:51 simeon Exp $ *)
+
+(* Module Opening_tag_lexer
+   Description:
+     This module contains the lexer for opening tags.
+*)
+
+{
+
+open Lexing
+
+open Finfo
+open Error
+
+open Xquery_ast      (* XQuery AST *)
+open Parse_xquery   (* tokens definition *)
+
+open Lexing_util     (* lexical state handling *)
+
+}
+
+(*****************************)
+(* Lexer regular expressions *)
+(*****************************)
+
+#insert pxp_lex_defs_*.def
+
+(****************)
+(* Lexing rules *)
+(****************)
+
+rule opening_tag lh = parse
+  | whitespaceplus   (* Recognizes whitespace so the parser can do something about it *)
+      { S }
+  | qname       (* Attribute or element name *)
+      { let var_s = (lexeme lexbuf) in
+        QNAME (Namespace_names.uqname_element_of_string var_s) }
+  | "="         (* Attribute equals *)
+      { EQUALS }
+  | "\""        (* Attribute content *)
+      { push_attribute_text_double lh; attribute_text lh lexbuf }
+  | "'"         (* Attribute content *)
+      { push_attribute_text_single lh; attribute_text lh lexbuf }
+  | "/>"        (* Closing an empty element *)
+      { pop_state lh; REMPTYELEMENT }
+  | ">"         (* Closing an opening tag *)
+      { pop_state lh; push_text lh; ROPENINGTAG }
+  | _
+      { raise (Query (Lexing(lexing_locinfo lexbuf, ("Illegal character '" ^ (lexeme lexbuf) ^ "' in opening tag")))) }
+
+and attribute_text lh = parse
+  | "''"  { match attribute_quote_kind lh with
+            | SingleQuoteKind ->
+              begin
+                add_char_to_string lh '\'';
+                attribute_text lh lexbuf
+              end
+            | _ ->
+              begin
+                add_char_to_string lh '\'';
+                add_char_to_string lh '\'';
+                attribute_text lh lexbuf
+              end }
+  | '\''  { match attribute_quote_kind lh with
+            | SingleQuoteKind ->
+              let text_content = get_string lh in
+              begin
+                pop_state lh;
+	        ATTRIBUTETEXT text_content
+              end
+            | _ ->
+              begin
+                add_char_to_string lh (lexeme_char lexbuf 0);
+                attribute_text lh lexbuf
+              end }
+  | "\"\""  { match attribute_quote_kind lh with
+            | DoubleQuoteKind ->
+              begin
+                add_char_to_string lh '"';
+                attribute_text lh lexbuf
+              end
+            | _ ->
+              begin
+                add_char_to_string lh '"';
+                add_char_to_string lh '"';
+                attribute_text lh lexbuf
+              end }
+  | '"'   { match attribute_quote_kind lh with
+            | DoubleQuoteKind ->
+              let text_content = get_string lh in
+              begin
+                pop_state lh;
+	        ATTRIBUTETEXT text_content
+              end
+            | _ ->
+              begin
+                add_char_to_string lh (lexeme_char lexbuf 0);
+                attribute_text lh lexbuf
+              end }
+  | '{'
+      { match get_parsing_kind lh with
+        | XPath_2_0 ->
+	    raise (Query (Prototype ("XPath 2.0 parsing not supported yet.")))
+	| XQuery_1_0 ->
+	    let text_content = get_string lh in
+            begin
+	      push_default lh;
+              ATTRIBUTETEXTLCURLY text_content
+	    end }
+  | '}'
+      { match get_parsing_kind lh with
+        | XPath_2_0 ->
+	    raise (Query (Prototype ("XPath 2.0 parsing not supported yet.")))
+	| XQuery_1_0 ->
+	    raise (Query (Lexing(lexing_locinfo lexbuf, "Use of the '}' character should be escaped in attribute content"))) }
+      (* In XQuery, you need to escape { and } into {{ and }} *)
+  | "{{"
+      { match get_parsing_kind lh with
+        | XPath_2_0 ->
+	    raise (Query (Prototype ("XPath 2.0 parsing not supported yet.")))
+	| XQuery_1_0 ->
+	    add_char_to_string lh '{'; attribute_text lh lexbuf }
+  | "}}"
+      { match get_parsing_kind lh with
+        | XPath_2_0 ->
+	    raise (Query (Prototype ("XPath 2.0 parsing not supported yet.")))
+	| XQuery_1_0 ->
+	    add_char_to_string lh '}'; attribute_text lh lexbuf }
+  | '<'
+      { raise (Query (Lexing(lexing_locinfo lexbuf, "Use of the '<' character not allowed in attribute content"))) }
+  | "&#" ascii_digit+ ";"
+      { let text_content = get_string lh in
+        let l = (lexeme lexbuf) in
+        let charref = get_char_ref l in
+	reset_string lh;
+	TEXTCHARREF (text_content,int_of_string charref) }
+  | "&#x" ascii_hexdigit+ ";"
+      { let text_content = get_string lh in
+        let l = (lexeme lexbuf) in
+        let hexcharref = get_hexchar_ref l in
+        reset_string lh;
+	TEXTCHARREF (text_content,int_of_string ("0x" ^ hexcharref)) }
+  | "&" name ";"
+      { let text_content = get_string lh in
+        let l = (lexeme lexbuf) in
+        let entityref = get_entity_ref l in
+        reset_string lh;
+	TEXTENTITYREF (text_content,entityref) }
+  | "&" 
+      { raise (Query (Lexing(lexing_locinfo lexbuf, "The use of '&' is not allowed as stand-alone character"))) }
+  | eof
+      { EOF
+         (* raise (Query (Lexing(lexing_locinfo lexbuf, "Attribute content not terminated"))) *) }
+  | character_except_quot
+      { add_string_to_string lh (lexeme lexbuf); attribute_text lh lexbuf }
+  | _
+      { raise (Query (Lexing(lexing_locinfo lexbuf, ("Illegal character '" ^ (lexeme lexbuf) ^ "' in attribute content")))) }
+

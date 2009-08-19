@@ -1,0 +1,19 @@
+5 October 2006
+
+To run server, in examples/dxq/test, run:
+
+   galaxd -s .
+
+This will start three servers:
+
+     galaxd: starting server for a on port 3000
+     galaxd: starting server for b on port 3001
+     galaxd: starting server for pathserver on port 3002
+
+To run regression tests, in examples/dxq/test/client, run:
+
+     galax-run test.xq
+
+Results should all be "true()" with exception of last example, which
+should (intentionally) throw an error.
+

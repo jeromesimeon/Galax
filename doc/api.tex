@@ -1,0 +1,566 @@
+
+% \textbf{\emph{NOTE: The C and Java APIs are disabled in 1.0.}}
+
+The quickest way to learn how to use the APIs is as follows:
+
+\begin{enumerate}
+\item  Read Section~\ref{sec:apisupport} ``Galax API Support''.
+\item  Read Section~\ref{sec:quickstart} ``Quick Start to the Galax APIs''.
+\item  Read the example programs in the \code{galax/examples/} directory
+  while reading  Section~\ref{sec:quickstart}. 
+\end{enumerate}
+
+Every Galax API has functions for:
+\begin{itemize}
+\item Converting values in the XQuery data model to/from values in
+    the native programming language (O'Caml, C or Java);
+
+\item Accessing values in XQuery data model from the native
+  programming language;
+
+\item Loading XML documents into the XQuery data model;
+
+\item Creating and modifying the query evaluation environment (also
+    known as the \term{dynamic context});
+
+\item Evaluating queries given a dynamic context; and 
+
+\item Serializing XQuery data model values as XML documents.
+\end{itemize}
+This chapter describes how to use each kind of functions. 
+
+\section{Galax API Functionality}
+\label{sec:apisupport}
+
+  Galax currently supports application-program interfaces for the
+  O'Caml, C, and Java programming languages. 
+
+  All APIs support the same set of functions; only their names differ
+  in each language API.  This file describes the API functions.  The
+  interfaces for each language are defined in:
+
+\begin{description}
+\item[O'Caml] \cmd{\$GALAXHOME/lib/caml/galax.mli}
+\item[C]      \cmd{\$GALAXHOME/lib/c/\{galax,galax\_util,galax\_types,itemlist\}.h}
+\item[Java]   \cmd{\$GALAXHOME/lib/java/doc/*.html}
+\end{description}
+
+  If you use the C API, see Section~\ref{sec:cmemory} ``Memory Management in C API''.
+
+  Example programs that use these APIs are in:
+  
+\begin{description}
+\item[O'Caml] \cmd{\$GALAXHOME/examples/caml\_api}
+\item[C]      \cmd{\$GALAXHOME/examples/c\_api}
+\item[Java]   \cmd{\$GALAXHOME/examples/java\_api}
+\end{description}
+
+To try out the API programs, edit examples/Makefile.config to set up your environment, then
+execute: \cmd{cd \$GALAXHOME/examples; make all}. 
+
+This will compile and run the examples.  Each directory contains a "test"
+program that exercises every function in the API and an "example"
+programs that illustrates some simple uses of the API.
+
+  The Galax query engine is implemented in O'Caml.  This means that
+  values in the native language (C or Java) are converted into
+  values in the XQuery data model (which are represented are by O'Caml
+  objects) before sending them to the Galax engine.  The APIs provide
+  functions for converting between native-language values and XQuery
+  data-model values.
+
+\subsection{Linking and Running}
+
+  There are two kinds of Galax libraries: byte code and native code. 
+  The C and Java libraries require native code libraries, and Java
+  requires dynamically linked libraries.  Here are the libraries:
+
+O'Caml libraries in \cmd{\$GALAXHOME/lib/caml}:
+\begin{description}
+\item[galax.cma]      Byte code
+\item[galax.cmxa]     Native code
+\end{description}
+
+
+C libraries in \cmd{\$GALAXHOME/lib/c}:
+\begin{description}
+\item[libgalaxopt.a]   Native code, statically linked
+\item[libgalaxopt.so]  Native code, dynamically linked
+\end{description}
+
+
+Java libraries in \cmd{\$GALAXHOME/lib/java}:
+\begin{description}
+\item[libglxoptj.so]  Native code, dynamically linked 
+\end{description}
+
+  Note that Java applications MUST link with a dynamically linked
+  library and that C applications MAY link with a dynamically linked
+  library.  
+
+  For Linux users, set \cmd{LD\_LIBRARY\_PATH} to \cmd{\$GALAXHOME/lib/c:\$GALAXHOME/lib/java}.
+
+  The Makefiles in \cmd{examples/c\_api} and \cmd{examples/java\_api} show how to
+  compile, link, and run applications that use the C and Java APIs.
+
+\section{Quick Start to using the APIs}
+\label{sec:quickstart}
+
+  The simplest API functions allow you to evaluate an XQuery statement
+  in a string.  If the statement is an update, these functions return
+  the empty list, otherwise if the statement is an Xquery expression,
+  these functions return a list of XML values.
+
+The example programs in
+\code{\$(GALAXHOME)/examples/caml\_api/example.ml}, 
+\code{\$(GALAXHOME)/examples/c\_api/example.c},
+\code{\$(GALAXHOME)/examples/java\_api/Example.java} 
+illustrate how to use these query evaluation functions. 
+
+Galax accepts input (documents and queries) from files, string buffers, channels and HTTP, and
+emits output (XML values) in files, string buffers, channels, and formatters. See
+\code{\$(GALAXHOME)/lib/caml/galax\_io.mli}. 
+
+All the evaluation functions require a processing context.  The
+default processing context is constructed by calling the function \code{Processing\_context.default\_processing\_context()}:
+\begin{alltt}
+  val default_processing_context : unit -> processing_context
+\end{alltt}
+
+There are three ways to evaluate an XQuery statement:
+\begin{alltt}
+    val eval\_statement\_with\_context\_item : 
+      Processing\_context.processing\_context -> Galax\_io.input\_spec -> 
+        Galax\_io.input\_spec -> item list
+\end{alltt}
+
+    Bind the context item (the XPath "." expression) to the XML
+    document in the resource named by the second argument, and
+    evaluate the XQuery statement in the third argument.
+
+\begin{alltt}
+    val eval\_statement\_with\_context\_item\_as\_xml : 
+      Processing\_context.processing\_context -> item -> 
+        Galax\_io.input\_spec -> item list
+\end{alltt}
+
+    Bind the context item (the XPath "." expression) to the XML value
+    in the second argument and evaluate the XQuery statement in
+    the third argument. 
+  
+\begin{alltt}
+  val eval\_statement\_with\_variables\_as\_xml : 
+    Processing\_context.processing\_context -> 
+      (string * item list) list -> 
+        Galax\_io.input\_spec -> item list
+\end{alltt}
+
+    The second argument is a list of variable name and XML value pairs.
+    Bind each variable to the corresponding XML value and evaluate the
+    XQuery statement in the third argument.
+
+  Sometimes you need more control over query evaluation, because, for
+  example, you want to load XQuery libraries and/or main modules and
+  evaluate statements incrementally.    The following two sections
+  describe the API functions that provide finer-grained control.
+
+\section{XQuery Data Model}
+
+\subsection{Types and Constructors}
+
+  In the XQuery data model, a value is a \term{sequence} (or list) of
+  \term{items}.  An item is either an \term{node} or an \term{atomic value}.  An
+  node is an \term{element}, \term{attribute}, \term{text}, \term{comment}, or
+  \term{processing-instruction}.  An \term{atomic value} is one of the nineteen
+  XML Schema data types plus the XQuery type \term{xs:untypedAtomic}.
+
+  The Galax APIs provide constructors for the following data model
+  values: 
+\begin{itemize}
+\item lists/sequences of items
+\item element, attribute, text, comment, and processing instruction
+    nodes
+\item xs:string, xs:boolean, xs:int, xs:integer, xs:decimal, xs:float,
+    xs:double, xs:anyURI, xs:QName, xs:dateTime, xs:date, xs:time,
+  xs:yearMonthDuration, xs:dayTimeDuration, and xs:untypedAtomic.
+\end{itemize}
+
+\subsubsection{Atomic values}
+  The constructor functions for atomic values take values in the
+  native language and return atomic values in the XQuery data
+  model.  For example, the O'Caml constructor:
+\begin{alltt}
+    val atomicFloat   : float -> atomicFloat
+\end{alltt}
+  takes an O'Caml float value (as defined in the Datatypes module) and
+  returns a float in the XQuery data model.  Similarly, the C
+  constructor: 
+
+\begin{alltt}
+    extern galax\_err galax\_atomicDecimal(int i, atomicDecimal *decimal);
+\end{alltt}
+  takes a C integer value and returns a decimal in the XQuery data
+  model. 
+
+\subsubsection{Nodes}
+  The constructor functions for nodes typically take other data model
+  values as arguments.  For example, the O'Caml constructor for
+  elements: 
+\begin{alltt}
+    val elementNode : atomicQName * attribute list * node list * atomicQName -> element
+\end{alltt}
+  takes a QName value, a list of attribute nodes, a list of children
+  nodes, and the QName of the element's type.  Simliarly, the C
+  constructor for text nodes takes an XQuery string value:
+\begin{alltt}
+    extern galax\_err galax\_textNode(atomicString str, text *);
+\end{alltt}
+
+\subsubsection{Sequences}
+  The constructor functions for sequences are language specific.  In
+  O'Caml, the sequence constructor is simply the O'Caml list
+  constructor.  In C, the sequence constructor is defined in
+  galapi/itemlist.h as: 
+\begin{alltt}
+    extern itemlist itemlist\_cons(item i, itemlist cdr);
+\end{alltt}
+
+\subsection{Using XQuery data model values}
+  The APIs are written in an "object-oriented" style, meaning that any
+  use of a type in a function signature denotes any value of that type
+  or a value derived from that type.  For example, the function
+  \term{Dm\_functions.string\_of\_atomicvalue} takes any atomic value (i.e., xs\_string,
+  xs\_boolean, xs\_int, xs\_float, etc.) and returns an O'Caml string
+  value:
+\begin{alltt}
+    val string\_of\_atomicValue  : atomicValue -> string
+\end{alltt}
+
+  Similarly, the function \code{galax\_parent} in the C API takes any node value (i.e., an
+  element, attribute, text, comment, or processing instruction node)
+  and returns a list of nodes:
+\begin{alltt}
+    extern galax\_err galax\_parent(node n, node\_list *);
+\end{alltt}
+
+\subsection{Accessors}
+  The accessor functions take XQuery values and return constituent
+  parts of the value.  For example, the \code{children} accessor takes an
+  element node and returns the sequence of children nodes contained in
+  that element: 
+\begin{alltt}
+    val children : node -> node list      (* O'Caml *)
+    extern galax\_err galax\_children(node n, node\_list *); /* C */
+\end{alltt}
+
+  The XQuery data model accessors are described in detail in 
+  {\datamodelurl}. 
+
+\subsection{Loading documents}
+  Galax provides the \code{load\_document} function for loading documents.
+
+  The \code{load\_document} function takes the name of an XML file in the
+  local file system and returns a sequence of nodes that are the
+  top-level nodes in the document (this may include zero or more
+  comments and processing instructions and zero or one element node.)
+
+\begin{alltt}
+  val load\_document : Processing\_context.processing\_context -> 
+    Galax\_io.input\_spec -> node list (* O'Caml *)
+\end{alltt}
+
+\begin{alltt}
+  extern galax\_err galax\_load\_document(char* filename, node\_list *);
+  extern galax\_err galax\_load\_document\_from\_string(char* string, node\_list *); 
+\end{alltt}
+
+\section{Query Evaluation}
+
+  The general model for evaluating an XQuery expression or statement
+  proceeds as follows (each function is described in detail below):
+\begin{enumerate}
+\item Create default processing context:
+
+\cmd{let proc\_ctxt = default\_processing\_context() in}
+
+\item Load Galax's standard library:
+
+\cmd{let mod\_ctxt = load\_standard\_library(proc\_ctxt) in}
+
+\item (Optionally) load any imported library modules:
+
+\cmd{let library\_input = File\_Input "some-xquery-library.xq" in}
+\cmd{let mod\_ctxt = import\_library\_module pc mod\_ctxt library\_input in}
+
+\item (Optionally) load one main XQuery module:
+
+\cmd{let (mod\_ctxt, stmts) = import\_main\_module mod\_ctxt (File\_Input "some-main-module.xq") in}
+
+\item (Optionally) initialize the context item and/or global variables
+     defined in application (i.e., external environment):
+
+\cmd{let ext\_ctxt = build\_external\_context proc\_ctxt opt\_context\_item var\_value\_list in}
+\cmd{let mod\_ctxt = add\_external\_context mod\_ctxt ext\_ctxt in}
+
+\item Evaluate all global variables in module context:
+
+\cmd{let mod\_ctxt = eval\_global\_variables mod\_ctxt}
+
+     ** NB: This step is necessary if the module contains *any*
+       global variables, whether defined in the XQuery module or
+       defined externally by the application. **
+
+\item Finally, evaluate a statement from the main module or one defined
+     in the application or call some XQuery function defined in the
+     module context:
+
+     \cmd{let result = eval\_statement proc\_ctxt mod\_ctxt stmt in}
+
+     \cmd{let result = eval\_statement\_from\_io proc\_ctxt mod\_ctxt
+     (Buffer\_Input some-XQuery-statement) in}
+
+     \cmd{let result = eval\_query\_function proc\_ctxt  mod\_ctxt
+     "some-function" argument-values in}
+\end{enumerate}
+
+\subsection{Module context}
+Every query is evaluated in a \term{module context}, which includes:
+\begin{itemize}
+\item the  built-in types, namespaces, and functions; 
+\item the user-defined types, namespaces, and functions specified in
+     any imported library modules; and
+\item any additional context defined by the application (e.g., the values of
+     the context item and any global variables).  
+\end{itemize}
+
+   The functions for creating a module context include:
+\begin{alltt}
+   val default\_processing\_context : unit -> processing\_context
+\end{alltt}
+
+      The default processing context, which just contains flags for
+      controlling debugging, printing, and the processing phases.  You
+      can change the default processing context yourself if you want
+      to print out debugging info.
+
+\begin{alltt}
+   val load\_standard\_library : processing\_context -> module\_context
+\end{alltt}
+      Load the standard Galax library, which contains the built-in
+      types, namespaces, and functions.
+
+\begin{alltt}
+val import\_library\_module : processing\_context -> 
+  module\_context -> input\_spec -> module\_context
+\end{alltt}
+
+      If you need to import other library modules, this function
+      returns the module\_context argument extended with the module
+      in the second argument.
+
+\begin{alltt}
+val import\_main\_module    : processing\_context -> 
+  module\_context -> input\_spec -> 
+    module\_context * (Xquery\_ast.cstatement list)
+\end{alltt}
+      If you want to import a main module defined in a file, this
+      function returns the module\_context argument extended with the
+      main module in the second argument and a list of
+      statements to evaluate.
+
+   The functions for creating an external context (context item and
+   global variable values):
+
+\begin{alltt}
+val build\_external\_context : processing\_context -> (item option) ->
+  (atomicDayTimeDuration option) -> (string * item list) list ->  external\_context
+\end{alltt}
+
+     The external context includes an optional value for the context
+     item (known as "."), the (optional) local timezone, and a list of
+     variable name, item-list value pairs.
+
+\begin{alltt}
+val add\_external\_context : module\_context -> external\_context -> module\_context
+\end{alltt}
+This function extends the given module context with the external context.
+
+\begin{alltt}
+val eval\_global\_variables : processing\_context -> xquery\_module -> xquery\_module 
+\end{alltt}
+      This function evaluates the expressions for all (possibly
+      mutually dependent) global variables.  It must be called before
+      calling the eval\_* functions otherwise you will get an
+      "Undefined variable" error at evaluation time.
+
+   Analogous functions are defined in the C and Java APIs.
+\subsection{Evaluating queries/expressions}
+
+  The APIs support three functions for evaluating a query:
+  \code{eval\_statement\_from\_io}, \code{eval\_statement}, and \code{eval\_query\_function}.
+
+  \note{If the module context contains (possibly mutually
+       dependent) global variables, the function \code{eval\_global\_variables} must be called before
+       calling the eval\_* functions otherwise you will get an
+       "Undefined variable" error at evaluation time.}
+
+\begin{alltt}
+val eval\_statement\_from\_io : processing\_context -> xquery\_module -> Galax\_io.input\_spec -> item list
+\end{alltt}
+       Given the module context, evaluates the XQuery statement  in
+       the third argument.  If the statement is an XQuery expression,
+       returns Some (item list); otherwise if the statement is an
+       XQuery update, returns None (because update statements have
+       side effects on the data model store, but do not return values).
+
+\begin{alltt}
+val eval\_statement 	   : processing\_context -> xquery\_module -> xquery\_statement -> item list
+\end{alltt}
+       Given the module context, evaluates the XQuery statement 
+
+\begin{alltt}
+val eval\_query\_function  : processing\_context -> xquery\_module -> string -> item list list -> item list
+\end{alltt}
+       Given the module context, evaluates the function with name in the
+       string argument applied to the list of item-list arguments.
+       \note{Each actual function argument is bound to one item list.}
+
+   Analogous functions are defined in the C and Java APIs.
+
+\subsection{Serializing XQuery data model values}
+
+  Once an application program has a handle on the result of evaluating
+  a query, it can either use the accessor functions in the API or it
+  can serialize the result value into an XML document.  There are
+  three serialization functions: \code{serialize\_to\_string},
+  \code{serialize\_to\_output\_channel} and \code{serialize\_to\_file}. 
+
+\begin{alltt}
+val serialize  : processing\_context -> Galax\_io.output\_spec -> item list -> unit
+\end{alltt}
+    Serialize an XML value to the given galax output. 
+
+\begin{alltt}
+    val serialize\_to\_string : processing\_context -> item list -> string
+\end{alltt}
+Serializes an XML value to a string.
+
+   Analogous functions are defined in the C and Java APIs.
+
+\section{C API Specifics}
+
+\subsection{Memory Management}
+\label{sec:cmemory}
+  The Galax query engine is implemented in O'Caml.  This means that
+  values in the native language (C or Java) are converted into
+  values in the XQuery data model (which represented are by O'Caml
+  objects) before sending them to the Galax engine.  Similarly, the
+  values returned from the Galax engine are also O'Caml values -- the
+  native language values are "opaque handles" to the O'Caml values.
+
+  All O'Caml values live in the O'Caml memory heap and are therefore
+  managed by the O'Caml garbage collector.  The C API guarantees that
+  any items returned from Galax to a C application will not be
+  de-allocated by the O'Caml garbage collector, unless the C
+  appliation explicitly frees those items, indicating that they are no
+  longer accessible in the C appliation.  The C API provides two
+  functions in galapi/itemlist.h for freeing XQuery item values: 
+  
+\begin{alltt}
+extern void item\_free(item i);
+\end{alltt}
+      Frees one XQuery item value.
+ 
+\begin{alltt}
+extern void itemlist\_free(itemlist il);
+\end{alltt}
+      Frees every XQuery item value in the given item list.
+  
+\subsection{Exceptions}
+  The Galax query engine may raise an exception in O'Caml, which must
+  be conveyed to the C application.  Every function in the C API
+  returns an integer error value : 
+\begin{itemize}
+\item     0 if no exception was raised or
+\item    -1 if an exception was raised.
+\end{itemize}
+
+  The global variable galax\_error\_string contains the string value of
+  the exception raised in Galax.  In future APIs, we will provide a
+  better mapping between error codes and Galax exceptions
+
+\section{Java API Specifics}
+
+\subsection{General Info}
+
+  The Galax query engine is implemented in O'Caml.  This means that
+  values in the native language (C or Java) are converted into values
+  in the XQuery data model (which represented are by O'Caml objects)
+  before sending them to the Galax engine.
+
+  The Java API uses JNI to call the C API, which in turn calls the
+  O'Caml API (it's not as horrible as it sounds).  
+
+  There is one class for each of the built-in XML Schema types
+  supported by Galax and one class for each kind of node:
+
+\begin{tabular}{lll}
+    Atomic	 &  Node  &                  Item\\
+    xsAnyURI     &  Attribute&\\
+    xsBoolean    &  Comment\\
+    xsDecimal    &  Element		\\
+    xsDouble     &  ProcessingInstruction\\
+    xsFloat      &  Text                 \\
+    xsInt\\
+    xsInteger\\
+    xsQName\\
+    xsString\\
+    xsUntyped\\
+\end{tabular}
+
+There is one class for each kind of sequence:
+\begin{itemize}
+\item    ItemList
+\item    AtomicList
+\item    NodeList		    
+\item    AttributeList    
+\end{itemize}
+
+There is one class for each kind of context used by Galax:
+\begin{itemize}
+\item    ExternalContext  
+\item    ModuleContext	    
+\item    ProcessingContext	    
+\item    QueryContext	    
+\end{itemize}
+
+Finally, the procedures for loading documents, constructing new
+contexts and running queries are in the \cmd{Galax} class.
+
+\subsection{Exceptions}
+
+  All Galax Java API functions can raise the exception class
+  GalapiException, which must be handled by the Java application.
+
+\subsection{Memory Management}
+
+  All Java-C-O'Caml memory management is handled automatically in the
+  Java API.
+
+\section{Operation-System Notes}
+
+  Currently, Galax is not re-entrant, which means multi-threaded
+  applications cannot create multiple, independent instances of the
+  Galax query engine to evaluate queries. 
+
+
+\subsection{Windows}
+\label{sec:api-notes-mingw}
+
+The C API library \texttt{libgalaxopt.a,so} does not link properly
+under MinGW.  A user reported that if you have the source
+distribution, you can link directly with the object files in
+\texttt{galapi/c\_api/*.o} and adding the library \texttt{-lasmrun} on
+the command line works.
+
+\eat{The C API seemed somewhat broken-- libgalaxopt.a contains libasmrun.a;objdump can't interpret libasmrun.a and linking to libgalaxopt.a reports thesymbols in libasmrun.a as unresolved; including libasmrun.a reports the Camlbootstrap symbols (i.e. from -output-obj in galax_wrap_opt.o inlibgalaxopt.a) as unresolved, etc.I'm not blocked by this moving forward-- linking directly togalapi/c_api/*.o with -lasmrun seems to work fine for me.}

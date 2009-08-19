@@ -1,0 +1,415 @@
+\section{Galax 1.0 (March 2008)}
+
+Galax version 1.0 implements the XQuery 1.0 Recommendation from
+\xqueryrec\ (\xqueryurl) and the XQuery Update Facility 1.0 from
+\ultfwd\ (\ultfurl).  It also implements XQueryP, an imperative
+scripting language that extends XQuery with updates with mutable
+variables, while loops, and sequential expressions (\xqueryp).
+
+\begin{itemize}
+\item Galax 1.0 must be built with O'Caml 3.10
+\item Implementation of the latest XQuery Update Facility 1.0
+(\ultfurl), including static typing.
+\item Improved implementation of XQueryP.
+\begin{itemize}
+      \item Re-implementation of while loops.
+      \item Fixed issues with scoping.
+\end{itemize}
+\item Improved support for modules.
+\begin{itemize}
+      \item Properly implemented nested imports.
+      \item Added support for module interfaces.
+\item Support for XQueryX trivial embedding.
+\item Bug fixes:
+\begin{itemize}
+      \item Fixed problems with support for in-scope namespaces.
+      \item Fixed problems with checking of cyclic variable declarations.
+      \item Fixed several problems with the parser, using wrong lexical states inside constructors.
+      \item Small bug fixes in support for the prolog.
+\end{itemize}
+\item Conformance results on XQTS 1.0.2:
+\begin{tabular}{lrrrr}
+  Feature & Pass & Fail & Total & Percent\\
+  Minimal Conformance      &       14555 & 69 & 14637 & (99.4\%)
+  Optional Features \\
+    Static Typing Feature   &      46    & 0   & 46 \\
+    Full Axis Feature        &     130  & 0   & 130\\
+    Module Feature            &    32    & 0   & 32\\
+\end{tabular}
+\end{itemize}
+\end{itemize}
+
+\section{Galax 0.7.2 (February 2007)}
+
+Galax version 0.7.2 is a minor release, and should be considered as a
+beta release. Galax 0.7.2 implements the XQuery 1.0 Recommendation
+from \xqueryrec.
+
+This is a development release.  Notably static typing and
+some of the new compiler optimizations are not fully tested.
+
+\begin{itemize}
+\item Compiler:
+  \begin{itemize}
+  \item We're still working on Join detection...A never-ending saga.
+  \end{itemize}
+
+\item Current testing results on XQTS 1.0.2:
+\begin{tabular}{lrrrr}
+  Feature & Galax Pass & Fail & Total & Percent\\
+  Minimal Conformance	 &         14514 & 110 & 14637 & (99.1\%) \\
+  Optional Features & \\
+    Schema Import Feature&	  0   	& 0   & 174\\
+    Schema Validation Feature&	  0   	& 0   & 25\\
+    Static Typing Feature	&  46  	& 0   & 46\\
+    Full Axis Feature	 	&  130 	& 0   & 130\\
+    Module Feature	 	&  0 	& 0   & 32\\
+    Trivial XML Embedding Feature &0 	& 0   & 4\\
+\end{tabular}
+\end{itemize}
+
+\section{Galax 0.6.8 (August 2006)}
+
+Galax version 0.6.8 is a minor release, and should be considered as a
+beta release. Galax 0.6.8 implements the XQuery 1.0 candidate
+recommendation working drafts from \xqueryversion.
+
+This is a development source-only release.  Notably static typing and
+some of the new compiler optimizations are not fully tested.
+
+\begin{itemize}
+\item Language: 
+  \begin{itemize}
+  \item More bug fixes to align with the \xqueryversion CR working
+    drafts.
+  \item Support for the XQuery! language is fixed (was broken in the
+    previous release).
+  \item Support for the XML update facility ({\ultfurl}).
+  \item Support for the XQueryP extension to XQuery ({\xqueryp}).
+  \end{itemize}
+\item Compiler:
+  \begin{itemize}
+  \item Join detection is back! Some bug fixes and improvements to the
+    robustness of the optimizer in the presence of rewritings.
+  \end{itemize}
+\end{itemize}
+
+\section{Galax 0.6.5 (May 2006)}
+
+Galax version 0.6.5 is a major release, and should be considered as an
+alpha release. Galax 0.6.5 implements the XQuery 1.0 candidate
+recommendation working drafts from \xqueryversion.
+
+This is a development source-only release.  Notably static typing and
+some of the new compiler optimizations are not fully tested.
+
+\begin{itemize}
+\item Language: 
+  \begin{itemize}
+  \item Alignment with the \xqueryversion CR working drafts. 
+  \item Support for XML updates based on the XQuery! language [Alpha]   
+  (See {\xquerybangurl}). 
+  \item  Support for both strong and weak typing. [Alpha]. 
+  \item Complete implementation of XQuery 1.0 Functions and Operators,
+    notably full support for date and time, URI, and QName operations.
+  \item Countless bug fixes...
+  \end{itemize}
+\item Environment:
+  \begin{itemize}
+  \item New configure script for automated configuration, compilation,
+  and installation.  
+  \item Galax is now a GODI package({\godiurl}).
+  \item Added test harness for the W3C XQuery test-suite.
+  Galax passes \textbf{\galaxpassestests} out of \textbf{\galaxtotaltests} tests on version
+  \textbf{\xquerytestsuiteversion} of the XQuery 1.0 Test Suite.  The test
+  suite contains a total of \textbf{\totaltests} tests. 
+  \end{itemize}
+\item Compiler:
+  \begin{itemize}
+  \item Support for a variety of physical algorithms for evaluating
+  path expressions, including twig joins, staircase joins, and
+  one-pass evaluation over XML token streams. [Alpha]
+  \item Known problems:  Support for hash/sort joins is temporarily disabled.
+  \end{itemize}
+\end{itemize}
+
+\section{Galax 0.5.0 (February 2005)}
+
+Galax version 0.5 is a major release, and should be considered as an
+alpha release. Galax 0.5.0 implements the XQuery 1.0 working draft
+published in October 2004.
+
+Among the most noticeable changes:
+
+\begin{itemize}
+\item Alignment with the XQuery 1.0, October 2004 working drafts.
+\item A much faster XML parser, based on Gerd Stolpmann's PXP, fixing
+  many XML 1.0 conformance bugs as well.
+\item A completely new compiler, including a query optimizer that
+  supports join optimizations and should deliver much better
+  performances than the previous versions of Galax.
+\item ``Document projection'' is finally part of the main release,
+  allowing to process queries over large documents. (see the
+  galax-project command-line tool).
+\item Improved support for sorting by document order and duplicate
+  removal in the compiler.
+\item The Windows port is back, based on the MinGW compilers.
+\item New port for MacOS X.
+\end{itemize}
+
+Have contributed to this release:
+  Mary Fern\'andez, Nicola Onose, Philippe Michiels, Christopher R\'e,
+  J\'er\^ome Sim\'eon, Michael Stark.
+
+\section{Galax 0.4.0 (August 2004)}
+
+Galax version 0.4 is a major release, and should be considered as an
+alpha release. Galax 0.4.0 implements the latest XQuery 1.0 working
+draft published in July 2004. It contains many improvements from the
+previous version, as well as new features.
+
+Among the most noticeable improvements and new features: Galax now
+comes bundled with Jungle, a simple native XML store. It now supports
+XML Schema and "named typing". Finally, it contains some prototype
+support for Web services.
+
+Have contributed to this release:
+  Mary Fern\'andez, Vladimir Gapeyev, Nicola Onose, Philippe Michiels,
+  Doug Petkanics, Christopher R\'e, J\'er\^ome Sim\'eon, Avinash Vyas.
+
+Main changes over the previous version are listed below.
+
+Language changes:
+\begin{itemize}
+\item Support for the latest XQuery 1.0's specifications (July 2004
+  Working Drafts).
+\item Support for XML Schema 1.0: schema import, validate, named typing,
+  sequence types and type tests.
+\item Preliminary support for modules. Import module statements without
+  recursion are supported. Details of the semantics will be fixed when
+  issues around modules are addressed by the XML Query working group.
+\item Support for dates and time.
+\item Support for string regular expressions.
+\end{itemize}
+
+Environment changes:
+\begin{itemize}
+\item A new set of command-line tools replace the old ones:
+    galax-run:       The XQuery execution engine
+    galax-parse:     XML parsing and XML Schema validation
+    galax-project:   To apply XML document projection
+    galax-mapschema: To map XML Schema to the XQuery type system
+    ocaml-galax:     The OCaml interpretor bundled with Galax
+\item New command-line tools for Web services:
+    galax-mapwsdl:   To map WSDL interfaces to an XQuery module
+    xquery2soap:     To deploy an XQuery module as an apache Web
+                     service.
+\item Revisions to the Caml, C, C++ and Java APIs.
+\end{itemize}
+
+Architectural changes:
+\begin{itemize}
+\item A new extensible data model, making Galax easy to use over 'virtual'
+  XML documents.
+\item A completely new query compiler and evaluation engine that supports
+  an hybrid SAX-tuple-tree algebra. The new compilation infrastructure
+  should already show improved performances, although it performs
+  little optimizations yet. Expect more work in this area in future
+  versions of the system
+\end{itemize}
+
+New features:
+\begin{itemize}
+\item Alpha support for native XML storage with Jungle (on top of
+  Sleepycat's BerkeleyDB).
+\item Alpha support for calling Web services from within XQuery.
+\end{itemize}
+
+Portability:
+\begin{itemize}
+\item Added Makefile for Mac OSX in config/Makefile.osx.
+\item Fixed numerous problems with Win32.
+\end{itemize}
+
+
+\section{Galax 0.3.5 (December 2003)}
+
+This is a bug-fix release:
+\begin{itemize}
+\item Now compiles with OCaml 3.07.
+\item Numerous bug fixes to the XML updates support.
+\item Added glx:document-save() function allowing to save the result of a
+query (notably useful in the case of an existing document that has
+been updated).
+\item Fixed bug in the release of Caml values in the C-API.
+\item Fixed bug in pretty-printing of function application, and added
+pretty-printing for the query prolog.
+\item Fixed index bug in fn:substring and fn:translate.
+\item Fixed serialization in canonical form.
+\item Fixed bug in parsing of PIs in the document root.
+\item Fixed bug in validation/casting of atomic values not dealing with
+whitespace properly.
+\item Fixed bug in key/keyref support introduced with the new API.
+\item Fixed bug in parsing of DTD declarations with the PUBLIC keyword.
+\end{itemize}
+
+
+\section{Galax 0.3.1 (June 2003)}
+
+Language extensions:
+\begin{itemize}
+\item Alpha support for XML updates!
+\end{itemize}
+
+Command line:
+\begin{itemize}
+\item External variables and context items can be bound from the
+command-line.
+\end{itemize}
+
+API:
+\begin{itemize}
+\item Brand new, hopefully complete Caml, C, and Java APIs.
+  Check them out!
+\end{itemize}
+
+Parsing:
+\begin{itemize}
+\item Switched for good to the SAX parser. glx:document-sax is removed.
+\item Complete new support for character encodings. Now detects encoding
+in XML declaration properly.  Support for UTF-16.
+\end{itemize}
+
+
+\section{Galax 0.3.0 (January 2003)}
+
+Bugs
+\begin{itemize}
+\item All reported and fixed bugs are documented in 'Bugs' file.
+\end{itemize}
+
+Language:
+Numerous changes to align with Nov. 2002 and upcoming Feb 2003 WDs.
+\begin{itemize}
+\item Grammar alignment:
+  'as' SequenceType in type declarations, function signatures, typeswitch
+\item Implements element \& attribute constructor semantics of Nov. 2002 WDs.
+\item Added positional variables to FLWOR
+\item Added support for order-by in FLWOR
+\item Implemented complete semantics of path expressions, including
+  document order and removing duplicates.
+\item Implemented dynamic function dispatch, promotion of arguments to
+  arithmetic operators
+\item Transitive 'eq' operators 
+\end{itemize}
+
+Galax features:
+\begin{itemize}
+\item Command-line options for monitoring memory and CPU usage.
+\end{itemize}
+
+Data model:
+\begin{itemize}
+\item Updated terminology to align with WDs.
+\end{itemize}
+
+Function library:
+\begin{itemize}
+\item Changed xf: to fn: prefix
+\item Added fn:error()
+\item Added support for fn:base-uri() and fn:lang()
+\item New semantics for fn:data() and fn:boolean()
+\end{itemize}
+
+
+\section{Galax 0.2.0 (October 2002)}
+
+Parsing
+\begin{itemize}
+\item Fixed very large number of bugs. Support for entities and DTDs is
+  still missing.
+\item Support for ISO-8859-1 and UTF-8 character encodings.
+\item Factorized XML and XQuery parsers. Results in more compact code,
+  easier to improve and maintain.
+\item Updated XQuery parser to align with latest grammar.
+\item Alpha support for SAX-based parsing.
+\end{itemize}
+
+Data model:
+\begin{itemize}
+\item Support for node identity.
+\item Fixed support for text nodes.
+\end{itemize}
+
+Language:
+\begin{itemize}
+\item Major revision based on August 16th 2002 working drafts.
+\item Full support for XPath expressions. Notably XPath parent, ancestor,
+  ancestor-or-self axis. See STATUS for some remaining deviations.
+\item Support for node-identity related operations (is, isnot
+  distinct-nodes, union, intersect, except, etc.).
+\item Support for type promotion in function calls, arithmetics, etc.
+\item Fixed many bugs in the semantics, through normalization.
+\item Added dynamic semantics for type operations through (simplified)
+  form of matching. Still some bugs there.
+\end{itemize}
+
+Namespaces:
+\begin{itemize}
+\item Fixed many bugs in namespace support and printing of namespaces.
+\item Implemented support for default function namespace.
+\end{itemize}
+
+XML Schema:
+\begin{itemize}
+\item *Very* alpha support for XML Schema import and validation. Basic
+  datatypes are now supported.
+\end{itemize}
+
+Type system:
+\begin{itemize}
+\item Updated type inference with the new language.
+\item Made sure all expressions are type checked, necessary for
+  optimization.
+\item Fixed bugs in typing for typeswitch.
+\end{itemize}
+
+Function library:
+\begin{itemize}
+\item Most of F\&O functions are now implemented. Some limitations apply to
+  XML Schema types not yet supported (notably date and time).
+\end{itemize}
+
+Optimizer:
+\begin{itemize}
+\item Support for simple query simplification.
+\end{itemize}
+
+Compilation:
+\begin{itemize}
+\item Removed dependency to the stdlib file.
+\item Removed dependency to anything but OCaml compilers and standard unix
+  tools.
+\item Fixed compilation for both Cygwin and MinGW.
+\end{itemize}
+
+Tests:
+\begin{itemize}
+\item Added large number of regression tests.
+\end{itemize}
+
+Tools and interfaces:
+\begin{itemize}
+\item Removed Java API for now. Will be back soon.
+\item Added very limited user-level api (Galapi) in Caml.
+\item Changed galax command-lined interpretor. See the new syntax and
+  options in ./README
+\item Major revision of the pretty-printer for types and XQuery
+  expressions. Added support for precedence in both cases.
+\end{itemize}
+
+Documentation:
+\begin{itemize}
+\item Added examples of calls to the Caml and C API's in ./example.
+\end{itemize}
+

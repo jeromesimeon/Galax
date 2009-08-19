@@ -1,0 +1,73 @@
+**********************************
+[WARNING] 
+Expression '???' at characters 442-445 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'dxq:gui-report(
+  fn:concat(
+    fn:string-join("Resolved", $n, "to", "", " "),
+    fn:string-join($addrs/@address, " ")
+  )
+)' at characters 551-660 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression ' { 
+    
+    dxq:gui-report(
+      fn:concat(
+        fn:string-join("Resolved", $n, "to", "", " "),
+        fn:string-join($addrs/@address, " ")
+      )
+    )
+ }' at characters 566-659 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression '???' at characters 534-660 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'at server T do {T:forward("resolver", $n)}' at characters 1948-1985 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'let
+  server
+  T
+  implement S at "198.41.0.4"
+  return at server T do {T:forward("resolver", $n)}' at characters 1898-1985 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression ' { 
+    
+    let
+      server
+      T
+      implement S at "198.41.0.4"
+      return at server T do {T:forward("resolver", $n)}
+ }' at characters 1898-1985 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression '???' at characters 1890-1985 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'at server T do {T:multicast("resolver", $n)}' at characters 2091-2130 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression 'let
+  server
+  T
+  implement S at "198.41.0.4"
+  return at server T do {T:multicast("resolver", $n)}' at characters 2041-2130 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression ' { 
+    
+    let
+      server
+      T
+      implement S at "198.41.0.4"
+      return at server T do {T:multicast("resolver", $n)}
+ }' at characters 2041-2130 has empty type, but is not the empty expression
+
+[WARNING] 
+Expression '???' at characters 2033-2130 has empty type, but is not the empty expression
+
+

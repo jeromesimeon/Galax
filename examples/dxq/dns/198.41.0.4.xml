@@ -1,0 +1,5 @@
+<rr>        
+  <soa domain="." nameserver="a.root-servers.net" />
+  <ns domain="com" nameserver="a.gtld-servers.net" />
+  <a hostname="a.gtld-servers.net" address="198.41.3.38" ttl="3600"/>
+</rr>

@@ -1,0 +1,316 @@
+Galax supports the following stand-alone command-line tools:
+
+\begin{description}
+\item[galax-run] The Galax XQuery interpreter.               
+\item[galax-parse] XML document parser and validator. 
+\item[galax-mapschema] XML Schema validator.  Outputs XML Schema in XQuery type system.
+\item[galaxd] The Galax network server.  Executes Galax query plans
+  issued from remote client (Under development).
+\end{description}
+
+\section{\code{galax-run} : The Galax XQuery interpreter}
+The simplest way to use Galax is by calling the 'galax-run' interpreter
+from the command line. The interpreter takes an XQuery input file, 
+evaluates it, and yields the result on standard output. 
+
+Usage: \code{galax-run \emph{options} query.xq}
+
+For instance, the following commands from the Galax home directory:
+\begin{alltt}
+%  echo "<two> { 1+1 } </two>" > test.xq
+%  $(GALAXHOME)/bin/galax-run test.xq
+<two>2</two>
+\end{alltt}
+evaluates the simple query \verb|<two> { 1+1 } </two>| and prints the
+XML value \verb|<two>2</two>|.
+
+The query interpreter has eight processing stages:
+   parsing an XQuery expression;
+   normalizing an XQuery expression into an XQuery core expression;
+   static typing of a core expression;
+   rewriting a core expression;
+   factorizing a core expression;
+   compiling a core expression into a logical plan;
+   selecting a physical plan from a logical plan;
+   and evaluating a physical plan.
+
+Parsing, factorization, and compilation are always enabled. By default, the other phases are:
+\begin{alltt}
+   -normalize on 
+   -static off   
+   -rewriting on 
+   -optimization on
+   -dynamic on 
+\end{alltt}
+By default, all result values (XML result, inferred type, etc.) are written
+to standard output.
+
+The command line options permit various combinations of phases,
+printing intermediate expressions, and redirecting output to multiple
+output files.  Here are the available options.  Default values are in
+\code{code} font.
+
+\begin{description}
+\item[-help,--help]   Display this list of options
+\end{description}
+
+\subsection{Input options}
+\label{sec:inputoptions}
+\begin{description}
+\item[-base-uri]  Sets the default base URI in the static context
+\item[-var]  \code{x}=literal, Binds the global variable \code{x} to literal constant
+\item[-doc]  \code{x}=filename, Binds the global variable \code{x} to document in filename
+\item[-context-item] Binds the context item (``\code{.}'' variable) to the document in filename or '-' for stdin
+\item[-context]  Load the context query from file or '-' for stdin
+\end{description}
+
+\begin{description}
+\item[-xml-whitespace]  Preserves whitespace in XML documents [on/\code{off}]
+\item[-xml-pic]  Preserves PI's and comments in XML documents [on/\code{off}]
+% \item[-xquery-whitespace]  Preserves whitespace in XQuery expressions [on/\code{off}]
+\end{description}
+
+\subsection{Output options}
+\begin{description}
+\item[-serialize]  Set serialization kind [wf, canonical, or \code{xquery}]
+% \item[-serialize-namespaces]  Set serialization of namespace nodes [strip/\code{preserve}]
+\end{description}
+
+\subsection{Evaluation options}
+\begin{description}
+\item[-dynamic]  Evaluation phase [\code{on}/off]
+
+\item[-execute-normalized-expr]  All files are assumed to be normalized expressions for execution [{on}/\code{off}]
+\item[-execute-logical-plan]  All files are assumed to be logical plans for execution [{on}/\code{off}]
+
+\item[-print-xml]  Print XML result [\code{on}/off]
+\item[-output-xml]  Output XML to result file
+
+\item[-print-expr]  Print input expression [on/\code{off}]
+\item[-output-expr]  Output expr to file.
+
+\end{description}
+
+\subsection{Normalization options}
+\begin{description}
+\item[-normalize]  Normalization phase [\code{on}/off]
+\item[-print-normalized-expr]  Print normalized expression [on/\code{off}]
+\item[-output-normalized-expr]  Output normalized expression to file.
+\end{description}
+
+\subsection{Static typing options}
+\begin{description}
+\item[-static] Static analysis phase [on/\code{off}]
+\item[-typing] Static typing behavior [\code{none}, weak, or strong]
+
+\item[-print-type]  Print type of expression [on/\code{off}]
+\item[-output-type]  Output type to file.
+
+\item[-print-typed-expr]  Print typed expression [on/\code{off}]
+\item[-output-typed-expr]  Output typed expression to file.
+\end{description}
+
+\subsection{Rewriting options}
+\begin{description}
+\item[-rewriting] Rewriting phase (use with -static on) [\code{on}/off]
+\item[-sbdo] Document-order/duplicate-elimination optimization
+  behavior [remove, preserve, sloppy, tidy, \code{duptidy}]
+\begin{description}
+\item[remove] Remove all distinct-docorder (ddo) calls from the query
+ plan. May result in faulty evaluation plans.
+\item[preserve] Preserve all distinct-doc-order calls (no
+ optimization).
+\item[sloppy] Delay duplicate removal and sorting until the last
+  step in the path expression. May cause the number of duplicates in
+  intermediate results to increase exponentially since they are not
+  removed. Also, subsequent steps are evaluated multiple times when
+  duplicates are generated in a step.
+\item[tidy] Removes all distinct-doc-order operations hat can be
+ removed while maintaining duplicate-freeness and doc-order after each
+ step.
+\item[duptidy] Only sorts and removes duplicates after a step if duplicates are generated. Intermediate results can be out of document order.
+\end{description}
+
+\item[-print-rewritten-expr]  Print rewritten expression [on/\code{off}]
+\item[-output-rewritten-expr]  Output rewritten expression to file.
+\end{description}
+
+\subsection{Factorization options}
+\begin{description}
+\item[-factorization] Factorization phase [\code{on}/off]
+
+\item[-print-factorized-expr]  Print factorized expression [on/\code{off}]
+\item[-output-factorized-expr]  Output factorized expression to file.
+\end{description}
+
+\subsection{Compilation options}
+\begin{description}
+\item[-print-comp-annotations]  Print compilation annotations [on/\code{off}]
+\item[-print-logical-plan]  Print logical plan [on/\code{off}]
+\item[-output-logical-plan]  Output logical plan to file.
+\end{description}
+
+\subsection{Optimization options}
+\begin{description}
+\item[-optimization] Optimization phase [\code{on}/off]
+\item[-nested-loop-join] Turns off sort/hash joins and uses only nested-loop joins [\code{on}/off]
+
+
+\item[-print-optimized-plan]  Print optimized plan [on/\code{off}]
+\item[-output-optimized-plan]  Output optimized plan to file
+
+\item[-print-physical-plan]  Print physical plan [on/\code{off}]
+\item[-output-physical-plan]  Output physical algebraic plan to file
+
+\end{description}
+
+\subsection{Miscellaneous printing options}
+\begin{description}
+\item[-verbose]  Emit descriptive headers in output [on/\code{off}]
+\item[-print-global]  Prints everything : prologs, exprs, etc.
+\item[-output-all]  Output everything to file.
+
+\item[-print-error-code]  Print only the error code instead of the full error message
+\item[-output-err]  Redirect error output to file.
+
+\item[-print-context-item]  Serializes the context item at the end of
+  query evaluation
+\item[-output-context-item]  Output the context item to the given file
+
+\item[-print-annotations]  Print expression annotations [on/\code{off}]
+\item[-print-prolog]  Print query prolog [on/\code{off}]
+
+\item[-print-materialize]  Print whenever data materialization occurs [on/\code{off}]
+\item[-force-materialized]  Force materialization of values in
+  variables [on/\code{off}]
+
+\end{description}
+
+\subsection{Document projection options}
+\begin{description}
+\item[-projection]  Document projection behavior [\code{none}, standard, or optimized]
+\item[-print-projection]  Prints the projection paths
+\item[-output-projection]  Output the projections paths to a file.
+
+\item[-print-projected-file]  Prints back the input document after projection
+\item[-output-projected-file]  Output the input document after projection into file.
+
+%\item[-pretty-print-module]  Pretty printing the whole module
+%\item[-pretty-print]  Pretty printing the query to file 'filename\_pretty.xq'
+\end{description}
+
+\eat{\item[-update-hack-oi]  Set the OI flag on
+\item[-update-hack-bi]  Set the BI flag on
+\item[-update-hack-sbi]  Set the SBI flag on
+}
+
+\subsection{Miscellaneous options}
+\begin{description}
+\item[-version]  Prints the Galax version
+\item[-debug]  Emit debugging [on/\code{off}]
+
+\item[-monitor] Monitors memory and CPU consumption [on/\code{off}]
+\item[-monitor-mem]  Monitors memory consumption [on/\code{off}]
+\item[-monitor-time]  Monitors CPU consumption [on/\code{off}]
+\item[-output-monitor]  Output monitor actibity to file
+
+\item[-internal-encoding]  Set the input character encoding
+  representation, e.g., \code{utf8, iso88591}.
+\item[-output-encoding]  Set the output character encoding representation
+\end{description}
+
+\section{\code{galax-parse}: XML parser and XML Schema validator}
+
+\code{galax-parse} parses an XML document and optionally validates the
+document against an XML Schema. 
+
+Usage: \code{galax-parse \emph{options} document.xml}
+
+\begin{description}
+\item[-help,--help]    Display this list of options
+
+\item[-xml-whitespace]  Preserves whitespace in XML documents
+\item[-xml-pic]  Preserves PI's and comments in XML documents
+
+\item[-validate] Set validation on
+\item[-xmlschema] Schema against which to perform validation
+
+\item[-dm] Also builds the data model instance
+
+\item[-monitor]  Monitors memory and CPU consumption
+\item[-monitor-mem]  Monitors memory consumption
+\item[-monitor-time]  Monitors CPU consumption
+\item[-output-monitor]  Output monitor to file
+
+\item[-serialize-namespaces]  Set serialization of namespace nodes  [strip/\code{preserve}]
+
+\item[-serialize]  Set serialization kind [canonical, \code{wf}, or xquery]
+
+\item[-print-error-code]  Print only the error code instead of the full error message
+\item[-output-encoding]  Set the output encoding representation
+\end{description}
+
+\section{\code{galax-mapschema} : XML Schema validator}
+\code{galax-mapschema} maps XML schemas in xmlschema(s) into XQuery type expressions.
+
+Usage: \code{galax-mapschema \emph{options} schema.xsd}
+
+\begin{description}
+\item[-prefix] Namespace prefix
+\item[-verbose]  Set printing to verbose
+\item[-import-type]  Set XML Schema import
+\item[-normalize-type]  Set XQuery type normalization
+
+\item[-print-type]  Set printing ofXQuery type
+\item[-print-normalized-type]  Set printing of normalized XQuery type
+
+\item[-output-type] Output XQuery type in file
+\item[-output-normalized-type] Output normalized XQuery type in file
+\end{description}
+
+
+\section{\code{galaxd} : The Galax network server}
+
+\code{galaxd} is a server that allows Galax to be invoked over the  
+network.
+
+Usage: \code{galaxd [\emph{options}] [query.xq]}
+
+\begin{description}
+\item[-port \emph{n}] Listen on port \emph{n}.  If the -port option is
+   not used, the port defaults to 3324.
+\item[-s \emph{dir}] Simulate the directory \emph{dir}.  The server
+   will act as if it is a part of a virtual network specified by
+   \emph{dir}.  Each file \emph{host.xq} in \emph{dir} defines a server
+   \emph{host} in the virtual network.  The virtual network is
+   implemented on the localhost at ports \emph{3324}, \emph{3325},
+   \ldots.  Ports are assigned to the \emph{host.xq} files in
+   lexicographic order.
+\end{description}
+
+The query file \emph{query.xq} should define a function named
+local:main().  An XQuery program can get the result of local:main() on
+\emph{host} by calling doc("dxq://host/").  If the server is using a
+non-default port \emph{port}, then use doc("dxq://host:port/").
+
+\subsection{Running simulations}
+It is sometimes useful to simulate a network of Galax servers on a
+single host.  The -s option makes this possible.  The way to set this
+up is to create a directory with a query file for each simulated host.
+For example, create a directory \emph{example} with query files
+\emph{a.xq}, \emph{b.xq}, and \emph{c.xq}.  Each .xq file should
+define a local:main() function.  Also, these files can refer to each
+other's local:main() functions using doc("dxq://a/"), doc("dxq://b/"),
+and doc("dxq://c/").  Then start up the three servers as follows:
+\begin{verbatim}
+     galaxd -s example -port 3324
+     galaxd -s example -port 3325
+     galaxd -s example -port 3326
+\end{verbatim}
+\code{galaxd} uses the -s option to find out what the virtual network
+will look like: it will have hosts a, b, and c, operating on
+non-virtual ports 3324, 3325, and 3326 on localhost.  The first
+invocation of \code{galaxd} above uses port 3324, so it uses a.xq to
+define its local:main() function.  Similarly, the second and third
+invocations use b.xq and c.xq, respectively.
+

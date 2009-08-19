@@ -1,0 +1,26 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.herpo.com/"
+            xmlns:t="http://www.herpo.com/">
+
+  <xsd:element name="order" type="t:SmallPurchaseOrderType"/>  
+
+  <xsd:complexType name="SmallPurchaseOrderType">
+    <xsd:sequence>
+      <xsd:element name="item" minOccurs="0" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="productName" type="xsd:string"/>
+            <xsd:element name="quantity">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:maxExclusive value="100"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

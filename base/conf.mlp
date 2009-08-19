@@ -1,0 +1,340 @@
+(***********************************************************************)
+(*                                                                     *)
+(*                                 GALAX                               *)
+(*                             XQuery Engine                           *)
+(*                                                                     *)
+(*  Copyright 2001-2007.                                               *)
+(*  Distributed only by permission.                                    *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* $Id: conf.mlp,v 1.108 2007/10/26 15:49:33 simeon Exp $ *)
+
+(* Module: Conf
+   Description:
+     This module contains global variables and parameters changing the
+     general behavior of the Galax interpretor.
+*)
+
+(***********************)
+(* Version information *)
+(***********************)
+
+let system = "Galax"
+
+let version = "%%RELEASE%%"
+
+let copyright = "Copyright "^system^" Contributors 2001-2006"
+
+let status = "%%STATUS%%"
+
+let motd = "Thank you for using "^system^"!\n"
+
+let xquery_version = "1.0"
+
+
+(****************)
+(* Galax stdlib *)
+(****************)
+
+(* Where is the Galax library installed *)
+
+let galax_library =
+  try
+    Sys.getenv "GALAXLIB"
+  with
+    Not_found ->
+      "%%LIBDIR%%"
+
+let pervasive_content =
+  ref Pervasive.pervasive
+
+let unicode_maps = ref None
+
+
+(***********************)
+(* Behavior parameters *)
+(***********************)
+
+(* Output behavior *)
+
+let print_global      = ref true
+
+let print_prolog      = ref false
+let print_annotations = ref false
+
+let verbose       = ref false
+let verbose_error = ref true
+let warning       = ref true
+
+(* Default escape function is identity function *)
+let xml_charescape_fn = ref (fun s -> s)
+
+let print_xml = ref false
+(* Default is false as in the API, the user controls printing *)
+let xml_output = ref stdout
+let xml_formatter = ref Format.std_formatter
+let xml_header = ref ("Dynamic Evaluation:\n"
+		     ^"-------------------\n\n")
+let xml_footer = ref "\n\n------------------------------------------------------------------------------\n\n"
+
+let print_expr     = ref false
+let expr_output    = ref stdout
+let expr_formatter = ref Format.std_formatter
+let expr_header    = ref ("XQuery Expression:\n"
+			 ^"------------------\n\n")
+let expr_footer    = ref "\n\n------------------------------------------------------------------------------\n\n"
+
+let print_type     = ref false
+let type_output    = ref stdout
+let type_formatter = ref Format.std_formatter
+let type_header    = ref ("Static Type Analysis:\n"
+		         ^"---------------------\n\n")
+let type_footer    = ref "\n\n------------------------------------------------------------------------------\n\n"
+
+let print_core_expr     = ref false
+let core_expr_output    = ref stdout
+let core_expr_formatter = ref Format.std_formatter
+let core_expr_header    = ref ("Normalized Expression (XQuery Core):\n"
+			      ^"------------------------------------\n\n")
+let core_expr_footer    = ref "\n\n------------------------------------------------------------------------------\n\n"
+
+let print_optimized_expr     = ref false
+let optimized_expr_output    = ref stdout
+let optimized_expr_formatter = ref Format.std_formatter
+let optimized_expr_header    = ref ("Rewritten Normalized Expression (XQuery Core):\n"
+				   ^"----------------------------------------------\n\n")
+let optimized_expr_footer    = ref "\n\n------------------------------------------------------------------------------\n\n"
+
+let print_factorized_expr     = ref false
+let factorized_expr_output    = ref stdout
+let factorized_expr_formatter = ref Format.std_formatter
+let factorized_expr_header    = ref ("Factorized Normalized Expression (XQuery Core):\n"
+				    ^"-----------------------------------------------\n\n")
+let factorized_expr_footer    = ref "\n\n------------------------------------------------------------------------------\n\n"
+
+let print_projection  	 = ref false
+let projection_output 	 = ref stdout
+let projection_formatter = ref Format.std_formatter
+
+let print_projected_file     = ref false
+let projected_file_output    = ref stdout
+let projected_file_formatter = ref Format.std_formatter
+
+let print_algebra_optimization_rewrite = ref false
+let algebra_optimization_rewrite_output = ref stdout
+let algebra_optimization_rewrite_formatter = ref Format.std_formatter
+let algebra_optimization_rewrite_header    = ref ("Algebra Rerwite (XQuery Algebra):\n"
+				    ^"------------------------------\n\n")
+let algebra_optimization_rewrite_footer    = ref "\n\n------------------------------------------------------------------------------\n\n"
+
+
+let print_logical_algebra     = ref false
+let logical_algebra_output    = ref stdout
+let logical_algebra_formatter = ref Format.std_formatter
+let logical_algebra_header    = ref ("Logical Plan (XQuery Algebra):\n"
+				    ^"------------------------------\n\n")
+let logical_algebra_footer    = ref "\n\n------------------------------------------------------------------------------\n\n"
+
+let serialize_logical_algebra = ref false
+
+let print_optimized_algebra  	= ref false
+let optimized_algebra_output 	= ref stdout
+let optimized_algebra_formatter = ref Format.std_formatter
+let optimized_algebra_header    = ref ("Optimized Logical Plan (XQuery Algebra):\n"
+				      ^"----------------------------------------\n\n")
+let optimized_algebra_footer    = ref "\n\n------------------------------------------------------------------------------\n\n"
+
+let print_physical_algebra     = ref false
+let physical_algebra_output    = ref stdout
+let physical_algebra_formatter = ref Format.std_formatter
+let physical_algebra_header    = ref ("Physical Plan (XQuery Algebra):"
+				     ^"\n-----------------------------\n\n")
+let physical_algebra_footer    = ref "\n\n------------------------------------------------------------------------------\n\n"
+
+let print_dfgraph     = ref false
+let dfgraph_output    = ref stdout
+let dfgraph_formatter = ref Format.std_formatter
+
+let genresults        = ref false
+
+(********************)
+(* XML Plan Loading *)
+(********************)
+
+let load_xml_plans = ref false
+
+let execute_logical_plan = ref false
+
+let execute_optimized_plan = ref false
+
+let error_blocking = ref true
+let glx_stderr = ref stderr
+let glx_err_formatter = ref Format.err_formatter
+
+
+(*********************)
+(* Global parameters *)
+(*********************)
+
+(* Default XML Schema namespaces *)
+
+(* Note:
+     The following namespace URIs are populated at configuration
+     time!  They are used in pervasive.xq, and namespace resolution.
+   - Jerome
+ *) 
+
+let emptyns  = ""
+ 
+let xmlns     = "%%XMLURI%%"
+let xmlnsns   = "%%XMLNSURI%%"
+let xsns      = "%%XSURI%%"
+let xsdns     = "%%XSDURI%%"
+let xsins     = "%%XSIURI%%"
+let fnns      = "%%FNURI%%"
+let xqxns     = "%%XQUERYXURI%%"
+let opns      = "%%OPURI%%"
+let fsns      = "%%FSURI%%"
+let localns   = "%%LOCALURI%%"
+let collns    = "%%COLLURI%%"
+let glxns     = "%%GLXURI%%"
+let errns     = "%%ERRURI%%"
+
+
+let bPrinting_comp_annotations = ref false
+
+(* Materialization flag *)
+
+let print_materialize = ref false
+
+
+(********************************************)
+(* Experimental parameters for optimization *)
+(********************************************)
+
+(* Note:
+
+     ALL experimental flags for new optimizations
+     should go here.
+
+     ALL should be false by default.
+
+   - Jerome 10/25/2004
+ *)
+
+(* New descendant style *)
+let new_descendant_style = ref false
+
+(* Aggressive sbdo remove *)
+
+let aggressive_sbdo_remove     = ref false
+
+(* Physical optimization flags *)
+
+let nested_loop_join           = ref false
+
+(* Variable materialization flag *)
+
+let force_materialized_variables = ref false
+let allow_streamed_tuple_fields = ref false
+let code_selection_by_physical_type = ref true
+
+(* Jungle flags *)
+
+let old_children_method = ref false
+let jungle_buffsize : int option ref = ref None
+
+(* SAX materialization buffers *)
+
+let buffer_chunks = ref 0
+let buffer_csize  = ref 10000
+let buffer_inc    = ref 2
+
+(* Statistics *)
+
+let countload = ref 0
+let countnext = ref 0
+let countexpo = ref 0
+
+(* Language *)
+
+type language_kind =
+  | Language_XQuery10
+  | Language_XQueryUpdates
+  | Language_XQueryBang
+  | Language_XQueryP
+  | Language_DXQ
+
+let language = ref Language_XQuery10
+
+let set_language l = language := l
+
+let is_xquery () =
+  match !language with
+  | Language_XQuery10 -> true
+  | Language_XQueryUpdates -> false
+  | Language_XQueryBang -> false
+  | Language_XQueryP -> false
+  | Language_DXQ -> false
+
+let is_ultf () =
+  match !language with
+  | Language_XQuery10 -> false
+  | Language_XQueryUpdates -> true
+  | Language_XQueryBang -> false
+  | Language_XQueryP -> false
+  | Language_DXQ -> false
+
+let is_xquerybang () =
+  match !language with
+  | Language_XQuery10 -> false
+  | Language_XQueryUpdates -> false
+  | Language_XQueryBang -> true
+  | Language_XQueryP -> false
+  | Language_DXQ -> false
+
+let is_xqueryp () =
+  match !language with
+  | Language_XQuery10 -> false
+  | Language_XQueryUpdates -> false
+  | Language_XQueryBang -> false
+  | Language_XQueryP -> true
+  | Language_DXQ -> true (* DXQ contains XQueryP *)
+
+let is_dxq () =
+  match !language with
+  | Language_XQuery10 -> false
+  | Language_XQueryUpdates -> false
+  | Language_XQueryBang -> false
+  | Language_XQueryP -> false
+  | Language_DXQ -> true
+
+type syntax_kind =
+  | XQuery_Syntax
+  | XQueryX_Syntax
+
+let syntax = ref XQuery_Syntax
+let set_syntax s = syntax := s
+let is_xquery_syntax () =
+  match !syntax with
+  | XQuery_Syntax -> true
+  | XQueryX_Syntax -> false
+let is_xqueryx_syntax () =
+  match !syntax with
+  | XQuery_Syntax -> false
+  | XQueryX_Syntax -> true
+
+let batch_xqueryx = ref false
+let embed_xqueryx = ref false
+
+type materialize_tables_kind =
+  | Always
+  | Analysis
+  | Never
+let materialize_tables = ref Analysis
+
+let set_materialize_tables mat_kind = materialize_tables := mat_kind
+
+let get_materialize_tables() = !materialize_tables
+

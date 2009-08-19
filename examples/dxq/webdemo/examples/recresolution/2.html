@@ -1,0 +1,215 @@
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+  <title>Galax: .</title>
+</head>
+<body>
+  <h3>Galax: .</h3>
+<div style='float: left; margin-right: 10px'>
+<img src='2.png' />
+</div>
+<p><b>Program:</b>
+<a href='prog-192.128.133.77.html'>192.128.133.77</a>
+<a href='prog-192.20.225.4.html'>192.20.225.4</a>
+<a href='prog-192.20.3.54.html'>192.20.3.54</a>
+<a href='prog-198.4.83.35.html'>198.4.83.35</a>
+<a href='prog-198.41.0.4.html'>198.41.0.4</a>
+<a href='prog-198.41.3.38.html'>198.41.3.38</a>
+<a href='prog-resolver.html'>resolver</a>
+<a href='prog-resolver+cache.html'>resolver+cache</a>
+<a href='prog-resolver-opt.html'>resolver-opt</a>
+</p>
+<p><b>Events:</b>
+<a href='1.html'>Prev</a>
+<a href='3.html'>Next</a>
+<br />
+<a href='1.html'>1</a>
+<b>2</b>
+<a href='3.html'>3</a>
+<a href='4.html'>4</a>
+<a href='5.html'>5</a>
+<a href='6.html'>6</a>
+</p>
+<div style='clear: left'>
+<pre><code>
+&lt;alg:Closure xmlns:alg="http://www.galaxquery.org/algebra/2006"&gt;
+  &lt;alg:Env&gt;
+    &lt;alg:Var alg:argcount="1"&gt;
+      &lt;alg:Bind alg:Var="{}n"&gt;
+        &lt;alg:string&gt;www.research.att.com&lt;/alg:string&gt;
+      &lt;/alg:Bind&gt;
+    &lt;/alg:Var&gt;
+    &lt;alg:Tup alg:argcount="2"&gt;
+      &lt;alg:Bind alg:Var="{http://www.galaxquery.org}ns_11"&gt;
+        &lt;ns xmlns:D="dns" xmlns:S="dxq:dns" xmlns:Server="dxq:dns"
+        domain="att.com" nameserver="kcgw1.att.com" /&gt;
+      &lt;/alg:Bind&gt;
+      &lt;alg:Bind alg:Var="{http://www.galaxquery.org}a_16"&gt;
+        &lt;a xmlns:D="dns" xmlns:S="dxq:dns" xmlns:Server="dxq:dns"
+        hostname="kcgw1.att.com" address="192.128.133.77"
+        ttl="3600" /&gt;
+      &lt;/alg:Bind&gt;
+    &lt;/alg:Tup&gt;
+  &lt;/alg:Env&gt;
+  &lt;alg:Expression xmlns:alg="http://www.galaxquery.org/algebra/2006"&gt;
+
+    &lt;alg:AOECallBuiltIn alg:fname="{http://www.w3.org/2004/10/xquery-semantics}distinct-docorder-or-atomic-sequence"
+    alg:arity="1"&gt;
+      &lt;alg:functionsignature alg:fname="{http://www.w3.org/2004/10/xquery-semantics}distinct-docorder-or-atomic-sequence"
+      alg:arity="1" alg:updating="no"&gt;
+        &lt;alg:inputtype alg:index="0"&gt;
+          &lt;alg:asequencetype alg:occurrence="*"&gt;
+            &lt;alg:aititem /&gt;
+          &lt;/alg:asequencetype&gt;
+        &lt;/alg:inputtype&gt;
+        &lt;alg:outtype&gt;
+          &lt;alg:asequencetype alg:occurrence="*"&gt;
+            &lt;alg:aititem /&gt;
+          &lt;/alg:asequencetype&gt;
+        &lt;/alg:outtype&gt;
+      &lt;/alg:functionsignature&gt;
+      &lt;alg:indep alg:subarity="1" alg:subtype="ManySub"&gt;
+        &lt;alg:AOEMapToItem&gt;
+          &lt;alg:dep alg:subarity="1" alg:subtype="OneSub"&gt;
+            &lt;alg:AOETreeJoin alg:axis="child"&gt;
+              &lt;alg:nodetest&gt;
+                &lt;alg:nametest alg:nametest="{}a" /&gt;
+              &lt;/alg:nodetest&gt;
+              &lt;alg:indep alg:subarity="1" alg:subtype="OneSub"&gt;
+                &lt;alg:AOEAccessTuple alg:tuple="{http://www.galaxquery.org}dot_34" /&gt;
+              &lt;/alg:indep&gt;
+            &lt;/alg:AOETreeJoin&gt;
+          &lt;/alg:dep&gt;
+          &lt;alg:indep alg:subarity="1" alg:subtype="OneSub"&gt;
+            &lt;alg:AOEProduct&gt;
+              &lt;alg:indep alg:subarity="2" alg:subtype="TwoSub"&gt;
+                &lt;alg:AOEInputTuple /&gt;
+                &lt;alg:AOEMapConcat&gt;
+                  &lt;alg:dep alg:subarity="1" alg:subtype="OneSub"&gt;
+                    &lt;alg:AOEMapFromItem alg:itemtuplevar="{http://www.galaxquery.org}comp33"&gt;
+
+                      &lt;alg:dep alg:subarity="1"
+                      alg:subtype="OneSub"&gt;
+                        &lt;alg:AOECreateTuple alg:arity="1"&gt;
+                          &lt;alg:tuple alg:index="0"
+                          alg:variable="{http://www.galaxquery.org}dot_34" /&gt;
+                          &lt;alg:indep alg:subarity="1"
+                          alg:subtype="ManySub"&gt;
+                            &lt;alg:AOEVar alg:vname="{http://www.galaxquery.org}comp33" /&gt;
+                          &lt;/alg:indep&gt;
+                        &lt;/alg:AOECreateTuple&gt;
+                      &lt;/alg:dep&gt;
+                      &lt;alg:indep alg:subarity="1"
+                      alg:subtype="OneSub"&gt;
+                        &lt;alg:AOEAccessTuple alg:tuple="{http://www.galaxquery.org}sequence_32" /&gt;
+                      &lt;/alg:indep&gt;
+                    &lt;/alg:AOEMapFromItem&gt;
+                  &lt;/alg:dep&gt;
+                  &lt;alg:indep alg:subarity="1" alg:subtype="OneSub"&gt;
+                    &lt;alg:AOECreateTuple alg:arity="1"&gt;
+                      &lt;alg:tuple alg:index="0"
+                      alg:variable="{http://www.galaxquery.org}sequence_32" /&gt;
+                      &lt;alg:indep alg:subarity="1"
+                      alg:subtype="ManySub"&gt;
+                        &lt;alg:AOECallBuiltIn alg:fname="{http://www.w3.org/2004/10/xquery-semantics}node-sequence"
+                        alg:arity="1"&gt;
+                          &lt;alg:functionsignature alg:fname="{http://www.w3.org/2004/10/xquery-semantics}node-sequence"
+                          alg:arity="1" alg:updating="no"&gt;
+                            &lt;alg:inputtype alg:index="0"&gt;
+                              &lt;alg:asequencetype alg:occurrence="*"&gt;
+
+                                &lt;alg:aitkindtest&gt;
+                                  &lt;alg:aitnode /&gt;
+                                &lt;/alg:aitkindtest&gt;
+                              &lt;/alg:asequencetype&gt;
+                            &lt;/alg:inputtype&gt;
+                            &lt;alg:outtype&gt;
+                              &lt;alg:asequencetype alg:occurrence="*"&gt;
+
+                                &lt;alg:aitkindtest&gt;
+                                  &lt;alg:aitnode /&gt;
+                                &lt;/alg:aitkindtest&gt;
+                              &lt;/alg:asequencetype&gt;
+                            &lt;/alg:outtype&gt;
+                          &lt;/alg:functionsignature&gt;
+                          &lt;alg:indep alg:subarity="1"
+                          alg:subtype="ManySub"&gt;
+                            &lt;alg:AOECallUserDefined alg:fname="{dns}down"
+                            alg:arity="1"&gt;
+                              &lt;alg:functionsignature alg:fname="{dns}down"
+                              alg:arity="1" alg:updating="no"&gt;
+                                &lt;alg:inputtype alg:index="0"&gt;
+                                  &lt;alg:asequencetype alg:occurrence="None"&gt;
+
+                                    &lt;alg:aitatomic&gt;
+                                      &lt;alg:rtype alg:prefix="xs"
+                                      alg:rqname="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+                                    &lt;/alg:aitatomic&gt;
+                                  &lt;/alg:asequencetype&gt;
+                                &lt;/alg:inputtype&gt;
+                                &lt;alg:outtype&gt;
+                                  &lt;alg:asequencetype alg:occurrence="*"&gt;
+
+                                    &lt;alg:aititem /&gt;
+                                  &lt;/alg:asequencetype&gt;
+                                &lt;/alg:outtype&gt;
+                              &lt;/alg:functionsignature&gt;
+                              &lt;alg:indep alg:subarity="1"
+                              alg:subtype="ManySub"&gt;
+                                &lt;alg:AOEPromoteAnyString alg:atomictype="{http://www.w3.org/2001/XMLSchema}string"&gt;
+
+                                  &lt;alg:indep alg:subarity="1"
+                                  alg:subtype="OneSub"&gt;
+                                    &lt;alg:AOEConvertSimple alg:atomictype="{http://www.w3.org/2001/XMLSchema}string"&gt;
+
+                                      &lt;alg:indep alg:subarity="1"
+                                      alg:subtype="OneSub"&gt;
+                                        &lt;alg:AOECallBuiltIn alg:fname="{http://www.w3.org/2005/xpath-functions}data"
+                                        alg:arity="1"&gt;
+                                          &lt;alg:functionsignature alg:fname="{http://www.w3.org/2005/xpath-functions}data"
+                                          alg:arity="1"
+                                          alg:updating="no"&gt;
+                                            &lt;alg:inputtype alg:index="0"&gt;
+
+                                              &lt;alg:asequencetype alg:occurrence="*"&gt;
+
+                                                &lt;alg:aititem /&gt;
+                                              &lt;/alg:asequencetype&gt;
+                                            &lt;/alg:inputtype&gt;
+                                            &lt;alg:outtype&gt;
+                                              &lt;alg:asequencetype alg:occurrence="*"&gt;
+
+                                                &lt;alg:aitatomic&gt;
+                                                  &lt;alg:rtype alg:prefix="xs"
+                                                  alg:rqname="{http://www.w3.org/2001/XMLSchema}anyAtomicType" /&gt;
+                                                &lt;/alg:aitatomic&gt;
+                                              &lt;/alg:asequencetype&gt;
+                                            &lt;/alg:outtype&gt;
+                                          &lt;/alg:functionsignature&gt;
+                                          &lt;alg:indep alg:subarity="1"
+                                          alg:subtype="ManySub"&gt;
+                                            &lt;alg:AOEVar alg:vname="{}n" /&gt;
+                                          &lt;/alg:indep&gt;
+                                        &lt;/alg:AOECallBuiltIn&gt;
+                                      &lt;/alg:indep&gt;
+                                    &lt;/alg:AOEConvertSimple&gt;
+                                  &lt;/alg:indep&gt;
+                                &lt;/alg:AOEPromoteAnyString&gt;
+                              &lt;/alg:indep&gt;
+                            &lt;/alg:AOECallUserDefined&gt;
+                          &lt;/alg:indep&gt;
+                        &lt;/alg:AOECallBuiltIn&gt;
+                      &lt;/alg:indep&gt;
+                    &lt;/alg:AOECreateTuple&gt;
+                  &lt;/alg:indep&gt;
+                &lt;/alg:AOEMapConcat&gt;
+              &lt;/alg:indep&gt;
+            &lt;/alg:AOEProduct&gt;
+          &lt;/alg:indep&gt;
+        &lt;/alg:AOEMapToItem&gt;
+      &lt;/alg:indep&gt;
+    &lt;/alg:AOECallBuiltIn&gt;
+  &lt;/alg:Expression&gt;
+&lt;/alg:Closure&gt;
+</code></pre>
+</div>
+</body></html>

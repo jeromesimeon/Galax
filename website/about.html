@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+  <head>
+    <link rev="made" href="mailto:galax-users@research.att.com">
+    <title>Galax: Overview</title>
+    <meta name="DESCRIPTION" content="galax, xquery, query language, ocaml">
+    <meta name="KEYWORDS" content="galax, xquery, query language, ocaml">
+    <link href="galax.css" type="text/css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <table border="0" cellspacing="4" cellpadding="0" width="100%">
+      <tbody>
+      <tr>
+        <td colspan="2" valign="top">
+          </br><img src="images/galax.gif" alt="[Galax]" border="0" hspace="4" vspace="5"></br>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top" bgcolor="PowderBlue" class="border">
+          <p>
+            <b><a href="./">Galax&nbsp;Home</a></b></br>
+            <b><a href="about.html" class="title">Galax&nbsp;Overview</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+            </br>
+
+            <table border=0 cellspacing=4 cellpadding=0
+            class="border">
+              <tbody>
+              <tr><td>
+                &nbsp;<a href="about.html#xquery">About&nbsp;XQuery</a></br>
+                &nbsp;<a href="about.html#galax">About&nbsp;Galax</a></br>
+                &nbsp;<a href="about.html#team" class="border">The&nbsp;Galax&nbsp;Team</a></br>
+                &nbsp;<a href="about.html#thanks">Thanks!</a></br></br>
+              </td></tr>
+              </tbody>
+            </table>
+          </p>
+        </td>
+
+        <td valign="top">
+
+    <h1><a name="xquery"></a>About XQuery</h1>
+
+    <p>XQuery is a query language for XML. It is developed within the
+    W3C by the XML Query Working Group, as part of the XML
+    Activity. XQuery is a simple but powerful language that supports a
+    large variety of data-oriented and document-oriented XML
+    applications. From 1000 feet, the salient features of XQuery
+    are:</p>
+
+    <ul>
+      <li>The ability to write clearly and concisely advanced
+      manipulation/transformation of XML data.</li>
+
+      <li>A declarative approach that promotes optimization and
+      efficient implementations.</li>
+    
+      <li>A type system that takes advantage of schema descriptions
+      and enables early detection of errors in programs.</li>
+    </ul>
+
+    <p>High-level requirements for XQuery can be found in the <a
+    href="http://www.w3.org/TR/xmlquery-req.html">XML Query
+    Requirements Documents</a>.</p>
+
+    <p>Many applications and XQuery examples can be found in the <a
+    href="http://www.w3.org/TR/xmlquery-use-cases.html">XML Query Use
+    Cases</a>.</p>
+
+    <p>More information on XQuery, and the W3C XML Query Working
+    Group, can be found on the <a
+    href="http://www.w3.org/XML/Query">W3C XML Query</a> homepage.</p>
+
+    <hr/>
+
+    <h1><a name="galax"></a>About Galax</h1>
+    
+    <h2>What is Galax?</h2>
+
+    <p>Galax is an open-source XQuery implementation.  Our goal is for
+    Galax to be a fully compliant implementation of the family of XQuery
+    working drafts. Currently, Galax implements most of the following
+    specifications from the XML Query Working Group:</p>
+
+    <ul>
+      <li><a href="http://www.w3c.org/TR/xquery/">XQuery 1.0: An XML
+      Query Language</a></li>
+
+      <li><a href="http://www.w3c.org/TR/xpath20/">XML Path Language
+      (XPath 2.0)</a></li>
+
+      <li><a href="http://www.w3c.org/TR/query-datamodel/">XQuery 1.0
+      and XPath 2.0 Data Model</a></li>
+
+      <li><a href="http://www.w3c.org/TR/xquery-operators/"> XQuery
+      1.0 and XPath 2.0 Functions &amp; Operators</a></li>
+
+      <li><a href="http://www.w3c.org/TR/query-semantics/">XQuery 1.0
+      Formal Semantics</a></li>
+    </ul>
+
+    <p>The XML Syntax of XQuery <a
+    href="http://www.w3.org/TR/xqueryx.html">XQueryX</a> is not
+    supported.</p>
+
+    <h2>Who should use Galax?</h2>
+
+    <p>Galax is a portable and extensible implementation of XQuery,
+    with a liberal open-source license which makes it ideal for:</p>
+
+    <ul> <li>XQuery users who want to learn the language and try
+      queries on a running system;</li>
+
+      <li>Students and researcher who want to experiments with an
+      XQuery implementation;</li>
+
+      <li>XML application developers who need a lightweight, easily
+      embeddable, XQuery engine for their application;</li>
+
+      <li>XML application developers who want an XQuery engine that
+      operates over their own XML storage system;</li>
+
+      <li>Implementors of XQuery systems who want to understand, or
+      get access, to the internals of an XQuery engine.</li>
+
+      <li>Anybody who needs a statically typed implementation of
+      XQuery.</p> </ul>
+
+    <h2>Who shouldn't use Galax?</h2>
+
+    <p>Galax is a versatile and extensible XQuery implementation, suitable for many
+    uses. But here are a few cases in which you might consider
+    <emph>not</emph> using Galax!</p>
+
+    <ul>
+      <li>If you need a pure Java-based XQuery engine, Galax is not
+      it. You can get a look at <a
+      href="http://xml.ipsi.fhg.de/xquerydemo">IPSI-XQuery</a> or <a
+      href="http://www.qexo.org/">Kawa-Query</a>.</li>
+
+      <li>If you need an XQuery implementation specially optimized for
+      your a particular database, you should contact your favorite database
+      vendor (or hook up Galax to it!).
+    </ul>
+<!--
+    ??? Extensibility here ???
+    <h2>Using Galax with your own storage</h2>
+-->
+    <hr/>
+
+    <h1><a name="team"></a>The Galax Team, past and present.</h1>
+
+    <ul>
+      <li><a href="http://www.research.att.com/~mff">Mary
+      Fernández</a>, AT&amp;T Labs Research.
+      <li><a href="mail:simeon@us.ibm.com">Jérôme Siméon</a>, IBM Watson Research.</li>
+      <li><a href="http://www.cs.uml.edu/~cchen/">Cindy Chen</a>,
+      University of Massachusetts at Lowell.</li>
+
+      <li><a href="http://www.cis.upenn.edu/~kkchoi">Byron Choi</a>,
+      University of Pennsylvania.</li>
+
+      <li><a href="">Vladimir Gapeyev</a>, University of
+      Pennsylvania.</li>
+
+      <li><a href="http://www1.cs.columbia.edu/~amelie/">Am&eacute;lie
+      Marian</a>, Columbia University.</li>
+
+      <li><a href="http://www.adrem.ua.ac.be/~michiels">Philippe Michiels</a>, Universiteit Antwerpen,
+      Belgium.</li>
+
+      <li><a href="http://www.cse.ucsd.edu/users/nonose/">Nicola
+      Onose</a>, University of California, San Diego.</li>
+
+      <li>Douglas Petkanics, University of
+      Pennsylvania.</li>
+
+      <li>Christopher Rath, AT&amp;T Labs Research.</li>
+
+      <li>Christopher R&eacute;, University of
+      Washington.</li>
+
+      <li>Michael Stark, University of Darmstadt</li>
+
+      <li><a href="http://www.cise.ufl.edu/~gsur/">Gargi Sur</a>,
+      University of Florida.</li>
+
+      <li>Avinash Vyas, Bell Laboratories.</li>
+
+      <li><a href="http://www.cs.bell-labs.com/who/wadler">Philip
+      Wadler</a>, University of Edinburgh, Scotland.</li>
+    </ul>
+
+    <p>We have always a long list of things TO DO. So if you want to help, don't be shy and <a
+    href="mailto:simeon@us.ibm.com,mff@research.att.com">drop
+    us a note!</a></p>
+
+    <hr/>
+
+    <h1><a name="thanks"></a>Thanks!</h1>
+
+    <p>To Rob Dinoff who helped with the development infrastructure
+    (notably the CVS and Web servers).</p>
+
+    <p>To Volker Renneberg who helped implementing the XML Query
+    Algebra prototype that preceded Galax.</p>
+
+    <p>To the members of the XML Query Working Group, notably Peter
+    Fankhauser, who contributed ideas and suggestions.</p>
+
+    <p>To the <a
+    href="http://www.cis.upenn.edu/~hahosoya/xduce.html">XDuce</a>
+    team, notably Haruo Hosoya, for discussions and for allowing us to
+    use their subtyping algorithm at the early stages of our
+    implementation.</p>
+
+    <p>To the <a href="http://caml.inria.fr">Caml</a> team for
+    developing the best programming language in the world.</p>
+
+    <p>To the XML-QL team, Mary Fernández, Dan Suciu and Alin Deutsch
+    for providing some help with the CGI scripts originally used for
+    the on-line demo.</p>
+
+    <p>To <a
+    href="http://www-db.research.bell-labs.com/user/sahuguet">Arnaud
+    Sahuguet</a> for the Galax logo.</p>
+    <hr/>
+              </td></tr>
+              </tbody>
+            </table>
+
+  </body>
+</html>
+

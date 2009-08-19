@@ -1,0 +1,153 @@
+#########################################################################
+#                                                                       #
+#                                  GALAX                                #
+#                               XQuery Engine                           #
+#                                                                       #
+#   Copyright 2001-2007.                                                #
+#   Distributed only by permission.                                     #
+#                                                                       #
+#########################################################################
+
+# $Id: Makefile-inst,v 1.2 2007/02/01 22:08:46 simeon Exp $ #
+
+#########################################################################
+# Author:	Christopher A. Rath (AT&T Labs Research)
+# Descripton:
+#		This is the installed Makefile for the Galax OCaml API examples
+# History:
+#	$Log: Makefile-inst,v $
+#	Revision 1.2  2007/02/01 22:08:46  simeon
+#	February 1, 2007 - Jerome
+#	
+#	  o Code cleanup:
+#	     - Cleaned up all the source file headers. Added module
+#	       descriptions when missing, as well as CVS Id.
+#	     - Removed obsolete modules: Optimization_rules_treepattern_old,
+#	       Factorize_sideeffects.
+#	
+#	  o AST Walker:
+#	     - Added support for a generic fold operation on the AST (useful
+#	       to compute a boolean property on the AST for instance).
+#	
+#	  o Normalization:
+#	     - Small fix to the normalization of comparisons to re-enable join
+#	       detection, not using let bindings for the comparator
+#	       anymore. [hack]
+#	
+#	  o Rewriting:
+#	     - Added a judgment to check for side-effects, removed
+#	       corresponding obsolete judgment in Factorization.
+#	     - Moved the snap removal rule from optimization to rewriting,
+#	       cleaning up the plans as early as possible.
+#	
+#	Revision 1.1  2006/04/17 18:10:40  car
+#	April 17, 2006 - Chris Rath
+#	  o Changes necessary to align with GODI
+#	
+#########################################################################
+
+#########################################################################
+# Section:	Default target
+# Description:
+#		The default target for this Makefile is "all"
+#########################################################################
+
+default:	all
+
+#########################################################################
+# Section:	Makefile pre-includes
+# Description:
+#		This is where the file(s) generated during by the Configure script
+#		are included.  If config/Makefile.conf does not exist, the
+#		make will fail.
+#
+#		Makefile.galax:	Variables defined for compiling and linking Galax
+#								applications in the build environment
+#########################################################################
+include CONF_GALAX_CONFIG/Makefile.galax
+
+#########################################################################
+# Sub-Section:	Targets
+# Description:
+#		These are the configuration-dependent targets built by "all"
+###########################################################################
+BYTETARGETS=\
+example$(BYTE) \
+test$(BYTE)
+
+OPTTARGETS=\
+example$(OPT) \
+test$(OPT)
+
+TESTS=runexample runtest
+
+ALL_TARGETS=$(BYTETARGETS)
+ifdef OCAMLOPT
+ALL_TARGETS+=$(OPTTARGETS)
+TESTS+=runoptexample runopttest
+endif
+
+#########################################################################
+# Section:  Main targets
+# Description:
+#     This is where all of the named toplevel targets are placed.
+#
+#  all:        This target builds the ALL_TARGETS
+#  clean::     This target cleans files created in the all section
+#########################################################################
+
+all: $(ALL_TARGETS)
+
+tests:	$(TESTS)
+
+clean:
+	$(RM) $(TARGETS)
+	$(RM) *.cmx *.cmo
+
+#########################################################################
+# Sub-Section:  Secondary targets
+# Description:
+#     These are the supporting targets for "all"
+#########################################################################
+
+$(CONF_GALAX_EXAMPLES)/caml_api:
+	$(MKDIR) $(CONF_GALAX_EXAMPLES)/caml_api
+
+example$(BYTE):	example.cmo
+	$(OCAMLC) -custom -linkall $(OCAMLC_FLAGS) -o $@ $(GALAX_ALL_INCLUDES) $(GALAX_ALL_LIBS) example.cmo
+
+example$(OPT):	example.cmx
+	$(OCAMLOPT) -linkall $(OCAMLOPT_FLAGS) -o $@ $(GALAX_ALL_INCLUDES) $(GALAX_ALL_OPTLIBS) example.cmx
+
+test$(BYTE):	test.cmo
+	$(OCAMLC) -custom -linkall $(OCAMLC_FLAGS) -o $@ $(GALAX_ALL_INCLUDES) $(GALAX_ALL_LIBS) test.cmo
+
+test$(OPT):	test.cmx
+	$(OCAMLOPT) -linkall $(OCAMLOPT_FLAGS) -o $@ $(GALAX_ALL_INCLUDES) $(GALAX_ALL_OPTLIBS) test.cmx
+
+runexample:	example$(BYTE)
+	$(RM) example.out
+	./example$(BYTE) > example.out
+	if [[ -z "`cmp example.out example.expect`" ]]; then echo "examples/caml_api/example$(BYTE) passed"; else $(MAKE) TEST=example$(BYTE) error; fi;
+
+runtest:	test$(BYTE)
+	$(RM) test.out
+	./test$(BYTE) > test.out
+	if [[ -z "`cmp test.out test.expect`" ]]; then echo "tests/caml_api/test$(BYTE) passed"; else $(MAKE) TEST=test$(BYTE) error; fi;
+
+runoptexample:	example$(OPT)
+	$(RM) optexample.out
+	./example$(OPT) > optexample.out
+	if [[ -z "`cmp optexample.out example.expect`" ]]; then echo "examples/caml_api/example$(OPT) passed"; else $(MAKE) TEST=example$(OPT) error; fi;
+
+runopttest:	test$(OPT)
+	$(RM) opttest.out
+	./test$(OPT) > opttest.out
+	if [[ -z "`cmp opttest.out test.expect`" ]]; then echo "tests/caml_api/test$(OPT) passed"; else $(MAKE) TEST=test$(OPT) error; fi;
+
+#########################################################################
+# Section:  Makefile post-includes
+# Description:
+#		There are currently no post-includes for this Makefile
+#########################################################################
+

@@ -1,0 +1,96 @@
+body
+{
+	background-color: #ebebeb;
+    color: #000000;
+	font-family: arial, helvetica; 
+#verdana, trebuchet, sans-serif;
+}
+
+.header
+{
+        background-color: #9aaaf0;
+        color: #000000;
+}
+
+
+pre
+{
+        background-color: #ddd;
+        padding: 2px;
+        padding-left: 10px;
+        margin-left: 20px;
+        margin-right: 20px;
+}
+
+
+
+
+H1
+{
+	font-family: Arial, Helvetica;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 24pt;
+}
+H2
+{
+	font-family: Arial, Helvetica;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 18pt;
+}
+H3
+{
+	font-family: Arial, Helvetica;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 14pt;
+}
+H4
+{
+	font-family: Arial, Helvetica;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 12pt;
+}
+H5
+{
+	font-family: Arial, Helvetica;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 10pt;
+}
+H6
+{
+	font-family: Arial, Helvetica;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 8pt;
+}
+UL
+{
+	list-style-type: disc;
+}
+
+TABLE {
+	margin-top: 0;
+	border-top-style:groove;	
+}
+TH
+{
+	color: rgb(0,0,0);
+}
+HR
+{
+	color: rgb(0,0,0);
+}
+TD
+{
+	border-color: rgb(51,0,102);
+}
+
+.keyword
+{
+	color: rgb(10,60,0);
+}
+

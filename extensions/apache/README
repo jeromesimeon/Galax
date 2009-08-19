@@ -1,0 +1,176 @@
+
+mod_xquery -- Apache module for XQuery SOAP servers
+
+October 28, 2003  - Nicola
+May 27, 2004 - Mary
+
+REQUIREMENTS
+============
+
+  Currently, the XQuery Apache module only works with Apache 1.3
+
+  If you don't have Apache 1.3, then read "How to Install Apache 1.3"
+
+  Otherwise, skip to "How to compile Apache XQuery Module"
+
+How to install Apache 1.3
+=========================
+
+  1. Download Apache 1.3 from:
+
+     http://httpd.apache.org/download.cgi
+
+  2. Run configure script, make, and install
+
+     ./configure --prefix=/usr/local/apache_1.3.31 
+                 --enable-module=most 
+                 --enable-shared=max
+
+     make
+     make install
+
+     Set prefix to wherever you want to install Apache 1.3. 
+     All my instructions are w.r.t. /usr/local/apache_1.3.31 
+
+  3. Test Apache 1.3 
+
+     Make sure the server runs, then stop it:
+
+     /usr/local/apache_1.3.31/bin/apachectl start
+
+     /usr/local/apache_1.3.31/bin/apachectl stop
+
+
+How to compile Apache XQuery Module
+===================================
+
+  1. Compile Galax C API
+
+     mod_xquery.c must be compiled *AFTER* the Galax C-API is
+     compiled.  We don't have the right dependencies yet in
+     galax/Makefile, so first, uncomment the C API in
+     galax/config/Makefile and compile:
+ 
+     APIS=c #java
+
+     Then compile Galax
+
+  2. Compile Apache XQuery Module
+   
+     In galax/config/Makefile, set following variables, then compile
+     Galax again 
+
+     TOOLS=apache #curl jungle jabber 
+
+     # Apache configuration
+     #
+     # Put the location of the Apache tool apxs and the location of 
+     # the Apache modules here:
+     APXS=/usr/local/apache_1.3.31/bin/apxs
+     APACHE_INCLUDE=/usr/local/apache_1.3.31/include
+     APACHE_MODULES_DIR=/usr/local/apache_1.3.31/libexec
+
+  3. Install Galax 
+
+     In galax/, run:
+
+     make install
+
+     This will install as usual and copy the mod_xquery.so file 
+     to /usr/local/apache_1.3.31/libexec, where Apache will look for
+     it. 
+
+How to configure and run Apache 1.3
+===================================
+  
+
+  1. Edit /usr/local/apache_1.3.31/conf/http.conf, and add following
+     statements:
+
+      # At end of LoadModule list, add:
+      # Support for XQuery Module
+      PassEnv LD_LIBRARY_PATH
+      LoadModule mod_xquery         libexec/mod_xquery.so
+  
+      # At end of AddModuleList, add:
+      # Support for XQuery Module
+      AddModule mod_xquery.c
+  
+      # Anywhere, you can add:
+      <IfModule mod_xquery.c>
+        # Support for XQuery Module
+        AddHandler xquery-web-service .xqs
+      </IfModule>
+
+  2. Note the value of the DocumentRoot variable, it should be:
+
+      DocumentRoot "/usr/local/apache_1.3.31/htdocs"
+
+     You will deploy/place your XQuery services in this directory
+
+  3. Start Apache 1.3 
+
+     Now start the Apache 1.3 server, which will load the mod_xquery
+     shared object.  It will need to find the Galax C library, so set
+     the environment variables as follows, where $GALAXHOME is the
+     path to your Galax installation:
+
+       export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}":${GALAXHOME}/lib/c
+
+       /usr/local/apache_1.3.31/bin/apachectl start
+
+     You will know if it doesn't work, as apachectl will raise an
+     error.  
+
+=================================================================
+Older notes from Nicola:
+=================================================================
+
+As a minimum, in order to install the mod_xquery, you should have
+a running version of the apache server (see http://www.apache.org)
+plus the apache-dev package, containing the Apache extension tool
+(apxs) which does most of the compilation chores.
+
+Once you did 
+make; make install
+you should also take care to modify your apache's httpd.conf, by
+adding the lines:
+
+LoadModule mod_xquery mod_xquery.so
+AddHandler xquery-web-service .xqs
+
+Further, it must be ensured that apache can find the galax C 
+libraries, so their path must be added to the LD_LIBRARY_PATH. 
+For bash users, it looks like:
+
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}":${GALAXHOME}/lib/c
+(done by the user who is running apache -- it's the root by 
+ default, usually)
+
+where $GALAXHOME is the path to your Galax installation.
+
+
+Problems
+=================================================================
+
+If it does not work, it means that your apache launcher ignores
+environment variables. Then, you should use the mod_env apache
+module to pass the LD_LIBRARY_PATH variable.
+
+If you have, like me, a script /etc/init.d/apache that launches apache, 
+you should modify the line defining the ENV variable to look like
+
+ENV="env -i LANG=C PATH=/bin:/usr/bin:/sbin:/usr/sbin LD_LIBRARY_PATH=/home/nicnic/Galax/lib/c:."
+
+And to be sure that apache uses this variable (because it does
+ not use "real" env. variables), before loading the module in httpd.conf, 
+you should have the command PassEnv:
+
+PassEnv LD_LIBRARY_PATH
+LoadModule mod_xquery mod_xquery.so
+AddHandler xquery-web-service .xqs
+
+This directive uses the mod_env module. If it is disabled, you can 
+enable it with:
+
+apache-modconf apache enable mod_env

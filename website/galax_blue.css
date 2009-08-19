@@ -1,0 +1,66 @@
+body {
+  font-family: helvetica;
+  font-size: 10pt;
+  margin-left: .25in;
+  margin-right: .25in;
+  color: "#003366";
+}
+
+a:link { color: DarkBlue; }
+
+a:visited { color: Purple; }
+
+table, tr, td {
+  font-family: helvetica;
+  font-size: 10pt;
+  color: "#003366";
+}
+
+p, ul, pre {
+  text-indent:0cm;
+  font-family: helvetica;
+  font-size: 10pt;
+  color: "#003366";
+}
+
+tt { font-family: courier; }
+
+.header {
+  font-weight: bold;
+  font-size: 12pt;
+  font-family: lucida, helvetica;
+  color: "#003366";
+}
+
+.sub-header {
+  font-weight: bold;
+  font-size: 10pt;
+  font-family: lucida, helvetica;
+  color: "#f4a460";
+}
+
+.code {
+  font-family: courier;
+  margin-left: 1cm;
+}
+	  
+h1 { font-size: 12pt; color: DarkBlue; }
+h2 { font-size: 10pt; color: DarkBlue; }
+h3 { font-size: 8pt; color: DarkBlue; text-indent:.5cm; }
+
+a.title:visited, a.title:link {
+  color: DarkBlue; 
+  text-decoration: none
+}
+
+.warn {
+  color: red;
+  margin-left: 1in;
+  margin-right: 1in;
+  text-indent:0cm;
+}
+
+b {
+  color: DarkBlue
+}
+

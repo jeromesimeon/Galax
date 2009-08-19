@@ -1,0 +1,52 @@
+(***********************************************************************)
+(*                                                                     *)
+(*                                 GALAX                               *)
+(*                              XQuery Engine                          *)
+(*                                                                     *)
+(*  Copyright 2001-2007.                                               *)
+(*  Distributed only by permission.                                    *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* $Id: closing_tag_lexer.src,v 1.6 2007/02/01 22:08:51 simeon Exp $ *)
+
+(* Module: Closing_tag_lexer
+   Description:
+     This module contains the lexer for closing tags.
+*)
+
+{
+
+open Lexing
+
+open Finfo
+open Error
+
+open Xquery_ast      (* XQuery AST *)
+open Parse_xquery   (* tokens definition *)
+
+open Lexing_util     (* lexical state handling *)
+
+}
+
+(*****************************)
+(* Lexer regular expressions *)
+(*****************************)
+
+#insert pxp_lex_defs_*.def
+
+(****************)
+(* Lexing rules *)
+(****************)
+
+rule closing_tag lh = parse
+  | whitespaceplus   (* Recognizes whitespace so the parser can do something about it *)
+      { S }
+  | qname
+      { let q = (lexeme lexbuf) in
+        QNAME (Namespace_names.uqname_element_of_string q) }
+  | '>'
+      { pop_state lh ; RCLOSINGTAG }
+  | _
+      { raise (Query (Lexing(lexing_locinfo lexbuf, ("Illegal character '" ^ (lexeme lexbuf) ^ "' in closing tag")))) }
+

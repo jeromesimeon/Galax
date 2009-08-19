@@ -1,0 +1,56 @@
+interface namespace S = "server";
+
+(: A local function :)
+declare function S:local() external;
+
+(: Constant functions call mirror functions on A :)
+declare function S:error() external;
+declare function S:c() external;
+declare function S:s() external;
+declare function S:d() external;
+declare function S:i() external;
+declare function S:ilist() external;
+declare function S:mixed() external;
+
+declare function S:primitive() external;
+declare function S:attr() external;
+declare function S:elem() external;
+
+(: ----------------------------------------- :)
+(: Identity functions                        :)
+(: Functions call mirror functions on A      :)
+(: ----------------------------------------- :)
+
+(: Test these functions by passing "mixed" heterogenous values,
+   in various arguments:
+   S:id((1, <a/>, "string"))
+   S:id2((1, <a/>, "string"), (1, <a/>, "string"))
+:)
+declare function S:id($x) external;
+declare function S:id2($x,$y) external;
+declare function S:id3($x,$y,$z) external;
+declare function S:id4($x,$y,$z,$w) external;
+
+(: ----------------------------------------- :)
+(: Test path expressions over element values :)
+(: ----------------------------------------- :)
+
+(:
+   Test path expressions with no command-line arguments
+   and with -dxq on -inline-functions on
+:)
+(: S:value()/b :)
+(: S:value()/b/c :)
+
+declare function S:value() external;
+declare function S:path-b() external;
+declare function S:path-bc() external;
+
+declare function S:path-b1($x) external;
+(: ----------------------------------------- :)
+(: Execute embedded in FLWOR expressions     :)
+(: ----------------------------------------- :)
+
+declare function S:flwr() external;
+declare function S:records() external;
+

@@ -1,0 +1,48 @@
+(***********************************************************************)
+(*                                                                     *)
+(*                                 GALAX                               *)
+(*                              XQuery Engine                          *)
+(*                                                                     *)
+(*  Copyright 2001-2007.                                               *)
+(*  Distributed only by permission.                                    *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* $Id: qname_lexer.src,v 1.3 2007/02/01 22:08:51 simeon Exp $ *)
+
+(* Auxiliary lexical for qualified names *)
+
+{
+
+open Lexing
+
+open Error
+
+let split_qname s =
+  try
+    let (s1, s2) = Gmisc.split_right_on_char s ':' in
+    if s1 = ""
+    then
+      (None,s2)
+    else
+      (Some s1, s2)
+  with
+  | Not_found ->
+      (None, s)
+
+}
+
+(*****************************)
+(* Lexer regular expressions *)
+(*****************************)
+
+#insert pxp_lex_defs_*.def
+
+(* Lexing rules *)
+
+(* QName *)
+
+rule parse_qname = parse
+  | qname eof
+      { split_qname (lexeme lexbuf) }
+

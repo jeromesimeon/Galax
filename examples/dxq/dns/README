@@ -1,0 +1,128 @@
+Demo Scenarios:
+~~~~~~~~~~~~~~~
+  D:init() to "Broadcast"
+  R:resolve("www.research.att.com") to resolver
+  R:resolve-opt("www.research.att.com") to resolver
+  R:delegate("www.research.att.com") to resolver
+  R:forward("www.research.att.com") to resolver
+  R:multicast("www.research.att.com") to resolver
+
+This DXQ program emulates a Domain Name System resolver.
+
+The XML files in this directory contain the resource records for six
+servers: 
+
+    IP Address      Start-of-authority 
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    198.41.0.4:     "."
+    198.41.3.38:    .com
+    198.4.83.35:    ibm.com
+    192.128.133.77: att.com
+    192.20.225.4:   research.att.com
+    192.20.3.54:    www.research.att.com
+
+To simulate a network of nodes:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Run:  
+    
+    make run
+
+which creates the directory run/ that contains the DXQ programs for
+the six servers.
+
+In this directory, dns/, run galaxd on this directory in simulation mode with:
+
+    galaxd -language xqueryp -s run
+
+Wait patiently until you see the "UDP started" messages.  We don't
+know why they are taking so long to startup.
+
+In a separate shell, run the WebGUI: 
+
+    webgui -s run
+
+To use the flashplayer interface, you MUST run the webgui program in
+the same directory as the compiled flashplayer program gui.swf and
+gui2.swf.  (See Trevor's instructions on the blog
+https://yang.princeton.edu/blog for downloading these programs).
+
+Once the webgui is running (it will let you know that it has connected
+successfully to the galaxd processes), open a browser on:
+
+  http://localhost:4000/ : this is the HTML interface or on:
+
+  http://localhost:4000/gui.swf : this is the Flashplayer interface.
+
+To initialize the servers, submit the following query to ALL/Broadcast:
+
+  D:init()
+
+Then run a few queries, e.g., submit this query using the HTML interface:
+
+  R:lookup("198.41.0.4", "www.research.att.com")
+
+to: "resolver".
+
+Submit: 
+
+  R:delegate("www.research.att.com") 
+
+to: 198.41.0.4
+
+Submit: 
+
+  R:forward("www.research.att.com") 
+
+to: 198.41.0.4
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Each of the hosts with IP addresses for names (e.g., 198.41.3.38)
+represents a DNS nameserver.  The interface for a nameserver is given by
+dns.xqi.  Each nameserver exports a function: 
+
+    Server:RR()
+
+where "RR" stands for "resource record," the basic units that DNS uses
+to encode the domain name mapping.  There are various kinds of
+resource records, e.g.,
+
+    <soa domain="com" nameserver="a.gtld-servers.net" />
+
+is a "start of authority" record saying that the nameserver is in
+charge of the com zone,
+
+    <ns domain="att.com" nameserver="kcgw1.att.com" />
+
+is a "nameserver" record saying that the nameserver for the att.com
+zone has hostname kcgw1.att.com, and
+
+    <a hostname="kcgw1.att.com" address="192.128.133.77" />
+
+is an "address" record that says that the IP address of host
+kcgw1.att.com is 192.128.133.77.
+
+The Server:RR() record returns all of the resource records of a nameserver.
+
+The file resolver.xq defines a resolver, which can walk the (logical)
+tree of nameservers to determine the IP address of a hostname.  It
+defines a function
+
+    R:lookup($x,$n)
+
+where $x is the IP address of a nameserver where querying will start,
+and $n is the hostname we are interest in.  R:lookup($x,$n) returns the
+set of address records for $n.  For example,
+
+    R:lookup("198.41.0.4","www.att.com")
+
+finds the address records of www.att.com, starting at the root
+nameserver, whose IP address is 198.41.0.4.  It should evaluate to 
+
+    <rr>        
+      <a hostname="www.att.com" address="192.20.3.54" />
+    </rr>
+
+The R:lookup() function is adapted from the paper "SD3: a trust
+management system with certified evaluation," and more details can be
+found there.

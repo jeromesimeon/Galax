@@ -1,0 +1,41 @@
+<html><head><title>192.20.225.4</title></head>
+<body><h1>Program for 192.20.225.4</h1>
+<a href='1.html'>Back to main</a>
+<pre><code>
+(: research.att.com nameserver :)
+module namespace D = "dns";
+import module namespace S = "dxq:dns" at "dns.xqi";
+
+declare function D:RR() {
+  &lt;rr&gt;        
+    &lt;soa domain="research.att.com" nameserver="ns.research.att.com" /&gt;
+
+    &lt;a hostname="www.research.att.com" address="192.20.3.54" ttl="3600"/&gt;
+
+    &lt;ns domain="." nameserver="a.root-servers.net" /&gt;
+    &lt;a hostname="a.root-servers.net" address="198.41.0.4" ttl="3600"/&gt;
+  &lt;/rr&gt;
+};
+(: Peer-to-peer :)
+declare function D:down($n) {
+  &lt;rr&gt;{ 
+    D:RR()/a[@hostname=$n],
+    for $ns in D:RR()/ns, $a in D:RR()/a
+    where $ns/@nameserver=$a/@hostname
+    and fn:not($ns/@domain=".")
+    and glx:dns-lt($ns/@domain,$n)
+    return exec { $a/@address } { S:down($n)/a }
+  }&lt;/rr&gt;
+};
+
+(: multicast :)
+declare function D:deliver($x) { () };
+declare function D:multicast($x) {
+  D:deliver($x),        
+  for $ns in D:RR()/ns, $a in D:RR()/a
+  where $ns/@nameserver=$a/@hostname
+  and glx:dns-lt(D:RR()/soa/@domain,$ns/@domain)
+  return exec { $a/@address } [ S:multicast($x) ]
+};
+
+</code></pre></body></html>

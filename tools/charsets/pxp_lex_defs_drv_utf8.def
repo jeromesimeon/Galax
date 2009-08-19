@@ -1,0 +1,212 @@
+(* Note:
+
+     This file is taken 'as-is' from the pxp distribution, whose
+     copyright notice is reproduced below.
+
+     PXP can be found at:
+     http://www.ocaml-programming.de/programming/pxp.html
+
+   - Jerome
+
+Copyright 1999 by Gerd Stolpmann
+
+The package PXP is copyright by Gerd Stolpmann. 
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this document and the PXP software (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+The Software is provided ``as is'', without warranty of any kind, express
+or implied, including but not limited to the warranties of
+merchantability, fitness for a particular purpose and noninfringement.
+In no event shall Gerd Stolpmann be liable for any claim, damages or
+other liability, whether in an action of contract, tort or otherwise,
+arising from, out of or in connection with the Software or the use or
+other dealings in the software.
+
+*)
+
+(* $Id: pxp_lex_defs_drv_utf8.def,v 1.1 2002/09/21 05:50:35 simeon Exp $
+ * ----------------------------------------------------------------------
+ *
+ *)
+
+let ws = [ ' ' '\t' '\r' '\n' ]
+
+let ascii_digit = ['0'-'9']
+
+let ascii_hexdigit = ['0'-'9' 'a'-'h' 'A'-'H']
+
+let namechar = letter | extender | digit | '.' | ':' | '_' | '-' | combiningChar
+
+let name = ( letter | '_' | ':' ) namechar*
+
+let nmtoken = namechar+
+
+(**** Added for Galax - Jerome *)
+
+let whitespace = ws*
+let whitespaceplus = ws+
+
+let nmstart  = letter | '_'
+let nmchar   = letter | extender | digit | '.' | '-' | '_' | combiningChar
+ 
+let ncname   = nmstart nmchar*
+
+let qname    = ncname (':' ncname)?
+
+(**** Until here - Jerome *)
+
+(* Valid characters are:
+ * #9, #10, #13, #32-#xD7FF, #xE000-#xFFFD, #x10000-#x10FFFF
+ *
+ * #xD7FF as UTF-8 sequence:
+ * 1110xxxx 10xxxxxx 10xxxxxx
+ * 1110...D 10...7.. 10.F...F  = ED 9F BF
+ *
+ * #xE000 as UTF-8 sequence:
+ * 1110xxxx 10xxxxxx 10xxxxxx
+ * 1110...E 10...0.. 10.0...0  = EE 80 80
+ *
+ * UTF-8 sequence CF BE BF as character:
+ * 1110xxxx 10xxxxxx 10xxxxxx
+ * 1110...F 10111110 10111111  = #FFBF
+ *
+ * #xFFFD as UTF-8 sequence:
+ * 1110xxxx 10xxxxxx 10xxxxxx
+ * 1110...F 10...F.. 10.F...D  = EF BF BD
+ *
+ * #x010000 as UTF-8 sequence:
+ * 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+ * 111100.. 10.1...0 10...0.. 10.0...0 = F0 90 80 80
+ *
+ * #x10FFFF as UTF-8 sequence:
+ * 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+ * 111101.. 10.0...F 10...F.. 10.F...F = F4 8F BF BF
+ *)
+
+
+let non_ascii_character = 
+  ['\192'-'\223'] ['\128'-'\191']                     (* #x80-#x7FF *)
+| ['\224'-'\236'] ['\128'-'\191'] ['\128'-'\191']     (* #x800-#xCFFF *)
+| '\237'          ['\128'-'\159'] ['\128'-'\191']     (* #xD000-#xD7FF *)
+| '\238'          ['\128'-'\191'] ['\128'-'\191']     (* #xE000-#xEFFF *)
+| '\239'          ['\128'-'\190'] ['\128'-'\191']     (* #xF000-#xFFBF *)
+| '\239'          '\191'          ['\128'-'\189']     (* #xFFC0-#xFFFD *)
+| '\240'          ['\144'-'\191'] ['\128'-'\191'] ['\128'-'\191']     
+                                                      (* #x010000-#x03FFFF *)
+| ['\241'-'\243'] ['\128'-'\191'] ['\128'-'\191'] ['\128'-'\191'] 
+                                                      (* #x040000-#x0FFFFF *)
+| '\244'          ['\128'-'\143'] ['\128'-'\191'] ['\128'-'\191'] 
+                                                      (* #x100000-#10FFFFF *)
+
+let character =
+  [ '\009' '\010' '\013' '\032'-'\127' ]
+| non_ascii_character
+
+
+let character_except_question_mark =                    (* '?' = '\063' *)
+  [ '\009' '\010' '\013' '\032'-'\062' '\064'-'\127' ]
+| non_ascii_character
+
+
+let character_except_right_angle_bracket =              (* '>' = '\062' *)
+  [ '\009' '\010' '\013' '\032'-'\061' '\063'-'\127' ]
+| non_ascii_character
+
+
+let character_except_minus =                            (* '-' = '\045' *)
+  [ '\009' '\010' '\013' '\032'-'\044' '\046'-'\127' ]
+| non_ascii_character
+
+
+let character_except_quot =                             (* '"' = '\034' *)
+  [ '\009' '\010' '\013' '\032'-'\033' '\035'-'\255' ]
+| non_ascii_character
+
+
+let character_except_apos =                             (* '\'' = '\039' *)
+  [ '\009' '\010' '\013' '\032'-'\038' '\040'-'\255' ]
+| non_ascii_character
+
+
+let pi_string = character_except_question_mark* 
+                ( '?' character_except_right_angle_bracket 
+                      character_except_question_mark* )* 
+                '?'?
+
+
+let comment_string = character_except_minus* 
+                     ('-' character_except_minus+ )*
+
+
+let normal_character = 
+  (* Character except '&' = '\038', '<' = '\060', ']' = '\093', and CR LF *)
+  [ '\009' '\032'-'\037' '\039'-'\059' '\061'-'\092' '\094'-'\127' ]
+| non_ascii_character
+
+
+let character_except_rbracket =                               (* ']' = '\093' *)
+  [ '\009' '\010' '\013' '\032'-'\092' '\094'-'\127' ]
+| non_ascii_character
+
+
+let character_except_rbracket_rangle =          (* ']' = '\093', '>' = '\062' *)
+  [ '\009' '\010' '\013' '\032'-'\061' '\063'-'\092' '\094'-'\127' ]
+| non_ascii_character
+
+
+let cdata_string = 
+  character_except_rbracket*
+  ( "]" character_except_rbracket+ |
+    "]]" ']'* character_except_rbracket_rangle character_except_rbracket*
+  )*
+  ']'*
+
+
+let printable_character_except_amp_lt =
+  (* '&' = '\038', '<' = '\060' *)
+  [ '\032'-'\037' '\039'-'\059' '\061'-'\127']
+| non_ascii_character
+
+
+let printable_character_except_amp_percent =
+  (* '%' = '\037', '&' = '\038' *)
+  [ '\032'-'\036' '\039'-'\127']
+| non_ascii_character
+
+
+let character_except_special =
+  (* '<'=060, ']'=093, '"'=034, '\''=039 *)
+  [ '\009' '\010' '\013' '\032'-'\033' '\035'-'\038' '\040'-'\059' 
+                         '\061'-'\092' '\094'-'\127' ]
+| non_ascii_character
+
+  
+
+(* ======================================================================
+ * History:
+ * 
+ * $Log: pxp_lex_defs_drv_utf8.def,v $
+ * Revision 1.1  2002/09/21 05:50:35  simeon
+ * Added third-party tool netstring.
+ *
+ * Revision 1.1  2002/09/03 19:52:09  simeon
+ * Added support for multiple character encodings.
+ *
+ * Revision 1.2  2000/08/26 19:58:08  gerd
+ * 	Bugfix in character_except_apos. The bug caused that attribute
+ * values delimited by &apos; could not be scanned at all.
+ *
+ * Revision 1.1  2000/05/20 20:33:25  gerd
+ * 	Initial revision.
+ *
+ * 
+ *)

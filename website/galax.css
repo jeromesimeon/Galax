@@ -1,0 +1,66 @@
+body {
+  background-color: white;
+  font-family: arial,helvetica;
+  font-size: small;
+  margin-left: .25in;
+  margin-right: .25in;
+  color: "#003366";
+}
+
+a:link { color: DarkBlue }
+a:visited { color: Purple; }
+
+a.title:visited, a.title:link {
+  color: DarkBlue;
+  text-decoration: none
+}
+a.transparent:visited, a.transparent:link {
+  color: white;
+  text-decoration: none
+}
+
+tt { font-family: courier; }
+b { color: DarkBlue }
+
+table {
+  font-family: arial,vernada,serif,helvetica;
+  font-size: small;
+  color: "#003366";
+}
+
+table.border,tr.border,td.border {
+  font-family: arial,vernada,serif,helvetica;
+  font-size: x-small;
+  color: "#003366";
+}
+
+.header {
+  font-weight: bold;
+  font-size: small;
+  font-family: arial,vernada,serif,helvetica;
+  color: "#003366";
+}
+
+.sub-header {
+  font-weight: bold;
+  font-size: x-small;
+  font-family: arial,vernada,serif,helvetica;
+  color: "#f4a460";
+}
+  
+.code {
+  font-family: courier;
+  margin-left: 1cm;
+}
+
+h1 { font-size: medium; color: DarkBlue; }
+h2 { font-size: small; color: DarkBlue;	}
+h3 { font-size: x-small; color: DarkBlue;  text-indent:.5cm; }
+
+.warn {
+  color: red;
+  margin-left: 1in;      
+  margin-right: 1in;
+  text-indent:0cm;
+}
+

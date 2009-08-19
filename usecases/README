@@ -1,0 +1,67 @@
+*** Galax Release: 0.4.0
+
+                     Galax: An XQuery 1.0 Implementation
+                     -----------------------------------
+                                 USECASES
+
+*** Galax Release: 0.4.0
+*** August 2003
+
+This directory contains the current use case examples that have been
+tested with Galax.
+
+I. Running Usecases
+===================
+
+In ${GALAXHOME}/usecases, execute
+
+  make 
+
+to run all the use cases.  Their output is written to into
+{use-case-name}_usecase.xml.
+
+Each usecase consists of a "context" file (globally defined variables
+and types) and a file containing all the queries.  To run by hand,
+execute:
+
+  ${GALAXHOME}/bin/galax-run -context {use-case-name}_context.xq {use-case-name}_usecase.xq
+
+II. Generating Web site
+=======================
+
+The files in this directory are used to automatically generate the
+demo. In order for the generation to work, these file must follow a
+precise organization and syntax.
+
+- Each separate use case must be registered in the Usecases file with
+  one filename (with it's title separated with a '$' sign) per line
+  and no whitespace.
+ 
+- Assuming 'name' is the name of the usecase in the Usecases file,
+  there must be three distinct files in the directory:
+
+  'name_documents.txt' must contain the list of all the XML input
+  documents with a description of what is in that documents, separated
+  by a '$' sign.
+
+  'name_context.xq' must contain the input context for all the queries
+  in the use case: type declarations, function definitions and global
+  variables.
+
+  'name.xq' must contain all the queries and follow the following
+  format precisely:
+
+	 (: QXX:  SHORT DESCRIPTION :)
+	 (: QXX:  LONG DESCRIPTION :)
+
+	 Query;
+
+	 (: QYY: ...
+
+  Comments are used to generate the HTML forms (small description) and
+  the english version of the query. There cannot be any additional
+  comments in that file.
+
+  The last query *must not* be followed by a ';' sign.
+
+  

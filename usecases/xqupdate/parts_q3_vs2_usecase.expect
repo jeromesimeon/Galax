@@ -1,0 +1,13 @@
+
+<partlist>
+  <part partid="0" name="car"/>
+  
+  
+  
+  
+  
+  <part partid="10" name="skateboard"/>
+  <part partid="11" partof="10" name="board"/>
+  <part partid="12" partof="10" name="wheel"/>
+  <part partid="20" name="canoe"/>
+</partlist>

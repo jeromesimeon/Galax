@@ -1,0 +1,346 @@
+\section{Galax Source Code Architecture}
+
+The Galax source-code directories roughly correspond to each phase of
+the query processor. (Put link to Jerome's tutorial presentation here)
+  
+The processing phases are: 
+
+\paragraph{Document processing}
+\begin{verbatim}
+  Document Parsing =>  
+ [Schema Normalization (below) =>]
+    Validation => 
+      Loading => 
+        Evaluation (below)
+\end{verbatim}
+
+\paragraph{Schema processing}
+\begin{verbatim}
+  Schema Parsing => 
+    Schema Normalization =>
+      Validation (above)
+      Static Typing (below)
+\end{verbatim}
+
+\paragraph{Query processing}
+\begin{verbatim}
+  Query Parsing => 
+    Normalization => 
+   [Schema Normalization (above) =>]
+      Static Typing (optional phase) => 
+        Rewriting => 
+          Compilation => 
+         [Loading (above) =>]
+            Evaluation =>
+              Serialization 
+\end{verbatim}
+
+\subsection{General}
+Makefile
+\begin{itemize}
+\item  Main Makefile 
+\end{itemize}
+
+base/
+\begin{itemize}
+\item    Command-line argument parsing
+\item    Global variables (conf.mlp)
+\item    XQuery Errors
+\item    String pools 
+\item    XML Whitespace handling
+\end{itemize}
+
+ast/    
+\begin{itemize}
+\item  All ASTs: XQuery User \& Core, XQuery Type User \& Core
+\item  Pretty printers for all ASTs
+\end{itemize}
+
+config/
+
+monitor/	 
+\begin{itemize}
+\item  CPU \&/or memory monitoring of each processing phase
+\end{itemize}
+
+toplevel/	    
+\begin{itemize}
+\item    Main programs for command-line tools (see 'Generated executables'  below)
+\end{itemize}
+
+website/
+\begin{itemize}
+\item    Local copy of Galax web site
+\end{itemize}
+
+\subsection{Datamodel}
+
+datatypes/  (*** Doug)
+\begin{itemize}
+\item    XML Schema simple datatypes  -- Lexers and basic operations 
+
+\item    datatypes\_lexer.mll
+    To learn about O'Caml lex, read:
+      \ahrefurl{http://caml.inria.fr/ocaml/htmlman/manual026.html}
+      Sections 12.1 and 12.2
+    Other examples of lexers in lexing/*.mll
+
+    We are going to extend this module to include lexer for: 
+      xsd:date, xsd:time, xsd:dateTime, xs:yearMonthDuration, xs:dayTimeDuration
+      (Skip Gregorian types for now, xsd:gDay, xsd:gMonth, etc)
+
+\item  dateTime.ml,mli
+    This module will implement the datatypes and basic operations
+\end{itemize}
+
+namespace/
+\begin{itemize}
+\item   XML Qualified Names (prefix:localname)
+  -- Lexer and basic operations
+  -- QName resolution prefix => URI 
+\item   Names of builtin functions \& operators 
+\end{itemize}
+
+dm/	    (*** Doug)
+\begin{itemize}
+\item   Abstract data model interface for Nodes
+\item   Concrete data model implementation for AtomicValues 
+\end{itemize}
+
+datamodel/
+\begin{itemize}
+\item   Main-memory implementation of abstract data model for Nodes
+  (~ Document-Object Model or DOM)
+\end{itemize}
+
+jungledm/	 
+\begin{itemize}
+\item   Secondary storage implementation of Galax datamodel (Jungle)
+\end{itemize}
+
+physicaldm/	 
+\begin{itemize}
+\item   Physical data model 
+\end{itemize}
+streaming/
+\begin{itemize}
+\item   XML parser to untyped and typed SAX streams
+\item   export datamodel to SAX stream 
+\end{itemize}
+
+\subsection{Processing Model}
+procctxt/ 
+\begin{itemize}
+\item   Processing context contains all query-processor state:
+\begin{itemize}
+\item      Parse context
+\item      Normalization context
+\item      Static context
+\item      Rewrite context
+\item      Dynamic context
+\end{itemize}
+\end{itemize}
+
+procmod/
+\begin{itemize}
+\item    Processing model dynamically "glues" together phases (controlled by
+  command-line arguments or API)
+\end{itemize}
+
+\subsection{Query Parsing}
+lexing/	    
+\begin{itemize}
+\item    Lexers for XQuery (excludes all simple datatypes)
+\end{itemize}
+parsing/	 
+\begin{itemize}
+\item    Parsing context
+\item    Parsing phase
+\end{itemize}
+
+\subsection{Normalization}
+normalization/
+\begin{itemize}
+\item    Normalization context
+\item    Normalization phase (XQuery AST => XQuery Core AST)
+\item    Overloaded functions
+\end{itemize}
+
+\subsection{Static Typing}
+
+fsa/	    
+\begin{itemize}
+\item    Finite-state Automata for checking sub-typing relation
+\end{itemize}
+typing/
+\begin{itemize}
+\item    Static-typing context
+\item    Static-typing phase
+\end{itemize}
+
+\subsection{Schema/Validation}
+schema/
+\begin{itemize}
+\item   Schema-validation context
+\item   Schema normalization phase (XML Schema => XQuery Core Types)
+\item   Document validation phase
+\item   Judgments(functions) for comparing XQuery types
+\end{itemize}
+
+\subsection{Rewriting}
+
+cleaning/    
+\begin{itemize}
+\item   Logical optimization/rewriting phase 
+\item   Sort-by-document order (DDO) optimization
+\end{itemize}
+rewriting/    
+\begin{itemize}
+\item   Generic AST rewriter
+\end{itemize}
+
+\subsection{Compilation}
+compile/  
+\begin{itemize}
+\item   Compilation phase 
+\end{itemize}
+algebra/    
+\begin{itemize}
+\item   AST for compiled algebra 
+\item   Dynamic context
+\item   Implementations (dynamic) of most built-in functions \& operators
+\end{itemize}
+
+\subsection{Evaluation}
+evaluation/
+\begin{itemize}
+\item   Evaluation phase
+\end{itemize}
+stdlib/ 
+\begin{itemize}
+\item   Static typing of built-in functions \& operators 
+\item   Implementations (dynamic) of built-in functions fn:doc, fn:error
+\item   Signatures of built-in functions \& operators (pervasive.xqp) 
+     Corresponds to sections in \ahrefurl{http://www.w3c.org/TR/xpath-functions/}
+\end{itemize}
+
+\subsection{Serialization}
+serialization/
+\begin{itemize}
+\item   Serialize SAX stream to XML document (in O'Caml formatter)
+\end{itemize}
+
+\subsection{Testing}
+
+usecases/
+\begin{itemize}
+\item   Tests of XQuery Usecases
+    Implements examples in \ahrefurl{http://www.w3.org/TR/xquery-use-cases/}
+\end{itemize}
+examples/
+\begin{itemize}
+\item   Tests of O'Caml, C \& Java APIs
+\end{itemize}
+regress/
+\begin{itemize}
+\item   Regression tests (needs separate xqueryunit/ CVS package)
+\end{itemize}
+
+\subsection{APIs}
+
+galapi/   
+\begin{itemize}
+\item   O'Caml, C \& Java APIs to Galax processor
+\end{itemize}
+
+\subsection{External libraries \& tools}
+tools/   
+
+Required tools:
+\begin{itemize}
+\item   http
+\item   pcre
+\item   pxp-engine 
+\item   netstring 
+\end{itemize}
+
+Optional supported tools:
+\begin{itemize}
+\item   Jungle
+\end{itemize}
+
+Optional unsupported tools:
+\begin{itemize}
+\item   glx\_curl
+\item   jabber
+\end{itemize}
+
+\subsection{Extensions}
+extensions/
+\begin{itemize}
+\item   apache
+\item   jabber
+\end{itemize}
+
+\subsection{Experimental Galax extensions}
+
+projection/ 
+\begin{itemize}
+\item   Document projection 
+\end{itemize}
+
+wsdl/    
+
+wsdl\_usecases/
+\begin{itemize}
+\item   Web-service interfaces
+\end{itemize}
+
+\subsection{Documentation}
+\begin{itemize}
+\item Changes     
+  Change log!! 
+  Protocol: always document your changes in Changes file; use log
+    entry as input message to 'cvs commit'
+
+\item BUGS	    
+  Out of date
+
+\item LICENSE	 
+\item README	 
+\item STATUS	    
+\item TODO	    
+\end{itemize}
+
+
+\subsection{Generated executables}
+\begin{description}
+\item[ocaml-galax] O'Caml top-level interpretor that loads Galax library.
+               Usage:
+               ocaml-galax -I \$(HOME)/Galax/lib/caml-devel
+
+\item[galax-run] Complete XQuery engine
+               For Usage:
+               galax-run --help
+               See also: 
+               all: rule in usecases/Makefile
+
+\item[galax.a]       Library versions of Galax
+\item[galax.cma]     byte code
+\item[galax.cmxa]    machine code
+
+\item[galax-parse]   Syntax checking on query, validation on a document
+\item[galax-compile] Parsing, normalization, optimization, and prints resulting expression
+
+\item[galax-mapschema] Takes XML Schema and prints out internal XQuery type
+\end{description}
+
+Auxiliary research tools:
+\begin{description}
+\item[galax-mapwsdl]Imports/exports Galax queries as WSDL Web Services
+\item[xquery2soap]
+
+\item[galax-project] Takes XQuery query and figures out what fragments of
+                documents are necessary to evaluate the query
+\end{description}
+

@@ -1,0 +1,16 @@
+<instrument>electrocautery</instrument>
+<glx:result xmlns:glx="http://www.galaxquery.org"><instrument>using electrocautery.</instrument><instrument>electrocautery</instrument></glx:result>
+<glx:result xmlns:glx="http://www.galaxquery.org"><instrument>Hasson trocar</instrument><instrument>trocar</instrument></glx:result>
+<glx:result xmlns:glx="http://www.galaxquery.org"/>
+<critical_sequence>
+      The fascia was identified and
+      <action>#2 0 Maxon stay sutures were placed on each side of the midline.</action>#2 0 Maxon stay sutures were placed on each side of the midline.
+      </critical_sequence>
+<critical_sequence>
+      The fascia was identified and
+      <action>#2 0 Maxon stay sutures were placed on each side of the midline.</action>#2 0 Maxon stay sutures were placed on each side of the midline.
+      </critical_sequence>
+<critical_sequence>
+      The fascia was identified and
+      <action>#2 0 Maxon stay sutures were placed on each side of the midline.</action>
+      </critical_sequence>

@@ -1,0 +1,412 @@
+<html>
+
+<head>
+<title>DXQ: Managing Distributed System Resources with Distributed XQuery</title>
+<link rel="stylesheet" href="files/style.css" type="text/css"/>
+<meta http-equiv="Content-Type" content="text/html; charset="iso-8859-1"/>
+</head>
+
+<body>
+
+<div class="header">
+<!-- style="background-color:blue" -->
+<table border="0">
+<tr>
+<td><img src="images/dxq.jpg" alt="DXQ" width="180pt"/></td>
+<td> <h1>
+DXQ: Managing Distributed System Resources with Distributed XQuery
+</h1> </td> 
+<tr>
+</table>
+</div>
+
+<h2>Goals</h2>
+
+The goal of the DXQ project is to support development of reliable,
+extensible, and efficient distributed resource-management
+protocols. Our strategy to meet these requirements is to provide a
+high-level, distributed, and optimizable <b>query language</b> for
+implementing distributed <b>resource-management protocols</b>. By using a
+high-level language, a protocol's semantics is transparent, not
+hidden, in the implementation, which supports the reliability
+requirement. In addition, the implementation is optimizable by general
+query optimization techniques. Automating optimization supports the
+efficiency requirement and permits implementors to focus more on
+functionality and less on performance.
+
+<h2>DXQ Team</h2>
+<ul>
+<li><a href="http://www.research.att.com/~mff/">Mary Fern&aacute;ndez</a>, AT&amp;T Labs Research</li>
+<li><a href="http://www.research.att.com/~trevor/">Trevor Jim</a>, AT&amp;T Labs Research</li>
+<li><a href="http://www.cs.utexas.edu/~kmorton/">Kristi Morton</a>, University of Texas, Austin</li>
+<li><a href="http://www.cse.ucsd.edu/users/nonose/">Nicola Onose</a>, University of California, San Diego</li>
+<li>J&eacute;r&ocirc;me Sim&eacute;on, IBM T.J. Watson Research</li>
+</ul>
+
+<h2>Publications</h2>
+<ul>
+<li><a href="papers/ximep-2007.pdf">DXQ, A Distributed XQuery Scripting Language</a>, <a href="http://research.yahoo.com/workshops/ximep-2007/">XIME-P 2007</a></li>
+<li><a href="papers/sigmod-demo-2007.pdf">Highly Distributed XQuery with DXQ</a>, SIGMOD 2007, demonstration track</li>
+</ul>
+
+<h2>The Language</h2>
+
+The DXQ language includes all XQueryP, a procedural language based on
+XQuery 1.0 with <a
+href="http://www.w3.org/TR/2006/WD-xqupdate-20060711/">update</a>
+statements, to which it addds a few extensions.  Unlike XQuery, DXQ
+distinguishes a module's interface from its implementation. Module
+interfaces contain only declarations of functions and variables that
+are exported.  A client query may remotely call functions in a module
+exported by a DXQ server, to which it can refer by using an <span
+class="keyword">import interface</span> statement.  DXQ also adds a
+<span class="keyword">let server implement</span> expression, which
+dynamically asserts that a DXQ server at a particular URI implements
+an imported interface.
+
+The expression language is also enriched with two remote evaluation
+expressions, <span class="keyword">from server return</span> and <span
+class="keyword">at server do</span>, which redirect evaluation of an
+expression to a DXQ server synchronously and asynchronously,
+respectively.  The following grammar gives the syntax for these
+extensions.
+
+<pre>
+      Interface ::= <span class="keyword">interface</span> namespace NCName = URILiteral; InterfaceProlog;
+         Module ::= module namespace NCName = URILiteral (<span class="keyword">implements</span> URILiteral)?; ModuleProlog
+InterfaceImport ::= <span class="keyword">import interface namespace</span> NCName = URILiteral
+           Expr ::= ... (: XQueryP :)
+                |  <span class="keyword">let server</span> NCName <span class="keyword">implement</span> NCName <span class="keyword">at</span> Expr return Expr
+                |  <span class="keyword">from server</span> NCName <span class="keyword">return</span> Expr
+                |  <span class="keyword">at server</span> NCName <span class="keyword">do</span> Expr  
+</pre>
+
+<h2>Architecture</h2>
+
+<img src="images/galaxd-process1.jpg" alt="DXQ" />
+
+<p>
+
+DXQ is implemented in the <a
+href="http://www.galaxquery.net">Galax</a> XQuery architecture, which
+compiles XQuery programs into an algebraic representation (a query
+plan) that is exchanged by DXQ servers.  This plan is enclosed into a
+remote closure which allows to ship an arbitrary expression and
+encapsulates whatever context is necessary to evaluate the expression
+remotely. Galax's hybrid algebra includes XML "tree" operators and
+classic tuple operators.  The latter permit efficient implementation
+(the Optimizer stage) of common query idioms like join an group-by,
+which are expressed by nested FLWOR expressions in XQuery. The
+optimized plan is evaluated based on the code selection performed on
+the server.
+
+</p>
+
+<p>
+
+The extension relies on a simple client-server protocol based on HTTP
+that permits the communication between DXQ peers.
+
+</p>
+
+<h2>Usage</h2>
+
+DXQ can be downloaded with the last <a
+href="http://www.galaxquery.net">Galax</a> distribution and is 
+available as a server application, <em>galaxd</em>.
+
+<p>
+galaxd reads the programs of the DXQ servers from DXQ source files.
+It can either create a network with nodes on different machines, or
+simulate one on localhost, based on the programs from a given
+directory.  For the full option list, try `galaxd -help'. For the
+purpose of this demo, we'll show a local simulation, which can be run
+by going into the directory containing the distributed application and
+typing:
+</p>
+<p>
+<code>$ galaxd -language xquerybang -dxq on -s .</code>
+
+</p>
+
+<h2>DNS Examples</h2>
+
+<p>
+The main example we focused on, in the beginning, is a distributed DNS
+application. The DNS network is formed by servers and resolvers, each
+running its own program. We focused on the core functionality of DNS. 
+The complete description of the protocol and its features is
+detailed in <a href='http://www.ietf.org/rfc/rfc1034.txt'>RFC1034</a>
+and  <a href='http://www.ietf.org/rfc/rfc1035.txt'>RFC1035</a>.
+</p>
+<p>
+
+In order to separate the common interface exported by the peers in a
+DXQ network from the implementation, we needed to extend the XQuery
+module system with the notion of interface.  For instance, all our DNS
+servers implement export the interface below:
+
+<pre>
+interface namespace Server = "http://www.dns.org/Server";
+
+declare function Server:RR() external;
+declare function Server:down($hostname as xs:string) external;
+
+</pre>
+
+<ul>
+
+<li> The <code>RR()</code> function returns the <a
+href='http://www.ietf.org/rfc/rfc1034.txt'>resource records</a> 
+of that server. It is typically called by a DNS resolver which
+interrogates servers.
+</li>
+
+<li> The <code>down()</code> function tries to resolve a URL both by using the
+addresses locally stored and by calling other <a
+href="http://www.ietf.org/rfc/rfc1035.txt">authoritative</a> servers
+specified in its resource records. It is used in a peer-to-peer 
+scenario, when the servers are willing to perform recursive resolution.
+</li>
+
+</ul>
+
+</p>
+
+<ol>
+<li> <b>Naive Iterative DNS Resolution</b> <br/>
+<!-- R:lookup("192.128.133.77", "www.research.att.com") -->
+See the <a href='examples/lookupdxqoff/1.html' target='_blank'>demo</a>
+and the <a href='examples/lookupdxqoff/anim.gif' target='_blank'>animated version</a>.
+
+<p>
+The lookup function takes as argument the address of the first server
+to be asked and the hostname whose address are looking for. It starts
+by retrieving the addresses stored on the server and continues,
+recursively, by sending requests to other servers to which it is
+referred.
+
+<pre>
+import interface Server = "http://www.dns.org/Server";
+import module U = "DNSUtility"; 
+declare function R:lookup($x,$n) {
+  let server S implement Server at $x return
+  &lt;rr&gt;{   
+    from server S return S:RR()/a[@hostname=$n],
+    for $ns in (from server S return S:RR()/ns)
+    for $a in (from server S return S:RR()/a)
+
+      where $ns/@nameserver=$a/@hostname
+      and fn:not($ns/@domain=".")
+      and glx:dns-lt($ns/@domain,$n)
+      return
+      R:lookup($a/@address,$n)/a
+  }&lt;/rr&gt;
+};
+</pre>
+
+In the non-optimized version, the resolver first makes an exec call to get all
+the nameserver records, then another one to get all address records and joins
+them locally to find out the addresses of servers that could answer its query,
+based on the result of the <code>glx:dns-lt()</code> function.
+</p> 
+
+</li>
+
+<li><b>Optimized Iterative DNS Resolution</b> <br/>
+<!-- R:lookup("192.128.133.77", "www.research.att.com") -->
+
+See the <a href='examples/lookupdxqon/1.html'
+target='_blank'>demo</a> and the <a
+href='examples/lookupdxqon/anim.gif' target='_blank'>animated
+version</a>.
+
+<p>
+With DXQ optimizations turned on, the join is pushed inside the exec call
+and executed on the server, by rewriting the body of the lookup function 
+as below: <!-- corresponds to lookup3() in resolver-opt.xq -->
+<pre>
+  let server S implement Server at $x return 
+  &lt;rr&gt;{
+    from server S return S:RR()/a[@hostname=$n],
+    for $a in 
+      from server S return { 
+        for $ns in (from server S return S:RR()/ns),
+            $a in (from server S return S:RR()/a)
+        where $ns/@nameserver=$a/@hostname
+        and fn:not($ns/@domain=".")
+        and glx:dns-lt($ns/@domain,$n)
+        return $a 
+      }
+     return
+     R:lookup($a/@address,$n)/a
+  }&lt;/rr&gt;
+</pre>
+
+This reduces the number of requests sent to a server from 3 to 2: one
+for the address of the looked-up name and one for the addresses of the
+relevant nameservers (which is the result of the join on the server).
+For the example in our <a href='examples/lookupdxqon/1.html'
+target='_blank'>demo</a>, where the exchange of messages ends after
+asking two servers, it means reducing the total number of messages
+from 14 to 10.
+
+Please note that in the optimized case, the servers also return tables
+of tuples containing the bindings found by the join in the second
+argument of the second exec.  In the non-optimized case, exec sends
+only path expressions, hence all responses are XML trees.
+</p>
+
+</li>
+
+<li><b>Recursive DNS Resolution</b> <br/>
+
+<!-- D:down("www.research.att.com") --> 
+
+See the <a href='examples/recresolution/1.html'
+target='_blank'>demo</a> and the <a
+href='examples/recresolution/anim.gif' target='_blank'>animated
+version</a>.
+
+<p>
+The nameservers in our application can also act as nodes in a
+<em>peer-to-peer</em> network and perform name resolution by
+themselves. In the <a href='examples/recresolution/1.html'
+target='_blank'>example</a> we provide, a server is directly ask to
+resolve a name which is not in its database, hence it will delegate
+the query to another server which is able to answer it, by calling by
+calling its <code>S:down()</code> function. As the latter doesn't have
+a relevant record, it needs to delegate the request to a third server
+which is finally able to answer. The answer is sent back by reversing
+the chain of requests.
+</p>
+
+</li>
+
+<li><b>DNS Resolution with caching</b>
+<br/>
+
+<!-- R:lookup("192.128.133.77", "www.research.att.com") -->
+
+See the <a href='examples/dnswithcache/1.html'
+target='_blank'>demo</a> and the <a
+href='examples/dnswithcache/anim.gif' target='_blank'>animated
+version</a>.
+
+<p>
+For reasons of scalability, most DNS implementation do caching at
+various levels. In our example, we added a cache on the resolver. The
+iterative lookup() is modified to first inspect its local cache and to
+stop if it finds an answer there. Otherwise, it proceeds as before,
+updating the cache each time a new answer is found. All resource
+records contain a <a
+href='http://www.ietf.org/rfc/rfc1035.txt'>TTL</a> field, representing
+the maximum number of seconds that the record can be stored in the
+cache. Also, the TTL has to be regularly updated, because it may be
+used by other servers along a path of requests, in case they decide to
+do caching. In our DXQ program, these specifications are implemented
+by <code>do replace</code> and <code>do delete</code> XQuery Update
+statements.
+</p>
+
+<p>
+In our <a
+href='examples/dnswithcache/1.html'target='_blank'>demo</a> we first
+ran the same lookup as before and we display the exchanged messages. 
+Then, we call that lookup again and this time the query is answered
+using information from the cache. Thus, event no. 10 (from the first
+lookup) and event no. 12 (from the second lookup) give the same address
+as answer, but with different TTL's.
+</p>
+
+
+</li>
+
+<li><b>Multicast Simulation</b>
+<br/>
+
+<!-- D:multicast("x"); -->
+
+See the <a href='examples/multicast/1.html' target='_blank'>demo</a>
+and the <a href='examples/multicast/anim.gif'
+target='_blank'>animated version</a>.
+
+<p>
+Using an architecture similar to the one from the DNS example, we can
+build a multicast service in a peer-to-peer network. The main
+ingredients allowing this are a node's capacity to export data and to
+delegate queries to other nodes. <br/>
+
+The interface exported by the peers consists in:
+
+<ul>
+
+<li> A <code>deliver()</code> function that processes a request.</li>
+
+<li> A <code>multicast()</code> function that tries to process the
+request locally and also delegates it to relevant nodes by calling
+asynchronously their own <code>multicast()</code>.</li>
+
+</ul>
+
+Please note that the definitions of <code>deliver()</code> and
+<code>multicast()</code> may not be the same on all nodes, giving a
+lot of flexibility in the implementation of the protocol.
+
+</p>
+
+</li>
+</ol>
+
+<h2>Narada</h2>
+
+<p>
+Narada is a mesh overlay network in which nodes can
+dynamically enter and leave the mesh overlay and which
+provides infrastructure for routing and multicast. Overlay
+networks like Narada are interesting test cases for DXQ, because
+they require periodic, asynchronous messages to maintain
+protocol state, and the state includes membership and
+routing tables that can be naturally described and manipulated
+in XML. More details are available in the 
+<a href="http://ieeexplore.ieee.org/iel5/49/22260/01038577.pdf">
+JSAC paper</a>.
+</p>
+
+<p>The core functionality of the protocol is simulated by 3 top-level
+functions:
+
+<pre>
+interface namespace Narada = "narada";
+
+declare updating function Narada:depart() as empty-sequence() external;
+declare updating function Narada:die() as empty-sequence() external;
+declare updating function Narada:go() as empty-sequence() external;
+
+</pre>
+</p>
+
+<ul>
+
+<li> <code>depart()</code>, as its name suggests,  provokes an explicit departure from the
+network.
+</li>
+
+<li>Calling <code>die()</code>, on the other hand, makes the node die without any warning
+for its peers.</li>
+
+<li>The <code>go()</code> function implements the main functionality by 
+updating local state and sending various kinds of messages:
+<ul>
+<li><i>refresh probe</i>: update local information</li>
+<li><i>latency probe</i>: test the latency of a peer</li>
+<li><i>neighbor probe</i>: update information regarding neighbors</li>
+<li><i>routing probe</i>: send routing table to neighbors</li>
+<ul>
+</li>
+
+</ul>
+
+</body>
+</html>
+

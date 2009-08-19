@@ -1,0 +1,12 @@
+
+<parttree>
+    <part partid="0" name="car">
+        
+        
+    </part>
+    <part partid="10" name="skateboard">
+        <part partid="11" name="board"/>
+        <part partid="12" name="wheel"/>
+    </part>
+    <part partid="20" name="canoe"/>
+</parttree>

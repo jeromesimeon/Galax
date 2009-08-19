@@ -1,0 +1,212 @@
+\section{What is XQuery 1.0?}
+
+XQuery 1.0 is a query language for XML, defined by the World-Wide Web
+Consortium (W3C), under the XML activity.  XQuery is a powerful
+language, which supports XPath 2.0 as a subset and includes
+expressions to construct new XML documents, SQL-like expressions to
+perform selection, joins, and sorting over collections of XML values,
+operations on namespaces, and expressions over XML Schema types.
+XQuery is a functional language, which comes with an extensive library
+of built-in functions, and allows user to define their own functions.
+More information about XQuery can be found of the XML Query Working
+Group Web page\footnote{\xquerywgurl}.
+
+\section{What is Galax?}
+
+Galax is an implementation of XQuery 1.0 designed with the following
+goals in mind: completeness, conformance, performance, and
+extensibility. Galax is open-source, and has been used on a large
+variety of real-life XML applications. Galax relies on a formally
+specified and open architecture which is particularly well suited for
+users interested in teaching XQuery, or in experimenting with
+extensions of the language or optimizations.
+
+Here is a list of the main Galax features.
+
+\begin{itemize}
+\item Galax implements the January 2007 (W3C Recommendation)
+  set of specifications for XQuery.
+\item Galax supports Minimal Conformance, as well as the following
+  optional features: Static Typing, Full Axis, Module, and
+  Serialization. The following table lists Galax 1.0 results with
+  respect to the XQuery Tests Suite version 1.0.2:
+\begin{center}
+\begin{tabular}{|lrrrr|}
+  \hline
+  & Pass & Fail & Total & Percent\\\hline
+  Minimal Conformance      &       14553 & 71 & 14637 & (99.4\%)\\\hline
+  Optional Features &&&& \\
+  \hspace*{0.5cm}Static Typing Feature   &      46    & 0   & 46 & (100\%)\\
+  \hspace*{0.5cm}Full Axis Feature        &     130  & 0   & 130 & (100\%)\\
+  \hspace*{0.5cm}Module Feature            &    32    & 0   & 32 & (100\%)\\\hline
+\end{tabular}
+\end{center}
+\item Galax supports Unicode, with native support for the UTF-8 and
+  ISO-8859-1 character encodings.
+\item Galax is portable and runs on most modern platforms.
+\item Galax includes a command-line interface, APIs for OCaml, C, and
+  Java, and a simple Web-based interface.
+\item Galax includes partial support for the Schema Import and Schema
+  Validation optional features. Unimplemented features of XML Schema
+  include simple types facets and derivation by extension and
+  restriction on complex types.
+\item Galax supports the XQuery 1.0 Update
+Facility\footnote{\ultfurl}.
+\item Galax supports the XQueryP scripting extension for
+  XQuery\footnote{\xqueryp}.
+\end{itemize}
+
+\paragraph{Alpha features:}
+
+The following features are experimental.
+
+\begin{itemize}
+\item Galax inludes support for SOAP and WSDL-based Web Services
+  invocation;
+\item Galax inludes support for Distributed XQuery development;
+\item Galax's compiler includes an optimizer that supports state of
+  the art database and programming language optimization, including:
+  \begin{itemize}
+  \item type-based optimizations, notably eliminating unnecessary type
+    matching or casting operations and turning dynamic dispatch into
+    static dispatch for comparison and arithmetic operators;
+  \item tail-recursion optimization;
+  \item join and query unnesting optimizations, including physical
+    support for XQuery-specific hash and sort join algorithms;
+  \item tree-pattern detection in query plans and physical support for
+    the TwigJoin and StaircaseJoin algorithms;
+  \item generation of hybrid streamed/materialized query plans.
+  \end{itemize}
+\item Galax has an \emph{extensible data model} interface. This allows
+  users to provide their own implementation of the XML data
+  model. This can be used to support e.g., XML queries over legacy
+  data.
+\end{itemize}
+
+\paragraph{Limitations:} See Chapter~\ref{sec:alignment} for details
+  on Galax's alignment with the XQuery and XPath working drafts.
+
+\subsection{Changes since the last version}
+
+The following lists the main changes included with this version
+(\version).
+
+\begin{itemize}
+\item Galax 1.0 supports the latest OCaml 3.10 compiler and GODI
+3.10.
+\item Support for the XQuery Update Facility 1.0, August 2007 Working
+Draft. Support for the XQuery 1.0 Update Facility Static Typing
+Feature.
+\item Improved implementation of XQueryP.
+\begin{itemize}
+\item Re-implementation of while loops.
+\item Fixed issues with scoping.
+\end{itemize}
+\item Improved support for modules.
+  \begin{itemize}
+  \item Properly implemented nested imports.
+  \item Added support for module interfaces.
+  \end{itemize}
+\item Support for XQueryX trivial embedding.
+\item Bug fixes:
+  \begin{itemize}
+  \item Fixed problems with support for in-scope namespaces.
+  \item Fixed problems with checking of cyclic variable declarations.
+  \item Fixed several problems with the parser, using wrong lexical states inside constructors.
+  \item Small bug fixes in support for the prolog.
+  \end{itemize}
+\end{itemize}
+
+Changes from older versions can be found in
+Chapter~\ref{sec:releasenotes}.
+
+\section{Downloading and installing Galax}
+
+The official distribution can be downloaded from the main Galax Web
+site\footnote{\galaxurl}.  Detailed installation instructions are
+provided in Chapter~\ref{sec:install}.
+
+\section{How to use Galax}
+
+The Galax processor offers the following user interfaces:
+
+\begin{itemize}
+\item Command-line.
+\item Application-programming interfaces (APIs) for OCaml, C, or Java.
+\item Web interface.
+\end{itemize}
+
+\subsection{Using Galax from the command line}
+
+A number of stand-alone command-line tools are provided with the Galax
+distribution. Assuming the Galax distribution is intalled in
+\verb+$GALAXHOME+, and that Galax executables are reachable from your
+\verb+$PATH+ environment variable, The following examples show how to
+use the main command-line tools.
+
+\begin{description}
+\item[galax-run] The main XQuery interpreter (\term{galax-run}) is the
+simplest way to use Galax. For instance, the following commands:
+\begin{verbatim}
+% echo "<two>{ 1+1 }</two>" > test.xq
+% galax-run test.xq
+<two>2</two>
+\end{verbatim}
+evaluates the query \verb|<two>{ 1+1 }</two>| and prints the XML
+result \verb|<two>2</two>|.
+
+\item[galax-parse] The Galax XML parser and XML Schema validator can
+  be called as a standalone tool. For instance, the following command
+  validates the document in \texttt{hispo.xml} against the schema in
+  \texttt{hispo.xsd}:
+\begin{verbatim}
+% galax-parse -validate -xmlschema $GALAXHOME/examples/docs/hispo.xsd \
+                                   $GALAXHOME/examples/docs/hispo.xml 
+\end{verbatim}
+
+\item[galax-mapschema] A stand-alone tool that maps XML Schema documents into the XQuery
+  type system.   This tools is useful for checking whether Galax
+  recognizes all the constructs in your XML Schema.  It also eliminates a lot of the
+  ``noise'' in XML Schema's XML syntax. 
+
+For instance, this command will print out the XQuery type
+representation of the schema in \texttt{hispo.xsd}: 
+\begin{verbatim}
+% galax-mapschema $GALAXHOME/examples/docs/hispo.xsd 
+\end{verbatim}
+\end{description}
+
+Chapter~\ref{sec:commandline} describes the command-line tools in detail.
+
+\subsection{Web interface}
+
+The Web interface is a simple and convenient way to get acquainted
+with Galax. It allows users to submit a query, and view the result of
+compilation and execution for that query.
+
+An on-line version is available on-line at:
+\ahrefurl{http://www.galaxquery.org/demo/galax\_demo.html}
+
+You can also re-compile the demo from the Galax source and install it
+on your own system. You will need an HTTP server (Apache is
+recommended), and follow the compilation instructions in
+Section~\ref{sec:website}.
+
+\subsection{Language API's}
+
+Galax supports APIs for OCaml, C, and Java.  See Chapter~\ref{sec:api}
+for how to use the APIs.
+  
+If you have installed the binary distribution of Galax, all three APIs
+are available.
+
+If you have intalled the source distribution of Galax, you will need
+to select the language(s) for which you need API support at
+configuration time.  See Chapter~\ref{sec:install} for details on
+compiling Galax from source.
+
+Examples of how to use Galax's APIs can be found in the following
+directories:\\ \cmd{\$GALAXHOME/examples/caml\_api/}\\
+\cmd{\$GALAXHOME/examples/c\_api/}\\
+\cmd{\$GALAXHOME/examples/java\_api/}.
+

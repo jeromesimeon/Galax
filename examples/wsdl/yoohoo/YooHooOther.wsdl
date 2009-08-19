@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+
+<!-- WSDL description of the YooHoo Web service. -->
+
+<definitions name="YooHoo"
+             targetNamespace="urn:YooHoo"
+             xmlns:typens="urn:YooHoo"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <!-- Types for presence info -->
+
+  <types>
+    <xsd:schema xmlns="http://www.w3.org/2001/XMLSchema" 
+                targetNamespace="urn:YooHoo">
+            
+      <xsd:complexType name="PresenceResult">
+       <xsd:sequence>
+        <xsd:element name="availability" type="xsd:string"/>
+       </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </types> 
+
+  <!-- Messages for YooHoo Web APIs  -->
+             
+  <message name="getPresence">
+    <part name="userName"         type="xsd:string"/>
+    <part name="buddyName"        type="xsd:string"/>
+  </message>
+
+  <message name="getPresenceResponse">
+    <part name="return"         type="typens:PresenceResult"/>
+  </message>
+
+  <!-- Port for YooHoo Web APIs, "YooHoo" -->
+  <portType name="YooHooPort">
+    <operation name="presence">
+      <input message="typens:getPresence"/>
+      <output message="typens:getPresenceResponse"/>
+    </operation>
+  </portType>
+
+
+  <!-- Binding for YooHoo Web APIs - RPC, SOAP over HTTP -->
+  <binding name="YooHooBinding" type="typens:YooHooPort">
+    <soap:binding style="rpc"
+                  transport="http://schemas.xmlsoap.org/soap/http"/>
+
+    <operation name="presence">
+      <soap:operation soapAction="urn:YooHooAction"/>
+      <input>
+        <soap:body use="encoded"
+                   namespace="urn:YooHoo"
+                   encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="encoded"
+                   namespace="urn:YooHoo"
+                   encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+  </binding>
+
+  <!-- Endpoint for YooHoo Web APIs -->
+  <service name="YooHooService">
+    <port name="YooHooPort" binding="typens:YooHooBinding">
+      <soap:address location="http://localhost:8080/yoohoo-server-other.xqs"/>
+    </port>
+  </service>
+
+</definitions>

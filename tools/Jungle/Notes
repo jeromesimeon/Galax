@@ -1,0 +1,31 @@
+Important notes
+-----------------
+
+* Library Changes
+ ----------------
+    
+    Make sure that the libdb.so you are using points to the same version that 
+    you compiled against. To check, use ldd galax-run, then ls -l the
+    resulting libdb.so library. It should be in your berkeley
+    installation - not the default with fedora.
+
+* DB_NOTFOUND
+  DB_NOTFOUND (in db.h) is the only constant we rely on. Unfortunately it
+  changed between versions 4.1 -> 4.3. You can change which constant is used 
+  in the top of jungle.ml.
+
+* String Manipulation * We do not use strings any longer. *
+  --------------------
+	String in ocaml *not* '\0' terminated 		(language feature)
+	String in C '\0' terminated 				(language feature)
+	String in BerkeleyDB *not* '\0' terminated 	(design decision)
+
+	String Conversions  C <==> Ocaml
+		+ use proper macros and routines and those will handle the
+		  placement and removal of '\0' in the end of a string.
+
+	String Conversions C <==> BDB
+		+ Do not store '\0' in BDB (use strlen()).
+		+ Append '\0' to string after retrieval from BDB.
+
+

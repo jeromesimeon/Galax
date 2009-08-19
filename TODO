@@ -1,0 +1,650 @@
+======================================================================
+
+ -------
+| TODO: |
+ -------
+
+March 29, 2005 - Jerome and Mary
+
+ALIGNMENT OF GALAX WITH VLDB PAPER:
+
+ (1) Now normalizing path expressions using FLWORs instead of for/let.
+ (2) Removed old for/let from the core.
+ (3) Changed SBDO optimization to operate over FLWORs.
+ (4) Removed for but *not* let from the algebra.
+ (5) Renamed SepSequence to MapIndexStep.
+ (6) Remove Enclosed expressions from the algebra, no-op.
+ (7) Remove let in the algebra, still used to bind the context
+     item before an axis call.
+
+STILL TO DO:
+
+ (6) Implement the full GroupBy. Adapt the optimization rules.
+ (8) Are enclosed expressions in the core still necessary?
+ (9) Compile some/every using tuples
+ (10) Compile typeswitches using tuples
+ (11) Fix a number of bugs in factorization and optimization (see
+      previous threads).
+
+March 28, 2005 - Mary
+  - EBV Alignment
+    See: http://lists.w3.org/Archives/Member/w3c-xsl-query/2004Nov/0291.html
+
+  - API
+    o We need to review and test memory management in the C/Java
+      APIs. There are no rules right now about who should be freeing
+      memory and which objects must be freed. 
+
+    In the C API, who is responsible for freeing compiled_modules? If
+    it is the client, what is the API call to free a compiled_module?
+
+August 4, 2004 - Mary and Jerome
+
+  - Net URL library
+    o We need to test Net URL library more thoroughly and determine
+      whether it conforms to the URL specification. 
+
+July 26, 2004 - Mary
+
+  o Galax \version does not permit document nodes in the content of a
+    new element, but should -- document node's children should be
+    extracted.
+
+  o [DONE] Add dates/times/durations to Java API 
+  o Change C and Java APIs to use input specs like O'Caml API. 
+
+July 23, 2004 - Chris
+  o Review the way symbols are handled and used in the string pools.
+      - Removing the lookups results in a large performance improvement
+	each element construction wraps a hash table lookup   
+
+July 21, 2004 - Mary 
+  For Release v0.4.0 / Alignment: 
+
+  o Check current definitions of typed-value() and string-value() are
+    implemented correctly 
+
+  o Test SequenceType more thoroughly 
+
+  o KindTest in path expressions excludes all the item tests.
+
+  o Re-check atomization rules 
+
+  o Re-check value comparisons
+
+July 14, 2004 - Mary, Jerome, Avinash, and Chris
+
+*** Galax Release Version 0.4 ***
+
+ We are preparing for V0.4 to be released on July 31.  Many people
+ have contributed to this release, so we have decided to set some
+ rules for how and when new features are incorporated into a new
+ release. 
+
+ The regression tests in xqueryunit/ are being cleaned up and
+ simplified.  New subdirectories will correspond to non-terminals in
+ grammar or function names to make finding tests easier. 
+ 
+ There will be new installation tests, which will be run from
+ galax/Makefile.  Run 'make tests'. This target will run all the
+ XQuery usecases and all the API examples.  
+
+ Features
+ ========
+
+ There are three classes of Galax features : 
+
+   o Built-in [builtin] : Built-in feature of Galax that _does not_
+     depend on any external tools (written only in Caml)
+
+   o Required tool [reqtool]: Built-in feature of Galax that _does_
+     depend on an external tool (written in Caml and/or C)
+
+   o Optional tool [opttool]: Optional feature of Galax (written in
+     Caml and/or C)
+
+ If a feature is built-in, appropriate tests should be added to 
+ xqueryunit/ directory.  For example, the SBDO feature would have its
+ own directory in xqueryunit/tests/sbdo, which would exercise that
+ feature thoroughly.  
+
+ If the feature is an optional user tool, the tools should have a
+ corresponding directory under examples/.  The directory should
+ contain user documentation, which explains how to use the tool,
+ example programs that use the tool, and a tests: target that make
+ sure it it installed correctly.
+
+ *** NB *** : A feature _must_ pass all the regression and
+ installation tests before being incorporated. 
+
+ I will let everyone know when all the testing infrastructure is in
+ place. 
+
+ Here is each new feature and person responsible for the feature:
+
+ v0.4 Release Plan
+ =================
+
+            Feature     Kind        Person    (Notes)
+            -----------------------------------------
+
+     v0.4.0 (July 31)
+
+            XML Schema  [builtin]   Vladimir
+            F&O         [builtin]   Doug
+            PCRE        [reqtool]   Mary
+            Jungle      [opttool]   Avinash   (Old node numbering, no updates)
+
+     v0.4.1 (Oct 15)
+
+            DTDs        [builtin]   Doug
+            SBDO        [builtin]   Philippe 
+            Projection  [builtin]   Amelie
+            WSDL/Apache [opttool]   Nicola
+
+     v0.4.x
+            Jungle      [opttool]   Avinash   (New node numbering, updates)
+
+ - v0.4.0 Release Plan
+   -------------------
+   o End-to-end testing plan
+
+     1. Move optional tools to config/Makefile.opttools
+
+     2. Include PCRE and Jungle in release
+
+     3. tests: target in Galax to make sure environment is set up
+        correctly 
+
+        Galax/        [mff]
+          usecases/
+          examples/   
+            caml_api/ 
+            c_api/    
+            java_api/ 
+            jungle/   [vyas]
+        
+ ACTION Items
+ ============
+ Jerome 
+   1. Talk to Vladimir about status of XML Schema
+
+ Mary
+   1.  end-to-end linking & testing for Linux platform
+       base tests, apis, xqueryunit, and Web site
+
+ Avinash
+   1. Talk to Rick about moving db.bell-labs.com/galax to
+      www.galaxquery.org
+   2. Tests and documentation for Jungle in examples/jungle
+
+ Doug
+   1. check whether namespaces of all working drafts have changed 
+
+======================================================================
+
+July 9, 2004 - Mary, Jerome, and Chris
+
+Preparatory tasks related to implementing the algebra:
+-----------------------------------------------------
+ - SBDO optimization
+
+   Code review, clean-up, and testing plan.
+   Currently the SBDO opt is _not_ the default in Galax.  To make it
+   the default,  we need to clean-up the code and add appropriate
+   tests to xqueryunit.
+
+   Who: Philippe, Mary
+   
+ - Core AST: clean-up and remove tuple expressions
+
+   Who: Jerome, Chris
+
+ - Rewriting module : review & clean-up (depends on Core AST)
+
+   Who: Mary, Jerome, Chris
+
+ - Projection module: integrate back into mainline Galax 
+   (depends on Core AST)
+ 
+   Who: Jerome, Amelie, (and Mary?)
+
+Implementing the algebra:
+-------------------------
+
+ - Source annotations (depends on Core AST)
+
+ - Consider two kinds of algebraic operators
+
+   o Independent of data-model implementation (e.g., tree pattern
+     operators, and join ops)
+
+   o Dependent on data-model implementation (e.g., stair-case joins &
+     indexed operators)
+
+May 4, 2004 - Mary
+
+ - Bug tracking! http://www.mozilla.org/projects/bugzilla/
+
+Jan 8, 2004 - Mary
+
+ - Processing model
+
+   o Serialization should be in Procmod module
+
+Dec 12, 2003 - Mary
+
+ - Modules : 
+
+   (4) in a library module, all user function declarations must be in the
+       target namespace of the module
+  
+Dec 1, 2003 - Mary
+
+    o  Alignment with LastCall F&O working draft : remove all get- prefixes
+
+Nov 18, 2003 - Mary
+
+    o cleaning_rules.ml:
+
+      - Disabled the rewriting rules for eliminating functions that
+      convert xdt:untypedAtomic values to a target type, because they
+      depend on the soundness of static typing and validation, i.e.,
+      on validation having correctly annotated data-model values with
+      their types, but validation is not yet implemented completely.
+
+      These rules should be re-enabled when named typing and
+      validation are implemented.
+
+November 14, 2003 - Mary
+ 
+  - Changed typing.ml so that element constructors pass static typing.
+
+    This is a temporary fix until element construction is implemented
+    completely and correctly.  See comments with label **Element
+    Construction HACK** in eval_expr.ml and typing.ml.
+
+Nov 12, 2003 - Mary
+
+  Review rules for union types in 'promotes_to' function in
+  typing_call.ml.  Right now, the assumption is that the target type
+  is _not_ a union.   This is too restrictive. 
+
+Nov 5, 2003  - Mary 
+
+  Default type of context item is not initialized in static context.
+  Where should this happen?  In toplevel/galax-run.ml, the values of
+  external global variables are defined, but their types are not.
+  Currently, API has no way of conveying types of external variables. 
+
+Oct 30, 2003  -  Mary
+    The optimization rules in cleaning/cleaning_rules.ml are very
+    conservative.  The do not eliminate expressions that might have a
+    side effect or that might fail.  Current dynamic semantics permits
+    elimination of unused expressions that might fail.  Need to split
+    side-effects from possible failure. 
+
+    Optimization rules also need to be re-considered under weak
+    typing.  Most of the "type-dependent" rules are assuming full
+    static typing, which provides more precise typing info than weak
+    typing. 
+
+[DONE] Oct 15, 2003
+  * fn:floor, fn:ceiling, fn:round et al should be overloaded, like all other
+    arithmetic operators
+
+Oct 1, 2003
+
+ * Export_dm should be updated when named typing is implemented. 
+   See comment by Mary in next_datamodel_event()
+
+July 31, 2003
+
+ * We need to add Finfo to SAX events so that error reporting can be
+   good. Such Finfo will come either from the original XML document,
+   or from the XQuery expression file in case of a stream built at
+   run-time when doing copy of element/constructors.
+
+June 25,  2003
+
+ * Allowing seemless datamodel extensions
+[DONE]
+   fn:doc() still needs to be changed to support alternative
+   protocols. 
+
+ * Extensible annotations of core AST/query plan
+[DONE]
+
+ * Implementing the new architecture with a query plan. I would
+   believe that the 'streaming' iterator you are talking about should
+   fit into that framework.
+
+ * XML Schema validation and named typing.
+   Depends on data model
+   Element constructor
+
+ * Improvements to the API
+
+ * Compiling the API under Windows
+
+ * Align with May 2003 grammar
+   Modules
+   Global/external variables
+   SequenceType/TypeTest
+   Element constructor
+   Namespaces ala Mike K
+
+  - Implement type-based optimizations for: 
+     o arithmetic operators applied to empty.
+
+  - Clean up datatypes & datamodel : remove all polymorphic operators
+    now that we have monomorphic operators
+
+  - Check all operators on () & with optimization enabled.
+
+  - Implement optimization for sorting by document order.
+
+  - Make the Galax code reentrant. This means getting rid of all
+    global variables and pass any required global structure in a
+    functional way.
+
+  - Complete review of treatment of namespaces & namespace attributes.
+
+  - Align with May 2003 working drafts.
+
+  - Whitespace handling during parsing & serialization.  Relationship
+    with pretty printing.
+
+======================================================================
+
+August 24, 2002:
+
+  1. Merging XML and XQuery parsers in Galax              ** DONE
+          --> Sharing the lexers.                         ** DONE
+          --> Fixing the lexers to be XML 1.0 compliant   ** DONE
+
+  2. SAX Parser
+
+  3. SAX-based loading of the data model
+
+  4. 'Generic' XML Schema validator
+          --> Done on the XML AST                 --> XQuery data model
+          --> Done on the XML-event stream        --> XQuery data model
+          --> Done on the XQuery data model       --> XQuery data model
+          --> LegoDB to generate statistics       --> Statistics
+          --> LegoDB to generate 'bulk-loading'   --> Insert statements into RDBMS
+              files (insert statements).
+
+        Take an XML stream of events as input
+      	   XML AST    --> stream of events
+      	   SAX parser --> stream of events
+      	   Data model --> stream of events
+
+  5. SAX-based validation
+         Instantiation of 4. with input  = SAX parser
+                                  output = data model creation
+
+  6. Named typing
+
+        --> Change the XQuery type system (add names)
+               --> New type AST in Galax
+        --> Normalization:
+               --> Mapping from XML Schema to the type system
+        --> Dynamic:
+               --> VALIDATION     (need to add type annotations)
+                                  (need to deal with derivations)
+                                  (need to check substitution groups)
+               --> Type matching  (With the optimization theorem!!)
+        --> Static:
+               --> Subtyping
+               --> Type inference
+
+       REFERENCES:
+         [1] XQuery 1.0 and XPath 2.0 Formal Semantics, August 16 2002.
+         [2] The Essence of XML (preliminary version), Jerome Simeon,
+             Philip Wadler, FLOPS 2002
+         [3] XML Schema Part 1: Structures
+         [4] MSL: Semantics of XML Schema (only structural based)
+         [5] RELAX NG, James Clark, Murata Makoto (only structural based)
+         [6] XDuce (only structural based)
+         [7] Look for OO languages. Formal models for OO
+             languages. Cardelli, et al.
+         [8] Subsumption for XML types, Gabi Kuper, Jerome Simeon.
+         [9] Inclusion of tree grammar references.
+         [10] Murali Mani, ask him for his note on subtyping for XML.
+
+  7. Hook-up schema validation inside XQuery data model
+
+  8. Document order and improved query rewritings
+  9. New semantics of element constructors.
+
+  10. 'Algebraic' optimizations
+
+
+==========================================================================
+August 20, 2001: 
+
+Features for demo & use cases:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  To do: 
+  * Interface to include Query/Result/Inferred type on one page
+    Window for loading XML Schema into type system
+
+    define global $v { treat as t (document(...) }
+
+    define global $v { e }
+
+  * Current XML Parser : floats 
+
+  * implicit data() in eq/arith operators [ Mary ]
+    - implement definition in email
+
+  * implicit existential quantification e.g., A[b]
+  * RANGE int TO int expression
+    Also in predicates [1 TO 5]
+  * functions: 
+    distinct-node, filter, date(), string(), namespace_uri(), 
+    newline()??, shallow()??
+  * operators: 
+    UNION, '//', AFTER, BEFORE
+  * node tests : text()
+  * Not sure how much use cases are sensitive to document order 
+
+  * Validation -
+    in the meantime, escape non-string literals with {} in input
+    documents 
+
+  Completed:
+  X sequence index expressions, e.g., A[1], A[last()], A[position() =  Expr ]
+  X functions: 
+    contains, ends_with, distinct-value, count,
+
+Release Strategy for Source-code release
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Technical
+  * Symbols in xs: xsd: namespaces 
+
+  X Schema import  [ Byron & Mary ] 
+
+  * Validation     [ Jerome ] 
+    - instance of data model 
+
+  * XML Parser -   [ ??? ]  
+       1. xerces-parser : document -> SAX interface 
+        : SAX -> data model instance (+ validation)
+       2. xquery-parser: document -> AST 
+        load : AST -> data model instance (+ validation)
+    
+       3. pxp : document -> DOM-like interface
+    
+          not complete w.r.t. whitespace    
+          Unicode, etc. 
+
+  * XPath 2.0 semantics [ Mary  & Jerome ]
+
+    1. Add '[]' predicates [ Mary ] 
+
+    2. '//' [ Jerome ]
+
+    '/' vs. FOR
+
+    implicit conversion of element/attribute to its typed value in
+       arithmetic exprs  $v/price + 1  $v/price/data(.) + 1 
+       --- explicit data()
+
+    conditional expression 
+       --- strict strategy 
+           if ($v/k) 
+
+    ==/ineq operators (existential semantics)
+
+  * Clean-up printing 
+  * Clean-up code - remove algebra
+  * General error support
+    - Sweep of all errors in system (Prototype, Internal_Errors)
+    - Add error for non-trivial exprs with () type
+    - Warnings, errors
+  
+  * Check 'C' interface 
+
+  Logistic
+  * Binary : windows, linux, solaris
+    Source code 
+  * Source forge for distribution
+  * Documentation 
+  * Testing 
+  * Examples  - schema-in;schema-out doc-in;doc-out
+    Use cases 
+  * Bug/limitation list 
+
+  Advertisement 
+  * DBWORLD, xmlql-interest, Jerome's list, xml-dev, 
+    query-comments list, Caml list
+    dbfans@research.att.com
+     
+  * 'Conformant' implementation not scalable one
+  * Web site, 
+
+Galax features the biggest TODO list in the world:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * Support for new XPath 2.0 and XQuery syntax. This includes:
+
+   o A new new XQuery parser with the latest syntax is available. He
+     parses the all set of use cases but has not been tested in
+     details.
+
+     Support for types is still based on the old XML Algebra.
+
+     - syntax for types is the same as latest XML Algebra document
+       syntax, except for minOccurs maxOccurs who are written:
+       t{{m,n}} for lexing reasons.
+
+     - such types can be written everywhere the current XQuery grammar
+     expects a datatype.
+
+     - in the prolog, the following syntax for type declaration can be
+     used:
+
+     schema s
+       {
+          type X = t
+          ...
+       }
+
+     where t is a type.
+
+   o Mapping from XQuery full AST to XQuery Core AST. There is nothing
+     yet in the implementation. This is also on going work within the
+     XQuery and XPath groups so it will likely be done on the fly as
+     the spec evolves.
+
+ * Support for new version of the XML Query datamodel, i.e., support
+   for XPath 2.0 data model. This should include support for current
+   missing features, notably:
+
+    o Adding support for node identity, parents and references.
+    o Adding support for text nodes and original lexical XML representation.
+    o Removing support for unordered collections
+    o Support for XML Schema datatypes
+    o Support for XQuery/XPath 2.0 operators
+
+ * Mapping from XQuery to the Core
+
+    o TBDone
+
+ * Support for typing
+    o New subtyping that takes XML Schema types into account and
+      fixing current bug.
+
+      Final resolution for subtyping is still opened (see
+      corresponding issue), but temporary fix would be to support
+      subsumption between supertype schema with local element
+      restriction and one-unambiguity of content model and arbitrary
+      subtype schema.
+
+    o Support for '&'
+    o descendant/index/sort
+    o Back to old typing for 'for' ?
+    o Mapping XML Schema to the type system. Generating back XML
+      Schema from types.
+
+ * Dynamic semantics for the core
+    o unordered operator
+    o parent/descendant/document order
+    o index operator
+    o sort operator
+
+ * Optimization
+    o Architecture
+    o Do we want to bypass XQuery mapping to the core ?
+    o Do we want a bulk algebra ?
+    o Rewrittings (logical/physical)
+    o Pushing evaluation to underlying physical storage
+
+ * Native support for XML documents.
+
+   o Input XML: Complete support would rather be out-sourced to
+     something like PXP for the native parsing. Support for XML Schema
+     is a big opened issue right now.
+   o XML Serialization: Still opened. Some basic support existing.
+
+ * Support for physical data representation. This is a big mess right
+   now. Here are a number of tasks which could be considered part of
+   that:
+
+  o new XPath 2.0 data model (see above)
+  o common interface for non-created nodes. I.e., we need something
+    like a module to cover nodes already existing in another physical
+    representation and 'viewed as instance nodes in the data model.
+  o interface for more 'physical operations at the data model level',
+    e.g., scan
+
+ * Actual physical modules:
+
+  o Native: cf. data model above
+  o DataBlitz: first queries have been run. Many more work is
+    required.
+  o Xerces-c: Nothing here yet, but I believe it is a must for users.
+
+Specific tasks
+--------------
+
+  o Improve the way the pervasive.xq file is
+    loaded. More generaly try to clean the handling of the global
+    environment of queries.
+
+  o Catch Not_found errors in access to variables
+    in the environment and raise specific errors. In general error
+    handling and messages needs to be improved.
+
+  o Jerome: think about module names and directory names: there is no
+    algebra anymore.
+
+  o Add complete support for nameclasses.
+
+  o Update built-in functions to the operator's document.
+
+  o Update built-in types to the XML Schema document.
+
+  o The distinction from attribute and element symbols in the Sym
+    module should probably be removed.

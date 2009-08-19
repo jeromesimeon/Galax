@@ -1,0 +1,120 @@
+<html>
+<head><title>Galax Demo</title>
+<link href="../galax.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<script language="JavaScript" src="$name$XQuery.js"></script>
+
+<center>
+<h1>$title$</h1>
+</center>
+
+<h2>Input documents:</h2>
+
+<ul>
+$documents$
+</ul>
+
+<form action="$cgibin_prefix$galax.opt.cgi" method="GET">
+  <h2>XQuery prolog:</h2>
+  <p>
+  <textarea ROWS=12 COLS=80 >$context$</textarea>
+  <p>
+
+  <h2>Choose a usecase query:</h2>
+  <select name="chooseQuery" size=1 onChange="displayQuery (this)">
+     <option>choose a query
+     $queries$
+  </select>
+  <input type="hidden" name="context" value="$name$_context.xq">
+  <input type="hidden" name="language" value="$language$">
+  <input type="hidden" name="documents" value="$documents$">
+  <input type="submit" value="Submit Query">
+  <p>
+    <h2>XQuery expression:</h2>
+  <p>
+  <textarea ROWS=15 COLS=80 NAME="query"></textarea>
+  <p>
+    <h2>Processing phases:</h2>
+  
+  <p>
+
+  <table border="5">
+
+  <tr><td>Processing Phase</td><td>Status</td><td>Printing</td></tr>
+
+  <tr><td><b>Parsing:</b></td>
+
+  <td></td>
+
+  <td>
+  <INPUT type="radio" name="expr-print" value="true"> On
+  <INPUT type="radio" name="expr-print" value="false" checked="true"> Off
+  </td>
+  </tr>
+  
+  <tr><td><b>Normalization:</b></td>
+
+  <td></td>
+
+  <td>
+  <INPUT type="radio" name="core-print" value="true"> On
+  <INPUT type="radio" name="core-print" value="false" checked="true"> Off
+  </td>
+  </tr>
+  
+  <tr><td><b>Static Type Analysis:</b></td>
+
+  <td>
+  <INPUT type="radio" name="typing" value="on" $typingon$> On
+  <INPUT type="radio" name="typing" value="off" $typingoff$> Off
+  </td>
+  <td>
+  <INPUT type="radio" name="typing-print" value="true" $typingon$> On
+  <INPUT type="radio" name="typing-print" value="false" $typingoff$> Off
+  </td>
+  </tr>
+
+  <tr>
+  <tr><td><b>Optimization:</b></td>
+
+  <td>
+  <INPUT type="radio" name="optim" value="on"  checked="true"> On
+  <INPUT type="radio" name="optim" value="off"> Off
+  </td>
+  <td>
+  <INPUT type="radio" name="optim-print" value="true"> On
+  <INPUT type="radio" name="optim-print" value="false" checked="true"> Off
+  </td>
+  </tr>
+
+  <tr>
+  <td><b>Dynamic Evaluation:</b></td>
+
+  <td>
+  <INPUT type="radio" name="eval" value="on" checked="true"> On
+  <INPUT type="radio" name="eval" value="off"> Off
+  </td>
+
+  <td>
+  <INPUT type="radio" name="eval-print" value="true" checked="true"> On
+  <INPUT type="radio" name="eval-print" value="false"> Off
+  </td>
+  </tr>
+
+  <tr>
+  <td><b>Debugging:</b></td>
+  <td>
+  <INPUT type="radio" name="debug" value="on"> On
+  <INPUT type="radio" name="debug" value="off"  checked="true"> Off
+  </td>
+  </tr>
+  </table>
+
+  <p><input type="submit" value="Submit Query">
+  <p><input type="reset"  value="Clear Form">
+</form>
+
+</body>
+
+</html>

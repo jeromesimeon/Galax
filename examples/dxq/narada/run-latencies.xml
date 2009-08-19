@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<config> <!--  xmlns="narada" -->
+<graph name="Neighbors">
+  <edge s="n1" t="n2"/>
+  <edge s="n2" t="n3"/>
+  <edge s="n3" t="n4"/>
+  <edge s="n4" t="n5"/>
+  <edge s="n5" t="n1"/>
+</graph>
+<!-- For now, we assume that latencies are symmetric -->
+<graph name="Latencies">
+  <edge s="n1" t="n2" w="2.0"/> <!-- 4.0 -->
+  <edge s="n1" t="n3" w="0.5"/><!-- 1.0 -->
+  <edge s="n1" t="n4" w="0.0"/>
+  <edge s="n1" t="n5" w="1.0"/><!-- 2.0 -->
+  <edge s="n2" t="n3" w="0.0"/>
+  <edge s="n2" t="n4" w="0.0"/>
+  <edge s="n2" t="n5" w="0.0"/>
+  <edge s="n3" t="n4" w="0.0"/>
+  <edge s="n3" t="n5" w="1.0"/><!-- 2.0 -->
+  <edge s="n4" t="n5" w="2.0"/><!-- 4.0 -->
+</graph>
+</config>
+

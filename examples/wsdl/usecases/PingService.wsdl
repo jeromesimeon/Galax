@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<definitions name="PingService" targetNamespace="http://www.xmethods.net/sd/PingService.wsdl" xmlns:tns="http://www.xmethods.net/sd/PingService.wsdl" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+	<message name="pingHostRequest">
+		<part name="hostname" type="xsd:string"/>
+	</message>
+	<message name="pingHostResponse">
+		<part name="return" type="xsd:int"/>
+	</message>
+	<portType name="PingPortType">
+		<operation name="pingHost">
+			<input message="tns:pingHostRequest" name="pingHost"/>
+			<output message="tns:pingHostResponse" name="pingHostResponse"/>
+		</operation>
+	</portType>
+	<binding name="PingBinding" type="tns:PingPortType">
+		<soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="pingHost">
+			<soap:operation soapAction="urn:xmethodsSoapPing#pingHost"/>
+			<input>
+				<soap:body use="encoded" namespace="urn:xmethodsSoapPing" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+			</input>
+			<output>
+				<soap:body use="encoded" namespace="urn:xmethodsSoapPing" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="PingService">
+		<documentation>Performs a network "PING" of input host</documentation>
+		<port name="PingPort" binding="tns:PingBinding">
+			<soap:address location="http://services.xmethods.net:80/perl/soaplite.cgi"/>
+		</port>
+	</service>
+</definitions>

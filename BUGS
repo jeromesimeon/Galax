@@ -1,0 +1,221 @@
+Testing buildbot
+
+Bugs fixed in Version 0.4
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Date:       Reported By:           Locus:          Fixed by:   Test in XQueryUnit:
+-----       ------------           ------          ---------   -------------------
+06 Nov	Trevor Jim                 
+	Feature request: if no file arguments are given to galax, take input
+	from standard input; or at least provide a flag that allows this.
+
+04Apr03     Mary Fernandez             Datamodel/Node order
+            mff@research.att.com                   Jerome      New data model 
+            galax-dev/2003q2/000209.html
+            Node order
+
+12Jul03     Mark Anderson          Makefiles (MacOSX)
+            galax/2003q3/000285.html               Mary 
+
+30Jul03     Michael Burbridge      Makefiles (MacOSX)
+            galax/2003q3/000287.html               Mary
+            galax/2003q3/000294.html
+
+8Aug03      Michael Schlenker      Extensible DM interface 
+            galax/2003q3/000304.html              
+
+Bugs fixed in Version 0.3.1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Date:       Reported By:           Locus:          Fixed by:   Test in XQueryUnit:
+-----       ------------           ------          ---------   -------------------
+16Apr03     Carmelo Montanez       Atomic types    Mary
+            carmelo@nist.gov 
+            galax/2003q2/000196.html
+            literal ints are int, not integer
+
+29Jan03     Bard Bloom             Optimization    Mary        [galax]Optimization_001.xq
+            <bardb@us.ibm.com>
+            galax/2003q1/000130.html
+
+31Jan03     Bard Bloom             Error messages  Mary        [Section3.1.4]Function_014.xq
+	    <bardb@us.ibm.com>
+            galax/2003q1/000138.html
+
+11Feb03     Clause Huempel         Lexing          Jerome
+            Claus Huempel  
+            chuempel@orange.fr 
+            galax/2003q1/000140.html
+
+20Feb03     Jerome Simeon          Context         Jerome/Mary
+            simeon@research.bell-labs.com
+            galax-dev/2003q1/000180.html
+
+13Mar03     Christopher Burdorf    Galapi-ML       Mary
+            cburdorf@imageworks.com    
+            galax/2003q1/000156.html
+
+22Mar03     Mike Tikiliainen       Galapi-ML       Mary
+            mt99@doc.ic.ac.uk 
+            galax/2003q1/000157.html
+
+26Mar03     Steve Fortune          Text constructor             [Section3.7.2]ComputedTextConstructor_00{12}.xq
+
+26Mar03     Steve Fortune          Context/API      Mary        [galax]ExtContext_{001,002}.xq
+
+
+16Apr03     Michael Burbidge       Galapi-C         Mary
+            mburbidg@adobe.com
+            galax/2003q2/000198.html
+
+18Apr03     Michael Burbidge       Command-line API Mary
+            mburbidg@adobe.com  
+            galax/2003q2/000217.html
+
+01May03     Bard Bloom             Evaluation       Mary        [Section3.8]OrderClause_007.xq
+            <bardb@us.ibm.com>
+            galax/2003q2/000233.html
+            Order-by clause broken
+
+05May03     Greg Pomerantz         Serialization    Jerome
+            gmp@alumni.brown.edu
+            galax/2003q2/000242.html
+
+
+21Apr03     Michael Burbidge           	 Unicode support  Jerome     Implemented some support for UTF-8,
+            mburbidg@adobe.com         	                             ISO-88591 and UTF16
+            galax/2003q2/000227.html
+
+30Apr03     Mary Fernandez             	 Document validate
+            mff@research.att.com
+            glx:document-validate
+            galax-dev/2003q2/000230.html
+
+
+Bug fixed in Version 0.3
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Date:   Reported By:               Locus:          Fixed by:   Test in XQueryUnit:
+-----   ------------               ------          ---------   -------------------
+14 Oct	Rajasekar Krishnamurthy    Sorting         Jerome      [Section3.2.2]Predicates_012.xq
+        <sekar@cs.wisc.edu>
+        galax/2002q4/000054.html
+
+04 Nov	Trevor Jim                 Attr: single quotes Jerome  [Section3.7.2]ComputedAttributeConstructor_009.xq
+        <trevor@research.att.com> 
+
+04 Nov	Trevor Jim                 Attr constructors Mary      [Section3.7.2]ComputedAttributeConstructor_010.xq
+        <trevor@research.att.com>                              [Section3.7.2]ComputedAttributeConstructor_011.xq
+
+04 Nov	Blavier, André             Attribute constructors      (Covered by ComputedAttributeConstructor above)
+        galax/2002q4/000062.html
+
+05 Nov	Blavier, André             Function calls   Mary       [Section3.1.4]/FunctionCall_013.xq
+        <andre.blavier@caissedesdepots.fr>
+        galax/2002q4/000064.html
+
+06 Nov	Bard Bloom                 Whitespace in elem          [Section3.7.1]ComputedElementConstructor_001.xq
+                                   constructor             
+        <bardb@us.ibm.com>
+        galax/2002q4/000067.html
+
+06 Nov  Peter Patel-Schneider      Namespaces       Jerome     Should reject wrongful rebindings of xml and xmlns
+
+
+06 Nov  Peter Patel-Schneider      Namespaces       Jerome
+        Requested support for xml:base and xml:lang special attributes
+
+08 Nov	Bard Bloom                 Sorting          J/M        [Section3.9.1]SortExpr_010.xq
+        <bardb@us.ibm.com>
+        galax/2002q4/000073.html
+
+15 Nov  Bernd Amann                Def'n of fn:data on         [Section3.5.2]GeneralComp_010.xq
+                                   complex content
+
+25 Nov	Bard Bloom                 Attr constructor            (Covered by ComputedAttributeConstructor above)
+        <bardb@us.ibm.com>
+        galax/2002q4/000086.html
+
+4 Dec	Bard Bloom                 Print function   Jerome     Implemented glx:print-string, glx:print-item 
+        <bardb@us.ibm.com>
+        galax/2002q4/000092.html
+
+
+=======
+STILL OUTSTANDING
+~~~~~~~~~~~~~~~~~
+
+Requested features
+~~~~~~~~~~~~~~~~~~
+
+Date:   Requested by: 
+11Apr03 Bronneberg EM              Schema support
+        embronne@cs.vu.nl
+        galax/2003q2/000187.html
+        Attribute groups unsupported
+
+14Apr03 MW                         Atomic types
+        onlymails@gmx.net
+        galax/2003q2/000194.html
+        literal ints are int, not integer
+
+16Apr03 Carmelo Montanez           Atomic types
+        carmelo@nist.gov
+        galax/2003q2/000203.html
+        All numeric types not supported
+
+User contributions
+~~~~~~~~~~~~~~~~~~
+
+20 Nov  Volker Stoltz
+        Free BSD compilation script
+
+17Apr03 Michael Burbidge
+        mburbidg@adobe.com
+        Makefile changes for Mac OS X build...
+        galax/2003q2/000207.html
+
+Bugs
+~~~~
+
+Date:   Reported By:               Locus:          Fixed by:   Test:
+-----   ------------               ------          ---------   -----
+30Jul03 Michael Burbridge          MacOSX
+        galax/2003q3/000304.html 
+        glx_serialize_to_file doesn't work
+
+06Nov02	Trevor Jim                 Error messages               galax-bugs/error.xq
+        <trevor@research.att.com>
+        galax/2002q4/000066.html
+
+17Nov02 Michael Good               Win32 distribution
+        galax/2002q4/000077.html
+
+03Dec02	Bard Bloom                 Error messages               General error messages 
+        <bardb@us.ibm.com>
+        galax/2002q4/000090.html
+
+28Feb03 Bronneberg EM              Parsing
+        <embronne@cs.vu.nl>
+        galax/2003q1/000144.html
+        Parse error in function definitions
+
+06Mar03 Bard Bloom                 Windows installation
+        <bardb@us.ibm.com>
+        galax/2003q1/000147.html
+        Spaces in path to Galax installation
+ 
+07Mar03 Palmer, Jim                Windows installation
+        jim.palmer@certive.com
+        galax/2003q2/thread.html
+
+10Apr03 Torsten Grust              Static typing
+        Torsten.Grust@uni-konstanz.de 
+        galax/2003q2/000183.html
+        Semantics of XPath axes and attributes 
+
+10Apr03 Sima Kdoshim               Parsing
+        sigik@alum.cs.huji.ac.il
+        galax/2003q2/thread.html
+        Parsing entities in DTDs
+

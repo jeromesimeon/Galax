@@ -1,0 +1,44 @@
+We have slightly modified the Porter Stemming Algorithm written 
+by Erik Arneson <erik@aarg.net>.
+
+
+=====================================================================
+OCaml Implementation of the Porter Stemming Algorithm
+by Erik Arneson <erik@aarg.net>
+
+This package is pretty much a direct port of the algorithm
+implementation in stemmer.c.  The OCaml implementation is not
+optimized and certainly doesn't take advantage of some of the string
+manipulation tricks that the C implementation uses.
+
+Usage is extremely simple.  There is only one entry point, that being
+the "stem" function.  There is not a lot of documentation and I'm
+afraid the code is not well-commented either, but the C implementation
+*is* commented and it should be rather simple to follow along.
+
+Things left to do:
+
+* There is little or no bounds checking.  Words of any length can be
+  passed in, whereas the C implementation limits input to 1000
+  characters.
+
+* The algorithm should throw exceptions when it fails.  Currently, it
+  doesn't.
+
+* The C implementation makes sure that words are purely composed of
+  letters.  The OCaml implementation doesn't.  I don't know that this
+  will always be a problem.
+
+* This implementation only works on the English language.  There are
+  Perl implementations which seem to have collections of rules for
+  several other languages, but as I am not proficient in those
+  languages I'm not going to try to port stemming algorithms for them.
+
+By the way, for speed-critical applications the C implementation may
+be quite a bit faster (I haven't done any benchmarking).  For those
+who are interested, the StemmerC module, which is not installed by
+default, contains wrapper functions around such.
+
+Feedback, bug reports, and patches are most welcome.
+
+

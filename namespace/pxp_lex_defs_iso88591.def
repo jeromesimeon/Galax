@@ -1,0 +1,316 @@
+(* Note:
+
+     This file is taken 'as-is' from the pxp distribution, whose
+     copyright notice is reproduced below.
+
+     PXP can be found at:
+     http://www.ocaml-programming.de/programming/pxp.html
+
+   - Jerome
+
+Copyright 1999 by Gerd Stolpmann
+
+The package PXP is copyright by Gerd Stolpmann. 
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this document and the PXP software (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+The Software is provided ``as is'', without warranty of any kind, express
+or implied, including but not limited to the warranties of
+merchantability, fitness for a particular purpose and noninfringement.
+In no event shall Gerd Stolpmann be liable for any claim, damages or
+other liability, whether in an action of contract, tort or otherwise,
+arising from, out of or in connection with the Software or the use or
+other dealings in the software.
+
+*)
+
+(* $Id: pxp_lex_defs_iso88591.def,v 1.1 2002/10/27 20:02:52 simeon Exp $
+ * ----------------------------------------------------------------------
+ *
+ *)
+
+let ws = [ ' ' '\t' '\r' '\n' ]
+
+(* Note: ISO-8859-1 charset does not have 'combining characters' *)
+
+let letter = ['A'-'Z' 'a'-'z' '\192'-'\214' '\216'-'\246' '\248'-'\255']
+let extender = '\183'
+let digit = ['0'-'9']
+let ascii_digit = ['0'-'9']
+let ascii_hexdigit = ['0'-'9' 'A'-'F' 'a'-'f']
+let namechar = letter | digit | '.' | ':' | '-' | '_' | extender
+let name = ( letter | '_' | ':' ) namechar*
+let nmtoken = namechar+
+
+(**** Added for Galax - Jerome *)
+
+let whitespace = ws*
+let whitespaceplus = ws+
+
+let nmstart  = letter | '_'
+let nmchar   = letter | extender | digit | '.' | '-' | '_'
+ 
+let ncname   = nmstart nmchar*
+
+let qname    = ncname (':' ncname)?
+
+(**** Until here - Jerome *)
+
+let character = ['\009' '\010' '\013' '\032'-'\255']
+
+let character_except_question_mark =                    (* '?' = '\063' *)
+  [ '\009' '\010' '\013' '\032'-'\062' '\064'-'\255' ]
+
+let character_except_right_angle_bracket =              (* '>' = '\062' *)
+  [ '\009' '\010' '\013' '\032'-'\061' '\063'-'\255' ]
+
+let character_except_minus =                            (* '-' = '\045' *)
+  [ '\009' '\010' '\013' '\032'-'\044' '\046'-'\255' ]
+
+let character_except_quot =                             (* '"' = '\034' *)
+  [ '\009' '\010' '\013' '\032'-'\033' '\035'-'\255' ]
+
+let character_except_apos =                             (* '\'' = '\039' *)
+  [ '\009' '\010' '\013' '\032'-'\038' '\040'-'\255' ]
+
+let pi_string = character_except_question_mark* 
+                ( '?' character_except_right_angle_bracket 
+                      character_except_question_mark* )* 
+                '?'?
+
+let comment_string = character_except_minus* 
+                     ('-' character_except_minus+ )*
+
+let normal_character = 
+  [^ '&' '<' ']' '\000'-'\008' '\010'-'\031']
+
+let character_except_rbracket =                               (* ']' = '\093' *)
+  [ '\009' '\010' '\013' '\032'-'\092' '\094'-'\255' ]
+
+let character_except_rbracket_rangle =          (* ']' = '\093', '>' = '\062' *)
+  [ '\009' '\010' '\013' '\032'-'\061' '\063'-'\092' '\094'-'\255' ]
+
+let cdata_string = 
+  character_except_rbracket*
+  ( "]" character_except_rbracket+ |
+    "]]" ']'* character_except_rbracket_rangle character_except_rbracket*
+  )*
+  ']'*
+(* cdata_string = char* - ( char* ']]>' char* ) *)
+
+let printable_character_except_amp_lt =
+  (* '&' = '\038', '<' = '\060' *)
+  [ '\032'-'\037' '\039'-'\059' '\061'-'\255']
+
+let printable_character_except_amp_percent =
+  (* '%' = '\037', '&' = '\038' *)
+  [ '\032'-'\036' '\039'-'\255']
+
+let character_except_special =
+  (* '<'=060, ']'=093, '"'=034, '\''=039 *)
+  [ '\009' '\010' '\013' '\032'-'\033' '\035'-'\038' '\040'-'\059' 
+                         '\061'-'\092' '\094'-'\255' ]
+
+(* ======================================================================
+ * History:
+ * 
+ * $Log: pxp_lex_defs_iso88591.def,v $
+ * Revision 1.1  2002/10/27 20:02:52  simeon
+ * October 27, 2002 - Jerome
+ *
+ *   ** Welcome to the big fall cleanup! **
+ *
+ *   ** This is a large reorganization which will require people to
+ *   ** migrate. Recommended is to do a full checkout again, except for
+ *   ** people who made actual changes. More changes in the terminology
+ *   ** inside the Datamodel and Datatypes modules are still expected.
+ *
+ *   - Fairly deep cleanup of the directory structure, file names, and
+ *     module organization. Here is the new organization, in compilation
+ *     order:
+ *
+ *         o ./base	 --  Basic modules, not really XML specific
+ *
+ *             XML related modules have been moved later in the
+ *             compilation chain. Remains:
+ *
+ *               Gmisc -- Additions to Caml's stdlib
+ *               Id -- Identifiers generation
+ *               Pool -- String pools
+ *               Finfo -- Handles locations in file
+ *               Error -- Galax error handling
+ *               Pervasive -- Wrapping of the pervasive.xq file
+ *               Conf -- Global variables and configuration parameters
+ * 	      Args -- Dealing with function arguments
+ * 	      Whitespace -- Operations on whitespace in strings
+ * 	      Occurrence -- Operations on occurrence indicators
+ *
+ *         o ./fsa		 -- Generic package for finite state automatas
+ *
+ *             This package has been made generic. Most modules only
+ *             contains functors, parameterized by an alphabet of
+ *             letters, which will make the transitions for the
+ *             automatas.
+ *
+ *               Fsautil -- Functions for the rest of the FSA package
+ * 	      Nfa -- Non deterministic FSAs
+ * 	      Dfa -- Deterministic FSAs
+ * 	      Regexp -- Regular expressions and Glushkov construction
+ * 	        from regular expressions to NFA and DFA. This module
+ * 	        relies on the fact that states in the automata should
+ * 	        be positions in the regular expression, as specified
+ * 	        in the Glushkov construction. This also contains
+ * 	        intersection and reachability (emptiness check) for
+ * 	        the automata(s)
+ *
+ *         o ./namespace	--  Operations on XML names, and namespaces
+ *
+ *             All basic support for XML names is located here.
+ *
+ * 	      Qname_lexer_{encoding} -- Lexer for qualified names for
+ *   	        a given character encoding
+ *               Qname_lexer -- toplevel access to the QName lexer(s)
+ * 	      Namespace -- Support for namespace names, local names,
+ *   	        namespace prefixes and URIs. It also implements
+ *   	        namespace environments
+ *               Sym -- Support for 'compiled' names, i.e., names stored
+ *   	        somewhere in a string pool
+ *               Resolve -- Support for namespace resolution. Given a
+ *   	        qname and a namespace environment, it can return you a
+ *   	        resolved name
+ *
+ *         o ./datatypes	--  Support for XML Schema datatypes
+ *
+ *             Support for XML Schema datatypes should now all be located
+ *             in this directory.
+ *
+ *               Decimal -- xsd:int, xsd:integer, xsd:decimal
+ * 	      DateTime -- xsd:dateTime, xsd:date, xsd:time
+ * 	      AnyURI -- xsd:anyURI
+ * 	      Datatypes_lexer -- Lexer for the various datatypes
+ * 	      Datatypes -- Top-level support for datatypes. Contains
+ * 	        implementation for atomic values in the XML Query data
+ * 	        model
+ *
+ *         o ./parsing	--  Abstract Syntax Trees, XML&XQuery parsers
+ *
+ *             The parsing
+ *
+ *               Xml_ast -- XML Abstract Syntax Tree (if materialized)
+ * 	      Xquery_ast -- XQuery Abstract Syntax Tree
+ * 	      Print -- Printing functions for the AST's
+ *  	      Xml_astutil -- Construction and misc. operations on the
+ * 	        XML AST
+ *  	      Xquery_astutil -- Construction and misc. operations on
+ * 	        the XQuery AST
+ *               Lexutil -- Lexing utilities, including support for
+ *   	        multiple lexical states
+ *               Xquery_parser -- XQuery parser
+ *               Document_lexer_{encoding} -- XML Document prolog lexer
+ * 	        for a given character encoding
+ *               Opening_tag_lexer_{encoding} -- Opening tag lexer for a
+ * 	        given character encoding
+ *               Closing_tag_lexer_{encoding} -- Closing tag lexer for a
+ * 	        given character encoding
+ *               Text_lexer_{encoding} -- Text content lexer for a given
+ * 	        character encoding
+ *               Lexers_{encoding} -- Toplevel access to the lexer(s) for
+ *                 a given encoding
+ *               Xmldecl_lexer -- XML declaration lexer
+ * 	      Type_lexer -- XQuery type system lexer
+ * 	      Xquery_lexer -- Main XQuery lexer
+ *
+ *         o ./monitor	--  Monitoring of Galax activity
+ *
+ *               Monitor -- Used to monitor CPU and memory consumption
+ *
+ *         o ./schema      --  XML Schema and XQuery type system
+ *
+ *             One step further in typing, now support for XML Schema and
+ *             the XQuery type system. A major rewrite of this package is
+ *             expected [Support for named typing].
+ *
+ *               Glushkov -- Wrapper on top of the FSA
+ *                 package. Implements low-level inclusion and
+ *                 intersection over content models
+ *               Schemamapping -- Mapping from XML Schema to the XQuery
+ *                 type system
+ *               Schemautil -- Various operations on types. Pretty messy
+ *                 in there...
+ *               Theta -- Subsumption mappings between type names, used
+ *                 during the subtyping algorithm
+ *               Subsumption -- Main subtyping module
+ *               Simplification -- simplification over computed types
+ *               Typeutil -- More operations on types... used in the rest
+ *                 of the type checking
+ *
+ *         o ./normalization -- Query normalization
+ *
+ *             This module corresponds to normalization as specified in
+ *             the XQuery 1.0 and XPath 2.0 Formal Semantics.
+ *
+ *   - Clean up of terminology in several modules, notably datatypes, and
+ *     data model. Here are the detailed changes:
+ *       --> Bound module		becomes Occurrence module
+ *           Bound.bound type	becomes Occurrence.occurs type
+ *       --> Simple module		becomes Datatypes module
+ *       --> Data in Simple	becomes Atomic in Datatype
+ *       --> _text in Simple	becomes _untyped in Datatype
+ *       --> oforest 		becomes Sequence
+ *       --> InstanceNode		becomes Node
+ *       --> Instance		becomes Item
+ *       --> InstanceForest	becomes Value
+ *
+ *   - Node names are aligned with names in the XQuery data model
+ *     document.
+ *       --> ElemNode		becomes ElementNode
+ *       --> AttrNode		becomes AttributeNode
+ *       --> DocNode		becomes DocumentNode
+ *       --> NSNode		becomes NamespaceNode
+ *       --> PINode		becomes ProcessingInstructionNode
+ *
+ *   - Fixed bug in toplevel Galax processing files in reverse input
+ *     order when given on the command line! :^)
+ *
+ * October 26, 2002 - Jerome
+ *
+ *   - Made a number of changes to try to understand the reason the data
+ *     model is so big in memory. Problems are in part due to the way
+ *     memory measure is done, which makes difficult to measure the
+ *     actual size of a memory object.
+ *
+ *       o Added some printing of the size of the string
+ *         pools.
+ *       o Simplified the way some of the loading with projection is done
+ *         to avoid registering names which are discarded by projection.
+ *       o Changed the SAX events to use QNames instead of symbols from
+ *         the pools. This is better since this way events do not get
+ *         recorded in the string pools. SAX event are discarded anyway.
+ *
+ * October 25, 2002 - Jerome
+ *
+ *   - Fixed bug in xf:index-of which was not using node identity has it
+ *     should have. This bug was triggered by projection, since it was
+ *     removing many other nodes and making it more likely that other
+ *     nodes would have the same structure among siblings.
+ *   - Fixed monitor to print the phase name for each line in the
+ *     summary.
+ *   - Fixed the document function to make sure it calls the monitor.
+ *
+ * Revision 1.1  2002/09/03 19:52:09  simeon
+ * Added support for multiple character encodings.
+ *
+ * Revision 1.1  2000/05/20 20:33:25  gerd
+ * 	Initial revision.
+ *
+ * 
+ *)

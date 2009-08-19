@@ -1,0 +1,61 @@
+This directory implements the Narada mesh protocol in DXQ.
+
+To simulate a five-node network:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Run:  make run
+
+which creates the directory run/ that contains the DXQ programs for
+the five nodes, n1 to n5.
+
+Run galaxd on this directory in simulation mode with:
+
+    galaxd -language xqueryp -s run
+
+To run on the Arizona cluster inside AT&T Labs:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Run:  make cluster
+
+which creates the directory cluster/ that contains the DXQ programs for
+the cactus nodes. 
+
+Startup an xterm on each cactus node:
+
+    multixterm -xf cluster.tcl 
+
+Then in main multixterm window, type:
+    cd <GALAX>/examples/dxq/narada
+    <GALAX>/galaxd -language xqueryp -d cluster -t cluster-latencies.xml
+
+The latencies.xml file contains the TOPOLOGY.  Don't forget it!
+
+On some other machine (e.g., scottsdale): 
+    cd ~/narada-movie
+    <GALAX>/webgui -d <GALAX>/examples/dxq/narada/cluster -drop true -log true
+
+With the "-drop true" option, the webgui filters out the inter-node
+messages and does not display them on the Web page, so only
+state-change messages are actually displayed.  The WebGUI caches all
+messages for playback in the HTML interface, so "-drop true" is
+necessary for this example, otherwise WebGUI dies because it can't
+allocate memory.
+
+The "-log true" option logs every message (inter-node and state
+changes) to log files in the directory $TMPDIR/webgui-<processid>.
+The weblog.log file can be replayed by Trevor's animation program,
+tracegui.swf.
+
+In the Web browser, submit the following expressions:
+
+  N:init() to ALL
+  N:go()   to ALL
+
+For testing purposes, e.g., see if things parse correctly, you might
+want to try:
+
+    cd run
+    galax-run -language xqueryp -dynamic off n1.xq
+
+Since the run directory is generated automatically you might want to
+remove it after you are done with:
+
+    make clean

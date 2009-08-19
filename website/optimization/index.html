@@ -1,0 +1,300 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+  <head>
+    <!-- Copied shamelessly from http://www.ocaml.org/
+         Copyright (c) 2001 Julian Assange, ALL RIGHTS RESERVED.
+         Style inspired by the NetBSD Project, see http://www.netbsd.org/ -->
+    <link rev="made" href="mailto:galax-users@research.att.com">
+    <title>Galax: XQuery Optimization</title>
+    <meta name="DESCRIPTION" content="galax, xquery, query language, ocaml">
+    <meta name="KEYWORDS" content="galax, xquery, query language, ocaml">
+    <link href="../galax.css" type="text/css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <table border="0" cellspacing="4" cellpadding="0" width="100%" bgcolor="#ffd400">
+      <tr>
+        <td valign="top" ><a href="../">Galax Home</a></td>
+<!--
+        <td colspan="2" valign="top">
+          </br><img src="../images/galax.gif" alt="[Galax]" border="0" hspace="4" vspace="5"></br>
+        </td>
+-->
+      </tr>
+      <tr>
+        <td valign="top" >
+          <p>
+            <b><a href="index.html" class="title">XQuery&nbsp;Optimization&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></b>
+            </br>
+
+            <table border=0 cellspacing=4 cellpadding=0>
+              <tr><td>
+                &nbsp;<a href="#overview" class="border">Overview</a></br>
+                &nbsp;<a href="#rewriting">Pre-processing</a></br>
+                &nbsp;<a href="#algebra">Algebraic&nbsp;Optimization</a></br>
+                &nbsp;<a href="#operations">Specific&nbsp;Operations</a></br>
+                &nbsp;<a href="#physical">Physical&nbsp;Storage</a></br></br>
+              </td></tr>
+            </table>
+          </p>
+
+          <p>
+            <b><a href="#operations" class="title">Specific&nbsp;Operations</a></b>
+            </br>
+
+            <table border=0 cellspacing=4 cellpadding=0>
+              <tr><td>
+                &nbsp;<a href="#projection">Document&nbsp;Projection</a></br></br>
+              </td></tr>
+            </table>
+          </p>
+
+        </td>
+
+        <td valign="top">
+
+        <h1>You have reached Galax's XQuery optimization page!</h1>
+
+        <p>The purpose of this page is to document our progress in
+        developing state of the art XML query optimization in
+        Galax. We are currently redesigning Galax's architecture to
+        support query optimization, and we are working on a number of
+        specific optimization features.</p>
+
+        <p>What you will find here:</p>
+
+        <ul>
+          <li>Some documentation for the Galax's internal
+          architecture.</li>
+          <li>Some reading material, research papers and technical
+          reports on XQuery and XPath optimization.</li>
+          <li>Some demos for specific optimization features.</li>
+          <li>Benchmarking reports.</li>
+          <li>In some occasions, we will also distribute development
+          versions of Galax that include some of our latest
+          optimization code.</li>
+        </ul>
+
+<!--
+	<p>&nbsp;&nbsp;<b>Latest News <img src="../images/hot.gif" alt="[HOT!]"></b> </p>
+
+	<ul>
+
+	    <li><strong>March 20, 2003.</strong>
+
+      	    <b><a href="#projection" class="title">Am&eacute;lie and
+      	    Jérôme add support for <i>document projection</i> in
+      	    Galax.</a></b> Document projection allows Galax to run
+      	    XQueries on very large files. More information about
+      	    document projection, a demo, and a development version of
+      	    Galax with Document Projection in can be found <a
+      	    href="#projection">here</a>.</li>
+
+	</ul>
+-->
+        <hr/>
+
+    	<h1><a name="overview"></a>Overview and Architecture</h1>
+
+        <p>One of the challenges in building an efficient query
+        processor is the need to work at many different levels in
+        system in a cohesive fashion. The following figure presents an
+        <emph>idealized</emph> version of the Galax query processing
+        architecture.</p>
+
+        <center>
+          <img src="global_architecture.gif"
+               alt="[Global Architecture]"
+               border="0"
+               hspace="4"
+               vspace="5">
+        </center>
+
+        <p>From a query processing point of view, the evaluation in
+        Galax can be separated in the following phases:</p>
+
+    	<ul>
+    	  <li><a href="#rewriting">Pre-processing:</a> Before applying
+    	  optimization techniques, a number of actual transformation
+    	  on the query must be performed. This phase includes parsing,
+    	  query normalization, static typing, and a number of
+    	  syntactic simplification operated on the query AST.</li>
+
+    	  <li><a href="#algebra">Algebraic optimization:</a>
+    	  <quote>Standard</quote> query optimization can then take
+    	  place. That step would require typically the use of an XML
+    	  algebra.</li>
+
+    	  <li><a href="#operations">Optimization for specific XQuery
+    	  operations:</a> Some specific certain classes of XQuery
+    	  operations which are expensive or used very often during
+    	  query processing require the development of specific
+    	  algorithms.</li>
+
+          <li><a href="#storage">Physical representation, storage and
+          indices</a></il>
+        </ul>
+
+    <hr/>
+
+    <h1><a name="rewriting"></a>Query pre-processing</h1>
+
+    <center>
+      <img src="archi_rewriting.gif"
+           alt="[Architecture -- Query Rewriting]"
+           border="0"
+           hspace="4"
+           vspace="5">
+    </center>
+
+    <p>Before applying optimization techniques, a number of actual
+    transformation on the query must be performed. This phase includes
+    parsing, query normalization, static typing, and a number of
+    syntactic simplification operated on the query abstract syntax
+    tree (AST). Some of those query transformations have already a
+    direct impact on performances. For instance, removing implicit
+    casting of nodes to values or removing sorting by document
+    order. In addition, many other optimization techniques based on
+    XML algebras cannot be performed before a serious clean-up of the
+    XQuery AST.</p>
+
+    <p>More detailed about that phase and on its impact can be found
+    in the following papers.</p>
+
+    <ul>
+      <li><a
+      href="http://www-db.research.bell-labs.com/user/simeon/xquery-optim-planx.pdf">The
+      XQuery Formal Semantics: A Foundation for Implementation and
+      Optimization</a>, Byron Choi, Mary Fernandez, and Jérôme
+      Siméon. Draft Manuscript. July 2002.</li>
+    </ul>
+
+    <hr/>
+
+    <h1><a name="algebra"></a>Algebraic Query Optimization</h1>
+
+    <center>
+      <img src="archi_algebra.gif"
+           alt="[Architecture -- Specific Operations]"
+           border="0"
+           hspace="4"
+           vspace="5">
+    </center>
+
+    <p>After the query has been normalized and simplified, the next
+    step is to compile it into an algebra. Currently Galax is using a
+    variant of the XQuery core with support for tuples as such an
+    algebra. We are interested in using a more complete algebra, but
+    what is the right algebra for XML Query processing is still
+    largely an open issue. One of the possible candidates though is
+    the <a
+    href="http://www.eecs.umich.edu/db/timber/overview.html">TAX
+    algebra</a> developped by our friends at university of
+    Michigan.</li>
+
+    <hr/>
+
+    <h1><a name="operations"></a>Specific XQuery Operations</h1>
+
+    <center>
+      <img src="archi_operations.gif"
+           alt="[Architecture -- Specific Operations]"
+           border="0"
+           hspace="4"
+           vspace="5">
+    </center>
+
+    <p>We are currently developing specific algorithms for certain
+    classes of operations which are expensive or used very often
+    during XQuery processing. Note that efficient support for those
+    operations typically assumes specific knowledge about the <a
+    hred="#physical">physical representation</a>.</p>
+
+    <h2><a name="projection"></a>XML Projection</h2>
+
+    <p>One of the bottleneck of query processing for main-memory
+    XQuery implementations is due to the size of tree representations
+    for XML document (e.g., DOM or the XQuery Data Model). XML
+    projection is physical operation that can be used to remove
+    uncessary node in the XML data model based on the paths used in a
+    given query. Document projection takes an XML stream as input and
+    loads a projected document according to a set of input path
+    expressions. Those paths are inferred from the query using a
+    static analysis algorithm described in details in the following
+    papers.</p>
+
+    <ul>
+      <li><a
+      href="http://www-db.research.bell-labs.com/user/simeon/xml_projection.pdf">Projecting
+      XML Documents</a>, Am&eacute;lie Marian and Jérôme
+      Siméon. VLDB'2003, Berlin, Germany, September 2003. To appear</li>
+
+      <li><a
+      href="http://www.cs.columbia.edu/~library/TR-repository/reports/reports-2003/cucs-004-03.pdf">Projecting
+      XML Documents (Full version)</a>, Am&eacute;lie Marian and
+      Jérôme Siméon. Technical Report.</li>
+    </ul>
+
+    <p>If you want to try out document projection for yourself, you
+    can download the following archive, which contains the complete
+    source code for Galax with document projection:</p>
+
+    <ul>
+      <li><a
+      href="../Downloads/download-galax-0.2.1-proj-source.html">Galax
+      0.2.1 with projection (source)</a></li>
+    </ul>
+
+    <hr/>
+
+    <h1><a name="#physical"></a>Physical representation, storage and
+    indices</h1>
+
+    <center>
+      <img src="archi_physical.gif"
+           alt="[Architecture -- Physical Layer]"
+           border="0"
+           hspace="4"
+           vspace="5">
+    </center>
+
+    <p>XML is a very versatile markup language, suitable for many
+    kinds of applications in many kinds of environment. Galax has the
+    ambition to be a very versatile XQuery implementation that will
+    work on a variety of physical XML representations. We are
+    especially interested in experimenting with Galax in the following
+    environments.</p>
+
+    <ul>
+      <li><b>XML Files.</b> Many applications just deal with ordinary
+      XML files. Files are easy to write and maintaing using many
+      ordinary XML tools and work well for light-weight
+      applications.</li>
+      <li><b>XML Streams.</b> In the context of distributed
+      applications, such as for information integration or Web
+      services, XML documents are accessed as streams from the
+      network.</li>
+      <li><b>Native XML repository.</b> Data-intensive applications
+      dealing with large amounts of XML data often require the use of
+      a storage manager. The use of an XML storage manager can provide
+      important benefit to your application, including scalability,
+      performances, concurrency control, crash recovery, and
+      high-availability.</li>
+ </ul>
+
+    <p>Currently, Galax only supports access to local XML files, but
+    we are working on hooking up an http/SOAP client inside Galax that
+    will allow Galax to receive XML streams from the network. We are
+    also considering the development of a storage manager that will
+    allow Galax users to process efficiently large amounts of XML
+    data. Please come back to check on our progress!</p>
+
+    <hr/>
+          </td>
+
+        </tr></table>
+
+  </body>
+</html>

@@ -1,0 +1,50 @@
+\section{Accessing XML Documents with \func{fn:doc()}}
+
+\section{Storing and Accessing XML Documents with Jungle}
+\label{sec:jungle}
+
+\note{Documentation under construction}
+
+To try out Jungle, make sure you have set up your environment as
+described in Section~\ref{sec:install}, then execute following: 
+\begin{alltt}
+% cd \$(GALAXHOME)/examples/jungle
+% make tests
+\end{alltt}
+
+\note{Don't forget in galax/examples/jungle director, to edit \cmd{jungle1.xq} and
+    replace directory name by the path to your jungle directory, then execute: \cmd{make tests}.}
+
+These commands will take a small XMark input document, create a Jungle
+store, and run several example queries on the store. 
+
+\subsection{\code{jungle-load} : The Jungle XML document loader}
+
+Usage: \code{jungle-load \emph{options} input-xml-file}
+
+\begin{description}
+\item[-version]  Prints the Jungle loader version
+\item[-help,--help]   Display this list of options
+\end{description}
+
+\begin{description}
+\item[-store\_dir]  Directory Path where store is to be created  (default is current directory)
+\item[-store\_name]  Logical name of the store (default is Jungle). 
+\item[-buff\_size]  Size of the buffer to be used (default is 256KB).
+\end{description}
+
+In \cmd{\$(GALAXHOME)/examples/jungle}, execute following command to
+build a Jungle store: 
+
+\cmd{jungle-load -store\_dir tmp -store\_name XMark \$(GALAXHOME)/usecases/docs/xmark.xml}
+
+After executing this command, the  \cmd{tmp} directory will contain:
+\begin{alltt}
+XMark-AttrIndex.db	  XMark-main.db      
+XMark-Namespace.db	  XMark-Qname2QnameID.db	XMark-Text.db
+XMark-FirstChildIndex.db  XMark-Metadata.db  
+XMark-NextSiblingIndex.db	XMark-QnameID2Qname.db
+\end{alltt}
+
+\section{Implementing the Galax data model}
+

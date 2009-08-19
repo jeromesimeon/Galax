@@ -1,0 +1,6 @@
+<rr>        
+  <soa domain="research.att.com" nameserver="ns.research.att.com" />
+  <a hostname="www.research.att.com" address="192.20.3.54" ttl="3600"/>
+  <ns domain="." nameserver="a.root-servers.net" />
+  <a hostname="a.root-servers.net" address="198.41.0.4" ttl="3600"/>
+</rr>

@@ -1,0 +1,183 @@
+(***********************************************************************)
+(*                                                                     *)
+(*                                 GALAX                               *)
+(*                              XQuery Engine                          *)
+(*                                                                     *)
+(*  Copyright 2001-2007.                                               *)
+(*  Distributed only by permission.                                    *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* $Id: text_lexer.src,v 1.8 2007/02/01 22:08:51 simeon Exp $ *)
+
+(* Module Text_lexer
+   Description:
+     This module contains the lexer for text content.
+*)
+
+{
+
+open Lexing
+
+open Finfo
+open Error
+
+open Xquery_ast      (* XQuery AST *)
+open Parse_xquery   (* tokens definition *)
+
+open Lexing_util     (* lexical state handling *)
+
+}
+
+(*****************************)
+(* Lexer regular expressions *)
+(*****************************)
+
+#insert pxp_lex_defs_*.def
+
+(****************)
+(* Lexing rules *)
+(****************)
+
+rule text lh = parse
+    (* Nested XML tags *)
+  | "</"                      (* Closing tag *)
+      { let text_content = get_string lh in
+        begin
+          pop_state lh;
+          push_closing_tag lh;
+          TEXTLCLOSINGTAG text_content
+	end }
+  | "<?" (ncname as n) whitespace    (* Processing instruction *)
+      { let text_content = get_string lh in
+        begin
+	  push_processing_instruction lh;
+	  TEXTOPENINGPI (text_content, (get_target_pi n))
+	end }
+  | "<![CDATA["                   (* CDATA section *)
+      { push_cdata lh; cdata lh lexbuf }
+  | "]]>"
+      { raise (Query (Lexing(lexing_locinfo lexbuf, "Use of the ']]>' sequence of characters is not allowed in element content"))) }
+  | "<!--"                    (* Comment *)
+      { let text_content = get_string lh in
+        begin
+	  push_comment lh;
+	  TEXTLOPENINGCOMMENT text_content
+	end }
+  | '<'
+      { let text_content = get_string lh in
+        begin 
+	  push_opening_tag lh;
+	  TEXTLOPENINGTAG text_content
+	end }
+  | '{'
+      { match get_parsing_kind lh with
+        | XPath_2_0 ->
+	    raise (Query (Prototype ("XPath 2.0 parsing not supported yet.")))
+	| XQuery_1_0 ->
+	    let text_content = get_string lh in
+            begin 
+	      push_default lh;
+	      TEXTLCURLY text_content
+	    end }
+  | '}'
+      { match get_parsing_kind lh with
+        | XPath_2_0 ->
+	    raise (Query (Prototype ("XPath 2.0 parsing not supported yet.")))
+	| XQuery_1_0 ->
+	    raise (Query (Lexing(lexing_locinfo lexbuf, "Use of the '}' character should be escaped in element content"))) }
+  | eof
+      { match get_parsing_kind lh with
+        | XPath_2_0 ->
+	    raise (Query (Prototype ("XPath 2.0 parsing not supported yet.")))
+	| XQuery_1_0 ->
+	    raise (Query (Lexing(lexing_locinfo lexbuf, "Element text not terminated"))) }
+
+      (* In XQuery, you need to escape { and } into {{ and }} *)
+  | "{{"
+      { match get_parsing_kind lh with
+        | XPath_2_0 ->
+	    raise (Query (Prototype ("XPath 2.0 parsing not supported yet.")))
+	| XQuery_1_0 ->
+	    add_char_to_string lh '{'; text lh lexbuf }
+  | "}}"
+      { match get_parsing_kind lh with
+        | XPath_2_0 ->
+	    raise (Query (Prototype ("XPath 2.0 parsing not supported yet.")))
+	| XQuery_1_0 ->
+	    add_char_to_string lh '}'; text lh lexbuf }
+  | normal_character
+      { add_string_to_string lh (lexeme lexbuf); text lh lexbuf }
+  | ']'
+      { add_char_to_string lh ']'; text lh lexbuf }
+  | "&#" ascii_digit+ ";"
+      { let text_content = get_string lh in
+        let l = (lexeme lexbuf) in
+        let charref = get_char_ref l in
+	reset_string lh;
+	TEXTCHARREF (text_content,int_of_string charref) }
+  | "&#x" ascii_hexdigit+ ";"
+      { let text_content = get_string lh in
+        let l = (lexeme lexbuf) in
+        let hexcharref = get_hexchar_ref l in
+        reset_string lh;
+	TEXTCHARREF (text_content,int_of_string ("0x" ^ hexcharref)) }
+  | "&" name ";"
+      { let text_content = get_string lh in
+        let l = (lexeme lexbuf) in
+        let entityref = get_entity_ref l in
+        reset_string lh;
+	TEXTENTITYREF (text_content,entityref) }
+  | "&" 
+      { raise (Query (Lexing(lexing_locinfo lexbuf, "The use of '&' is  not allowed as stand-alone character"))) }
+(* 
+   XML 1.0 Recommendation 
+   2.11 End-of-Line Handling
+
+   XML parsed entities are often stored in computer files which, for
+   editing convenience, are organized into lines. These lines are
+   typically separated by some combination of the characters CARRIAGE
+   RETURN (#xD) and LINE FEED (#xA).
+
+   To simplify the tasks of applications, the XML processor MUST
+   behave as if it normalized all line breaks in external parsed
+   entities (including the document entity) on input, before parsing,
+   by translating both the two-character sequence #xD #xA and any #xD
+   that is not followed by #xA to a single #xA character.
+*)
+  | "\013\010"
+      {  add_char_to_string lh '\010'; text lh lexbuf }
+  | '\013'
+      { add_char_to_string lh '\010'; text lh lexbuf }
+  | '\010'
+      { add_char_to_string lh '\010'; text lh lexbuf }
+  | _
+      { raise (Query (Lexing(lexing_locinfo lexbuf, ("Illegal character '" ^ (lexeme lexbuf) ^ "' in XML content")))) }
+
+and cdata lh = parse
+  | "]]>" { pop_state_keep_buffer lh; text lh lexbuf }
+  | eof   { raise (Query (Lexing(lexing_locinfo lexbuf, "CDATA section not terminated"))) }
+  | character     { add_string_to_string lh (lexeme lexbuf); cdata lh lexbuf }
+  | _
+      { raise (Query (Lexing(lexing_locinfo lexbuf, ("Illegal character '" ^ (lexeme lexbuf) ^ "' in CDATA section")))) }
+
+and pi lh = parse
+  | "?>" { let pi_content = get_string lh in
+	   pop_state lh;
+	   TEXTCLOSINGPI (pi_content) }
+  | eof  { raise (Query (Lexing(lexing_locinfo lexbuf, "Processing instruction not terminated"))) }
+  | character    { add_string_to_string lh (lexeme lexbuf); pi lh lexbuf }
+  | _
+      { raise (Query (Lexing(lexing_locinfo lexbuf, ("Illegal character '" ^ (lexeme lexbuf) ^ "' in PI")))) }
+
+and xml_comment lh = parse
+  | "-->" { let comment_content = get_string lh in
+            pop_state lh;
+            TEXTRCLOSINGCOMMENT (comment_content) }
+  | "--"
+      { raise (Query (Lexing(lexing_locinfo lexbuf, "'--' not allowed in comments"))) }
+  | eof   { raise (Query (Lexing(lexing_locinfo lexbuf, "XML comment not terminated"))) }
+  | character     { add_string_to_string lh (lexeme lexbuf); xml_comment lh lexbuf }
+  | _
+      { raise (Query (Lexing(lexing_locinfo lexbuf, ("Illegal character '" ^ (lexeme lexbuf) ^ "' in Comment")))) }
+

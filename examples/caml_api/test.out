@@ -1,0 +1,138 @@
+Test Integer:
+<glx:result xmlns:glx="http://www.galaxquery.org">20</glx:result>
+
+Test Decimal:
+<glx:result xmlns:glx="http://www.galaxquery.org">20</glx:result>
+
+Test String:
+<glx:result xmlns:glx="http://www.galaxquery.org">user test</glx:result>
+
+Test Boolean:
+<glx:result xmlns:glx="http://www.galaxquery.org">false</glx:result>
+
+Test Float:
+<glx:result xmlns:glx="http://www.galaxquery.org">98.5489998</glx:result>
+
+Test Double:
+<glx:result xmlns:glx="http://www.galaxquery.org">98.549</glx:result>
+
+Test DateTime:
+<glx:result xmlns:glx="http://www.galaxquery.org">1991-01-02T01:01:01.01Z</glx:result>
+
+Test Date:
+<glx:result xmlns:glx="http://www.galaxquery.org">2000-03-12</glx:result>
+
+Test Time:
+<glx:result xmlns:glx="http://www.galaxquery.org">03:04:05.06</glx:result>
+
+Test DayTimeDuration:
+<glx:result xmlns:glx="http://www.galaxquery.org">P1DT2H3M1.1S</glx:result>
+
+Test YearMonthDuration:
+<glx:result xmlns:glx="http://www.galaxquery.org">P2Y3M</glx:result>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<html>
+<ul>
+<li>An item</li>
+<li>More items</li>
+</ul>
+</html>
+Test load_document:
+<?xml version="1.0" encoding="UTF-8"?>
+<html>
+<ul>
+<li>An item</li>
+<li>More items</li>
+</ul>
+</html>
+
+Test import_main_module:
+<glx:result xmlns:glx="http://www.galaxquery.org">user test</glx:result>
+
+Test QName:
+<glx:result xmlns:glx="http://www.galaxquery.org">xq-example1:bar</glx:result>
+
+Test node_kind:
+comment
+Test commentNode:
+<glx:result xmlns:glx="http://www.galaxquery.org"><!--This is a comment--></glx:result>
+
+Test processingInstructionNode:
+<glx:result xmlns:glx="http://www.galaxquery.org"><?target This is a processing instruction?></glx:result>
+
+Test elementNode:
+<xq-example1:bar xmlns:xmlns="http://www.w3.org/2000/xmlns/" xmlns:xq-example1="xq-example1"/>
+
+Test QName:
+<glx:result xmlns:glx="http://www.galaxquery.org">baz</glx:result>
+
+Test documentNode:
+<?xml version="1.0" encoding="UTF-8"?><?target This is a processing instruction?><!--This is a comment-->
+<xq-example1:bar xmlns:xmlns="http://www.w3.org/2000/xmlns/" xmlns:xq-example1="xq-example1"/>
+<xq-example1:bar xmlns:xmlns="http://www.w3.org/2000/xmlns/" xmlns:xq-example1="xq-example1"/>
+
+Test attributeNode:
+<glx:result xmlns:glx="http://www.galaxquery.org" baz="attribute value"/>
+
+Test elementNode children:
+<xq-example1:bar xmlns:xmlns="http://www.w3.org/2000/xmlns/"
+                 xmlns:xq-example1="xq-example1"
+                 baz="attribute value"><xq-example1:bar/><xq-example1:bar/></xq-example1:bar>
+
+Test node_name:
+<glx:result xmlns:glx="http://www.galaxquery.org">xq-example1:bar</glx:result>
+
+Test children:
+<glx:result xmlns:glx="http://www.galaxquery.org"><xq-example1:bar xmlns:xmlns="http://www.w3.org/2000/xmlns/" xmlns:xq-example1="xq-example1"/><xq-example1:bar xmlns:xmlns="http://www.w3.org/2000/xmlns/" xmlns:xq-example1="xq-example1"/></glx:result>
+
+Test parent:
+<xq-example1:bar xmlns:xmlns="http://www.w3.org/2000/xmlns/"
+                 xmlns:xq-example1="xq-example1"
+                 baz="attribute value"><xq-example1:bar/><xq-example1:bar/></xq-example1:bar>
+
+Test attributes:
+<glx:result xmlns:glx="http://www.galaxquery.org" baz="attribute value"/>
+
+Test text:
+<glx:result xmlns:glx="http://www.galaxquery.org">this is a text node</glx:result>
+
+Test base_uri:
+<glx:result xmlns:glx="http://www.galaxquery.org">http://db.bell-labs.com/galax</glx:result>
+
+Test eval_statement 1:
+<glx:result xmlns:glx="http://www.galaxquery.org">test0</glx:result>
+
+Test eval_statement 2:
+<glx:result xmlns:glx="http://www.galaxquery.org">66</glx:result>
+
+Test variable $x:
+<?xml version="1.0" encoding="UTF-8"?>
+<html>
+<ul>
+<li>An item</li>
+<li>More items</li>
+</ul>
+</html>
+
+Test variable $y:
+<glx:result xmlns:glx="http://www.galaxquery.org">20</glx:result>
+
+Test dateTime equality:
+<glx:result xmlns:glx="http://www.galaxquery.org">false</glx:result>
+
+Test eval_statement 3:
+<glx:result xmlns:glx="http://www.galaxquery.org"><li>An item</li><li>More items</li></glx:result>
+
+Test eval_statement 4:
+<glx:result xmlns:glx="http://www.galaxquery.org"><li>An item</li><li>More items</li></glx:result>
+
+Test eval_statement 5:
+<glx:result xmlns:glx="http://www.galaxquery.org"><li>An item</li><li>More items</li></glx:result>
+
+Test rebinding of variables:
+<glx:result xmlns:glx="http://www.galaxquery.org">30 60</glx:result>
+
+Parsing Error: Parse error in file ../docs/xmlschema_context.xq [File "../docs/xmlschema_context.xq", line 4, characters 7-16:]
+[WARNING] This is an intensional error
+

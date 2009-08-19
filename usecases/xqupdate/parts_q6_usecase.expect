@@ -1,0 +1,18 @@
+
+
+<parttree>
+    <part partid="1000" name="car">
+        <part partid="1001" name="engine">
+            <part partid="1003" name="piston"/>
+        </part>
+        <part partid="1002" name="door">
+            <part partid="1004" name="window"/>
+            <part partid="1005" name="lock"/>
+        </part><part partid="1021" name="radio"/>
+    </part>
+    <part partid="2010" name="skateboard">
+        <part partid="2011" name="board"/>
+        <part partid="2012" name="wheel"/>
+    </part>
+    <part partid="3020" name="canoe"/>
+</parttree>

@@ -1,0 +1,1633 @@
+#! /bin/sh
+#########################################################################
+#                                                                       #
+#                                Galax                                  #
+#                             XQuery Engine                             #
+#                                                                       #
+#   Copyright 2001-2006.						#
+#   Distributed only by permission.                                     #
+#                                                                       #
+#########################################################################
+
+# $Id: configure,v 1.24 2008/03/12 22:30:57 simeon Exp $	#
+
+#--- Options ---
+# value	-1:	off by command line ("forced")
+# value	 0:	off by default
+# value	 1:	on by default
+# value	 2:	on by command line ("forced")
+
+version="1.0"
+ocaml_version="3.11"
+# Function:	print_options()
+# Description:
+#		Print the current values of all options
+#
+print_options () {
+	for opt in $eoptions
+	do
+		e="o=\$enable_$opt"
+		eval "$e"
+		uopt=`echo $opt | sed -e 's/_/-/g'`
+		if [ $o -gt 0 ]
+		then
+			echo "    -enable-$uopt"
+		else
+			echo "    -disable-$uopt"
+		fi
+	done
+	for opt in $woptions
+	do
+		e="o=\$with_$opt"
+		eval "$e"
+		uopt=`echo $opt | sed -e 's/_/-/g'`
+		if [ $o -gt 0 ]
+		then
+			echo "    -with-$uopt"
+		else
+			echo "    -without-$uopt"
+		fi
+	done
+	for opt in $poptions
+	do
+		e="o=\$$opt"
+		eval "$e"
+		uopt=`echo $opt | sed -e 's/_/-/g'`
+		echo "    -$uopt $o"
+	done
+	for opt in $coptions
+	do
+		e="o=\$copt_$opt"
+		eval "$e"
+		echo "    $opt $o"
+	done
+}
+
+usage() {
+	echo "Configure [options]"
+	echo "[options]"
+	echo "-help          Print this help message"
+	for opt in $eoptions
+	do
+		e="help=\$help_enable_$opt"
+		eval "$e"
+		uopt=`echo $opt | sed -e 's/_/-/g'`
+		echo "-enable-$uopt:"
+		echo "-disable-$uopt:"
+		echo "        $help"
+	done
+	for opt in $woptions
+	do
+		e="help=\$help_with_$opt"
+		eval "$e"
+		uopt=`echo $opt | sed -e 's/_/-/g'`
+		echo "-with-$uopt:"
+		echo "-without-$uopt:"
+		echo "        $help"
+	done
+	for opt in $poptions
+	do
+		e="help=\$help_$opt"
+		eval "$e"
+		uopt=`echo $opt | sed -e 's/_/-/g'`
+		echo "-$uopt arg:"
+		echo "        $help"
+	done
+}
+
+# Set default values for configuration variables
+#		local:				This is the root directory that serves as the default
+#								for dependent libraries and includes, as well as the
+#								default root directory for installing GALAX.
+#		local_bin:			This is the local library (default=local/bin)
+#		local_lib:			This is the local library (default=local/lib)
+#		local_inc:			This is the local include (default=local/include)
+#
+#		galax_home:			This is where Galax will be installed (default=local)
+#		galax_bin:			This is where Galax binaries will be installed (default=$galax_home/bin)
+#		galax_lib:			This is where Galax libraries will be installed (default=$galax_home/lib)
+#		galax_camllib:		This is where the CAML interface and libraries are installed (default=$galax_lib/caml)
+#		galax_usecases:	This is where the usecases files are installed (default=$galax_home/usecases)
+#		galax_regress:		This is where the regress files are installed (default=$galax_home/regress)
+#		galax_examples:	This is where the examples files are installed (default=$galax_home/examples)
+#		galax_config:		This is where the sample Makefiles are installed (default=$galax_home/config)
+#		galax_capi:			This is where the C API files are installed (default=$galax_lib/c)
+#		galax_javaapi:		This is where the JAVA API files are installed (default=$galax_lib/java)
+#		galax_man:			This is where Galax documentation will be installed (default=$galax_home/doc)
+#
+#		ocaml_home:			This is where OCaml 3.10 is installed (default=local)
+#		ocaml_bin:			This is where ocamlc is installed (default=$ocaml_home/bin)
+#		ocaml_major_version:		O'Caml major version number 
+#		ocaml_minor_version:		O'Caml minor version number 
+#		ocaml_lib:			This is where ocamlc is installed (default=$ocaml_home/lib)
+#		ocaml_stdlib:		This is where the OCaml std-lib is installed (default=$ocaml_lib/ocaml/std-lib)
+#		ocaml_pkglib:		This is where the OCaml pkg-lib is installed (default=$ocaml_lib/ocaml/pkg-lib)
+#		ocaml_pcre:			This is where the OCaml PCRE interface is installed (default=$ocaml_pkglib/pcre)
+#		ocaml_netstring:	This is where the OCaml netstring files are installed (default=$ocaml_pkglib/netstring)
+#		ocaml_equeue:	    This is where the OCaml equeue files are installed (default=$ocaml_pkglib/equeue)
+#		ocaml_netclient:	This is where the OCaml netclient files are installed (default=$ocaml_pkglib/netclient)
+#		ocaml_netsys:	        This is where the OCaml netsys files are installed (default=$ocaml_pkglib/netstring)
+#		ocaml_pxp:			This is where the OCaml PXP files are installed (default=$ocaml_pkglib/pxp-engine)
+#		ocaml_pxp_utf8:	This is where the OCaml PXP UTF8 files are installed (default=$ocaml_pkglib/pxp-lex-utf8)
+#		ocaml_pxp_iso88591:	This is where the OCaml PXP UTF8 files are installed (default=$ocaml_pkglib/pxp-lex-iso88591)
+#		ocaml_camomile:	This is where the OCaml Camomile files are installed (default=$ocaml_pkglib/camomile)
+#		ocaml_idl:			This is where the OCaml ocamlidl package is installed (default=$ocaml_home)
+#		ocaml_idl_bin:		This is where the OCaml ocamlidl bin is installed (default=$ocaml_home/bin)
+#		ocaml_libasumrun:	This is where libasmrun.a is located (default=$ocaml_stdlib)
+
+#		clib_pcre:			This is where the PCRE C library is installed (default=$local/lib)
+#		clib_bdb_lib:		This is where the BDB C library is installed (default=$local/lib)
+#		clib_bdb_inc:		This is where the BDB C header is installed (default=$local/include)
+#		clib_bdb_name:		This is the name of the BDB C library (default=libdb.a)
+#
+#		java_home:			This is the home directory for the JDK installation (default=$local if with_java selected)
+#		java_bin:			This is the bin directory for javac (default=$java_home/bin)
+#		java_inc:			This is the include directory
+#		java_sysinc:		This is the OS-dependent java include directory
+#
+#		package_dir:		The directory to write the source package to (default=..)
+#
+#		with{out}_utf8:	Compile Galax with{out} support for UTF8 character encoding (default with)
+#		with{out}_iso88591	Compile Galax with{out} support for ISO 88591 character encoding (default with)
+#		with{out}_jungle	Compile Galax with{out} support for the Jungle storage interface (default without)
+#		with{out}_c		Compile Galax with{out} support for the C API (default with)
+#		with{out}_java		Compile Galax with{out} support for the JAVA API (default without)
+#		with{out}_shared	Compile API libraries with{out} support for shared libraries (default without)
+#		with{out}_galaxd	Compile threaded Galax server daemon (default without)
+#
+#	These variables are automatically set based on the current environment
+#
+config_user=`id -u -nr`
+config_dir=`pwd`
+config_date=`date`
+config_cmd="$0 $*"
+config_out="config/Makefile.conf"
+
+package_dir=".."
+package_src=`pwd`
+
+# These can all be set from the command line
+#
+local=/usr/local
+local_bin=
+local_lib=
+local_inc=
+
+galax_home=
+galax_bin=
+galax_lib=
+galax_camllib=
+galax_usecases=
+galax_examples=
+galax_config=
+galax_capi=
+galax_javaapi=
+galax_man=
+
+ocaml_bin=
+ocaml_lib=
+ocaml_home=
+ocaml_stdlib=
+ocaml_pkglib=
+ocaml_pcre=
+ocaml_netstring=
+ocaml_equeue=
+ocaml_netclient=
+ocaml_netsys=
+ocaml_pxp=
+ocaml_pxp_utf8=
+ocaml_pxp_iso88591=
+ocaml_camomile=
+ocaml_idl=
+ocaml_idl_bin=
+ocaml_libasmrun=
+
+clib_bdb_lib=
+clib_bdb_inc=
+clib_bdb_name=
+clib_pcre=
+java_home=
+java_bin=
+with_utf8=1
+with_iso88591=1
+with_jungle=0
+with_c=0
+with_java=0
+with_shared=1
+with_galaxd=0
+enable_profiling=0
+regression=PLEASESET
+galax_regression=PLEASESET
+host_type="unknown"
+ccoption=
+
+poptions="local local_bin local_lib local_include"
+poptions="$poptions galax_home galax_bin galax_lib galax_camllib galax_usecases galax_examples galax_regress galax_config galax_capi galax_javaapi galax_man regression galax_regression"
+poptions="$poptions ocaml_home ocaml_bin ocaml_lib ocaml_stdlib ocaml_pkglib ocaml_pcre ocaml_netstring ocaml_equeue ocaml_netclient ocaml_netsys ocaml_pxp ocaml_pxp_utf8 ocaml_pxp_iso88591 ocaml_camomile ocaml_idl ocaml_idl_bin ocaml_libasmrun"
+poptions="$poptions clib_bdb_lib clib_bdb_inc clib_bdb_name clib_pcre"
+poptions="$poptions java_home java_bin java_inc java_sysinc"
+poptions="$poptions regression galax_regression host_type ccoption"
+poptions="$poptions package_dir"
+
+woptions="utf8 iso88591 jungle c java shared galaxd"
+
+eoptions="profiling"
+
+coptions="CC CCFLAGS MKSHAREDLIB MKSHAREDLIBFLAGS CCLIBS SUPPORTS_SHARED_LIBRARIES"
+
+help_local="The root directory where Galax is installed and other packages are found"
+help_local_bin="The local bin directory"
+help_local_lib="The local lib directory"
+help_local_inc="The local include directory"
+
+help_galax_home="The root directory where Galax is installed"
+help_galax_bin="The directory where Galax executables are installed"
+help_galax_lib="The directory where Galax libraries are installed"
+help_galax_camllib="The directory where Galax OCaml libraries are installed"
+help_galax_usecases="The directory where Galax use case files are installed"
+help_galax_examples="The directory where Galax example programs are installed"
+help_galax_config="The directory where Galax configuration Makefiles are installed"
+help_galax_regress="The directory where Galax regression tests are installed"
+help_galax_capi="The directory where Galax C API files are installed"
+help_galax_javaapi="The directory where Galax Java API files are installed"
+help_galax_man="The directory where Galax documentation is installed"
+
+help_ocaml_home="The root directory for the OCaml installation"
+help_ocaml_bin="The bin directory where the OCaml compiler is installed"
+help_ocaml_major_version="The OCaml major version number"
+help_ocaml_minor_version="The OCaml minor version number"
+help_ocaml_lib="The lib directory where the OCaml libraries are installed"
+help_ocaml_stdlib="The directory where OCaml standard library files are installed"
+help_ocaml_pkglib="The directory where OCaml package library files are installed"
+help_ocaml_pcre="The directory where the OCaml PCRE library is installed"
+help_ocaml_netstring="The directory where the OCaml netstring library is installed"
+help_ocaml_netclient="The directory where the OCaml netclient library is installed"
+help_ocaml_equeue="The directory where the OCaml equeue library is installed"
+help_ocaml_netsys="The directory where the OCaml netsys library is installed"
+help_ocaml_pxp="The directory where the OCaml PXP library is installed"
+help_ocaml_pxp_utf8="The directory where the OCaml UTF8 PXP library is installed"
+help_ocaml_pxp_iso88591="The directory where the OCaml ISO 88591 PXP library is installed"
+help_ocaml_camomile="The directory where the OCaml Camomile library is installed"
+help_ocaml_idl="The directory where the OCaml IDL package is installed"
+help_ocaml_idl_bin="The directory where the OCaml IDL compiler is installed"
+help_ocaml_libasmrun="The directory where the OCaml libasmrun.a is installed"
+
+help_clib_bdb_lib="The directory where the Berkeley DB library is installed (libdb.a)"
+help_clib_bdb_inc="The directory where the Berkeley DB header is installed (db.h)"
+help_clib_bdb_name="The name of the Berkeley DB library"
+help_clib_pcre="The directory where the PCRE C library is installed"
+
+help_java_home="The directory where the jdk is installed"
+help_java_bin="The directory where javac is installed"
+help_java_inc="The directory where jni.h is installed"
+help_java_sysinc="The directory where system-dependent headers included by jni.h are installed"
+
+help_regression="The directory where the XQuery 1.0 regression test suite is installed"
+help_galax_regression="The directory where the Galax regression test suite is installed"
+help_host_type="The type of system Galax is being built for (automatically detected)"
+help_ccoption="The C compiler to use"
+help_package_dir="The directory to write the source package to"
+help_with_utf8="Include/exclude support for the UTF8 character set (default=with)"
+help_with_iso88591="Include/exclude support for the ISO 88591 character set (default=with)"
+help_with_jungle="Include/exclude support for the Jungle XML document database (default=without)"
+help_with_c="Include/exclude support for the Galax C API (default without)"
+help_with_java="Include/exclude support for the Galax Java API (default without)"
+help_with_shared="Include/exclude support for shared libraries (default with)"
+help_enable_profiling="Enable/disable support for profiling (default disable)"
+
+# These variables are derived from other
+# variables
+#
+tool_ocamlfind=
+tool_ocamlc=
+tool_ocamlopt=
+tool_ocamldep=
+tool_ocamllex=
+tool_ocamlyacc=
+tool_ocamlmktop=
+tool_ocamlmklib=
+tool_camlp4o=
+tool_camlidl=
+
+tool_java=
+tool_javac=
+tool_javadoc=
+tool_javah=
+tool_jar=
+
+# These variables determine things that are required
+#
+need_copt=0
+
+# Function:	findpath(prog)
+# Description:
+#		Find the first directory in $PATH containing prog.
+#
+findpath() {
+	OIFS=$IFS
+	IFS=':'
+	for dir in $PATH
+	do
+		if [ -z "$dir" ]
+		then
+			dir=.
+		fi
+		if [ -f $dir/$1 ]
+		then
+			echo $dir
+			IFS=$OIFS
+			return 0
+		fi
+	done
+	IFS=$OIFS
+	return 1
+}
+
+# Function:	check_popt(path-name)
+# Description:
+#		Check to see if the given path-name is one of the supported
+#		paths for configuration purposes
+#
+check_popt() {
+	for x in $poptions
+	do
+		if [ "$x" = "$1" ]
+		then
+			return 0
+		fi
+	done
+	echo "Unknown path option: $1" >&2
+	exit 1
+}
+
+# Function:	check_wopt(opt)
+# Description:
+#		Check to see if the given with{out}-name is one of the supported
+#		with{out} options.
+#
+check_wopt() {
+	for x in $woptions
+	do
+		if [ "$x" = "$1" ]
+		then
+			return 0
+		fi
+	done
+	echo "Unknown with option: $1" >&2
+	exit 1
+}
+
+# Function:	check_eopt(opt)
+# Description:
+#		Check to see if the given {en|dis}able-name is one of the supported
+#		enable options
+#
+check_eopt() {
+	for x in $eoptions
+	do
+		if [ "$x" = "$1" ]
+		then
+			return 0
+		fi
+	done
+	echo "Unknown enable option: $1" >&2
+	exit 1
+}
+
+echo "Configuring Galax $version..." >&2
+# Process command line arguments
+#
+while [ "$#" -gt 0 ]
+do
+	case "$1" in
+		-enable-*)
+			opt=`echo "$1" | sed -e 's/-enable-//' -e 's/-/_/g'`
+			check_eopt "$opt"
+			eval "enable_$opt=2"
+			shift
+			;;
+		-disable-*)
+			opt=`echo "$1" | sed -e 's/-disable-//' -e 's/-/_/g'`
+			check_eopt "$opt"
+			eval "enable_$opt=-1"
+			shift
+			;;
+		-with-*)
+			opt=`echo "$1" | sed -e 's/-with-//' -e 's/-/_/g'`
+			check_wopt "$opt"
+			eval "with_$opt=2"
+			shift
+			;;
+		-without-*)
+			opt=`echo "$1" | sed -e 's/-without-//' -e 's/-/_/g'`
+			check_wopt "$opt"
+			eval "with_$opt=-1"
+			shift
+			;;
+		-version)
+			echo "$version"
+			exit 0
+			;;
+		-?|-help)
+			usage
+			exit 0
+			;;
+		-*)
+			opt=`echo "$1" | sed -e 's/^-*//' -e 's/-/_/g'`
+			check_popt "$opt"
+			eval "$opt=$2"
+			shift 2
+			;;
+		*)
+			echo "Unknown option: $1"
+			usage
+			exit 1
+			;;
+	esac
+done
+
+# Determine the system type
+#
+if [ "$host_type" = "unknown" ]
+then
+	host_type=`./config/config.guess`
+	if [ -z "$host_type" ]
+	then
+		echo "Cannot guess host type"
+		echo "You must specify one with the -host-type option"
+		exit 2
+	fi
+fi
+host=`./config/config.sub $host_type`
+if [ -z "$host_type" ]
+then
+	echo "Please specify the correct host type with the -host-type option"
+	exit 2
+fi
+echo "Configuring for a $host ..."
+
+# Set up values based on the command line options
+#
+
+# local, local_bin, local_lib, and local_inc
+#
+if [ -z "$local_bin" ]
+then
+	local_bin=$local/bin
+fi
+if [ -z "$local_lib" ]
+then
+	local_lib=$local/lib
+fi
+if [ -z "$local_inc" ]
+then
+	local_inc=$local/include
+fi
+
+# galax_*
+#
+if [ -z "$galax_home" ]
+then
+	galax_home=$local/galax
+fi
+if [ -z "$galax_bin" ]
+then
+	galax_bin=$galax_home/bin
+fi
+if [ -z "$galax_lib" ]
+then
+	galax_lib=$galax_home/lib
+fi
+if [ -z "$galax_man" ]
+then
+	galax_man=$galax_home/doc
+fi
+if [ -z "$galax_camllib" ]
+then
+	galax_camllib=$galax_lib/caml
+fi
+if [ -z "$galax_usecases" ]
+then
+	galax_usecases=$galax_home/usecases
+fi
+if [ -z "$galax_examples" ]
+then
+	galax_examples=$galax_home/examples
+fi
+if [ -z "$galax_regress" ]
+then
+	galax_regress=$galax_home/regress
+fi
+if [ -z "$galax_config" ]
+then
+	galax_config=$galax_home/config
+fi
+if [ -z "$galax_capi" ]
+then
+	galax_capi=$galax_lib/c
+fi
+if [ -z "$galax_javaapi" ]
+then
+	galax_javaapi=$galax_lib/java
+fi
+
+# OCAML directories
+#
+if [ -z "$ocaml_bin" ]
+then
+	if [ -n "$ocaml_home" ]
+	then
+		ocaml_bin=$ocaml_home/bin
+	else
+		ocaml_bin=`findpath ocamlc`
+		if [ -z "$ocaml_bin" ]
+		then
+			ocaml_home=$local;
+			ocaml_bin=$local/bin
+		else
+			ocaml_home=$ocaml_bin/..
+		fi
+	fi
+	echo "Setting ocaml_bin to $ocaml_bin"
+
+	ocamlv=`$ocaml_bin/ocaml -version | sed -e 's/.*version //g'`
+	ocaml_major_version=`echo ${ocamlv} | sed -e 's/\.[0-9]$//g'`
+        if [ "${ocaml_major_version}" != "${ocaml_version}" ] 
+	then
+          echo "ERROR: Expected OCaml major version ${ocaml_version}, found ${ocaml_major_version}"
+          exit 1
+        fi 
+	ocaml_minor_version=`echo $ocamlv | sed -e 's/[0-9]\.[0-9][0-9]\.//g'`
+	echo "Setting ocaml_major_version to $ocaml_major_version"
+	echo "Setting ocaml_minor_version to $ocaml_minor_version"
+fi
+
+for i in ocamlfind ocamlc ocamlopt ocamldep ocamllex ocamlyacc ocamlmktop ocamlmklib camlp4o
+do
+	printf "%s" "Finding OCaml tool $i..."
+	if [ -n "$ocaml_bin" -a -x "$ocaml_bin/$i" ]
+	then
+		xtool="$ocaml_bin/$i"
+		eval "tool_$i=$xtool"
+	elif xtool=`findpath $i`
+	then
+		eval "tool_$i=$xtool"
+	fi
+	if [ -n "$xtool" ]
+	then
+		echo "Found!"
+	else
+		echo "ERROR: Unable to find OCaml tool $i"
+		if [ "$i" != "ocamlfind" -a "$i" != "ocamlopt" ]
+		then
+			exit 1
+		fi
+	fi
+done
+
+if [ -z "$ocaml_lib" ]
+then
+	if [ -d "$ocaml_home/lib" ]
+	then
+		ocaml_lib="$ocaml_home/lib"
+	fi
+fi
+
+printf "%s" "Checking for standard OCaml libraries... "
+if [ -z "$ocaml_stdlib" ]
+then
+	if [ -n "$ocaml_lib" ]
+	then
+		if [ -d "$ocaml_lib/ocaml" -a -f "$ocaml_lib/ocaml/stdlib.cma" ]
+		then
+			ocaml_stdlib="$ocaml_lib/ocaml"
+		fi
+	fi
+	if [ -z "$ocaml_stdlib" ]
+	then
+		ocaml_stdlib=`$ocaml_bin/ocamlc -where`
+	fi
+fi
+for i in nums.cma unix.cma str.cma bigarray.cma
+do
+	if [ ! -f "$ocaml_stdlib/$i" ]
+	then
+		echo "ERROR: unable to find $i in $ocaml_stdlib"
+		exit 1
+	else
+		printf "%s" "$i "
+	fi
+done
+echo "Found!"
+
+if [ -z "$ocaml_libasmrun" ]
+then
+	if [ -d "$ocaml_stdlib" -a -f "$ocaml_stdlib/libasmrun.a" ]
+	then
+		ocaml_libasmrun=$ocaml_stdlib
+	fi
+fi
+
+if [ -z "$ocaml_pkglib" ]
+then
+	if [ -n "$ocaml_lib" ]
+	then
+		if [ -d "$ocaml_lib/ocaml/pkg-lib" ]
+		then
+			ocaml_pkglib="$ocaml_lib/ocaml/pkg-lib"
+		elif [ -d "$ocaml_lib/ocaml/site-lib" ]
+		then
+			ocaml_pkglib="$ocaml_lib/ocaml/site-lib"
+		fi
+	fi
+fi
+
+printf "%s" "Checking for OCaml PCRE library... "
+if [ -z "$ocaml_pcre" ]
+then
+	if [ -n "$ocaml_pkglib" -a -d "$ocaml_pkglib/pcre" -a -f "$ocaml_pkglib/pcre/pcre.cmi" ]
+	then
+		ocaml_pcre="$ocaml_pkglib/pcre"
+	elif [ -n "$tool_ocamlfind" ]
+	then
+		ocaml_pcre=`$tool_ocamlfind query pcre 2>/dev/null`
+	fi
+fi
+if [ -n "$ocaml_pcre" -a -f "$ocaml_pcre/pcre.cmi" ]
+then
+	echo "found"
+else
+	echo "ERROR: unable to find pcre.cmi in $ocaml_pcre"
+	exit 1
+fi
+
+printf "%s" "Checking for OCaml netstring library... "
+if [ -z "$ocaml_netstring" ]
+then
+	if [ -n "$ocaml_pkglib" -a -d "$ocaml_pkglib/netstring" -a -f "$ocaml_pkglib/netstring/netstring_str.cmi" ]
+	then
+		ocaml_netstring="$ocaml_pkglib/netstring"
+	elif [ -n "$tool_ocamlfind" ]
+	then
+		ocaml_netstring=`$tool_ocamlfind query netstring 2>/dev/null`
+	fi
+fi
+if [ -n "$ocaml_netstring" -a -f "$ocaml_netstring/netstring_str.cmi" ]
+then
+	echo "found"
+else
+	echo "ERROR: unable to find netstring_str.cmi in $ocaml_netstring"
+	exit 1
+fi
+
+# equeue is needed by Http_client in netclient
+printf "%s" "Checking for OCaml equeue library... "
+if [ -z "$ocaml_equeue" ]
+then
+	if [ -n "$ocaml_pkglib" -a -d "$ocaml_pkglib/equeue" -a -f "$ocaml_pkglib/equeue/unixqueue.cmi" ]
+	then
+		ocaml_equeue="$ocaml_pkglib/equeue"
+	elif [ -n "$tool_ocamlfind" ]
+	then
+		ocaml_equeue=`$tool_ocamlfind query equeue 2>/dev/null`
+	fi
+fi
+if [ -n "$ocaml_equeue" -a -f "$ocaml_equeue/unixqueue.cmi" ]
+then
+	echo "found"
+else
+	echo "ERROR: unable to find unixqueue.cmi in $ocaml_equeue"
+	exit 1
+fi
+
+printf "%s" "Checking for OCaml netclient library... "
+if [ -z "$ocaml_netclient" ]
+then
+	if [ -n "$ocaml_pkglib" -a -d "$ocaml_pkglib/netclient" -a -f "$ocaml_pkglib/netclient/http_client.cmi" ]
+	then
+		ocaml_netclient="$ocaml_pkglib/netclient"
+	elif [ -n "$tool_ocamlfind" ]
+	then
+		ocaml_netclient=`$tool_ocamlfind query netclient 2>/dev/null`
+	fi
+fi
+if [ -n "$ocaml_netclient" -a -f "$ocaml_netclient/http_client.cmi" ]
+then
+	echo "found"
+else
+	echo "ERROR: unable to find http_client.cmi in $ocaml_netclient"
+	exit 1
+fi
+
+
+printf "%s" "Checking for OCaml netsys library... "
+if [ -z "$ocaml_netsys" ]
+then
+	if [ -n "$ocaml_pkglib" -a -d "$ocaml_pkglib/netsys" -a -f "$ocaml_pkglib/netsys/netsys.cmi" ]
+	then
+		ocaml_netsys="$ocaml_pkglib/netsys"
+	elif [ -n "$tool_ocamlfind" ]
+	then
+		ocaml_netsys=`$tool_ocamlfind query netsys 2>/dev/null`
+	fi
+fi
+if [ -n "$ocaml_netsys" -a -f "$ocaml_netsys/netsys.cmi" ]
+then
+	echo "found"
+else
+	echo "ERROR: unable to find netsys.cmi in $ocaml_netsys"
+	exit 1
+fi
+
+printf "%s" "Checking for PXP..."
+if [ -z "$ocaml_pxp" ]
+then
+	if [ -n "$ocaml_pkglib" -a -d "$ocaml_pkglib/pxp-engine" -a -f "$ocaml_pkglib/pxp-engine/pxp_aux.cmi" ]
+	then
+		ocaml_pxp="$ocaml_pkglib/pxp-engine"
+	elif [ -n "$tool_ocamlfind" ]
+	then
+		ocaml_pxp=`$tool_ocamlfind query pxp-engine 2>/dev/null`
+	fi
+fi
+if [ -n "$ocaml_pxp" -a -f "$ocaml_pxp/pxp_aux.cmi" ]
+then
+	echo "found"
+else
+	echo "ERROR: unable to find pxp_aux.cmi in $ocaml_pxp"
+	exit 1
+fi
+
+# Note: We may only need this check if ISO 88591 has been
+# requested.
+#
+printf "%s" "Checking for PXP-LEX-ISO88591..."
+if [ -z "$ocaml_pxp_iso88591" ]
+then
+	if [ -n "$ocaml_pkglib" -a -d "$ocaml_pkglib/pxp-lex-iso88591" -a -f "$ocaml_pkglib/pxp-lex-iso88591/pxp_lex_iso88591.cma" ]
+	then
+		ocaml_pxp_iso88591="$ocaml_pkglib/pxp-lex-iso88591"
+	elif [ -n "$tool_ocamlfind" ]
+	then
+		ocaml_pxp_iso88591=`$tool_ocamlfind query pxp-lex-iso88591 2>/dev/null`
+	fi
+fi
+if [ -n "$ocaml_pxp_iso88591" -a -f "$ocaml_pxp_iso88591/pxp_lex_iso88591.cma" ]
+then
+	echo "found"
+else
+	echo "ERROR: unable to find pxp_lex_iso88591.cma in $ocaml_pxp_iso88591"
+	exit 1
+fi
+
+# Note: We may only need this check if UTF8 has been
+# requested.
+#
+printf "%s" "Checking for PXP-LEX-UTF8..."
+if [ -z "$ocaml_pxp_utf8" ]
+then
+	if [ -n "$ocaml_pkglib" -a -d "$ocaml_pkglib/pxp-lex-utf8" -a -f "$ocaml_pkglib/pxp-lex-utf8/pxp_lex_utf8_01.cmi" ]
+	then
+		ocaml_pxp_utf8="$ocaml_pkglib/pxp-lex-utf8"
+	elif [ -n "$tool_ocamlfind" ]
+	then
+		ocaml_pxp_utf8=`$tool_ocamlfind query pxp-lex-utf8 2>/dev/null`
+	fi
+fi
+if [ -n "$ocaml_pxp_utf8" -a -f "$ocaml_pxp_utf8/pxp_lex_utf8_01.cmi" ]
+then
+	echo "found"
+else
+	echo "ERROR: unable to find pxp_lex_utf8_01.cmi in $ocaml_pxp_utf8"
+	exit 1
+fi
+
+printf "%s" "Checking for Camomile..."
+if [ -z "$ocaml_camomile" ]
+then
+	if [ -n "$ocaml_pkglib" -a -d "$ocaml_pkglib/camomile" -a -f "$ocaml_pkglib/camomile/camomileLibrary.cmi" ]
+	then
+		ocaml_camomile="$ocaml_pkglib/camomile"
+	elif [ -n "$ocaml_pkglib" -a -d "$ocaml_pkglib/camomile" -a -f "$ocaml_pkglib/camomile/camomile.cmi" ]
+	then
+		ocaml_camomile="$ocaml_pkglib/camomile"
+	elif [ -n "$tool_ocamlfind" ]
+	then
+		ocaml_camomile=`$tool_ocamlfind query camomile 2>/dev/null`
+	fi
+fi
+if [ -n "$ocaml_camomile" -a -f "$ocaml_camomile/camomileLibrary.cmi" ]
+then
+	ocaml_camomile_version="0.7"
+	echo "found version 0.7"
+elif [ -n "$ocaml_camomile" -a -f "$ocaml_camomile/camomile.cmi" ]
+then
+	ocaml_camomile_version="0.6"
+	echo "found version 0.6"
+else
+	echo "ERROR: unable to find camomileLibrary.cmi in $ocaml_camomile"
+	exit 1
+fi
+
+if [ "$with_c" -gt 0 -o "$with_java" -gt 0 ]
+then
+#	echo "ERROR: C and JAVA APIs not supported in version $version.  Remove -with-{c,java} option."
+#	exit 1
+
+	printf "%s" "Checking for C PCRE library..."
+	if [ -z "$clib_pcre" ]
+	then
+		if [ -f "$local_lib/libpcre.a" ]
+		then
+			clib_pcre=$local/lib
+		elif [ -f "/usr/local/lib/libpcre.a" ]
+		then
+			clib_pcre=/usr/local/lib
+		elif [ -f "/usr/lib/libpcre.a" ]
+		then
+			clib_pcre=/usr/lib
+		fi
+	fi
+	if [ -f "$clib_pcre/libpcre.a" ]
+	then
+		echo "Found!"
+	else
+		if [ -n "$clib_pcre" ]
+		then
+			echo "ERROR: unable to find libpcre.a in $clib_pcre"
+		else
+			echo "ERROR: unable to find libpcre.a"
+		fi
+		exit 1
+	fi
+
+	printf "%s" "Checking for libasmrun.a..."
+	if [ -f "$ocaml_libasmrun/libasmrun.a" ]
+	then
+		echo "Found!"
+	else
+		echo "ERROR: unable to find libasmrun.a"
+		exit 1
+	fi
+fi
+
+if [ "$with_java" -gt 0 ]
+then
+#	echo "ERROR: JAVA API not supported in version $version. Remove -with-java option."
+#	exit 1
+
+	if [ -z "$java_home" ]
+	then
+		case "$host" in
+			*darwin*)
+				if [ -d "/System/Library/Frameworks/JavaVM.framework" ]
+				then
+					java_home="/System/Library/Frameworks/JavaVM.framework"
+				fi
+				;;
+		esac
+	fi
+	if [ -z "$java_bin" ]
+	then
+		if [ -n "$java_home" ]
+		then
+			if [ -x "$java_home/bin/javac" ]
+			then
+				java_bin=$java_home/bin
+			elif [ -x "$java_home/Commands/javac" ]
+			then
+				java_bin=$java_home/Commands
+			fi
+		fi
+		if [ -z "$java_bin" ]
+		then
+			java_bin=`findpath javac`
+			if [ -z "$java_bin" ]
+			then
+				java_bin=$local_bin
+			fi
+		fi
+	fi
+	echo "java_bin set to $java_bin"
+
+	if [ -z "$java_inc" ]
+	then
+		if [ -n "$java_home" ]
+		then
+			if [ -f "$java_home/include/jni.h" ]
+			then
+				java_inc=$java_home/include
+			elif [ -f "$java_home/Headers/jni.h" ]
+			then
+				java_inc=$java_home/Headers
+			fi
+		fi
+		if [ -z "$java_inc" ]
+		then
+			if [ -f "$local/include/jni.h" ]
+			then
+				java_inc=$local/include
+			elif [ -f "/usr/include/jni.h" ]
+			then
+				java_inc=/usr/include
+			fi
+		fi
+	fi
+	if [ -z "$java_sysinc" ]
+	then
+		case $host in
+			*linux*)
+				if [ -d $java_inc/linux ]
+				then
+					java_sysinc=$java_inc/linux
+				fi
+				;;
+		esac
+	fi
+
+	printf "%s" "Checking for Java tools..."
+	for i in java javac javah javadoc jar
+	do
+		if [ -n "$java_bin" -a -x "$java_bin/$i" ]
+		then
+			xtool="$java_bin/$i"
+			eval "tool_$i=$xtool"
+		elif xtool=`findpath $i`
+		then
+			eval "tool_$i=$xtool"
+		fi
+		if [ -n "$xtool" ]
+		then
+			printf "%s " $i
+		else
+			echo "ERROR: Unable to find Java tool $i"
+			exit 1
+		fi
+	done
+	echo "Found!"
+
+	printf "%s" "Checking for Java headers..."
+	for i in jni.h
+	do
+		if [ -n "$java_inc" -a -f "$java_inc/jni.h" ]
+		then
+			printf "%s " $i
+		else
+			echo "ERROR: Unable to find java header $i"
+			exit 1
+		fi
+	done
+	echo "Found!"
+fi
+
+# Optional flags
+#
+if [ "$enable_profiling" -gt 0 ]
+then
+	config_ocamlopt_profile="-p"
+fi
+
+# Optional components
+#
+if [ "$with_jungle" -gt 0 ]
+then
+	if [ -z "$ocaml_idl" ]
+	then
+		ocaml_idl=$ocaml_stdlib
+	fi
+	if [ -z "$ocaml_idl_bin" ]
+	then
+		if [ -x "$ocaml_bin/camlidl" ]
+		then
+			ocaml_idl_bin=$ocaml_bin
+		else 
+			ocaml_idl_bin=`findpath camlidl`
+		fi
+	fi
+	printf "%s" "Checking for camlidl..."
+	if [ -x "$ocaml_idl_bin/camlidl" ]
+	then	
+		tool_camlidl=$ocaml_idl_bin/camlidl
+		echo "Found!"
+	else
+		if [ -n "$ocaml_idl_bin" ]
+		then
+			echo "ERROR: unable to find camlidl in $ocaml_idl_bin"
+		else
+			echo "ERROR: unable to find camlidl"
+		fi
+		exit 1
+	fi
+	printf "%s" "Checking for libcamlidl.a..."
+	if [ -f "$ocaml_idl/libcamlidl.a" ]
+	then
+		echo "Found!"
+	else
+		if [ -n "$ocaml_idl" ]
+		then
+			echo "ERROR: unable to find libcamlidl.a in $ocaml_idl"
+		else
+			echo "ERROR: unable to find libcamlidl.a"
+		fi
+		exit 1
+	fi
+	printf "%s" "Checking for Berkeley DB..."
+	if [ -z "$clib_bdb_name" ]
+	then
+		clib_bdb_name="db"
+	fi
+	if [ -z "$clib_bdb_lib" ]
+	then
+		if [ -f "$local/lib/lib${clib_bdb_name}.a" ]
+		then
+			clib_bdb_lib=$local/lib
+		elif [ -f /usr/local/lib/lib${clib_bdb_name}.a ]
+		then
+			clib_bdb_lib=/usr/local/lib
+		else
+			echo "ERROR: unable to find lib${clib_bdb_name}.a"
+			exit 1
+		fi
+	fi
+	if [ -z "$clib_bdb_inc" ]
+	then
+		if [ -f "$clib_bdb_lib/../include/db.h" ]
+		then
+			clib_bdb_inc=$clib_bdb_lib/../include
+		elif [ -f "$local/include/db.h" ]
+		then
+			clib_bdb_inc=$local/include
+		elif [ -f /usr/local/include/db.h ]
+		then
+			clib_bdb_inc=/usr/local/include
+		else
+			echo "ERROR: unable to find db.h"
+			exit 1
+		fi
+	fi
+else
+	clib_bdb_lib=
+	clib_bdb_inc=
+	clib_bdb_name=
+fi
+
+# Check to make sure at least one encoding has been selected
+#
+encodings=
+if [ "$with_utf8" -gt 0 ]
+then
+	encodings="${encodings}utf8 "
+fi
+if [ "$with_iso88591" -gt 0 ]
+then
+	encodings="${encodings}iso88591 "
+fi
+if [ -z "$encodings" ]
+then
+	echo "ERROR: You must include at least one character encoding"
+	exit 1
+fi
+
+# Check to see which optional tools have been selected
+#
+opttools=
+if [ "$with_jungle" -gt 0 ]
+then
+	opttools="${opttools}jungle "
+fi
+
+# Check which APIs to build
+#
+apis=
+
+if [ "$with_c" -gt 0 ]
+then
+	apis="${apis}c "
+	need_copt=1
+fi
+
+if [ "$with_java" -gt 0 ]
+then
+	apis="${apis}java "
+	need_copt=1
+fi
+
+if [ $need_copt -gt 0 ]
+then
+# Check for C compilation options
+#
+# See if we have gcc and use that if available.
+# otherwise use cc if available.
+#
+	copt_CC=
+	copt_CCFLAGS=
+	copt_MKSHAREDLIB=
+	copt_MKSHAREDLIBFLAGS=
+	copt_RPATHFLAGS=
+	copt_OCAML_RPATHFLAGS=
+	copt_CCLIBS=
+	copt_SUPPORTS_SHARED_LIBRARIES=false
+	copt_SUPPORTS_RPATH=false
+	copt_OCAMLSHARED=
+	copt_LIBDL=
+	copt_NEEDLIBDL=false
+	copt_SUPPORTS_STARTGROUP=false
+	copt_STARTGROUP=
+	copt_ENDGROUP=
+
+	printf "%s" "Checking for C compiler..."
+	if [ -z "$ccoption" ]
+	then
+		if findpath gcc >/dev/null
+		then
+			copt_CC=gcc
+		else
+			copt_CC=cc
+		fi
+	else
+		copt_CC="$ccoption"
+	fi
+	if [ -n "$copt_CC" ]
+	then
+		echo "$copt_CC Found!"
+	else
+		echo "ERROR: No C compiler found.  Please set with -ccoption"
+		exit 1
+	fi
+
+# Get the extra libraries and check for static library search options
+#
+	case "$host" in
+		*linux*|*freebsd*|*osf*|*irix*)
+			copt_SUPPORTS_STARTGROUP=true
+			copt_STARTGROUP="-Wl,--start-group"
+			copt_ENDGROUP="-Wl,--end-group"
+			copt_CCLIBS="-lm -lcurses"
+			;;
+		*darwin*)
+			copt_CCLIBS="-lm -lcurses"
+			;;
+		*solaris*)
+			copt_CCLIBS="-lm -lcurses -lnsl -lsocket"
+			;;
+		*mingw*|*cygwin*)
+			copt_CCLIBS="-lm -lcurses"
+			copt_SUPPORTS_STARTGROUP=true
+			copt_STARTGROUP=-Wl,--start-group
+			copt_ENDGROUP=-Wl,--end-group
+			;;
+		*)
+			echo "ERROR: Unknown host $host"
+			exit 1
+			;;
+	esac
+
+	if [ "$with_shared" -gt 0 ]
+	then
+# Check for shared library support
+#
+		case "$host" in
+			*-*-linux-gnu|*-*-linux|*-*-freebsd[3-9]*)
+				copt_CCFLAGS="$copt_CCFLAGS -fPIC"
+				copt_MKSHAREDLIB=$copt_CC
+				copt_MKSHAREDLIBFLAGS="-shared"
+				copt_RPATHFLAGS="-Wl,--rpath -Wl,"
+				copt_OCAML_RPATHFLAGS="-ccopt -Wl,--rpath -ccopt -Wl,"
+				copt_SUPPORTS_RPATH=true
+				copt_LD_LIBRARY_PATH_VAR="LD_LIBRARY_PATH"
+				copt_SUPPORTS_SHARED_LIBRARIES=true
+				copt_LIBDL=-ldl
+				copt_NEEDLIBDL=true
+				;;
+			alpha*-*-osf*)
+				case "$copt_CC" in
+					gcc*)
+						copt_CCFLAGS="$copt_CCFLAGS -fPIC"
+						copt_MKSHAREDLIB=$copt_CC
+						copt_MKSHAREDLIBFLAGS="-shared"
+						copt_LD_LIBRARY_PATH_VAR="LD_LIBRARY_PATH"
+						copt_SUPPORTS_SHARED_LIBRARIES=true
+						;;
+					cc*)
+						copt_MKSHAREDLIB=ld
+						copt_MKSHAREDLIBFLAGS="-shared -expect_unresolved '*'"
+						copt_LD_LIBRARY_PATH_VAR="LD_LIBRARY_PATH"
+						copt_SUPPORTS_SHARED_LIBRARIES=true
+						;;
+				esac
+				copt_LIBDL=-ldl
+				copt_NEEDLIBDL=true
+				;;
+			*-*-solaris2*)
+				case "$copt_CC" in
+					gcc*)
+						copt_CCFLAGS="$copt_CCFLAGS -fPIC"
+						copt_MKSHAREDLIB=$ccopt_CC
+						copt_MKSHAREDLIBFLAGS="-shared"
+						copt_LD_LIBRARY_PATH_VAR="LD_LIBRARY_PATH"
+						copt_SUPPORTS_SHARED_LIBRARIES=true
+						;;
+					*)
+						copt_CCFLAGS="$copt_CCFLAGS -KPIC"
+						copt_MKSHAREDLIB=/usr/ccs/bin/ld
+						copt_MKSHAREDLIBFLAGS="-G"
+						copt_LD_LIBRARY_PATH_VAR="LD_LIBRARY_PATH"
+						copt_SUPPORTS_SHARED_LIBRARIES=true
+						;;
+				esac
+				copt_LIBDL=-ldl
+				copt_NEEDLIBDL=true
+				;;
+			mips*-*-irix[56]*)
+				case "$copt_CC" in
+					gcc*)
+						copt_CCFLAGS="$copt_CCFLAGS -fPIC"
+						;;
+				esac
+				copt_MKSHAREDLIB=ld
+				copt_MKSHAREDLIBFLAGS="-shared -rdata_shared"
+				copt_LD_LIBRARY_PATH_VAR="LD_LIBRARY_PATH"
+				copt_SUPPORTS_SHARED_LIBRARIES=true
+				copt_LIBDL=-ldl
+				copt_NEEDLIBDL=true
+				;;
+			powerpc-apple-darwin*)
+				copt_MKSHAREDLIB=gcc
+				copt_MKSHAREDLIBFLAGS="-dynamiclib"
+				copt_LD_LIBRARY_PATH_VAR="DYLD_LIBRARY_PATH"
+				copt_SUPPORTS_SHARED_LIBRARIES=false
+				;;
+			*mingw*|*cygwin*)
+				copt_SUPPORTS_SHARED_LIBRARIES=false
+				;;
+		esac
+	fi
+fi
+
+if [ "$with_shared" -gt 0 -a "$copt_SUPPORTS_SHARED_LIBRARIES" = "false" ]
+then
+	echo "WARNING: Shared libraries are not supported on this platform."
+fi
+
+if [ "$with_java" -gt 0 -a "$copt_SUPPORTS_SHARED_LIBRARIES" = "false" ]
+then
+	echo "ERROR: The JAVA API requires shared libraries, which are not supported on this platform"
+	exit 1
+fi
+
+# Configure the arch options here
+#
+arch_name=$host
+if findpath ranlib > /dev/null
+then
+	echo "Found ranlib"
+	arch_RANLIB=ranlib
+else
+	arch_RANLIB=echo
+fi
+if findpath gawk > /dev/null
+then
+	arch_AWK=gawk
+elif findpath awk > /dev/null
+then
+	arch_AWK=awk
+else
+	echo "awk not found"
+	exit 2
+fi
+if findpath sed > /dev/null
+then
+	arch_SED=sed
+else
+	echo "sed not found"
+	exit 2
+fi
+
+# Get architecture-specific commands and extensions
+#
+echo "Setting commands for host: $host"
+
+case "$host" in
+	*linux*|*freebsd*|*osf*|*solaris*|*irix*)
+		arch_EXE=
+		arch_DLL=.so
+		arch_JNIDLL=$arch_DLL
+		arch_OPT=.opt
+		arch_BYTE=.byte
+		arch_CGI=.cgi
+		arch_OPTCGI=opt.cgi
+		arch_ZIPEXT=.tar.gz
+		arch_CP=cp
+		arch_MKDIR="mkdir -p"
+		arch_AR=ar
+		arch_LN="ln -s -f"
+		arch_CAT=cat
+		arch_RM="rm -f"
+		arch_DELTREE="rm -fr"
+		arch_ZIP="tar cvf"
+		arch_ZIPOPT="--gzip"
+		arch_LD_LIBRARY_PATH_VAR=LD_LIBRARY_PATH
+		;;
+	*darwin*)
+		arch_EXE=
+		arch_DLL=.dylib
+		arch_JNIDLL=.jnilib
+		arch_OPT=.opt
+		arch_BYTE=.byte
+		arch_CGI=.cgi
+		arch_OPTCGI=opt.cgi
+		arch_ZIPEXT=.tar.gz
+		arch_CP=cp
+		arch_MKDIR="mkdir -p"
+		arch_AR=ar
+		arch_LN="ln -s -f"
+		arch_CAT=cat
+		arch_RM="rm -f"
+		arch_DELTREE="rm -fr"
+		arch_ZIP="tar cvf"
+		arch_ZIPOPT="--gzip"
+		arch_LD_LIBRARY_PATH_VAR=DYLD_LIBRARY_PATH
+		;;
+	*mingw*|*cygwin*)
+		arch_EXE=.exe
+		arch_BYTE=byte.exe
+		arch_OPT=opt.exe
+		arch_DLL=.dll
+		arch_CGI=.cgi
+		arch_OPTCGI=opt.cgi
+		arch_ZIPEXT=zip
+		arch_CP=cp
+		arch_MKDIR="mkdir -p"
+		arch_AR=ar
+		arch_LN=cp
+		arch_CAT=cat
+		arch_RM="rm -f"
+		arch_DELTREE="rm -fr"
+		arch_ZIP=zip
+		arch_ZIPOPT=-r
+		arch_LD_LIBRARY_PATH_VAR=LD_LIBRARY_PATH
+		;;
+	*)
+		echo "Unknown host type $host"
+		exit 1
+		;;
+esac
+
+here=`pwd`
+sourcebase=`basename $here`
+
+# Print a summary before we start generating Makefile.conf
+#
+print_options
+
+echo "Writing $config_out"
+
+cat <<_EOF_ > $config_out
+#########################################################################
+#                                                                       #
+#                                Galax                                  #
+#                             XQuery Engine                             #
+#                                                                       #
+#   Copyright 2006, AT&T Labs                                           #
+#   Distributed only by permission.                                     #
+#                                                                       #
+#########################################################################
+
+#########################################################################
+# Generated by:	$config_user
+# Generated on:	$config_date
+# Generated in:	$config_dir
+# Host:				$host
+# Command line:	$config_cmd
+# Descripton:
+#		This is the configuration Makefile that is included by Makefile.galax
+#		in both the build and installation environment.  It is generated
+#		with the Configure script.
+#########################################################################
+
+#########################################################################
+# Section:  Compilation tools
+# Description:
+#     Here are the variables that define the names and paths to tools
+#     used in compiling Galax or applications that use the Galax API.
+#
+#     Note: If OCAMLOPT is not defined here, that means there is no
+#     ocamlopt compiler, or disable-opt was configured.  In this case
+#     no optimized targets are built and installed.
+#########################################################################
+
+# OCaml compilation tools and options
+#
+OCAMLC=$tool_ocamlc
+OCAMLDEP=$tool_ocamldep
+OCAMLLEX=$tool_ocamllex
+OCAMLYACC=$tool_ocamlyacc
+OCAMLMKTOP=$tool_ocamlmktop
+OCAMLMKLIB=$tool_ocamlmklib
+CAMLP4O=$tool_camlp4o
+CAMLIDL=$tool_camlidl
+
+RANLIB=$arch_RANLIB
+
+OCAMLC_FLAGS=
+OCAMLOPT_FLAGS=$config_ocamlopt_profile
+_EOF_
+
+if [ -n "$tool_ocamlopt" ]
+then
+	echo "OCAMLOPT=$tool_ocamlopt" >> $config_out
+fi
+
+# Install the cc command and options here
+#
+if [ $with_c -gt 0 ]
+then
+cat <<_EOF_ >> $config_out
+
+# C compilation tools and options
+#
+CC=$copt_CC
+CCFLAGS=$copt_CCFLAGS
+CCLIBS=$copt_CCLIBS
+SUPPORTS_SHARED_LIBRARIES=$copt_SUPPORTS_SHARED_LIBRARIES
+SUPPORTS_RPATH=$copt_SUPPORTS_RPATH
+MKSHAREDLIB=$copt_MKSHAREDLIB
+MKSHAREDLIBFLAGS=$copt_MKSHAREDLIBFLAGS
+RPATHFLAGS=$copt_RPATHFLAGS
+OCAML_RPATHFLAGS=$copt_OCAML_RPATHFLAGS
+LD_LIBRARY_PATH_VAR=$arch_LD_LIBRARY_PATH_VAR
+NEEDLIBDL=$copt_NEEDLIBDL
+LIBDL=$copt_LIBDL
+SUPPORTS_STARTGROUP=$copt_SUPPORTS_STARTGROUP
+STARTGROUP=$copt_STARTGROUP
+ENDGROUP=$copt_ENDGROUP
+
+_EOF_
+fi
+
+# Install the java command and options here
+#
+if [ $with_java -gt 0 ]
+then
+cat <<_EOF_ >> $config_out
+JAVA=$tool_java
+JAVAC=$tool_javac
+JAVAH=$tool_javah
+JAVADOC=$tool_javadoc
+JAR=$tool_jar
+
+JAVAINCLUDE=$java_inc
+JAVAC_FLAGS=
+_EOF_
+fi
+
+if [ -n "$java_sysinc" ]
+then
+echo "JAVASYSINC=$java_sysinc" >> $config_out
+fi
+
+# Install the system tools and options here
+#
+cat <<_EOF_ >> $config_out
+
+#########################################################################
+# Section:  System-dependencies
+# Description:
+#		Here, variables are defined that name system-dependent tools
+#		used in the build process.  The file extensions used by the
+#		system are set here as well.
+#########################################################################
+
+SED=$arch_SED
+CP=$arch_CP
+RM=$arch_RM
+DELTREE=$arch_DELTREE
+LN=$arch_LN
+CAT=$arch_CAT
+MKDIR=$arch_MKDIR
+ZIP=$arch_ZIP
+ZIPOPT=$arch_ZIPOPT
+ZIPEXT=$arch_ZIPEXT
+
+BYTE=$arch_BYTE
+OPT=$arch_OPT
+EXE=$arch_EXE
+DLL=$arch_DLL
+JNIDLL=$arch_JNIDLL
+
+#########################################################################
+# Section:  Options
+# Description:
+#		Here, variables are defined that enable or disable various
+#		build-options.
+#########################################################################
+
+_EOF_
+
+# Install the various configuration option variables
+#
+echo "CONF_WITH_NETSYS=true" >> $config_out
+
+if [ $with_utf8 -gt 0 ]
+then
+echo "CONF_WITH_CHARSET_UTF8=true"
+else
+echo "CONF_WITH_CHARSET_UTF8=false"
+fi >> $config_out
+
+if [ $with_iso88591 -gt 0 ]
+then
+echo "CONF_WITH_CHARSET_ISO88591=true"
+else
+echo "CONF_WITH_CHARSET_ISO88591=false"
+fi >> $config_out
+
+if [ $with_jungle -gt 0 ]
+then
+echo "CONF_WITH_EXT_JUNGLE=true"
+else
+echo "CONF_WITH_EXT_JUNGLE=false"
+fi >> $config_out
+
+if [ $with_c -gt 0 ]
+then
+echo "CONF_WITH_API_C=true"
+else
+echo "CONF_WITH_API_C=false"
+fi >> $config_out
+
+if [ $with_java -gt 0 ]
+then
+echo "CONF_WITH_API_JAVA=true"
+else
+echo "CONF_WITH_API_JAVA=false"
+fi >> $config_out
+
+# CONF_WITH_GALAXD is used in Makefile when compiling galaxd
+echo "CONF_WITH_GALAXD=false" >> $config_out
+
+# Install the various configurable path variables
+#
+cat <<_EOF_ >> $config_out
+
+#########################################################################
+# Section:  PATHS
+# Description:
+#		Here, variables are defined that point to various directories
+#		used in compilation.
+#########################################################################
+
+# Package location
+#
+CONF_PACKAGE_DIR=$package_dir
+CONF_PACKAGE_SRC=$package_src
+
+# OCaml library packages
+#
+CONF_OCAML_LIBPCRE=$ocaml_pcre
+CONF_OCAML_LIBNETSTRING=$ocaml_netstring
+CONF_OCAML_EQUEUE=$ocaml_equeue
+CONF_OCAML_LIBNETCLIENT=$ocaml_netclient
+CONF_OCAML_LIBNETSYS=$ocaml_netsys
+CONF_OCAML_LIBPXP=$ocaml_pxp
+CONF_OCAML_LIBPXP_UTF8=$ocaml_pxp_utf8
+CONF_OCAML_LIBPXP_ISO88591=$ocaml_pxp_iso88591
+CONF_OCAML_LIBCAMOMILE=$ocaml_camomile
+CONF_OCAML_STDLIB=$ocaml_stdlib
+CONF_OCAML_PKGLIB=$ocaml_pkglib
+CONF_OCAML_IDL=$ocaml_idl
+
+# C library locations
+#
+CONF_C_LIBPCRE=$clib_pcre
+CONF_C_LIBASMRUN=$ocaml_libasmrun
+CONF_C_LIBBDB=$clib_bdb_lib
+CONF_C_LIBBDB_INC=$clib_bdb_inc
+CONF_C_LIBBDB_NAME=$clib_bdb_name
+
+# Installation directories
+#
+CONF_GALAX_HOME=$galax_home
+CONF_GALAX_BIN=$galax_bin
+CONF_GALAX_LIB=$galax_lib
+CONF_GALAX_OCAMLLIB=$galax_camllib
+CONF_GALAX_MAN=$galax_man
+CONF_GALAX_CONFIG=$galax_config
+CONF_GALAX_EXAMPLES=$galax_examples
+CONF_GALAX_USECASES=$galax_usecases
+CONF_GALAX_REGRESS=$galax_regress
+CONF_GALAX_C_API=$galax_capi
+CONF_GALAX_JAVA_API=$galax_javaapi
+
+CONF_XQUERYUNIT=$regression
+CONF_GALAXUNIT=$galax_regression
+CONF_CAMOMILEVERSION=$ocaml_camomile_version
+
+_EOF_
+
+# generate META
+# META.in missing
+sed "s/@VERSION@/$version/g" META.in > META
+
+exit 0
+

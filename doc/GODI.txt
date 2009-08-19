@@ -1,0 +1,197 @@
+There are two methods for installing Galax from source:
+
+  I. RECOMMENDED METHOD: Use GODI installation and configuration tool
+     to automatically install Galax and all the libraries on which it
+     depends.
+
+  II. Install Galax and the libraries on which it depends by hand.
+
+     This method may be preferable if you are an O'Caml user, already
+     have an installation of O'Caml and its libraries, and do not want
+     to install a new version of O'Caml.
+
+     Even if you are already an O'Caml user, the first method is
+     always recommended.
+
+I.  Installing Galax using GODI installation and configuration tool.
+
+  [Warning: Installing packages using GODI is an ON-LINE process, so
+   preferably, you should be connected to the Net by a fast, hard-wire
+   connection.]
+
+  1. Download GODI from : http://godi.ocaml-programming.de/
+
+     1a. Follow GODI installation instructions through
+         "bootstrap_stage2" command, adding GODI bin/sbin directories
+         to your PATH as instructed.
+
+         [Note: If you are an O'Caml user, after bootstrapping, you
+          will find all the O'Caml executables in
+          <your-godi-directory>/bin and the O'Caml libraries in
+          <your-godi-directory>/lib/ocaml.]
+
+  2. Run godi_console
+
+     2a. Select conf-pcre package (Packages are listed in
+         alphabetical order.)
+
+     2b. Select [b]uild & install, then e[x]it
+
+     2c. GODI will give you the PCRE library configure options:
+
+                [ 1] GODI_BASEPKG_PCRE = no
+                [ 2]  GODI_PCRE_INCDIR =
+                [ 3]  GODI_PCRE_LIBDIR =
+
+         Select 2 to set the path to the directory containing pcre.h (version 5.0 or higher)
+         Select 3 to set the path to the directory containing libpcre.a (version 5.0 or higher)
+
+         If you do not have PCRE version 5.0 or higher installed, download
+         and install it before completing this configuration step.
+
+	 Select e[x]it twice to return to the main menu.
+
+     2d. (Optional) If you are planning to include support for Jungle,
+         Galax's secondary storage manager, then select conf-bdb.
+
+     2e. Select [b]uild & install, then e[x]it
+
+     2f. GODI will give you the BDB library configure options:
+
+                [ 1] GODI_BDB_INCDIR =
+                [ 2] GODI_BDB_LIBDIR =
+
+         Select 1 to set the path to the directory containing db.h. (version 4.4 or higher)
+         Select 2 to set the path to the directory containing libdb.a (version 4.4 or higher)
+
+         If you do not have Berkeley DB version 4.4 or higher installed, download and
+         install it before completing this configuration step.
+
+         Select e[x]it twice to return to the main menu.
+
+     2g. Select godi-galax package (Packages are listed in
+         alphabetical order.)
+
+     2h. Select [b]uild & install, then e[x]it
+
+         This will add all of Galax's dependencies to your GODI configuration.
+
+     2i. GODI will give you Galax's configure options:
+
+		[ 1] GODI_GALAX_INCLUDE_JUNGLE = no
+		[ 2]  GODI_GALAX_INCLUDE_C_API = no
+		[ 3] GODI_GALAX_INCLUDE_JAVA_$ = no
+		[ 4]   GODI_GALAX_INCLUDE_UTF8 = yes
+		[ 5] GODI_GALAX_INCLUDE_ISO88$ = yes
+		[ 6]      GODI_GALAX_JAVA_HOME = unset
+		[ 7]       GODI_GALAX_JAVA_BIN = unset
+		[ 8]   GODI_GALAX_JAVA_INCLUDE = unset
+		[ 9] GODI_GALAX_REGRESSION_SU$ = unset
+
+        You can change the default Galax configuration as follows:
+
+        Select 1 to include Jungle, Galax's secondary storage manager.
+        Select 2 to include Galax's C API. 
+        Select 3 to include Galax's Java API (requires the C API).
+        Select 4(5) to exclude UTF8(ISO88) character set (reduces
+        sizes of executables).
+        Select 6(7,8) to set the Java home(bin,include) directories.
+        Select 9 to set directory where XQuery 1.0 test suite is installed.
+
+        Select e[xi]t.
+
+     2j. Select [s]tart/continue, which will report all dependencies.
+
+         Then select [s]tart/continue, which will report actual
+         dependencies based on your current GODI installation.
+
+         Then select [o]k.
+
+   3. Take a long coffee break...while GODI downloads and installs
+      packages. 
+
+   4. Finish
+
+      When installation has completed, Galax will be installed in:
+
+      <your-godi-directory>/
+         bin/  : Galax's command-line executables
+         lib/  : 
+           pervasive.xq : Signatures of XQuery 1.0 Function & Operators 
+           c/           : C libraries and API header files
+           java/        : Java libraries and API interfaces
+           lib/ocaml/pkg-lib/galax/  : O'Caml libraries and interfaces
+         share/galax/:
+           examples/:  Examples of using C, Java, and O'Caml APIs
+           regress/:   Configuration for running the W3C XQuery 1.0 Test Suite
+           usecases/:  XQuery 1.0 usecases
+
+      Add <your-gody-directory>/bin to your PATH.
+        
+II. Installing Galax source by hand.
+
+    If you already have an O'Caml installation, you can install the
+    Galax source by hand.  To do so, you need the following versions
+    of the O'Caml compiler and libraries, and C libraries:
+
+    OCaml compiler	3.09.1 or higher
+
+    OCaml Libraries:
+	Library		Version   GODI-Package 	
+	PCRE		5.0       godi-pcre	
+	netstring	1.1.1     godi-ocamlnet	
+	Caml IDL	1.05      godi-camlidl	
+	PXP		1.1.96    godi-pxp	
+	Camomile	0.6.5	  godi-camomile	
+
+    C Libraries:
+	Berkeley DB (libdb) version 4.3 (only required for Jungle support)
+	PCRE version 6.3 (4.5 or higher works)
+
+   1. Download Galax source from http://www.galaxquery.org/galax-\version.tar.gz
+
+      gunzip galax-\version.tar.gz
+      tar xvf galax-\version.tar
+
+   2. Configure Galax.
+
+      In galax/ run: 
+
+        ./configure -galax-home <Galax's installation directory>
+
+      If you want the C API, use -with-c.
+      If you want the Java API, use -with-java -java-home <Top-level Java directory>
+
+      The configure script will try to find your O'Caml installation
+      and other necessary libraries by itself.  Review the default
+      configuration before proceeding.  If you need to change the
+      default configuration, run "./configure -help" for all options.
+
+   3. Build Galax.
+
+      In galax/ run: 
+  
+        make world
+
+      Go get more coffee...
+
+   4. Install Galax.
+
+      In galax/ run: 
+  
+        make install
+
+   5. Finish
+
+      When installation has completed, Galax will be installed in:
+
+      <your-Galax-install-directory>:
+         bin/       : command-line executables	
+         examples/  : Examples of using C, Java, and O'Caml APIs
+         regress/   : Configuration for running the W3C XQuery 1.0 Test Suite
+         usecases/  : XQuery 1.0 usecases
+
+      Add <your-Galax-install-directory>/bin to your PATH.
+        
+
+   

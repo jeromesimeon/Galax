@@ -1,0 +1,4 @@
+docs/yoohoo-server.xq$YooHoo server stub$
+docs/yoohoo-server.xqs$YooHoo SOAP wrapper$
+docs/yoohoo-impl.xq$YooHoo server implementation$
+

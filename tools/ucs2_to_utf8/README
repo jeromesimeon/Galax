@@ -1,0 +1,28 @@
+(* Note:
+
+     This file is taken 'as-is' from the pxp distribution, but seems
+     to have been originally written by Claudio Sacerdoti Coen. There
+     is no license recorded for that file.
+
+     PXP can be found at:
+     http://www.ocaml-programming.de/programming/pxp.html
+
+   - Jerome
+
+*)
+
+(******************************************************)
+(*    Claudio Sacerdoti Coen <sacerdot@cs.unibo.it>   *)
+(*                   14/05/2000                       *)
+(******************************************************)
+
+How to compile: "make clean && make depend && make && make opt"
+
+Usage: "cat input.mll | ./ucs2_to_utf8 > output.mll"
+ where in input.mll there are definitions of ucs2 regular expressions
+ and in output.mll there are the same utf8 regular expressions in the
+ format expected by ocamllex
+
+ See input/input.mll for an example (the definitions are taken from the
+ appendix B of the XML reccomendation) and input/example.mll for a
+ smaller one.

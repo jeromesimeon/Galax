@@ -1,0 +1,1347 @@
+(***********************************************************************)
+(*                                                                     *)
+(*                                 GALAX                               *)
+(*                              XQuery Engine                          *)
+(*                                                                     *)
+(*  Copyright 2001-2007.                                               *)
+(*  Distributed only by permission.                                    *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* $Id: schema_import.mlp,v 1.33 2007/09/27 19:47:09 simeon Exp $ *)
+
+(* Module: Schema_import
+   Description:
+     This module imports an XML document (in the form of a resolved
+     XML SAX stream) in the XQuery type system.
+*)
+
+(*--VG  Known limitations of this schema import implementation:
+
+  - Neither XML declaration, nor DTD in the beginning of the schema are
+  processed.
+
+  - Comments, processing instructions, and character content are
+  silently ignored (in particular, arbitrary character content between
+  tags is permitted).
+
+  - Elements that do not belong to W3C Schema cause an error.
+
+  - <xs:annotation> elements are ignored.
+
+  - Irrelevant attributes within <xs:xxx> elements are silently ignored.
+
+  - <xs:redefine> and <xs:include> are not yet handled.
+
+  - When XQuery import specification says that a certain Schema
+  feature is ignored, we also do not fully check syntactic correctness
+  of the corresponding schema fragment, we just skip it.  Example:
+  facets inside <xs:restriction> inside <xs:simpleType>.
+
+  - When importing <complexType> with <simpleContent>, the attribute
+  constraint mixed="false" is not enforsed -- the normalization stage
+  would be more appropriate for this.
+*)
+
+
+(*--VG Major TODO items
+  
+  - Robust error messages about stray elements. (Now it is in most
+  cases a Stream.Error("") exception.  See uses of complain_unkn_elt
+  for ideas.)
+
+  - Checking for unexpected xs:xxx attributes.
+    Add additional parameter to open_tag, which is a record
+    of string lists for known xs attributes:
+       { handled:         FS: handled by 1.0 and the mapping
+         notinv10:        FS: relevant to XQ, but not supported in 1.0
+         nothandled:      FS: relevant to XQ, but ignored by the mapping
+         ignored:         FS: not relevant to XQ, ignored
+         galax_extra:     handled by galax import, but not by FS
+         galax_notyet:    not yet implemented in Galax
+       }
+    Note: the first 4 lists are disjoint.
+
+    Each attribute xs:a is to be checked agains these lists with the 
+    following effects:
+        a in (handled intersect galax_not_yet) --> NYI error
+        a in (notin10 minus galax_extra) -> Not in 1.0 error
+        otherwise --> proceed silently
+    maybe: 
+       a in galax_extra --> only when "vendor typing extensions" is on?
+*)
+
+
+open Streaming_types
+open Xquery_type_ast
+open Xquery_common_ast
+open Error
+open Schema_util
+
+module N = Namespace_names
+module NB = Namespace_builtin
+module NS = Namespace_symbols
+module NC = Namespace_context
+module XU = Xquery_ast_util
+
+let cur_finfo () = ref (Finfo.make_finfo_line_col "Unknown File" 0 0)
+
+let import_error loc msg = raise (error_with_file_location loc (Query(Schema_Import(msg))))
+
+(**********************************************************************
+              Stream cleansing 
+***********************************************************************)
+
+(* Removes stream events that definitely bear no schema information. *)
+(* All parsers in this module assume cleansed streams. *)
+
+let cleanse_rsax_stream rsax_stream =
+  let loc_ref = cur_finfo () in 
+  let sift_event e =
+    loc_ref := e.rse_loc ;  
+    match e.rse_desc with	
+      RSAX_attribute _ | RSAX_atomicValue _ | RSAX_hole ->
+        failwith
+          ("BUG in Schema_import.cleanse_sax_stream: " ^
+             "unexpected RSAX event (attribute, atomicValue or hole)")
+    | RSAX_comment _ | RSAX_processingInstruction _ | RSAX_characters _ ->
+        None
+    | _ -> Some e
+  in
+  let rec next_clean_event strm =
+    try
+      let next_input_event = Stream.next strm in
+      match sift_event next_input_event with
+        None -> next_clean_event strm
+      | some -> (some)
+    with
+    | Stream.Failure -> (None)
+    | exn -> (import_error (!loc_ref) ("Fatal error on or near specified line"))
+  in
+  Stream.from (fun n -> next_clean_event rsax_stream)
+
+
+(**********************************************************************
+                              Some types 
+***********************************************************************)
+
+
+(* Flags for handling the determination of namespace prefixes for the
+   names of newly defined elements and attributes. *)
+
+type mode =
+    Global
+  | Local  
+  (* whether the component is global or local (in Schema sense) *)
+
+type qualificator =
+    Qualified
+  | Unqualified
+    (* values of Schema's  form, elementFormDefault, attributeFormDefault *)
+
+
+(**********************************************************************
+     Import state -- info passed around by all import routines 
+**********************************************************************)
+
+module ImportState = 
+struct 
+  module PM = Schema_prefix_manager
+  module N = Namespace_names
+  module NC = Namespace_context
+  module NB = Namespace_builtin
+
+  type import_state = {
+    (* User-suggested prefix for schema's targetNamespace *)
+    (* None when schema has no targetNamespace *)
+    target_pref_opt : N.prefix option; 
+    (* Global form default declarations from <schema> *)
+    elementFormDefault : qualificator;
+    attributeFormDefault : qualificator;
+    (* Namespace environment at the current point in schema traversal *)
+    schema_nsenv : NC.nsenv;
+      (*--VG!! After the namespace overhaul of Aug'04, schema_nsenv is
+	really needed here only for supporting functionality of prefix
+	manager... *)
+
+    (* Prefixes to be used in the imported (XQuery) result  *)
+    prefix_manager : PM.prefix_manager;
+  }
+
+  (* Note: target namespace binding, if provided, is added only to the
+  prefix manager and not to the namespace environment -- this binding
+  is external to the schema and, therefore, should not be used for
+  resolution of schema names. 
+  *)
+  let init_import_state pref_opt ns_opt eltForm attForm nsenv = 
+    (* Create prefix manager to be used for unresolving the uri's *)
+    let bindings = NC.delta_bindings nsenv NC.default_xml_nsenv in
+    let pm = PM.create () in
+    let pm = PM.add_bindings pm bindings in
+
+    (* Determine what is the target namespace and invent a prefix for it, 
+    if needed. *)
+    let (pm, tpo) = match ns_opt with 
+      | None -> (pm, None)
+      | Some nsuri -> 
+	  try (pm, Some(PM.unresolve_uri pm nsuri))
+	  with _ -> 
+	    let pm = 
+	      match pref_opt with 
+		| Some suggested_pref -> 
+		    PM.add_binding pm (suggested_pref, nsuri)
+		| None -> 
+		    PM.add_binding pm (N.NSPrefix "target", nsuri)
+	    in 
+	    let added_pref = PM.unresolve_uri pm nsuri in
+	      (pm, Some added_pref)
+    in
+      {
+	target_pref_opt = tpo;
+	elementFormDefault = eltForm;
+	attributeFormDefault = attForm;
+	schema_nsenv = nsenv; 
+	prefix_manager = pm;
+      }	   
+
+  let add_bindings ims nsenv = 
+    let nsdelta = NC.delta_bindings ims.schema_nsenv nsenv in 
+    let new_prefix_manager =
+      PM.add_bindings ims.prefix_manager nsdelta in 
+      { ims with 
+	  schema_nsenv = nsenv; 
+	  prefix_manager = new_prefix_manager; }
+
+
+  (** Renames (if necessary) the prefix of a cname, so that it is valid
+    w.r.t. the "flattened" namespace bindings maintained by
+    ims.prefix_manager. *)
+  let qualify_refname fi ims cname = 
+    let (pref,ncname) = N.uqname_element_of_string cname in
+    let uri = 
+      try NC.get_ns_of_prefix ims.schema_nsenv pref 
+      with _ -> import_error fi
+	("The namespace for this name could not be resolved: '" ^
+	 cname  ^ "'") in
+    let qpref = PM.unresolve_uri ims.prefix_manager uri
+    in (qpref, ncname)
+
+  let qualify_newtype ims ncname = 
+    match ims.target_pref_opt with 
+      | Some pref -> (pref,ncname)
+      | None -> (NB.empty_prefix, ncname) 
+	  
+  let qualify_newname (target, formDefault)  globloc formopt ncname = 
+    let form = match (globloc, formopt) with
+      | (Global, None) -> Qualified
+      | (Global, _) -> failwith ("BUG in Schema_import.qualify_newname: " ^ 
+				 "this arg should not be passed in")
+      | (Local, Some q) -> q
+      | (Local, None) -> formDefault
+    in match (form, target) with 
+      | (Unqualified, _) 
+      | (Qualified, None) -> (NB.empty_prefix, ncname)  
+      | (Qualified, Some pref) -> (pref, ncname)
+
+  let qualify_newelem ims = 
+    qualify_newname (ims.target_pref_opt, ims.elementFormDefault)
+  let qualify_newattr ims = 
+    qualify_newname (ims.target_pref_opt, ims.attributeFormDefault)
+
+  let make_xs_type ims ncname =
+    let pref = PM.unresolve_uri ims.prefix_manager Namespace_builtin.xs_uri in
+    (pref,ncname)
+
+  let namespace_declarations ims = PM.invented_bindings ims.prefix_manager
+
+end 
+
+module IMS = ImportState
+
+
+
+(******************************************************
+  General-purpose helper functions 
+*******************************************************)
+(*--VG## If these duplicate functions are available elsewhere, 
+         this should be corrected. *)
+
+let opt_or_default opt def = 
+  match opt with 
+    | Some x -> x 
+    | None -> def
+
+let bmkstype_spec desc = 
+  { pstype_specifier_desc = desc; 
+    pstype_specifier_loc = Finfo.bogus }
+
+let bmkxtype (desc : xtype_desc) = 
+  { pxtype_desc = desc;
+    pxtype_loc = Finfo.bogus; }
+
+let bmkctype_spec (desc : ctype_specifier_desc) = 
+  { pctype_specifier_desc = desc;
+    pctype_specifier_loc = Finfo.bogus; }
+
+let bmkxtype_decl (desc : xtype_declaration_desc) = 
+  { pxtype_declaration_desc = desc; 
+    pxtype_declaration_loc = Finfo.bogus }
+
+let ncname_of_prefix = function
+  | N.NSPrefix ncname -> ncname
+  | _ -> import_error Finfo.bogus ("Bug in Schema_import: a prefix in an unexpected form: default or wildcard.")
+
+
+(***********************************************************************
+                            AST utilities
+************************************************************************)
+
+let rec do_grouping zero op = function 
+  | [typ] -> typ
+  | typ::rest -> bmkxtype(op typ (do_grouping zero op rest))
+  | [] -> bmkxtype zero
+
+let grouping_interleave typs = 
+  do_grouping TEmpty (fun t ts -> TInterleave(t,ts)) typs
+
+let grouping_sequence typs = 
+  do_grouping TEmpty (fun t ts -> TSequence(t,ts)) typs
+
+let grouping_choice typs = 
+  do_grouping TNone (fun t ts -> TChoice(t,ts)) typs
+
+
+let apply_occurs typ (min,max) = 
+  match (min,max) with 
+    | (Occurrence.UP_INT 1, Occurrence.UP_INT 1) -> typ
+    | _ -> bmkxtype(TBound(typ,min,max))
+
+
+let xtypeopt_of_AttributeContent = function
+  | ([], None) -> None
+  | ([], Some w) -> Some w
+  | (rs, None) -> Some(grouping_interleave rs)
+  | (rs, Some w) -> Some(bmkxtype(TInterleave(grouping_interleave rs, w)))
+
+let xtype_of_AttributeContent ac = 
+  match xtypeopt_of_AttributeContent ac with 
+    | None -> bmkxtype(TEmpty)
+    | Some t -> t
+
+
+(*$$ This is a new version of the above function.  If separation of
+  attribute and element content is adopted for good, things can be
+  simplified even more, since the sole need for these functions was
+  to correctly support the monolithic attributes-and-children. 
+*)
+let xtype_of_ChildrenAndAttributes chldr attrs =   
+  let axtype_opt = xtypeopt_of_AttributeContent attrs in
+  let cxtype = match chldr with 
+    | None ->  bmkxtype(TEmpty)
+    | Some ct -> ct
+  in (axtype_opt, cxtype)
+
+
+(***********************************************************************
+  Import utilities
+************************************************************************)
+
+(* Get the value of a WXS attribute. *)
+let probe_attr atts ncname  = 
+  let needed_attr (rattr_symbol, _) = 
+    let (_, uri, name) = NS.rattr_name rattr_symbol
+    in (uri = NB.empty_uri) && (name = ncname)
+  in
+  try 
+    let (_, v) = List.find needed_attr atts
+    in Some v
+  with Not_found -> None
+
+
+let probe_form_attr fi atts cname = 
+  match probe_attr atts cname with 
+    | Some "qualified" -> Some Qualified
+    | Some "unqualified" -> Some Unqualified
+    | None -> None
+    | Some s -> 
+	import_error fi ("Unexpected value of a form attribute: " ^ 
+		    cname ^ "=" ^ "\"" ^ s ^ "\"")
+
+let obtain_mixed_attr fi atts = 
+  match probe_attr atts "mixed" with 
+    | Some "true" -> Mixed
+    | Some "false" -> NonMixed
+    | None -> NonMixed 
+    | Some other -> import_error fi 
+	("Unexpected value of an attribute: mixed=\"" ^ other ^ "\"")
+
+let obtain_nillable_attr fi atts = 
+  match probe_attr atts "nillable" with 
+    | Some "true" -> Nillable
+    | Some "false"
+    | None -> NonNillable
+    | Some other -> import_error fi 
+	("Unexpected value of an attribute: nillable=\"" ^ other ^ "\"")
+
+let obtain_occurs_attrs fi atts = 
+  let min = match probe_attr atts "minOccurs" with 
+    | None -> Occurrence.UP_INT 1 
+    | Some x -> 
+	(*--VG!! OCaml's int_of_string handles more general input 
+	  than permitted by Schema ... *)
+	try Occurrence.UP_INT(int_of_string x)
+	with Failure "int_of_string" -> import_error fi 
+	  ("Invalid attribute value: minOccurs=\"" ^ x ^ "\"")
+  in
+  let max = match probe_attr atts "maxOccurs" with 
+    | None -> Occurrence.UP_INT 1 
+    | Some "unbounded" -> Occurrence.UNBOUNDED
+    | Some x -> 
+	(*--VG!! OCaml's int_of_string handles more general input 
+	  than permitted by Schema ... *)
+	try Occurrence.UP_INT(int_of_string x)
+	with Failure "int_of_string" -> import_error fi 
+	  ("Invalid attribute value: maxOccurs=\"" ^ x ^ "\"")
+  in (min,max)
+
+let obtain_substgroup_attr fi ims atts = 
+  match probe_attr atts "substitutionGroup" with 
+    | None -> TNonSubstitutesFor
+    | Some name -> TSubstitutesFor(IMS.qualify_refname fi ims name)
+
+let demand_attr fi atts cname errloc = 
+  match probe_attr atts cname with 
+    | Some x -> x
+    | None -> import_error fi
+	("Expected to find attribute '" ^ cname ^ "' in " ^ errloc)
+
+let use_attr_applicator fi atts  = 
+  match probe_attr atts "use" with 
+    | None | Some "optional" -> 
+	(fun xtype ->
+	   bmkxtype(TBound(xtype, Occurrence.UP_INT 0, Occurrence.UP_INT 1)) )
+    | Some "required" -> (fun xtype -> xtype )
+    | Some "prohibited" -> 
+	import_error fi "Attribute use=\"prohibited\" is not handled by import in XQuery 1.0 (expected in later versions)"
+    | Some other -> 
+	import_error fi ("Invalid attribute value: use=\"" ^ other ^ "\"")
+
+ 
+let check_tag relem_symbol tagname = 
+  let (_, uri, ncname) = NS.relem_name relem_symbol in 
+    (uri = NB.xs_uri) && (ncname = tagname)
+
+let open_tag ims tagname = parser
+    [< '{ rse_desc = RSAX_startElement(relem_sym, atts, _, _, nsenv) ; rse_loc = rse_loc }
+       when check_tag relem_sym tagname >] -> 
+	 let ims' = IMS.add_bindings ims nsenv 
+	 in (ims', atts, rse_loc)
+
+let crack_tag tagname = parser 
+  | [< '{ rse_desc = RSAX_startElement(relem_sym, _,_,_,_)  ; rse_loc = rse_loc }
+	 when check_tag relem_sym tagname >] -> ()
+
+
+let complain_unkn_elt parent_name = parser
+  | [< '{ rse_desc = RSAX_startElement(relem_sym, _,_,_,_); rse_loc = rse_loc } >] -> 
+      let (_, uri, _) = NS.relem_name relem_sym in
+      let parent_tag = "<xs:" ^ parent_name ^ ">" in
+      if not (uri = NB.xs_uri) 
+      then import_error rse_loc ("A child of " ^ parent_tag ^ 
+			" is from a non-Schema namespace: " ^
+			"<" ^ (NS.relem_prefix_string relem_sym) ^ "> = " ^
+			"<" ^ (NS.relem_string relem_sym) ^ ">")
+      else import_error rse_loc ("Unexpected child of " ^ parent_tag ^ ": " ^
+			"<" ^ (NS.relem_prefix_string relem_sym) ^ ">")
+ 
+let complain_unkn_tail context_descr = parser
+  |  [< '{ rse_desc = RSAX_startElement(relem_sym, _,_,_,_); rse_loc = rse_loc  }>] -> 
+      let (_, _, _) = NS.relem_name relem_sym in
+	import_error rse_loc (context_descr ^ ": After some expected items, " ^
+		      "the items starting with " ^ 
+		      "<" ^ (NS.relem_prefix_string relem_sym) ^ ">" ^
+		     " are not expected in this context according to " ^ 
+		     "Schema for Schemas")
+  | [<>] -> ()
+
+(***********************************************************************
+          Parse wrappers, 
+          mostly for skipping irrelevant stuff.
+************************************************************************)
+
+let optparse prs = parser
+  | [< x = prs >] -> Some x 
+  | [< >] -> None
+
+let multiparse prs stream = 
+  let rec multi accum = parser
+    | [< x = prs ; 
+	 accum1 = multi (x::accum) >] -> accum1
+    | [< >] -> accum
+  in
+    List.rev(multi [] stream)
+
+let optmultiparse prs stream = 
+  let rec multi accum = parser
+    | [< x = prs ; 
+	 accum1 = multi(match x with None -> accum | Some x -> (x::accum)) >] -> accum1
+    | [< >] -> accum
+  in
+    List.rev(multi [] stream)
+
+let rec skip_wf_content = parser 
+  | [< _ = skip_element ; 
+       _ = skip_wf_content ?? "skip_wf_content: skip_wf_content expected"
+	 >] -> ()
+  | [< >] -> ()
+and skip_element = parser
+  | [< '{ rse_desc = RSAX_startElement _; rse_loc = rse_loc } ; 
+       _ = skip_wf_content ?? "skip_element: skip_wf_content expected"; 
+       '{ rse_desc = RSAX_endElement; rse_loc = rse_loc } ?? "skip_element: RSAX_endElement expected"
+    >] -> ()
+
+let skip_element_named name = parser
+  | [< _ = crack_tag name; 
+       _ = skip_wf_content; 
+       '{ rse_desc = RSAX_endElement; rse_loc = rse_loc } >] -> ()
+
+let skip_facet = parser 
+  | [< _ = skip_element_named "minExclusive" >] -> ()
+  | [< _ = skip_element_named "minInclusive" >] -> ()
+  | [< _ = skip_element_named "maxExclusive" >] -> ()
+  | [< _ = skip_element_named "maxInclusive" >] -> ()
+  | [< _ = skip_element_named "totalDigits" >] -> ()
+  | [< _ = skip_element_named "fractionDigits" >] -> ()
+  | [< _ = skip_element_named "length" >] -> ()
+  | [< _ = skip_element_named "minLength" >] -> ()
+  | [< _ = skip_element_named "maxLength" >] -> ()
+  | [< _ = skip_element_named "enumeration" >] -> ()
+  | [< _ = skip_element_named "whiteSpace" >] -> ()
+  | [< _ = skip_element_named "pattern" >] -> ()
+
+let skip_facets = multiparse skip_facet
+
+let skip_annotation = optparse(skip_element_named "annotation")
+
+let skip_notation = optparse(skip_element_named "notation")
+
+let skip_keyconstr = parser
+  | [< _ = skip_element_named "unique" >] -> ()
+  | [< _ = skip_element_named "key" >] -> ()
+  | [< _ = skip_element_named "keyref" >] -> ()
+
+let skip_keyconstrs = multiparse skip_keyconstr
+       
+
+(***********************************************************************
+                 Import functions  
+                 (for local declarations)
+************************************************************************)
+
+(*    <simpleType>  *)
+
+let rec  local_simpleType ims = parser  (* result: stype_specifier *)
+  | [< (ims,atts,fi) = open_tag ims "simpleType";
+       _ = skip_annotation;
+       inside = inside_simpleType fi ims 
+	 ?? "local_simpleType!inside";
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+	 ?? "Unexpected trailing extra content iside local <simpleType>"
+    >] -> bmkstype_spec(SAnonymous inside)
+
+and inside_simpleType fi ims = parser          (* : stype_derivation *)
+  | [< x = local_simpleType_restriction ims >] -> x
+  | [< x = local_simpleType_list ims >] -> x
+  | [< x = local_simpleType_union ims >] -> x
+  | [< _ = complain_unkn_elt "simpleType" >] -> assert false
+  | [< >] -> import_error fi "<xs:simpleType> cannot have empty content."
+
+and local_simpleType_restriction ims = parser (* : stype_derivation *)
+  | [< (ims,atts,fi) = open_tag ims "restriction"; 
+      _ = skip_annotation;
+      inside = inside_simpleType_restriction ims 
+	?? "local_simpleType_restriction!inside" ; 
+      '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+	?? "local_simpleType_restriction!endElem"
+    >] -> 
+	  begin
+	    try
+	      let basespec = match (probe_attr atts "base", inside) with 
+	      | (Some base, None) ->  
+		  bmkstype_spec(STypeRef(IMS.qualify_refname fi ims base))
+	      | (None, Some sspec) -> sspec
+	      | (Some _, Some _) -> import_error fi
+		    "In <restriction> inside <simpleType>: the base type is defined both by reference and anonymously."
+	      | (None, None) -> import_error fi
+		    "In <restriction> inside <simpleType>: the base type is not defined neither by reference nor anonymously."
+	      in SRestriction(basespec)
+	    with
+	      exn -> raise (error_with_file_location fi exn)
+	  end
+
+and inside_simpleType_restriction ims = parser 
+  | [< x = optparse(local_simpleType ims) ; 
+       _ = skip_facets ; 
+       _ = complain_unkn_tail "Under <restriction> under <simpleType>"
+    >] -> x
+
+
+and local_simpleType_list ims = parser   
+  | [< (ims,atts,fi) = open_tag ims "list"; 
+      _ = skip_annotation; 
+      inside = inside_simpleType_list ims; 
+      '{ rse_desc = RSAX_endElement; rse_loc = rse_loc } >] -> 
+	begin
+	  try
+	    let itemtype = match (probe_attr atts "itemType", inside) with 
+	    | (Some item, None) -> 
+		bmkstype_spec(STypeRef(IMS.qualify_refname fi ims item))
+	    | (None, Some sspec) -> sspec
+	    | (Some _, Some _) -> import_error fi
+		  "In <list> inside <simpleType>: the item type is defined both by reference and anonymously."
+	    | (None, None) -> import_error  fi
+		  "In <list> inside <simpleType>: the item type is not defined neither by reference nor anonymously."
+	    in
+	    SList itemtype
+	  with
+	    exn -> raise (error_with_file_location fi exn)
+	end
+
+and inside_simpleType_list ims = parser 
+  | [< x = local_simpleType ims >] -> Some x 
+  | [< >] -> None
+
+
+and local_simpleType_union ims = parser
+  | [< (ims,atts,fi) = open_tag ims "union"; 
+      _ = skip_annotation; 
+      inside = inside_simpleType_union ims;
+      '{ rse_desc = RSAX_endElement; rse_loc = rse_loc } >] -> 
+	begin
+	  try
+	    let members = 
+	      match probe_attr atts "memberTypes" with
+	      | None -> []
+	      | Some lst -> Str.split (Str.regexp "[ \t\n\r]+") lst
+	    in
+	    let members = 
+	      List.map (fun s -> bmkstype_spec(STypeRef(IMS.qualify_refname fi ims s)))
+		members
+	    in
+	    SUnion(members @ inside)
+	  with
+	    exn -> raise (error_with_file_location fi exn)
+	end
+
+and inside_simpleType_union ims = parser 
+  | [< typs = multiparse(local_simpleType ims) >] -> typs
+
+
+(**** <xs:attribute>  ****)
+
+let rec local_attribute ims = parser
+  | [< (ims,atts,fi) = open_tag ims "attribute";
+      _ = skip_annotation ; 
+      inside = inside_attribute ims;
+      '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+	>] -> 
+	  begin
+	    try
+	      let apply_use_attr = use_attr_applicator rse_loc atts in
+	      match (probe_attr atts "type", probe_attr atts "ref", inside) with 
+
+	(* Attribute with type reference *)
+	      | (Some typname, None, None) ->
+		  let name = demand_attr fi atts "name" "local <attribute>" in 
+		  let form = probe_form_attr fi atts "form" in
+		  let aname = IMS.qualify_newattr ims Local form name in 
+		  let aspec = bmkstype_spec(STypeRef(IMS.qualify_refname fi ims typname))
+		  in apply_use_attr (bmkxtype(TAttributeLocal(aname, aspec)))
+		    
+	(* Attribute with absent type reference *)
+        (* Treat those cases as <xs:attribute name="NAME" type="xs:anySimpleType"/> *)
+	      | (None, None, None) ->
+		  let typ = IMS.make_xs_type ims "anySimpleType" in
+		  let name = demand_attr fi atts "name" "local <attribute>" in 
+		  let form = probe_form_attr fi atts "form" in
+		  let aname = IMS.qualify_newattr ims Local form name in 
+		  let aspec = bmkstype_spec(STypeRef typ)
+		  in apply_use_attr (bmkxtype(TAttributeLocal(aname, aspec)))
+		    
+        (* Reference to a global attribute *)
+	      | (None, Some attname, None) -> 
+		  let refname = IMS.qualify_refname fi ims attname 
+		  in apply_use_attr (bmkxtype(TAttributeRef refname))
+
+        (* Attribute with in-line anonymous type *)
+	      | (None, None, Some sspec) ->
+		  let name = demand_attr fi atts "name" "local <attribute>" in
+		  let form = probe_form_attr fi atts "form" in
+		  let aname = IMS.qualify_newattr ims Local form name in
+		  apply_use_attr (bmkxtype(TAttributeLocal(aname, sspec)))
+
+	      | _ -> import_error fi
+		    "Wrong combination of constituents in a local <attribute>."
+	    with
+	      exn -> raise (error_with_file_location fi exn)
+	  end
+
+and inside_attribute ims = parser     (* result : stype_specifier option *)
+  | [< x = local_simpleType ims >] -> Some x
+  | [< _ = complain_unkn_elt "attribute" >] -> assert false
+  | [< >] -> None
+
+
+
+(**** <xs:element> ****)
+
+and local_element ims = parser                  (* result: xtype *)
+  | [< (ims,atts,fi) = open_tag ims "element";
+       _ = skip_annotation; 
+       inside = inside_element ims;
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+    >] -> 
+      begin
+	try
+	  let nillable = obtain_nillable_attr fi atts in
+	  let occurs = obtain_occurs_attrs fi atts in
+	  match (probe_attr atts "type", probe_attr atts "ref", inside) with 
+	    
+      (* Element with type reference *)
+	  | (Some typname, None, None) ->
+	      let name = demand_attr fi  atts "name" "local <element>" in
+	      let form = probe_form_attr fi atts "form" in
+	      let ename = IMS.qualify_newelem ims Local form name in
+	      let espec = TSpecComplex (bmkctype_spec (TTypeRef(IMS.qualify_refname fi ims typname)))
+	      in
+	      apply_occurs 
+		(bmkxtype(TElementLocal(ename,nillable,espec)))
+		occurs
+		
+      (* Element with absent type reference *)
+	  | (None, None, None) ->
+	      let typ = IMS.make_xs_type ims "anyType" in
+	      let name = demand_attr fi  atts "name" "local <element>" in
+	      let form = probe_form_attr fi atts "form" in
+	      let ename = IMS.qualify_newelem ims Local form name in
+	      let espec = TSpecComplex (bmkctype_spec (TTypeRef typ))
+	      in
+	      apply_occurs 
+		(bmkxtype(TElementLocal(ename,nillable,espec)))
+		occurs
+		
+      (* Reference to a global element *)
+	  | (None, Some eltname, None) -> 
+	      let refname = IMS.qualify_refname fi ims eltname in 
+	      apply_occurs (bmkxtype(TElementRef refname)) occurs 
+
+      (* Element with in-line anonymous type *)
+	  | (None, None, Some xspec) -> 
+	      let name = demand_attr fi atts "name" "local <element>" in
+	      let form = probe_form_attr fi atts "form" in
+	      let ename = IMS.qualify_newelem ims Local form name in
+	      apply_occurs 
+		(bmkxtype(TElementLocal(ename,nillable,xspec)))
+		occurs
+
+	  | _ -> 
+	      import_error fi ("Wrong combination of constituents in local <element>.")
+	with
+	  exn -> raise (error_with_file_location fi exn)
+      end
+
+and inside_element ims = parser           (* result: xtype_specifier option *)
+  | [< x = local_simpleType ims; 
+       _ = skip_keyconstrs; 
+       _ = complain_unkn_tail "Under <element>"
+    >] -> Some(TSpecSimple x)
+  | [< x = local_complexType ims;
+       _ = skip_keyconstrs; 
+       _ = complain_unkn_tail "Under <element>"
+    >] -> Some(TSpecComplex x)
+  | [<
+       _ = skip_keyconstrs; 
+       _ = complain_unkn_tail "Under <element>"
+    >] -> None
+
+
+(****  <complexType> ****)
+
+and local_complexType ims = parser   (* result: ctype_specifier *)
+  | [< (ims,atts,fi) = open_tag ims "complexType";
+       _ = skip_annotation; 
+       (deriv, (acont,ccont)) = inside_complexType ims ; 
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+	 begin
+	   try
+	     let mixed = obtain_mixed_attr fi atts in
+	     bmkctype_spec(TAnonymous(deriv,acont,mixed,ccont))
+	   with
+	     exn -> raise (error_with_file_location fi exn)
+	 end
+
+and inside_complexType ims = parser   (* result: deriv opt * (xtype opt * xtype) *)
+  | [< x = content_ComplexTypeContent ims >] -> x
+  | [< _ = complain_unkn_elt "complexType" >] -> assert false
+
+(* [62] ComplexTypeContent ::= annotation?
+                               (  simpleContent
+                                 | complexContent
+                                 | ChildrenContent AttributeContent )
+   Ocaml representation type:  xtype
+*)
+and content_ComplexTypeContent ims = parser (* result: deriv opt * (xtype opt * xtype) *)
+  | [< x = local_simpleContent ims >] -> x
+  | [< x = local_complexContent ims >] -> x 
+  | [< chld_opt = content_ChildrenContent ims;
+       att_cont = content_AttributeContent ims; 
+       _ = complain_unkn_tail "Under <complexType>"
+    >] -> 
+      begin
+	try
+	  let cont = xtype_of_ChildrenAndAttributes chld_opt att_cont in
+	  (None, cont)
+	with
+	  exn -> raise (error_with_file_location Finfo.bogus exn)
+      end
+
+  (* <simpleContent> *)   
+
+and local_simpleContent ims = parser   (* result: deriv opt * (xtype*xtype)  *)
+  | [< (ims,atts,fi) = open_tag ims "simpleContent";
+       _ = skip_annotation; 
+       res =  inside_simpleContent ims; 
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc } >] -> res
+
+and inside_simpleContent ims = parser   (* result: deriv opt * (xtype*xtype)  *)
+  | [< x = local_simpleContent_restriction ims ;
+       _ = complain_unkn_tail "Under <simpleContent>"   >] -> x
+  | [< x = local_simpleContent_extension ims ;
+       _ = complain_unkn_tail "Under <simpleContent>"   >] -> x
+  | [< _ = complain_unkn_elt "simpleContent" >] -> assert false
+
+
+and local_simpleContent_restriction ims = parser (*res: deriv opt * (xtype*xtype) *)
+  | [< (ims,atts,fi) = open_tag ims "restriction";
+       _ = skip_annotation; 
+       cont = inside_simpleContent_restriction ims; 
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+	 begin
+	   try
+	     let base = demand_attr fi atts "base" "<restriction> inside <simpleContent>" in
+	     let qbase = IMS.qualify_refname fi ims base in
+	     (Some(TRestriction qbase), cont)
+	   with
+	     exn -> raise (error_with_file_location fi exn)
+	 end
+
+and inside_simpleContent_restriction ims = parser  (*res: (xtype*xtype)  *)
+  | [< _ = skip_facets ;
+       cont = content_AttributeContent ims ;  
+       _ = complain_unkn_tail "Under <restriction> under <simpleContent>" 
+    >] -> 
+      begin
+	try
+	  xtype_of_ChildrenAndAttributes None cont
+	with
+	  exn -> raise (error_with_file_location Finfo.bogus exn)
+      end
+
+
+and local_simpleContent_extension ims = parser (*res: deriv opt * (xtype*xtype)  *)
+  | [< (ims,atts,fi) = open_tag ims "extension";
+       _ = skip_annotation; 
+       cont = inside_simpleContent_extension ims ;
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+	 begin
+	   try
+	     let base = demand_attr fi atts "base" "<extension> inside <simpleContent>" in
+	     let qbase = IMS.qualify_refname fi ims base in
+	     (Some(TExtension qbase), cont)
+	   with
+	     exn -> raise (error_with_file_location fi exn)
+	 end
+
+and inside_simpleContent_extension ims = parser (*res: xtype*xtype  *)
+  | [< cont = content_AttributeContent ims ; 
+       _ = complain_unkn_tail "Under <extension> under simpleContent"
+    >] ->  
+      begin
+	try
+	  xtype_of_ChildrenAndAttributes None cont
+	with
+	  exn -> raise (error_with_file_location Finfo.bogus exn)
+      end
+
+  (* <complexContent> *)
+
+and local_complexContent ims = parser   (* : deriv opt * xtype  *)
+  | [< (ims,atts,fi) = open_tag ims "complexContent";
+       _ = skip_annotation; 
+       res = inside_complexContent ims; 
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> res
+
+and inside_complexContent ims = parser       (* : deriv opt * xtype  *)
+  | [< x = local_complexContent_restriction ims ; 
+       _ = complain_unkn_tail "Under <complexContent>"   >] -> x
+  | [< x = local_complexContent_extension ims ; 
+       _ = complain_unkn_tail "Under <complexContent>"   >] -> x
+  | [< _ = complain_unkn_elt "complexContent" >] -> assert false
+
+and local_complexContent_restriction ims = parser (* : deriv opt * xtype  *)
+  | [< (ims,atts,fi) = open_tag ims "restriction";
+       _ = skip_annotation; 
+       cont = inside_complexContent_restrictionORextension ims  ; 
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+	 begin
+	   try
+	     let base = demand_attr fi atts "base" 
+		 "<restriction> inside <complexContent>" in
+	     let qbase = IMS.qualify_refname fi ims base in
+	     (Some(TRestriction qbase), cont)      
+	   with
+	     exn -> raise (error_with_file_location fi exn)
+	 end
+
+and local_complexContent_extension ims = parser (* : deriv opt * xtype  *)
+  | [< (ims,atts,fi) = open_tag ims "extension";
+       _ = skip_annotation; 
+       cont = inside_complexContent_restrictionORextension ims  ; 
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+	 begin
+	   try
+	     let base = demand_attr fi atts "base" 
+		 "<extension> inside <complexContent>" in
+	     let qbase = IMS.qualify_refname fi ims base in
+	     (Some(TExtension qbase), cont)      
+	   with
+	     exn -> raise (error_with_file_location fi exn)
+	 end
+
+and inside_complexContent_restrictionORextension ims = parser (* : xtype *)
+  | [< chld_opt = content_ChildrenContent ims;
+       atts_opt = content_AttributeContent ims; 
+       _ = complain_unkn_tail "Under <restriction> or <extension> under <complexContent>" 
+    >] -> 
+      begin
+	try
+	  xtype_of_ChildrenAndAttributes chld_opt atts_opt 
+	with
+	  exn -> raise (error_with_file_location Finfo.bogus exn)
+      end
+
+  (*  ChildrenContent  and AttributeContent  *)
+
+(* [63] ChildrenContent ::= (group | all | choice | sequence)?
+   Ocaml representation type:  xtype option
+*)
+and content_ChildrenContent ims = parser    (*  : xtype option *)
+  | [< x = local_group ims >] -> Some x
+  | [< x = local_all ims >] -> Some x
+  | [< x = local_choice ims >] -> Some x
+  | [< x = local_sequence ims >] -> Some x
+  | [< >] -> None
+
+
+(* [65] AttributeContent ::= (attribute | attributeGroup)* anyAttribute?
+   Ocaml representation type:   xtype list * xtype option
+*)
+and content_AttributeContent ims = parser 
+  | [< attspecs = multiparse(content_AttributeSpec ims); 
+       attany_opt = optparse(local_anyAttribute ims)
+    >] -> (attspecs, attany_opt)
+
+and content_AttributeSpec ims = parser
+  | [< x = local_attribute ims >] -> x
+  | [< x = local_attributeGroup ims >] -> x
+
+(***** <attributeGroup>   ******)
+
+and local_attributeGroup ims = parser
+  | [< (ims,atts,fi) = open_tag ims "attributeGroup" ;
+       _ = skip_annotation; 
+       '{ rse_desc = RSAX_endElement; rse_loc = rse_loc } ?? "A local <attributeGroup> should have no children."
+    >] -> 
+      begin
+	try
+	  let refn = demand_attr fi atts "ref" "local <attributeGroup>" in 
+	  let refname = IMS.qualify_refname fi ims refn in 
+	  bmkxtype(TAttrGroupRef(refname))
+	with
+	  exn -> raise (error_with_file_location fi exn)
+      end
+
+(*****  Model groups:  <group>, <all>, <choice>, <sequence> ****)
+
+and local_group ims = parser 
+  | [< (ims,atts,fi) = open_tag ims "group" ; 
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+	 begin
+	   try
+	     let refn = demand_attr fi atts "ref" "local <group>" in 
+	     let refname = IMS.qualify_refname fi ims refn in 
+	     let cont = bmkxtype(TGroupRef(refname)) in
+	     apply_occurs cont (obtain_occurs_attrs fi atts)
+	   with
+	     exn -> raise (error_with_file_location fi exn)
+	 end
+
+and local_all ims = parser 
+  | [< (ims,atts,fi) = open_tag ims "all"; 
+       _ = skip_annotation; 
+       elts = multiparse(local_element ims); 
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+	 begin
+	   try
+	     let (min,max) = obtain_occurs_attrs rse_loc atts  in
+	(*--VG!! <all> group has constraint max<=1. 
+	   Checking this is intentionally left for normalization.  *)
+	     let cont = grouping_interleave elts in
+	     apply_occurs cont (min,max)
+	   with
+	     exn -> raise (error_with_file_location fi exn)
+	 end
+
+and local_choice ims = parser 
+  | [< (ims,atts,fi) = open_tag ims "choice" ; 
+       _ = skip_annotation; 
+       comps = multiparse(content_GroupComponent ims); 
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+	 begin
+	   try
+	     let cont = grouping_choice comps in 
+	     apply_occurs cont (obtain_occurs_attrs fi atts)
+	   with
+	     exn -> raise (error_with_file_location fi exn)
+	 end
+
+and local_sequence ims = parser 
+  | [< (ims,atts,fi) = open_tag ims "sequence" ; 
+       _ = skip_annotation; 
+       comps = multiparse(content_GroupComponent ims); 
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+	 begin
+	   try
+	     let cont = grouping_sequence comps in 
+	     apply_occurs cont (obtain_occurs_attrs fi atts)
+	   with
+	     exn -> raise (error_with_file_location fi exn)
+	 end
+
+
+and content_GroupComponent ims = parser 
+  | [< x = local_element ims >] -> x
+  | [< x = local_group ims >] -> x
+  | [< x = local_choice ims >] -> x
+  | [< x = local_sequence ims >] -> x
+  | [< x = local_any ims >] -> x
+
+
+(******** Wildcards: <anyAttribute>  <any>  ***********)
+
+and local_any ims = parser 
+  | [< (_,_,_) = open_tag ims "any" ; 
+       _ = skip_annotation; 
+       _ = skip_wf_content ; 
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+      failwith "NotYet: <any> element wildcard"    (*--VG## *)
+
+and local_anyAttribute ims = parser 
+  | [< (_,_,_) = open_tag ims "anyAttribute" ; 
+       _ = skip_annotation; 
+       _ = skip_wf_content ; 
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+      failwith "NotYet: <anyAttribute>  wildcard"    (*--VG## *)
+
+
+(***********************************************************************
+               Import functions for global declarations
+************************************************************************)
+
+let global_simpleType ims = parser
+  | [< (ims,atts,fi) = open_tag ims "simpleType";
+      _ = skip_annotation; 
+      inside = inside_simpleType fi ims 
+	?? "global_simpleType!inside";
+      '{ rse_desc = RSAX_endElement ; rse_loc = _} ?? "global_simpleType!endElem" 
+	>] -> 
+	  begin
+	    try
+	      let name = demand_attr fi atts "name" "global <simpleType>" in 
+	      let tname = IMS.qualify_newtype ims name in
+	      bmkxtype_decl(TTypeDecl(tname, TSimpleDerivation inside))
+	    with
+	      exn -> raise (error_with_file_location fi exn)
+	  end
+
+let global_notation ims = parser
+  | [< _ = skip_element_named "notation" >] -> ()
+
+let global_attribute ims = parser
+  | [< (ims,atts,fi) = open_tag ims "attribute";
+      _ = skip_annotation; 
+      inside = inside_attribute ims;
+      '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+	>] -> 
+	  begin
+	    try
+	      match (probe_attr atts "type", probe_attr atts "ref", inside) with
+		
+      (* Attribute with type reference *)
+	      | (Some typname, None, None) ->
+		  let name = demand_attr fi atts "name" "global <attribute>" in 
+		  let aname = IMS.qualify_newattr ims Global None name in
+		  let aspec = bmkstype_spec(STypeRef(IMS.qualify_refname fi ims typname)) 
+		  in bmkxtype_decl(TAttributeDecl(aname, aspec))
+
+      (* Attribute with in-line anonymous type *)
+	      | (None, None, Some sspec) -> 
+		  let name = demand_attr fi atts "name" "global <attribute>" in 
+		  let aname = IMS.qualify_newattr ims Global None name in
+		  bmkxtype_decl(TAttributeDecl(aname, sspec))
+
+	      | _ -> import_error rse_loc
+		    "Wrong combination of constituents in a global <attribute>." 
+	    with
+	      exn -> raise (error_with_file_location fi exn)
+	  end
+
+let global_element ims = parser              (* result xtype_declaration *)
+  | [< (ims,atts,fi) = open_tag ims "element";
+      _ = skip_annotation; 
+      inside = inside_element ims;
+      '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+	>] -> 
+	  begin
+	    try
+	      let nillable = obtain_nillable_attr fi atts in
+	      let substgroup = obtain_substgroup_attr fi ims atts in
+	      match (probe_attr atts "type", inside, substgroup) with 
+		
+      (* Element with type reference *)
+	      | (Some typname, None, _) ->
+		  let name = demand_attr fi atts "name" "global <element>" in
+		  let ename = IMS.qualify_newelem ims Global None name in
+		  let espec = TSpecComplex (bmkctype_spec (TTypeRef(IMS.qualify_refname fi ims typname)))
+		  in
+		  bmkxtype_decl(TElementDecl(ename, (substgroup, nillable, espec)))
+		    
+      (* Element with in-line anonymous type *)
+	      | (None, Some xspec, _) -> 
+		  let name = demand_attr fi atts "name" "global <element>" in
+		  let ename = IMS.qualify_newelem ims Global None name in
+		  bmkxtype_decl(TElementDecl(ename, (substgroup, nillable, xspec)))
+
+	      | (None, None, TSubstitutesFor _) -> 
+		  import_error fi "Not implemented: Element in a substitution group, but without an explicitly given type.  Workaround: specify explicitly the same type as in the group's head element."
+
+	      | _ -> 
+		  import_error fi "Wrong combination of constituents in global <element>." 
+	    with
+	      exn -> raise (error_with_file_location fi exn)
+	  end
+
+let global_complexType ims = parser   (* result: xtype_declaration *)
+    | [< (ims,atts,fi) = open_tag ims "complexType";
+	_ = skip_annotation; 
+	(deriv, (acont,ccont)) = inside_complexType ims ; 
+	'{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+	  begin
+	    try 
+	      let mixed = obtain_mixed_attr fi atts in
+	      let name = demand_attr fi atts "name" "global <complexType>" in
+	      let tname = IMS.qualify_newtype ims name in
+	      bmkxtype_decl(TTypeDecl(tname, TComplexDerivation(deriv,acont,mixed,ccont)))
+	    with  exn -> raise (error_with_file_location fi exn)
+	  end
+
+let rec global_group ims = parser   (* result: xtype_declaration *)
+  | [< (ims,atts,fi) = open_tag ims "group" ; 
+      _ = skip_annotation; 
+      xtyp = inside_group ims ; 
+      '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+	>] -> 
+	  begin
+	    try
+	      let name = demand_attr fi atts "name" "global <group>" in
+	      let gname = IMS.qualify_newtype ims name in
+	      bmkxtype_decl(TGroupDecl(gname,xtyp))
+	    with
+	      exn -> raise (error_with_file_location fi exn)
+	  end
+
+and inside_group ims = parser
+  | [< x = local_all ims ;  
+       _ = complain_unkn_tail "Under <group>" >] ->  x
+  | [< x = local_choice ims ;  
+       _ = complain_unkn_tail "Under <group>" >] ->  x
+  | [< x = local_sequence ims ;  
+       _ = complain_unkn_tail "Under <group>" >] ->  x
+  | [< _ = complain_unkn_elt "group" >] -> assert false
+  | [<>] -> import_error Finfo.bogus "A <group> cannot be empty"
+
+
+let rec global_attributeGroup ims = parser   (* result: xtype_declaration *)
+  | [< (ims,atts,fi) = open_tag ims "attributeGroup" ; 
+      _ = skip_annotation; 
+      xtyp = inside_attributeGroup ims ; 
+      '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+	>] -> 
+	  begin
+	    try	let name = demand_attr fi atts "name" "global <attributeGroup>" in
+	    let gname = IMS.qualify_newtype ims name in
+	    bmkxtype_decl(TAttrGroupDecl(gname,xtyp))
+	    with
+	      exn -> raise (error_with_file_location fi exn)
+	  end
+
+and inside_attributeGroup ims = parser
+  | [< inside = content_AttributeContent ims >] -> 
+      xtype_of_AttributeContent inside
+
+
+
+(********** <xs:schema>  ******)
+
+let content_Component ims = parser
+  | [< d = global_simpleType ims >] -> Some d
+  | [< d = global_attribute ims >] -> Some d
+  | [< d = global_element ims >] -> Some d
+  | [< d = global_complexType ims >] -> Some d
+  | [< d = global_group ims >] -> Some d
+  | [< d = global_attributeGroup ims >] -> Some d
+  | [< d = global_notation ims >] -> None
+  | [< _ = complain_unkn_elt "schema" >] -> assert false
+
+let rec import_components ims = parser
+  | [< _ = skip_annotation;
+       comps = optmultiparse(content_Component ims) >] -> (ims,comps)
+
+let open_tag_schema targpref_opt = parser 
+  | [< '{ rse_desc = RSAX_startElement(rsymb, atts, _, _, document_nsenv); rse_loc = rse_loc }
+      when check_tag rsymb "schema" >] -> 
+	begin
+	  try
+	    let targns_opt = 
+	      match probe_attr atts "targetNamespace" with 
+	      | Some str -> Some(N.NSUri str)
+	      | None -> None
+	    in 
+	    let ims = 
+	      IMS.init_import_state 
+		targpref_opt
+		targns_opt
+		(opt_or_default 
+		   (probe_form_attr rse_loc atts "elementFormDefault") Unqualified)
+		(opt_or_default 
+		   (probe_form_attr rse_loc atts "attributeFormDefault") Unqualified)
+		document_nsenv
+	    in (ims, atts, rse_loc)
+
+	  with
+	    exn -> raise (error_with_file_location rse_loc exn)
+	end
+
+let import_schema_new targpref_opt = parser
+  | [< (ims,atts,fi) = open_tag_schema targpref_opt;
+       (pm,comps) = import_components ims
+       ?? "Schema components were expected";
+       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> (pm,comps)
+  | [< _ = complain_unkn_elt "parent context OR document node" >] 
+        -> assert false
+  | [<>] -> import_error Finfo.bogus "Did not find <schema> at the start of input"
+
+
+let import_doc_new proc_ctxt targpref_opt = parser 
+  | [< '{ rse_desc = RSAX_startDocument(xml_decl, dtd_decl, base_uri);  rse_loc = rse_loc };   
+       (* ignore <?xml ?> decl and the in-lined DTD *)
+       (*--VG?? What is base_uri? Should it affect the import? *)
+       (pm,comps) = import_schema_new targpref_opt
+		      ?? "Schema root was expected" ;
+       '{ rse_desc = RSAX_endDocument ; rse_loc = rse_loc }
+	 ?? "End of document was expected " 
+    >] -> (pm,comps)
+
+let parser_wrapper prser tpo cursor = 
+  let cleaned_stream = 
+    cleanse_rsax_stream (Cursor.stream_of_cursor cursor) in
+  let (pm, components) = prser tpo cleaned_stream in
+    { xschema_imported_schemas = [];
+      xschema_namespace_declarations = 
+	List.map (fun(pref,uri) -> (ncname_of_prefix pref,uri))
+	  (IMS.namespace_declarations pm) ;
+      xschema_type_declarations = components ; }    
+
+(* Import a schema, trying all possible location hints *)
+let rec import_schema proc_ctxt prefix_option schema_uri loc_hint_option = 
+  let actual_uris =
+    Processing_context.resolve_schema_location_hint proc_ctxt loc_hint_option schema_uri
+  in
+  let rec try_hints actual_uris = 
+    match actual_uris with
+    | [] -> raise (Query(Schema_Import("Invalid location hints")))
+    | actual_uri::rest ->
+	try
+	  let (_, xml_schema_stream) =
+	    Streaming_parse.open_xml_stream_from_io (Galax_io.Http_Input actual_uri)
+	  in
+	  let resolved_xml_stream = Streaming_ops.resolve_xml_stream xml_schema_stream in
+	  import_schema_document proc_ctxt prefix_option resolved_xml_stream 
+	with
+	| e -> (Error.eprintf_warning (Error.bprintf_error "Invalid location hint" e); try_hints rest)
+  in try_hints actual_uris
+    
+and import_nested_schema proc_ctxt ims  = parser
+  | [< (ims, atts,fi) = open_tag ims "import"; 
+      _ =  skip_annotation; 
+      '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+    >] ->
+	  begin
+	    try
+	      let schema_uri = demand_attr fi atts "namespace" "<import>" in 
+	      let loc_hint_option = probe_attr atts "schemaLocation" in 
+	      import_schema proc_ctxt None schema_uri loc_hint_option 
+	    with
+	      exn -> raise (error_with_file_location fi exn)
+	  end
+
+and
+import_components proc_ctxt ims = parser 
+  | [< _ = skip_annotation;
+       imported_schemas = multiparse (import_nested_schema proc_ctxt ims);
+       comps = optmultiparse (content_Component ims) 
+    >] ->
+  (imported_schemas, ims, comps)
+
+and import_schema_new proc_ctxt targpref_opt = parser
+  | [< (ims, _, _) = (open_tag_schema targpref_opt); 
+     (imported_schemas, pm, comps) = import_components proc_ctxt ims ?? ("Schema components were expected");
+     '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+     (imported_schemas, pm, comps)
+  | [< _ = complain_unkn_elt "parent context OR document node" >] -> assert false
+  | [< >] -> import_error Finfo.bogus "Did not find <schema> at the start of input"
+
+and import_doc_new proc_ctxt targpref_opt = parser
+ | [< '{ rse_desc = (RSAX_startDocument (xml_decl, dtd_decl, base_uri)); rse_loc = rse_loc };
+      (imported_schemas, pm, comps) = import_schema_new proc_ctxt targpref_opt ?? ("Schema root was expected"); 
+      '{ rse_desc = RSAX_endDocument; rse_loc = rse_loc } ?? "End of document was expected " 
+    >] 
+      -> (imported_schemas, pm, comps)
+
+and parser_wrapper proc_ctxt prser tpo cursor =
+  let cleaned_stream = cleanse_rsax_stream (Cursor.stream_of_cursor cursor) in
+  let (imported_schemas, pm, components) = prser proc_ctxt tpo cleaned_stream in
+  {xschema_imported_schemas = imported_schemas;
+   xschema_namespace_declarations =
+     List.map (fun (pref, uri) -> ncname_of_prefix pref, uri)
+       (IMS.namespace_declarations pm);
+   xschema_type_declarations = components}    
+
+and import_schema_element proc_ctxt targpref_opt schema_cursor =
+  let xschema = parser_wrapper proc_ctxt import_schema_new targpref_opt schema_cursor in
+  xschema
+
+and import_schema_document proc_ctxt targpref_opt schema_cursor =
+  let xschema = parser_wrapper proc_ctxt import_doc_new targpref_opt schema_cursor in 
+  xschema
+

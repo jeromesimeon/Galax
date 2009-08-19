@@ -1,0 +1,927 @@
+(***********************************************************************)
+(*                                                                     *)
+(*                                 GALAX                               *)
+(*                             XQuery Engine                           *)
+(*                                                                     *)
+(*  Copyright 2001-2007.                                               *)
+(*  Distributed only by permission.                                    *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* $Id: wsdl_load.mlp,v 1.27 2007/06/28 15:17:31 ndonose Exp $ *)
+
+
+
+
+(** 
+  @(#)wsdl_load.mlp
+
+  Takes a data model instance containing a wsdl file 
+  and builds an instance of wsdl AST.
+
+  @author Nicola Onose
+*)
+
+
+open Error
+
+open Namespace_names
+open Namespace_builtin
+open Namespace_symbols
+open Namespace_context
+
+open Streaming_types
+open Streaming_util
+open Xquery_type_ast
+
+open Wsdl_ast
+open Wsdl_util
+
+
+
+			      
+(**
+  extract the value of the  attribute name_attr (as a string) 
+  and the list of values of the xmlns attributes from the
+  list of attributes att_el
+*)
+
+let get_attr att_el name_attr =
+  let rec get_nx n =  function
+      [] -> n
+    | (rsym, t) :: rest ->
+	begin
+	  match rattr_prefix rsym with
+	      NSDefaultElementPrefix ->
+		begin
+		  match rattr_name rsym with 
+		      (_,_, name) -> if name = name_attr then get_nx (Some t) rest else get_nx n rest
+		end
+	    | p -> print_endline (string_of_prefix p); get_nx n rest
+	end
+  in
+    get_nx None att_el
+	    
+(**
+  extract the value the attribute "name" and the 
+  values of the xmlns attributes from the list of attributes
+  att_el
+*)
+
+let get_name attl =
+  match get_attr attl "name" with
+    None -> raise (Query (Load_Error "missing name attribute"))
+  | Some n -> n
+
+
+let checked_uqname_of_string str = 
+  try 
+    uqname_element_of_string str
+  with _ -> raise (Query (Load_Error ("Bad uqname: " ^ str ^ "\n")))
+
+let build_rqname str delta = 
+  let p,loc = checked_uqname_of_string str in
+    (* look for a match of the prefix p in the environment delta *)
+    match p with 
+      | NSPrefix _ | NSDefaultElementPrefix -> 
+	  (try p,(List.assoc p delta),loc
+	   with Not_found -> 
+	     raise (Query (Load_Error ("Bad prefix or URI in " ^ str ^ "\n"))))
+      | _ -> raise (Query (Load_Error ("Bad prefix or URI in " ^ str ^ "\n")))
+
+
+let mk_special_prefix base_name env = 
+  let rec new_var v i = function
+    | [] -> v
+    | x::rest -> 
+	if v=x then 
+	  new_var (base_name ^ (string_of_int (i+1))) (i+1) rest
+	else
+	  new_var v i rest
+  in
+    new_var base_name 0 (List.sort (Pervasives.compare)
+			   (List.map (fun (x,_) -> x) env))
+      
+
+(** 
+  * generate a name for the SOAP envelope nms, needed for the 'return' part of the query 
+  *
+**)
+let mk_soapenv_prefix = mk_special_prefix default_soapenv_prefix_name
+
+let mk_xsi_prefix = mk_special_prefix default_xsi_prefix_name
+let mk_xsd_prefix = mk_special_prefix default_xsd_prefix_name
+      
+
+	  
+(**
+  extract the value of the attribute name_attr (as an rqname) and the 
+  values of the xmlns attributes from the list of attributes  att_el
+*)
+	  
+let rec get_name_and_rqname delta attr_name n d =
+  function
+      [] -> n, d
+    | (rel, t) :: rest when rattr_prefix rel = NSDefaultElementPrefix ->
+	begin
+	  match rattr_name rel with _,_,name ->
+	    if name = "name" then get_name_and_rqname delta attr_name (Some t) d rest
+	    else if name = attr_name then
+              get_name_and_rqname delta attr_name n (Some (build_rqname t delta)) rest
+	    else get_name_and_rqname delta attr_name n d rest
+	end
+    | _ :: rest -> get_name_and_rqname delta attr_name n d rest
+	
+
+
+
+(**
+  create a wsdl_module record using the attributes attl
+  and the name of the service
+*)
+
+let make_module attl serv_name env =
+  let tn = get_attr attl "targetNamespace" in
+    match tn with
+	None -> raise (Query (Load_Error "missing targetNamespace"))
+      | Some target ->
+	  {wsdl_name = serv_name; global_xmlns = env;
+	   targetNamespace = Datatypes_util.anyURI_of_untyped target;
+	   wsdl_services = []; wsdl_types = None; wsdl_bindings = [];
+	   wsdl_port_types = []; wsdl_messages = [];
+	   soapenv_prefix_name = "soapenv";
+	   xsi_prefix_name = "xsi";
+	   xsd_prefix_name = "xsd"}
+
+
+(**
+  extract the value of the 'message' attribute as a uqname from a list of attributes
+*)
+
+let rec get_message_attr delta =
+  function
+    (rsym, t) :: _ 
+      when rqname_equal (rattr_name rsym) (empty_prefix,empty_uri,"message") ->
+	build_rqname t delta
+    | _ :: rest -> get_message_attr delta rest
+    | [] ->
+	raise(Query (Load_Error "missing message attribute in operation subcomponent"))
+
+
+(**
+  create a wsdl_service record using the attributes attl
+*)
+
+let make_service attl =
+  let n = get_name attl in
+    {service_name = n; ports = []}
+    
+(**
+  create a operation_in_port_type record using the attributes attl
+*)
+
+let make_operation_pt attl =
+  let n = get_name attl in
+  {operation_name = n; input = None; output = None;
+   faults = []}
+
+(**
+  create a operation_in_binding record using the attributes attl
+*)
+
+let make_binding_operation attl =
+  let n = get_name attl in
+  {operation_in_binding_name = n;
+   binding_input = None; binding_output = None; binding_faults = [];
+   binding_soap_operation = None; http_relative_uri = None}
+
+(**
+  create a port_type record using the attributes attl
+*)
+
+let make_portType attl =
+  let n = get_name attl in
+  let ext =
+    try
+      let (_, content) =
+        List.find
+          (fun a ->
+             match a with
+               | (_, "extends") -> true
+               | _ -> false)
+          attl
+      in
+      Some content
+    with
+      Not_found -> None
+  in
+  {port_type_name = n; operations = []; extends = ext}
+    (**
+      create a message record using the attributes attl
+    *)
+
+let make_message attl =
+  let n = get_name attl in
+  {message_name = n; message_parts = []}
+
+(**
+  create a 'part' record using the attributes attl
+*)
+
+let make_part att_el nsenv =
+  let rec get_ntx n d =
+    function
+      [] -> n, d
+      | (rsym, t) :: rest when rattr_prefix rsym = NSDefaultElementPrefix ->
+	  begin
+	    match rattr_name rsym with	_,_,name ->
+              if name = "name" then get_ntx (Some t) d rest
+              else if name = "element" or name = "type" then
+		begin
+		  let qn = uqname_element_of_string t in
+		    match qn with p, s ->
+		      let u = get_ns_of_prefix nsenv p in
+			if name = "element" then
+			  get_ntx n (Some (PartElement (u, qn))) rest
+			else
+			  get_ntx n (Some (PartType (u, qn))) rest			  
+		end
+              else get_ntx n d rest
+	  end
+      | _ :: rest -> get_ntx n d rest
+  in
+    match get_ntx None None att_el with
+	Some nm, Some typ ->  {part_name = nm; part_type = typ}
+      | None, _ ->
+	  raise
+          (Query (Load_Error "Missing `name' attribute in `part' component"))
+      | _, None ->
+	  raise (Query
+		   (Load_Error
+		      "Missing `element' or `type' attribute in 'part' component"))
+
+
+(**
+  create a service_binding record using the attributes attl
+*)
+
+let make_binding delta att_el =
+  match get_name_and_rqname delta "type" None None att_el with
+    Some nm, Some typ ->
+      {binding_name = nm; binding_type = typ;
+       bind_soap = None; binding_operations = []; http_method = "POST"}
+  | None, _ ->
+      raise
+        (Query (Load_Error "Missing `name' attribute in `binding' component"))
+  | _, None ->
+      raise
+        (Query (Load_Error "Missing `type' attribute in `binding' component"))
+
+
+(**
+  create a soap_binding record using the attributes attl
+*)
+
+let make_soap_binding att_el nms =
+  let rec get_params transp stl enc =
+    function
+	[] -> transp, stl, enc
+      | (rsym, t) :: rest ->
+	  begin
+	    match rattr_prefix rsym with
+		NSDefaultElementPrefix ->
+		  begin
+		    match rattr_name rsym with
+			_,_, "transport" ->
+			  get_params (Some (Datatypes_util.anyURI_of_untyped t)) stl enc rest
+		      | _,_, "style"			  
+		      | _,_, "styleDefault" ->
+			  if t = "rpc" then get_params transp (Some Soap_RPC) enc rest
+			  else if t = "document" then
+			    get_params transp (Some Soap_Document) enc rest
+			  else raise (Query (Load_Error ("Unknown soap style: " ^ t)))			  
+		      | _,_, encodingstyle_default ->
+			  get_params transp stl (Some (Datatypes_util.anyURI_of_untyped t)) rest
+		  end
+	      | _ -> get_params transp stl enc rest
+	  end
+  in
+  let (t, s, e) = get_params None None None att_el in
+    {nms_prefix = nms; transport = t; soap_binding_style = s;
+     encodingStyleDefault = e}
+    
+    
+(**
+  create a soap_operation record using the attributes attl
+*)
+    
+let make_soap_operation att_el nms_prefix =
+  let rec get_params act stl =
+    function
+	[] -> act, stl
+      | (rsym, t) :: rest ->
+	  match rattr_prefix rsym with
+	      NSDefaultElementPrefix ->
+		begin
+		  match rattr_name rsym with
+		      _,_, "soapAction" ->
+			get_params (Some (Datatypes_util.anyURI_of_untyped t)) stl rest			
+		    | _,_, "style" ->
+			if t = "rpc" then get_params act (Some Soap_RPC) rest
+			else if t = "document" then get_params act (Some Soap_Document) rest
+			else raise (Query (Load_Error ("Unknown soap style: " ^ t)))
+		    | _  -> get_params act stl rest
+		end
+	    | _  -> get_params act stl rest
+  in
+    match get_params None None att_el with
+      | Some sa, stl ->
+	  {nms_soap_operation = nms_prefix; soapAction = Some sa;
+	   soap_operation_style = stl}
+      | None, _ -> 
+	  raise (Query (Load_Error "Missing soapAction"))    
+	  
+	  
+(**
+  create a soap_body record using the attributes attl
+*)
+
+let make_soap_body nms_prefix att_el =
+  let rec get_params es u nms =
+    function
+      [] -> es, u, nms
+      | (rsym, t) :: rest ->
+	  match rattr_prefix rsym with
+	    | NSDefaultElementPrefix ->
+		begin
+		  match rattr_name rsym with
+		    | _,_, "encodingStyle" ->
+			get_params (Some (Datatypes_util.anyURI_of_untyped t)) u nms rest
+		    | _,_, "use" ->
+			if t = "literal" then get_params es (Some Literal) nms rest
+			else if t = "encoded" then get_params es (Some Encoded) nms rest
+			else raise (Query (Load_Error ("Unknown soap body use: " ^ t)))
+		    | _,_, "namespace" ->
+			get_params es u (Some (Datatypes_util.anyURI_of_untyped t)) rest
+		    | _  -> get_params es u nms rest
+		end
+	    | _  -> get_params es u nms rest
+  in
+  let (es, u, nms) = get_params None None None att_el in
+  {soap_body_encodingStyle = es; 
+   use = u;
+   soap_body_nms = nms}
+
+let make_soap_header nms_prefix att_el =
+  let rec get_params h =
+    function
+      [] -> h
+      | (rsym, t) :: rest ->
+	  match rattr_prefix rsym with
+	    | NSDefaultElementPrefix ->
+		begin
+		  match rattr_name rsym with
+		    | _,_, "element" ->
+			get_params
+			{h with
+			   soap_header_element = Some (checked_uqname_of_string t)}
+			rest
+		    | _,_, "type" ->
+			get_params
+			{h with
+			   soap_header_type = Some (checked_uqname_of_string t)}
+			rest
+		    | _,_, "localname" ->
+			get_params {h with soap_header_localname = Some t} rest
+		    | _,_, "namespace" ->
+			get_params
+			{h with soap_header_nms = Some (Datatypes_util.anyURI_of_untyped t)}
+			rest
+		    | _,_, "encodingStyle" ->
+			get_params
+			{h with
+			   soap_header_encodingStyle =
+			   Some (Datatypes_util.anyURI_of_untyped t)}
+			rest
+		    | _,_, "role" ->
+			get_params
+			{h with
+			   soap_header_role = Some (Datatypes_util.anyURI_of_untyped t)}
+			rest
+		    | _ -> get_params h rest
+		end
+	    | _ -> get_params h rest
+  in
+    get_params
+      {soap_header_element = None; soap_header_type = None;
+       soap_header_localname = None; soap_header_nms = None;
+       soap_header_encodingStyle = None; soap_header_role = None}
+      att_el
+
+      
+let make_soap_headerfault nms_prefix att_el =
+  let rec get_params h =
+    function
+	[] -> h
+      | (rsym, t) :: rest ->
+	  match rattr_prefix rsym with
+	    | NSDefaultElementPrefix ->
+		begin
+		  match rattr_name rsym with		      
+		    | _,_, "message" ->
+			get_params
+			{h with
+			   soap_headerfault_message = checked_uqname_of_string t}
+			rest
+		    | _,_, "part" ->
+			get_params {h with soap_headerfault_part = t} rest
+		    | _,_, "namespace" ->
+			get_params
+			{h with
+			   soap_headerfault_nms = Some (Datatypes_util.anyURI_of_untyped t)}
+			rest
+		    | _,_, "encodingStyle" ->
+			get_params
+			{h with
+			   soap_headerfault_encodingStyle =
+			   Some (Datatypes_util.anyURI_of_untyped t)}
+			rest
+		    | _ -> get_params h rest
+		end
+	    | _ -> get_params h rest
+  in
+    get_params
+      {soap_headerfault_message = NSDefaultElementPrefix, "";
+       soap_headerfault_part = ""; soap_headerfault_nms = None;
+       soap_headerfault_encodingStyle = None}
+      att_el
+      
+
+let make_soap_fault nms_prefix att_el =
+  let rec get_params name nms enc =
+    function
+      [] -> name, nms, enc
+      | (rsym, t) :: rest ->
+	  match rattr_prefix rsym with
+	    | NSDefaultElementPrefix ->
+		begin
+		  match rattr_name rsym with		      
+		    | _,_, "name" ->
+			get_params t nms enc rest
+		    | _,_, "namespace" ->
+			get_params name (Some (Datatypes_util.anyURI_of_untyped t)) enc rest
+		    | _,_, "encodingStyle" ->
+			get_params name nms (Some (Datatypes_util.anyURI_of_untyped t)) rest
+		    | _ -> get_params name nms enc rest
+		end
+	    | _ -> get_params name nms enc rest
+  in
+  let (faultname, nms, enc) = get_params "" None None att_el in
+    {soap_fault_prefix = nms_prefix; soap_fault_name = faultname;
+     soap_fault_nms = nms; soap_fault_encodingStyle = enc}
+    
+    
+let void_soap_fault =
+  {soap_fault_prefix = NSDefaultElementPrefix; soap_fault_name = "";
+   soap_fault_nms = None; soap_fault_encodingStyle = None}
+
+
+(**
+  create a service_port record using the attributes attl
+*)
+
+let make_port delta att_el =
+  match get_name_and_rqname delta "binding" None None att_el with
+      Some nm, Some typ ->
+	{service_port_name = nm; 
+	 service_port_binding = typ; port_soap_address = None;
+	 http_base_uri = None}
+    | None, _ ->
+	raise (Query (Load_Error "Missing name attribute in port element"))
+    | _, None ->
+	raise (Query (Load_Error "Missing binding attribute in port element"))
+	
+	
+(**
+  create a soap_address record using the attributes attl
+*)
+
+let make_soap_address nms attl =
+  let rec find_loc loc =
+    function
+      [] -> loc
+      | (rsym, t) :: rest ->
+	  match rattr_prefix rsym with
+	    | NSDefaultElementPrefix ->
+		begin
+		  match rattr_name rsym with		      
+		    | _,_, "location" ->
+			Some (Datatypes_util.anyURI_of_untyped t)
+		    | _ -> find_loc loc rest
+		end
+	    | _ -> find_loc loc rest
+  in
+    match find_loc None attl with
+	Some addr -> {nms_soap_address = nms; location = addr}
+      | None -> raise (Query (Load_Error "Missing "))	
+
+
+(**
+  parse till the end of an element and throw everything to garbage
+*)
+
+let rec parse_element_content =
+  parser
+    | [< 'RSAX_endElement >] -> ()
+    | [< 'RSAX_startElement (_, att_el, _, _, _);
+	 _=parse_element_content;
+	 y=parse_element_content >] -> y
+    | [< 'x; y=parse_element_content >] -> y
+	
+(**
+  main parser: parse the root element
+*)
+	
+let rec parse_doc proc_ctxt serv_name =
+  parser 
+    | [< 'RSAX_startDocument (xml_dec, dtd_dec, base_uri); 
+	 d = parse_doc proc_ctxt serv_name;
+	 'RSAX_endDocument >] -> d
+    | [< 'RSAX_comment c; 
+	 d = parse_doc proc_ctxt serv_name >] -> d
+    | [< 'RSAX_startElement (rel, att_el, has, _, env); 
+	 (* JEROME : Should we really use only the active bindings here ?? *)
+	 d=parse_component proc_ctxt (make_module att_el serv_name (active_bindings env));
+	 'RSAX_endElement >] ->
+	match relem_name rel with
+	    _, uri, "definitions" when uri=wsdl_uri -> d
+	  | _ -> raise (Query (Load_Error ("Root element should be definitions and not "^(relem_string rel))))
+	      
+	      
+(**
+  parse the WSDL components on the first level in the root element
+*)
+and parse_component proc_ctxt doc =
+  parser
+    | [< 'RSAX_comment c;
+	 new_doc = parse_component proc_ctxt doc >] -> new_doc
+
+    | [< 'RSAX_characters s; 
+	 new_doc = parse_component proc_ctxt doc >] -> new_doc	
+
+    | [< 'RSAX_startElement (rsym, att_el, has, _, env) 
+	   when rqname_equal (relem_name rsym) (wsdl_prefix,wsdl_uri,"types");
+	 t = parse_types proc_ctxt doc;
+	 _ = parse_element_content;	 
+	 new_doc = parse_component proc_ctxt {doc with wsdl_types=t} >] -> new_doc	
+
+    | [< 'RSAX_startElement (rsym, att_el, has, _, env)
+      	   when rqname_equal (relem_name rsym) (wsdl_prefix,wsdl_uri,"portType");
+	 pt = parse_portType (make_portType att_el);
+	 'RSAX_endElement;	 
+	 new_doc = parse_component proc_ctxt
+		     {doc with wsdl_port_types=pt::doc.wsdl_port_types} >] -> 
+	new_doc
+
+    | [< 'RSAX_startElement (rsym, att_el, has, _, env)
+      	   when rqname_equal (relem_name rsym) (wsdl_prefix,wsdl_uri,"message");
+	 m = parse_message (make_message att_el);
+	 'RSAX_endElement; 
+	 new_doc = parse_component proc_ctxt
+		     {doc with wsdl_messages=m::doc.wsdl_messages} >] -> 
+ 	new_doc
+
+    | [< 'RSAX_startElement (rsym, att_el, has, _, env)
+	   when rqname_equal (relem_name rsym) (wsdl_prefix,wsdl_uri,"binding");
+	 b = parse_binding (make_binding (active_bindings env) att_el );
+	 'RSAX_endElement;
+	 new_doc = parse_component proc_ctxt
+		     {doc with wsdl_bindings=b::doc.wsdl_bindings} >] -> 
+ 	new_doc	
+
+    | [< 'RSAX_startElement (rsym, att_el, has, _, env)
+	   when rqname_equal (relem_name rsym) (wsdl_prefix,wsdl_uri,"service");
+	 s = parse_service  (make_service att_el);
+	 'RSAX_endElement;
+	 new_doc = parse_component proc_ctxt
+		     {doc with wsdl_services=s::doc.wsdl_services} >] -> new_doc
+
+    | [< 'RSAX_startElement (_, att_el, has, _, _);
+	 doc2 = parse_component proc_ctxt doc;
+	 'RSAX_endElement;
+	 new_doc = parse_component proc_ctxt doc2 >] -> 
+	(* ignore other elements in the file *)
+ 	new_doc
+
+    | [< >] -> flush Pervasives.stdout; doc 
+	
+
+(** 
+  Imports the embedded schema.
+  
+  -Nicola
+*)
+
+and parse_types proc_ctxt wsdl_mod resolved_xml_stream = 
+  let wrap x = try Some (fmkrse_event (Stream.next resolved_xml_stream) Finfo.bogus) with Failure _ -> None in
+  let resolved_xml_stream = Stream.from wrap in
+  let xschema = Schema_import.import_schema_element proc_ctxt
+		  None
+		  (Cursor.cursor_of_stream resolved_xml_stream) 
+  in 
+    begin
+      wsdl_mod.soapenv_prefix_name <- (mk_soapenv_prefix xschema.xschema_namespace_declarations);
+      wsdl_mod.xsi_prefix_name <- (mk_xsi_prefix 
+				     ((wsdl_mod.xsi_prefix_name, NSWildcardUri)
+				      ::xschema.xschema_namespace_declarations));
+      wsdl_mod.xsd_prefix_name <- (mk_xsd_prefix 
+				     ((wsdl_mod.xsd_prefix_name, NSWildcardUri)
+				      ::xschema.xschema_namespace_declarations));
+      Some xschema
+    end
+
+
+(**
+  parse the portType component
+*)
+      
+and parse_portType pt =
+  parser
+    | [< 'RSAX_startElement (rsym, att_el, has, _, env)
+	   when rqname_equal (relem_name rsym) (wsdl_prefix,wsdl_uri,"operation");
+	 op1 = parse_operation_in_port_type (make_operation_pt att_el);
+	 _ = parse_element_content;
+	 pt2 = parse_portType 
+		 {pt with operations=op1::pt.operations} >] -> 
+	pt2	    	
+    | [< 'RSAX_startElement _;
+	 pt1 = parse_portType  pt;
+	 'RSAX_endElement;
+	 pt2 = parse_portType  pt1  >] -> pt2	    	
+    | [< 'RSAX_comment c;
+	 pt2 = parse_portType  pt >] -> pt2
+    | [< 'RSAX_characters s; 
+	 pt2 = parse_portType  pt >] -> pt2
+    | [< >] -> pt
+
+(**
+  parse the operation element in a portType component
+*)
+	
+and parse_operation_in_port_type op =
+  parser
+    | [< 'RSAX_startElement (rsym, att_el, _, _, env)
+	   when rqname_equal (relem_name rsym) (wsdl_prefix,wsdl_uri,"input"); 
+	 _ = parse_element_content;
+	 op2 = let m = get_message_attr (active_bindings env) att_el in
+	   parse_operation_in_port_type 
+	     {op with input=Some m} >] -> op2
+    | [< 'RSAX_startElement (rsym, att_el, _, _, env)
+	   when rqname_equal (relem_name rsym) (wsdl_prefix,wsdl_uri,"output"); 
+	 _ = parse_element_content;
+	 op2 = let m = get_message_attr (active_bindings env) att_el in
+	   parse_operation_in_port_type 
+	     {op with output=Some m}  >] -> op2
+    | [< 'RSAX_startElement (rsym, att_el, _, _, env)
+	   when rqname_equal (relem_name rsym) (wsdl_prefix,wsdl_uri,"fault");
+	 _ = parse_element_content;
+	 op2 = let m = get_message_attr (active_bindings env) att_el in
+	   parse_operation_in_port_type 
+	     {op with faults=m::op.faults} >] -> op2
+    | [< 'RSAX_startElement _;
+	 op1 = parse_operation_in_port_type  op;
+	 'RSAX_endElement;
+	 op2 = parse_operation_in_port_type  op1  >] -> op2
+    | [< 'RSAX_comment c;
+	 op2 = parse_operation_in_port_type  op >] -> op2
+    | [< 'RSAX_characters s; 
+	 op2 = parse_operation_in_port_type  op >] -> op2	
+    | [< >] -> op
+
+(**
+  parse a message component
+*)
+
+and parse_message m =
+  parser
+    | [< 'RSAX_startElement (rsym, att_el, _, _, env)
+	   when rqname_equal (relem_name rsym) (wsdl_prefix,wsdl_uri,"part");
+	 _ = parse_element_content;	 	 
+	 m2 = let part1 = make_part att_el (add_all_ns empty_nsenv (active_bindings env)) in
+	   parse_message 
+	     {m with message_parts=part1::m.message_parts} >] -> flush Pervasives.stdout; m2	
+    | [< 'RSAX_startElement _;
+	 m1 = parse_message m;
+	 'RSAX_endElement;
+	 m2 = parse_message m1  >] -> m2	    	
+    | [< 'RSAX_comment c;
+	 m2 = parse_message m >] -> m2
+    | [< 'RSAX_characters s; 
+	 m2 = parse_message m >] -> m2
+    | [< >] -> m
+	
+(**
+  parse a binding component
+*)
+	
+and parse_binding b =
+  parser       
+    | [< 'RSAX_startElement (rsym, att_el, _, _, _)
+	   when rqname_equal (relem_name rsym) (http_prefix,http_uri,"binding");
+	 _ = parse_element_content;
+	 b2 = let m =
+	   let meth = get_attr att_el "verb" in
+	     match meth with 
+	       | None -> ""
+	       | Some s -> s
+	 in
+	   parse_binding {b with http_method = m} >] -> b2
+    | [< 'RSAX_startElement (rsym, att_el, _, _, _)
+	   when rqname_equal (relem_name rsym) (soap_prefix,soap_uri,"binding");
+	 _ = parse_element_content;
+	 b2 = let sb = make_soap_binding att_el (NSPrefix "soap") in
+	   parse_binding
+	     {b with bind_soap = Some sb} >] -> b2
+    | [< 'RSAX_startElement (rsym, att_el, _, _, _)
+	   when rqname_equal (relem_name rsym) (wsdl_prefix,wsdl_uri,"operation");	   
+	 bo = parse_binding_operation (make_binding_operation att_el);
+	 'RSAX_endElement;
+	 b2 = parse_binding
+		{b with binding_operations = bo::b.binding_operations} >] -> b2
+	
+    | [< 'RSAX_startElement _;
+	 b1 = parse_binding b;
+	 'RSAX_endElement;
+	 b2 = parse_binding b1 >] -> b2	
+    | [< 'RSAX_comment c;
+	 b2 = parse_binding b >] -> b2
+    | [< 'RSAX_characters s; 
+	 b2 = parse_binding b >] -> b2	
+    | [< >] -> b   
+	
+(**
+  parse an operation in a binding component
+*)
+
+and parse_binding_operation bo =
+  parser
+    | [< 'RSAX_startElement (rsym, att_el, has, _, _)
+	   when rqname_equal (relem_name rsym) (http_prefix,http_uri,"operation");	   
+	 _ = parse_element_content;
+	 bop2 = 
+	   let addr = get_attr att_el "location" in
+	     parse_binding_operation
+	       {bo with http_relative_uri = addr} >] -> bop2
+
+    | [< 'RSAX_startElement (rsym, att_el, has, _, _)
+	   when rqname_equal (relem_name rsym) (soap_prefix,soap_uri,"operation");	   
+	 _ = parse_element_content;
+	 bop2 = let sb = make_soap_operation att_el (NSPrefix "soap") in
+	   parse_binding_operation
+	     {bo with binding_soap_operation = Some sb} >] -> bop2
+    | [< 'RSAX_startElement (rsym, att_el, has, _, _)
+	   when rqname_equal (relem_name rsym) (wsdl_prefix,wsdl_uri,"input");	   
+	 sb = parse_soap_body_and_headers None [] [];
+	 'RSAX_endElement;
+	 bo2 = parse_binding_operation
+		 {bo with binding_input = Some sb} >] -> bo2
+    | [< 'RSAX_startElement (rsym, att_el, has, _, _)
+	   when rqname_equal (relem_name rsym) (wsdl_prefix,wsdl_uri,"output");
+	 sb = parse_soap_body_and_headers None [] [];
+	 'RSAX_endElement;
+	 bo2 = parse_binding_operation
+		 {bo with binding_output = Some sb} >] -> bo2
+    | [< 'RSAX_startElement (rsym, att_el, has, _, _)
+	   when rqname_equal (relem_name rsym) (wsdl_prefix,wsdl_uri,"fault");
+	 sf = parse_soap_fault void_soap_fault;
+	 'RSAX_endElement;
+	 bo2 = parse_binding_operation
+		 {bo with binding_faults=sf::bo.binding_faults} >] -> bo2	
+    | [< 'RSAX_startElement _;
+	 b1 = parse_binding_operation bo;
+	 'RSAX_endElement;
+	 b2 = parse_binding_operation b1 >] -> b2	
+    | [< 'RSAX_comment c;
+	 b2 = parse_binding_operation bo >] -> b2
+    | [< 'RSAX_characters s; 
+	 b2 = parse_binding_operation bo >] -> b2	
+    | [< >] -> bo
+  
+(**
+  parse a soap:body element in a WSDL message definition
+*)
+
+and parse_soap_body_and_headers sb sh shf =
+  parser
+    | [< 'RSAX_startElement (rsym, att_el, has, _, _)
+	 when rqname_equal (relem_name rsym) (soap_prefix,soap_uri, "body");
+	 _ = parse_element_content;
+	 sb1 = parse_soap_body_and_headers
+		 (Some (make_soap_body (NSPrefix "soap") att_el)) sh shf >] -> sb1
+	
+    | [< 'RSAX_startElement (rsym, att_el, has, _, _)
+	   when rqname_equal (relem_name rsym) (soap_prefix,soap_uri, "header");
+	 'RSAX_endElement;
+	 sh1 = parse_soap_body_and_headers sb 
+	     (make_soap_header (NSPrefix "soap") att_el :: sh) shf >] -> sh1
+    | [< 'RSAX_startElement _;
+	 b1,h1,hf1 = parse_soap_body_and_headers sb sh shf;
+	 'RSAX_endElement;
+	 b2 = parse_soap_body_and_headers b1 h1 hf1 >] -> b2	
+    | [< 'RSAX_comment c;
+	 b2 = parse_soap_body_and_headers sb sh shf >] -> b2
+    | [< 'RSAX_characters s; 
+	 b2 = parse_soap_body_and_headers sb sh shf >] -> b2	
+    | [< >] -> sb, sh, shf
+	
+	
+and parse_soap_fault sf =
+  parser
+    | [< 'RSAX_startElement (rsym, att_el, has, _, _)
+	   when rqname_equal (relem_name rsym) (soap_prefix,soap_uri, "fault");
+	 _ = parse_element_content;
+	 sf1 = parse_soap_fault (make_soap_fault (NSPrefix "soap") att_el) >] -> sf1
+    | [< 'RSAX_startElement _;
+	 f1 = parse_soap_fault sf;
+	 'RSAX_endElement;
+	 f2 = parse_soap_fault f1>] -> f2	
+    | [< 'RSAX_comment c;
+	 f2 = parse_soap_fault sf >] -> f2
+    | [< 'RSAX_characters s; 
+	 f2 = parse_soap_fault sf >] -> f2	
+    | [< >] -> sf	
+
+(**
+  parse a service component
+*)
+
+and parse_service  s =
+  parser
+    | [< 'RSAX_startElement (rsym, att_el, has, _, env)
+	   when rqname_equal (relem_name rsym) (wsdl_prefix,wsdl_uri, "port");
+	 p = parse_port (make_port (active_bindings env) att_el);
+	 'RSAX_endElement;
+	 s2 = parse_service 
+		{s with ports=p::s.ports} >] -> s2
+    | [< 'RSAX_startElement _;
+	 s1 = parse_service  s;
+	 'RSAX_endElement;
+	 s2 = parse_service  s1 >] -> s2	
+    | [< 'RSAX_comment c;
+	 s2 = parse_service  s >] -> s2
+    | [< 'RSAX_characters cars; 
+	 s2 = parse_service  s >] -> s2
+    | [< >] -> s
+
+(**
+  parse a port component in a service component
+*)
+
+and parse_port p =
+  parser
+    | [< 'RSAX_startElement (rsym, att_el, has, _, _)
+	   when rqname_equal (relem_name rsym) (http_prefix,http_uri, "address");
+	 _ = parse_element_content;
+	 p2 = let addr = get_attr att_el "location" in
+	   parse_port
+	     {p with http_base_uri = addr} >] -> p2
+    | [< 'RSAX_startElement (rsym, att_el, has, _, _)
+	   when rqname_equal (relem_name rsym) (soap_prefix,soap_uri, "address");
+	 'RSAX_endElement;
+	 p2 = 
+	   let sa = make_soap_address (NSPrefix "soap") att_el in
+	     parse_port {p with port_soap_address=Some sa} >] -> p2	
+    | [< 'RSAX_startElement _;
+	 p1 = parse_port p;
+	 'RSAX_endElement;
+	 p2 = parse_port p1 >] -> p2	
+    | [< 'RSAX_comment c;
+	 p2 = parse_port p >] -> p2
+    | [< 'RSAX_characters s; 
+	 p2 = parse_port p >] -> p2
+    | [< >] -> p
+
+
+(**
+  produce a wsdl_ast from an xml_stream
+*)
+	
+let xml_to_wsdl_ast proc_ctxt name xml_stream =
+  try
+    let stream = Streaming_ops.resolve_xml_stream xml_stream in
+    let stream = Cursor.stream_of_cursor stream in
+    let unwrap x = try Some ((Stream.next stream).rse_desc) with Failure _ -> None in
+    let stream = Stream.from unwrap  in
+    parse_doc proc_ctxt name stream
+  with
+    Stream.Error q ->
+      raise (Query (Load_Error ("Error in the syntax of the wsdl file. "^q)))
+	
+let test_parser wsdl_file =
+  let proc_ctxt = Processing_context.default_processing_context () in
+  let (_, wsdl_stream) = Streaming_parse.open_xml_stream_from_io
+		      (Galax_io.File_Input wsdl_file) 
+  in
+    xml_to_wsdl_ast proc_ctxt wsdl_file wsdl_stream
+      
+

@@ -1,0 +1,137 @@
+(* Note:
+
+     This file is taken 'as-is' from the pxp distribution, whose
+     copyright notice is reproduced below.
+
+     PXP can be found at:
+     http://www.ocaml-programming.de/programming/pxp.html
+
+   - Jerome
+
+Copyright 1999 by Gerd Stolpmann
+
+The package PXP is copyright by Gerd Stolpmann. 
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this document and the PXP software (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+The Software is provided ``as is'', without warranty of any kind, express
+or implied, including but not limited to the warranties of
+merchantability, fitness for a particular purpose and noninfringement.
+In no event shall Gerd Stolpmann be liable for any claim, damages or
+other liability, whether in an action of contract, tort or otherwise,
+arising from, out of or in connection with the Software or the use or
+other dealings in the software.
+
+*)
+
+(* $Id: pxp_lex_defs_iso88591.def,v 1.1 2002/09/21 05:50:35 simeon Exp $
+ * ----------------------------------------------------------------------
+ *
+ *)
+
+let ws = [ ' ' '\t' '\r' '\n' ]
+
+(* Note: ISO-8859-1 charset does not have 'combining characters' *)
+
+let letter = ['A'-'Z' 'a'-'z' '\192'-'\214' '\216'-'\246' '\248'-'\255']
+let extender = '\183'
+let digit = ['0'-'9']
+let ascii_digit = ['0'-'9']
+let ascii_hexdigit = ['0'-'9' 'A'-'F' 'a'-'f']
+let namechar = letter | digit | '.' | ':' | '-' | '_' | extender
+let name = ( letter | '_' | ':' ) namechar*
+let nmtoken = namechar+
+
+(**** Added for Galax - Jerome *)
+
+let whitespace = ws*
+let whitespaceplus = ws+
+
+let nmstart  = letter | '_'
+let nmchar   = letter | extender | digit | '.' | '-' | '_'
+ 
+let ncname   = nmstart nmchar*
+
+let qname    = ncname (':' ncname)?
+
+(**** Until here - Jerome *)
+
+let character = ['\009' '\010' '\013' '\032'-'\255']
+
+let character_except_question_mark =                    (* '?' = '\063' *)
+  [ '\009' '\010' '\013' '\032'-'\062' '\064'-'\255' ]
+
+let character_except_right_angle_bracket =              (* '>' = '\062' *)
+  [ '\009' '\010' '\013' '\032'-'\061' '\063'-'\255' ]
+
+let character_except_minus =                            (* '-' = '\045' *)
+  [ '\009' '\010' '\013' '\032'-'\044' '\046'-'\255' ]
+
+let character_except_quot =                             (* '"' = '\034' *)
+  [ '\009' '\010' '\013' '\032'-'\033' '\035'-'\255' ]
+
+let character_except_apos =                             (* '\'' = '\039' *)
+  [ '\009' '\010' '\013' '\032'-'\038' '\040'-'\255' ]
+
+let pi_string = character_except_question_mark* 
+                ( '?' character_except_right_angle_bracket 
+                      character_except_question_mark* )* 
+                '?'?
+
+let comment_string = character_except_minus* 
+                     ('-' character_except_minus+ )*
+
+let normal_character = 
+  [^ '&' '<' ']' '\000'-'\008' '\010'-'\031']
+
+let character_except_rbracket =                               (* ']' = '\093' *)
+  [ '\009' '\010' '\013' '\032'-'\092' '\094'-'\255' ]
+
+let character_except_rbracket_rangle =          (* ']' = '\093', '>' = '\062' *)
+  [ '\009' '\010' '\013' '\032'-'\061' '\063'-'\092' '\094'-'\255' ]
+
+let cdata_string = 
+  character_except_rbracket*
+  ( "]" character_except_rbracket+ |
+    "]]" ']'* character_except_rbracket_rangle character_except_rbracket*
+  )*
+  ']'*
+(* cdata_string = char* - ( char* ']]>' char* ) *)
+
+let printable_character_except_amp_lt =
+  (* '&' = '\038', '<' = '\060' *)
+  [ '\032'-'\037' '\039'-'\059' '\061'-'\255']
+
+let printable_character_except_amp_percent =
+  (* '%' = '\037', '&' = '\038' *)
+  [ '\032'-'\036' '\039'-'\255']
+
+let character_except_special =
+  (* '<'=060, ']'=093, '"'=034, '\''=039 *)
+  [ '\009' '\010' '\013' '\032'-'\033' '\035'-'\038' '\040'-'\059' 
+                         '\061'-'\092' '\094'-'\255' ]
+
+(* ======================================================================
+ * History:
+ * 
+ * $Log: pxp_lex_defs_iso88591.def,v $
+ * Revision 1.1  2002/09/21 05:50:35  simeon
+ * Added third-party tool netstring.
+ *
+ * Revision 1.1  2002/09/03 19:52:09  simeon
+ * Added support for multiple character encodings.
+ *
+ * Revision 1.1  2000/05/20 20:33:25  gerd
+ * 	Initial revision.
+ *
+ * 
+ *)

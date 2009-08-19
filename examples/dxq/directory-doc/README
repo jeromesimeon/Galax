@@ -1,0 +1,17 @@
+This is a distributed directory service written in Xquery with the
+fn:doc("dxq://host") extension.
+
+Each host exports a directory through the local:main() function.
+A directory is a set of entries mapping names to hosts, e.g., 
+
+     <dir>  
+     <entry name="Bob" value="b"/>
+     <entry name="Claire" value="c"/>
+     </dir>;
+
+maps Bob to the host b and Claire to the host c.
+
+Typically a host's directory is defined by some local entries
+(variable $dbase) and a full directory that incorporates the local
+entries and some remote entries (variable $dfull).  $dfull is defined
+using fn:doc("dxq://remotehost").

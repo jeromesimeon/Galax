@@ -1,0 +1,4 @@
+docs/xmpbib.xml$Bibliography$bib
+docs/xmpreviews.xml$Reviews$reviews
+docs/prices.xml$Prices$prices
+docs/books.xml$Books$books

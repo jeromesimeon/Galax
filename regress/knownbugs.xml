@@ -1,0 +1,92 @@
+<!-- This is a list of known Galax bugs and the corresponding tests
+     which break because of each bug. The bug id is the bugzilla id
+     (http://bugzilla.galaxquery.net/).
+
+     To find the bug corresponding to the id 'ID', the following URL
+     can be used:
+
+     http://bugzilla.galaxquery.net/show_bug.cgi?id=ID
+
+ - Jerome -->
+
+<bugs>
+  <!-- Galax BUGS -->
+  <!-- In Bugzilla -->
+  <bug id="42" in="galax" status="open">
+    <test-case name="Constr-cont-baseuri-2"/>
+    <test-case name="Constr-cont-baseuri-3"/>
+    <test-case name="Constr-cont-uripres-1"/>
+  </bug>
+  <bug id="55" in="galax" status="open">
+    <test-case name="surrogates01"/>
+    <test-case name="surrogates02"/>
+    <test-case name="surrogates06"/>
+    <test-case name="surrogates12"/>
+    <test-case name="surrogates13"/>
+    <test-case name="surrogates14"/>
+    <test-case name="surrogates15"/>
+  </bug>
+  <bug id="56" in="galax" status="open">
+    <test-case name="caselessmatch04"/>
+    <test-case name="caselessmatch05"/>
+    <test-case name="caselessmatch06"/>
+    <test-case name="caselessmatch07"/>
+    <test-case name="caselessmatch08"/>
+    <test-case name="caselessmatch09"/>
+    <test-case name="caselessmatch14"/>
+    <test-case name="caselessmatch15"/>
+  </bug>
+  <!-- Still not fixed as of XQTS 1.0 -->
+  <bug id="2357" in="xqts" status="open">
+    <test-case name="op-gYear-equal-2"/>
+  </bug>
+  <bug id="2896" in="xqts" status="open">
+    <test-case name="Comp-notation-5"/>
+    <test-case name="Comp-notation-8"/>
+    <test-case name="Comp-notation-10"/>
+    <test-case name="Comp-notation-11"/>
+    <test-case name="Comp-notation-12"/>
+    <test-case name="Comp-notation-13"/>
+    <test-case name="Comp-notation-14"/>
+    <test-case name="Comp-notation-19"/>
+    <test-case name="Comp-notation-20"/>
+    <test-case name="Comp-notation-21"/>
+  </bug>
+  <bug id="2930" in="xqts" status="open">
+    <test-case name="fn-avg-mix-args-013"/>
+    <test-case name="fn-avg-mix-args-015"/>
+  </bug>
+  <bug id="9999" in="xqts" status="open">
+    <test-case name="ForExprType032"/>
+    <test-case name="orderBy25"/>
+    <test-case name="orderBy35"/>
+    <test-case name="orderBy45"/>
+    <test-case name="orderBy47"/>
+    <test-case name="orderBy55"/>
+    <test-case name="orderBy57"/>
+    <test-case name="orderbylocal-25"/>
+    <test-case name="orderbylocal-35"/>
+    <test-case name="orderbylocal-45"/>
+    <test-case name="orderbylocal-47"/>
+    <test-case name="orderbylocal-55"/>
+    <test-case name="orderbylocal-57"/>
+    <test-case name="orderbywithout-14"/>
+    <test-case name="orderbywithout-21"/>
+    <test-case name="orderbywithout-30"/>
+    <test-case name="orderbywithout-32"/>
+    <test-case name="orderbywithout-37"/>
+    <test-case name="orderbywithout-39"/>
+  </bug>
+  <bug id="9998" in="xqts" status="open">
+    <test-case name="ForExprType059"/>
+    <test-case name="ForExprType060"/>
+  </bug>
+  <bug id="9997" in="xqts" status="open">
+    <test-case name="CastAs672"/>
+  </bug>
+  <!-- Possibly either a XQTS 1.0 or a Galax BUG -->
+  <bug id="3773" in="xqts" status="open">
+    <test-case name="CastableAs648"/>
+  </bug>
+</bugs>
+

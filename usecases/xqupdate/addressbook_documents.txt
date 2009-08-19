@@ -1,0 +1,4 @@
+docs/archive.xml$Original Address Book$archive
+docs/copy1.xml$First Copy$copy1
+docs/copy2.xml$Second Copy$copy2
+docs/log.xml$Log File$log

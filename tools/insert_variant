@@ -1,0 +1,146 @@
+#! /bin/sh
+# (*
+exec ocaml "$0" "$@"
+*) directory ".";;
+
+(* Note:
+
+     This file is modified from the pxp distribution, whose
+     copyright notice is reproduced below.
+
+     PXP can be found at:
+     http://www.ocaml-programming.de/programming/pxp.html
+
+   - Jerome
+
+Copyright 1999 by Gerd Stolpmann
+
+The package PXP is copyright by Gerd Stolpmann. 
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this document and the PXP software (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+The Software is provided ``as is'', without warranty of any kind, express
+or implied, including but not limited to the warranties of
+merchantability, fitness for a particular purpose and noninfringement.
+In no event shall Gerd Stolpmann be liable for any claim, damages or
+other liability, whether in an action of contract, tort or otherwise,
+arising from, out of or in connection with the Software or the use or
+other dealings in the software.
+
+*)
+
+(* $Id: insert_variant,v 1.1 2002/09/03 19:52:10 simeon Exp $
+ * ----------------------------------------------------------------------
+ *
+ *)
+
+let get_arg variant insert_line =
+  (* returns the argument of an "#insert" line *)
+  let s = ref "" in
+  for i = 8 to String.length insert_line - 1 do
+    match insert_line.[i] with
+	' ' -> ()
+      | '*' ->
+	  (* replace '*' with 'variant' *)
+	  s := !s ^ variant
+      | c ->
+	  s := !s ^ String.make 1 c
+  done;
+  !s
+;;
+
+
+let edit_file variant extension name =
+  let basename = Filename.chop_suffix name ".src" in
+  let mllname =
+    (* basename ^ ".mll" *)
+    (* basename ^ "_" ^ variant ^ ".mll" *)
+    basename ^ "_" ^ variant ^ "." ^ extension
+  in
+  let chin = open_in name in
+  let chout = open_out mllname in
+  begin try
+    while true do
+      let line = input_line chin in
+      (* We do not have Str here. *)
+      if String.length line >= 8 & String.sub line 0 8 = "#insert " then begin
+	let insname = get_arg variant line in
+	(* Copy the file 'insname' to chout *)
+	let chcopy = open_in_bin insname in
+	let n = in_channel_length chcopy in
+	let s = String.create n in
+	really_input chcopy s 0 n;
+	close_in chcopy;
+	output_string chout s;
+      end
+      else begin
+	output_string chout line;
+	output_char chout '\n';
+      end
+    done
+  with
+      End_of_file -> ()
+  end;
+  close_in chin;
+  close_out chout
+;;
+
+
+let main() =
+  let variant = ref "" in
+  let extension = ref "mll" in
+  let files = ref [] in
+  Arg.current := 0;          (* Because of a OCaml-3.00 bug *)
+  Arg.parse
+      [ "-variant", Arg.String (fun s -> variant := s),
+	        "<name>  Set the variant (character encoding)";
+        "-extension", Arg.String (fun s -> extension := s),
+	        "<name>  Set the variant (character encoding)";
+      ]
+      (fun s -> files := !files @ [s])
+      "insert_variant [ options ] file.src ...
+
+Reads the files, replaces the #insert lines by the referred files, and 
+writes the file file_variant.mll. 
+
+The #insert lines include the specified file into the source. The
+asterisk (*) is replaced by the name of the variant.
+
+Options:
+";
+  
+  List.iter 
+    (fun name -> edit_file !variant !extension name)
+    !files
+;;
+
+
+main();;
+
+(* ======================================================================
+ * History:
+ * 
+ * $Log: insert_variant,v $
+ * Revision 1.1  2002/09/03 19:52:10  simeon
+ * Added support for multiple character encodings.
+ *
+ * Revision 1.3  2001/04/21 17:41:57  gerd
+ * 	Hope this makes insert_variant working under Cygwin.
+ *
+ * Revision 1.2  2000/05/20 21:14:33  gerd
+ * 	Workaround for an OCaml 3.00 bug.
+ *
+ * Revision 1.1  2000/05/20 20:30:15  gerd
+ * 	Initial revision.
+ *
+ * 
+ *)

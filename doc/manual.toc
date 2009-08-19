@@ -1,0 +1,120 @@
+\contentsline {part}{I\hspace {1em}User's Manual}{7}
+\contentsline {chapter}{\numberline {1}Getting Started}{9}
+\contentsline {section}{\numberline {1.1}What is XQuery 1.0?}{9}
+\contentsline {section}{\numberline {1.2}What is Galax?}{9}
+\contentsline {paragraph}{Alpha features:}{10}
+\contentsline {paragraph}{Limitations:}{10}
+\contentsline {subsection}{\numberline {1.2.1}Changes since the last version}{10}
+\contentsline {section}{\numberline {1.3}Downloading and installing Galax}{11}
+\contentsline {section}{\numberline {1.4}How to use Galax}{11}
+\contentsline {subsection}{\numberline {1.4.1}Using Galax from the command line}{11}
+\contentsline {subsection}{\numberline {1.4.2}Web interface}{12}
+\contentsline {subsection}{\numberline {1.4.3}Language API's}{12}
+\contentsline {chapter}{\numberline {2}Installation}{13}
+\contentsline {section}{\numberline {2.1}Prerequisites}{13}
+\contentsline {section}{\numberline {2.2}Source Installation}{13}
+\contentsline {subsection}{\numberline {2.2.1} Installing Galax using GODI installation and configuration tool}{13}
+\contentsline {subsection}{\numberline {2.2.2}Installing Galax source by hand}{15}
+\contentsline {section}{\numberline {2.3}XQuery Test Suite}{16}
+\contentsline {section}{\numberline {2.4}Web Site Interface}{17}
+\contentsline {subsection}{\numberline {2.4.1}Prerequisites}{17}
+\contentsline {subsection}{\numberline {2.4.2}Installation of Website Interface}{17}
+\contentsline {chapter}{\numberline {3}Tutorial}{19}
+\contentsline {section}{\numberline {3.1}Executing a query}{19}
+\contentsline {section}{\numberline {3.2}Accessing Input}{19}
+\contentsline {section}{\numberline {3.3}Controlling Output}{20}
+\contentsline {section}{\numberline {3.4}Controlling Compilation}{20}
+\contentsline {section}{\numberline {3.5}Updates and Procedural Extensions}{20}
+\contentsline {part}{II\hspace {1em}Reference Manual}{21}
+\contentsline {chapter}{\numberline {4}XQuery 1.0 Conformance}{23}
+\contentsline {section}{\numberline {4.1}Data Model}{23}
+\contentsline {section}{\numberline {4.2}XQuery}{23}
+\contentsline {section}{\numberline {4.3}XQuery 1.0 Formal Semantics}{25}
+\contentsline {section}{\numberline {4.4}Functions and Operators}{26}
+\contentsline {section}{\numberline {4.5}Use Cases}{26}
+\contentsline {section}{\numberline {4.6}Galax 1.0\ extensions}{26}
+\contentsline {subsection}{\numberline {4.6.1}Defining XQuery Types in the Query Prolog}{26}
+\contentsline {subsection}{\numberline {4.6.2}Galax specific functions}{27}
+\contentsline {chapter}{\numberline {5}Command Line Tools}{29}
+\contentsline {section}{\numberline {5.1}\textbf {\texttt {galax-run}} : The Galax XQuery interpreter}{29}
+\contentsline {subsection}{\numberline {5.1.1}Input options}{30}
+\contentsline {subsection}{\numberline {5.1.2}Output options}{30}
+\contentsline {subsection}{\numberline {5.1.3}Evaluation options}{30}
+\contentsline {subsection}{\numberline {5.1.4}Normalization options}{30}
+\contentsline {subsection}{\numberline {5.1.5}Static typing options}{30}
+\contentsline {subsection}{\numberline {5.1.6}Rewriting options}{31}
+\contentsline {subsection}{\numberline {5.1.7}Factorization options}{31}
+\contentsline {subsection}{\numberline {5.1.8}Compilation options}{31}
+\contentsline {subsection}{\numberline {5.1.9}Optimization options}{31}
+\contentsline {subsection}{\numberline {5.1.10}Miscellaneous printing options}{32}
+\contentsline {subsection}{\numberline {5.1.11}Document projection options}{32}
+\contentsline {subsection}{\numberline {5.1.12}Miscellaneous options}{32}
+\contentsline {section}{\numberline {5.2}\textbf {\texttt {galax-parse}}: XML parser and XML Schema validator}{33}
+\contentsline {section}{\numberline {5.3}\textbf {\texttt {galax-mapschema}} : XML Schema validator}{33}
+\contentsline {section}{\numberline {5.4}\textbf {\texttt {galaxd}} : The Galax network server}{34}
+\contentsline {subsection}{\numberline {5.4.1}Running simulations}{34}
+\contentsline {chapter}{\numberline {6}Application Programming Interfaces (APIS)}{35}
+\contentsline {section}{\numberline {6.1}Galax API Functionality}{35}
+\contentsline {subsection}{\numberline {6.1.1}Linking and Running}{36}
+\contentsline {section}{\numberline {6.2}Quick Start to using the APIs}{36}
+\contentsline {section}{\numberline {6.3}XQuery Data Model}{37}
+\contentsline {subsection}{\numberline {6.3.1}Types and Constructors}{37}
+\contentsline {subsubsection}{Atomic values}{37}
+\contentsline {subsubsection}{Nodes}{38}
+\contentsline {subsubsection}{Sequences}{38}
+\contentsline {subsection}{\numberline {6.3.2}Using XQuery data model values}{38}
+\contentsline {subsection}{\numberline {6.3.3}Accessors}{38}
+\contentsline {subsection}{\numberline {6.3.4}Loading documents}{38}
+\contentsline {section}{\numberline {6.4}Query Evaluation}{39}
+\contentsline {subsection}{\numberline {6.4.1}Module context}{39}
+\contentsline {subsection}{\numberline {6.4.2}Evaluating queries/expressions}{40}
+\contentsline {subsection}{\numberline {6.4.3}Serializing XQuery data model values}{41}
+\contentsline {section}{\numberline {6.5}C API Specifics}{41}
+\contentsline {subsection}{\numberline {6.5.1}Memory Management}{41}
+\contentsline {subsection}{\numberline {6.5.2}Exceptions}{41}
+\contentsline {section}{\numberline {6.6}Java API Specifics}{42}
+\contentsline {subsection}{\numberline {6.6.1}General Info}{42}
+\contentsline {subsection}{\numberline {6.6.2}Exceptions}{42}
+\contentsline {subsection}{\numberline {6.6.3}Memory Management}{42}
+\contentsline {section}{\numberline {6.7}Operation-System Notes}{43}
+\contentsline {subsection}{\numberline {6.7.1}Windows}{43}
+\contentsline {chapter}{\numberline {7}For Galax Developers}{45}
+\contentsline {section}{\numberline {7.1}Galax Source Code Architecture}{45}
+\contentsline {paragraph}{Document processing}{45}
+\contentsline {paragraph}{Schema processing}{45}
+\contentsline {paragraph}{Query processing}{45}
+\contentsline {subsection}{\numberline {7.1.1}General}{45}
+\contentsline {subsection}{\numberline {7.1.2}Datamodel}{46}
+\contentsline {subsection}{\numberline {7.1.3}Processing Model}{47}
+\contentsline {subsection}{\numberline {7.1.4}Query Parsing}{47}
+\contentsline {subsection}{\numberline {7.1.5}Normalization}{47}
+\contentsline {subsection}{\numberline {7.1.6}Static Typing}{47}
+\contentsline {subsection}{\numberline {7.1.7}Schema/Validation}{48}
+\contentsline {subsection}{\numberline {7.1.8}Rewriting}{48}
+\contentsline {subsection}{\numberline {7.1.9}Compilation}{48}
+\contentsline {subsection}{\numberline {7.1.10}Evaluation}{48}
+\contentsline {subsection}{\numberline {7.1.11}Serialization}{48}
+\contentsline {subsection}{\numberline {7.1.12}Testing}{49}
+\contentsline {subsection}{\numberline {7.1.13}APIs}{49}
+\contentsline {subsection}{\numberline {7.1.14}External libraries \& tools}{49}
+\contentsline {subsection}{\numberline {7.1.15}Extensions}{49}
+\contentsline {subsection}{\numberline {7.1.16}Experimental Galax extensions}{49}
+\contentsline {subsection}{\numberline {7.1.17}Documentation}{50}
+\contentsline {subsection}{\numberline {7.1.18}Generated executables}{50}
+\contentsline {chapter}{\numberline {8}Release Notes}{51}
+\contentsline {section}{\numberline {8.1}Galax 1.0 (March 2008)}{51}
+\contentsline {section}{\numberline {8.2}Galax 0.7.2 (February 2007)}{52}
+\contentsline {section}{\numberline {8.3}Galax 0.6.8 (August 2006)}{52}
+\contentsline {section}{\numberline {8.4}Galax 0.6.5 (May 2006)}{52}
+\contentsline {section}{\numberline {8.5}Galax 0.5.0 (February 2005)}{53}
+\contentsline {section}{\numberline {8.6}Galax 0.4.0 (August 2004)}{53}
+\contentsline {section}{\numberline {8.7}Galax 0.3.5 (December 2003)}{54}
+\contentsline {section}{\numberline {8.8}Galax 0.3.1 (June 2003)}{55}
+\contentsline {section}{\numberline {8.9}Galax 0.3.0 (January 2003)}{55}
+\contentsline {section}{\numberline {8.10}Galax 0.2.0 (October 2002)}{56}
+\contentsline {chapter}{\numberline {9}General}{59}
+\contentsline {section}{\numberline {9.1}The Galax Team}{59}
+\contentsline {section}{\numberline {9.2}Feedback}{59}
+\contentsline {section}{\numberline {9.3}Copyright and License}{60}
+\contentsline {section}{\numberline {9.4}Bugs and Limitations}{65}
+\contentsline {section}{\numberline {9.5}Known Bugs and Limitations}{65}

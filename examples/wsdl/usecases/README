@@ -1,0 +1,13 @@
+Google Service
+==============
+You can call it with:
+$ galax-run -serialize wf -context google_context.xq google_test2.xq
+
+Ping Service
+============
+Ping service always answers 0, but it's just to test the HTTP transfer:
+
+You can call it with:
+$ galax-run -serialize wf -context ping_context.xq ping_test.xq
+
+

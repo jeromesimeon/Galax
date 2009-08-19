@@ -1,0 +1,364 @@
+#!%%PERL%%
+
+# This script may be called with the following command line arguments:
+# -usecases, e.g.,
+# runtest.perl -usecases             # runs all the usecases
+
+# Parse the command line arguments
+if ($#ARGV == -1) {
+    print "runtest.perl must be called with at least one argument: \n  -all, -usecases.\n";
+    exit 0;
+}
+$usecases = 0;
+@xmlquery_switches = ("-verbose", "on", "-print-expr", "on");
+foreach $arg (@ARGV) {
+     if ($arg eq "-all") {
+        $usecases = 1;
+    }
+    else {
+      @xmlquery_switches = (@xmlquery_switches, $arg); 
+    }
+}
+
+$querydir_top = "%%GALAXSRC%%/usecases";
+# Write the testing results to this file
+$results_file = "$querydir_top\/results";
+# The executable for galax
+$xmlquery = "%%GALAXSRC%%/galax";
+$unix2dos = "%%GALAXSRC%%/tools/unix2dos/unix2dos";
+# How often should we print the query file being processed?
+$frequency = 1; # for every file
+#$frequency = 25;
+
+# Input Query:
+# Keyword_usecase.xq
+
+# If the input query file is query.xq (eg., Integer_1_pos.xq), then we have:
+
+# Actual Output files:
+# query_actual.txt: the result
+# query_actual.err: the error
+
+# Expected Output files:
+# query_expect.txt
+# query_expect.err
+
+&test_all();
+
+sub test_usecases {
+    print "\n\n\# Usecase tests\n\n";
+    &write_report_line("\n\# Usecase tests\n", "");
+
+    &run_usecase_directory();
+
+    print "\n\n\# Optimizer tests\n\n";
+    &write_report_line("\n\# Optimizer tests\n", "");
+
+    $optim = "true";
+    &run_usecase_directory();
+
+#    print "\n\n\# Pretty-printer tests\n\n";
+#    &write_report_line("\n\# Pretty-printer tests\n", "");
+
+#    $optim = "false";
+#    $pretty = "true";
+#    &run_usecase_directory();
+}
+
+sub test_all {
+    &test_start();
+    # Run all the tests that were specified on the command line.
+    if ($usecases) {
+	&test_usecases();
+    }
+    &test_finish();
+}
+
+sub test_start {
+    # Open results file, set global variables
+    unless (open (RESULTS_FILE, ">$results_file")) {
+	die ("Can't open results file: $results_file");
+    }
+    &write_report_line("\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#", "");
+    &write_report_line("\# Galax use cases : Status report \#", "");
+    &write_report_line("\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#", "");
+    print "\n\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\n\n";
+    print "\tRunning use cases\n\n";
+    print "\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#";
+    $fileno = 0;
+    $num_incorrect_solutions = 0;
+    $num_incorrect_types = 0;
+    $num_incorrect_errors = 0;
+    $num_known_bugs = 0;
+}
+
+sub test_finish {
+    print "Finished running galax use cases\n";
+    print RESULTS_FILE "\n\n";
+    print RESULTS_FILE "Number of incorrect solutions: $num_incorrect_solutions\n";
+    print RESULTS_FILE "Number of incorrect errors: $num_incorrect_errors\n";
+    close RESULTS_FILE;
+    &test_report_to_user();
+}
+
+sub test_report_to_user {
+    print "\n\n\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\n\n";
+    if (($num_incorrect_solutions + $num_incorrect_errors) == 0) {
+      print "\tAll use cases successful! :-)";
+    }
+    else {
+      print "Some tests failed :-(\n\n";
+      print "\tNumber of incorrect solutions: $num_incorrect_solutions\n";
+      print "\tNumber of incorrect errors: $num_incorrect_errors\n\n";
+      print "See detailed report in: usecases/results";
+    }
+    print "\n\n\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\n\n";
+}
+
+sub run_usecase_directory {
+    $querydir = "$querydir_top";
+    # Get all .xq files to process
+    opendir QUERYDIR, $querydir;
+    @queryfiles = sort (grep /^.*_usecase\.xq$/, readdir QUERYDIR);
+    closedir QUERYDIR;
+
+    foreach $queryfile (@queryfiles) {
+	$fileno++;
+	if ($fileno % $frequency == 0) {
+#	    print STDOUT "\nProcessed $fileno queries\n";
+#	    print STDOUT "processing query $fileno: $queryfile\n";
+	}
+	$queryfile =~ /^(.*)_usecase\.xq$/;
+	$queryfile_base = $1;
+	process_usecasefile($querydir, $queryfile_base);
+    }
+}
+
+sub process_usecasefile {
+    my ($dir, $prefix) = @_;
+    # Create the output subdirectory, if it isn't there.
+    my $expectdir = "$dir/expect";
+    my $outdir = "$dir/output";
+    if (! -e $outdir) {
+	mkdir $outdir, 0775;
+    }
+    # Read all the comment directives at the beginning of the query file.
+    $full_queryfile = "$dir/$prefix\_usecase\.xq";
+
+    $context = "$prefix\_context.xq";
+    $full_context = "$dir/$context";
+
+    @xmlquery_switches_local = @xmlquery_switches;
+    if ($full_context) {
+#       print STDOUT "CONTEXT: ", $context, "\n";
+	@xmlquery_switches_local = (@xmlquery_switches_local, "-context", $full_context);
+    }
+    if ($prefix =~ /(ns|parts|xmark)/) { 
+	@xmlquery_switches_local = (@xmlquery_switches_local, "-static", "off");
+    } else {
+	@xmlquery_switches_local = (@xmlquery_switches_local, "-static", "on", "-print-type", "on");
+    }
+    if ($pretty) {
+        $full_queryfile = "$dir/$prefix\_usecase\_pretty\.xq";
+    } else {
+      if ($optim) {
+	  @xmlquery_switches_local = (@xmlquery_switches_local, "-optim", "on");
+      } else {
+	  @xmlquery_switches_local = (@xmlquery_switches_local, "-optim", "off", "-pretty-print", "$prefix\_usecase");
+      }
+    }
+    $expect_prefix = "$prefix\_actual";
+    $expect_solution = "$expect_prefix\.txt";
+    $expect_error = "$expect_prefix\.err";
+
+    $actual_prefix = "$prefix\_actual";
+    $actual_solution = "$actual_prefix\.txt";
+    $actual_error = "$actual_prefix\.err";
+
+    # The full path to each of the files for the query
+    $full_expect_solution = "$expectdir/$expect_solution";
+    $full_expect_error = "$expectdir/$expect_error";
+
+    $full_actual_solution_prefix = "$outdir/$actual_prefix";
+    $full_actual_solution = "$outdir/$actual_solution";
+    $full_actual_error = "$outdir/$actual_error";
+
+    # save STDERR before redirecting
+    open(SAVEERR, ">&STDERR");
+    open(SAVEOUT, ">&STDOUT");
+    # Redirect STDERR to a file, for processing
+    # each query file.
+    unless (open (STDERR, ">$full_actual_error")) {
+      die ("Can't open STDERR as $full_actual_error");
+    }
+    unless (open (STDOUT, ">$full_actual_solution")) {
+      die ("Can't open STDOUT as $full_actual_solution");
+    }
+
+    # Call xmlquery on the current query file
+    # *** Put in @xmlquery_switches_local before "-o"
+    @xmlquery_call = ("$xmlquery", @xmlquery_switches_local, "$full_queryfile");
+    print SAVEOUT "Running usecase: $prefix\n";
+
+    # for debugging
+    if (($fileno % $frequency == 0) && ($debug == 1)) {
+#      print SAVEOUT "xmlquery_call: @xmlquery_call\n";
+    }
+    system(@xmlquery_call) == 0
+    or print RESULTS_FILE "system @xmlquery_call failed: $?";
+    # After running the query, close and restore STDERR.
+    close STDERR;
+    open(STDERR, ">&SAVEERR");
+    close STDOUT;
+    open(STDOUT, ">&SAVEOUT");
+    &compare_results();
+}
+
+sub compare_results {
+    # Make sure the files exist before trying to compare them.
+    if ((-e $full_expect_solution) && (-e $full_actual_solution)) {
+	@unixfile = ("$unix2dos", "$full_actual_solution");
+        system(@unixfile);
+	if (! &files_equivalent
+	    ($full_expect_solution, $full_actual_solution)) {
+	    $num_incorrect_solutions++;
+	    &write_report_line($queryfile, $actual_solution);
+	}
+    } else {
+	# At least one file doesn't exist.
+	# They must both either not exist or be empty.
+	# If either file exists and is nonempty, print an error.
+	if (((-e $full_expect_solution) && (! (-z $full_expect_solution))) ||
+	    ((-e $full_actual_solution) && (! (-z $full_actual_solution)))) {
+	    $num_incorrect_solutions++;
+	    &write_report_line($queryfile, $actual_solution);
+	}
+    }
+    # Make sure the files exist before trying to compare them.
+    if ((-e $full_expect_type) && (-e $full_actual_type)) {
+	@unixfile = ("$unix2dos", "$full_actual_type");
+        system(@unixfile);
+	if (! &files_equivalent
+	    ($full_expect_type, $full_actual_type)) {
+	    $num_incorrect_types++;
+	    &write_report_line($queryfile, $actual_type);
+	}
+    } else {
+	# At least one file doesn't exist.
+	# They must both either not exist or be empty.
+	# If either file exists and is nonempty, print an error.
+	if (((-e $full_expect_type) && (! (-z $full_expect_type))) ||
+	    ((-e $full_actual_type) && (! (-z $full_actual_type)))) {
+	    $num_incorrect_types++;
+	    &write_report_line($queryfile, $actual_type);
+	}
+    }
+    # Make sure the files exist before trying to compare them.
+    if ((-e $full_expect_error) && (-e $full_actual_error)) {
+	@unixfile = ("$unix2dos", "$full_actual_error");
+        system(@unixfile);
+	if (! &error_files_equivalent
+	    ($full_expect_error, $full_actual_error)) {
+	    $num_incorrect_errors++;
+	    &write_report_line($queryfile, $actual_error);
+	}
+    } else {
+	# At least one file doesn't exist.
+	# They must both either not exist or be empty.
+	# If either file exists and is nonempty, print an error.
+	if (((-e $full_expect_error) && (! (-z $full_expect_error))) ||
+	    ((-e $full_actual_error) && (! (-z $full_actual_error)))) {
+	    $num_incorrect_errors++;
+	    &write_report_line($queryfile, $actual_error);
+	}
+    }
+}
+
+sub write_report_line {
+    # ** Need to modify this to do formatting
+    # $result is either the file which differs, or the word BUG,
+    # for known bugs. $description is the bug description, or "".
+    my($queryfile, $result, $description) = @_;
+    print RESULTS_FILE "$queryfile   $result   $description\n";
+}
+
+sub files_equivalent {
+    # Return 1 if the 2 files are equivalent; otherwise 0.
+    my($file1, $file2) = @_;
+    unless (open (FILE1, "$file1")) {
+	die ("Can't open $file1");
+    }
+    unless (open (FILE2, "$file2")) {
+	die ("Can't open $file2");
+    }
+    while ($file1_line = <FILE1>) {
+	if (!($file2_line = <FILE2>)) {
+	    # file2 reached EOF
+	    return 0;
+	}
+	if ($file1_line ne $file2_line) {
+	    return 0;
+	}
+    }
+    if ($file2_line = <FILE2>) {
+	# file1 reached EOF, but file2 didn't
+	return 0;
+    } else {
+	return 1;
+    }
+}
+
+sub error_files_equivalent {
+    # Return 1 if the 2 files are equivalent; otherwise 0.
+    # The expected error file currently just contains
+    # Lexing_Error or Parsing_Error, while the actual error file
+    # may contain something like
+    # "Lexing_Error: Illegal character in opening tag.
+    #  characters 1-2"
+    # Just check the first line of each file.
+    my($expected_error_file, $actual_error_file) = @_;
+    unless (open (EXPECTED_ERROR_FILE, "$expected_error_file")) {
+	die ("Can't open $expected_error_file");
+    }
+    unless (open (ACTUAL_ERROR_FILE, "$actual_error_file")) {
+	die ("Can't open $actual_error_file");
+    }
+    # Get the first line of each file.
+    $expected_error_file_line = <EXPECTED_ERROR_FILE>;
+    $actual_error_file_line = <ACTUAL_ERROR_FILE>;
+#    $expected_error_file_line =~ /^(.*)$/;
+    $expected_error_file_line =~ /^(.*?):.*$/;
+    $expected_error_symbol = $1;
+    $actual_error_file_line =~ /^(.*?):.*$/;
+    $actual_error_symbol = $1;
+
+    if ($expected_error_symbol eq $actual_error_symbol) {
+	return 1;
+    } else {
+	return 0;
+    }
+#    while ($expected_error_file_line = <EXPECTED_ERROR_FILE>) {
+#	if (!($actual_error_file_line = <ACTUAL_ERROR_FILE>)) {
+#	    # actual_error_file reached EOF
+#	    return 0;
+#	}
+#	if ($expected_error_file_line ne $actual_error_file_line) {
+#	    return 0;
+#	}
+#    }
+#    if ($actual_error_file_line = <ACTUAL_ERROR_FILE>) {
+#	# expected_error_file reached EOF, but actual_error_file didn't
+#	return 0;
+#    } else {
+#	return 1;
+#    }
+}
+
+
+
+
+
+
+
+
+

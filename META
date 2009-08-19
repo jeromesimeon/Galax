@@ -1,0 +1,4 @@
+version = "1.0"
+requires = "str,num,pcre,netstring,equeue,netclient,netsys,pxp-engine,camomile,pxp-lex-utf8"
+archive(byte) = "galax.cma"
+archive(native) = "galax.cmxa"

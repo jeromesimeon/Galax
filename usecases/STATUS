@@ -1,0 +1,298 @@
+                             ***************************************
+                             * Galax Version 0.4.0 Use Case STATUS *
+                             ***************************************
+
+6 Jun 2004 - Doug
+
+1. Use case "XMP" - Experiences and Exemplars
+=============================================
+No bugs
+
+2. Use case "Tree" - Queries that preserve hierarchy
+====================================================
+Q1, Q2 give right output, however it isn't formatted in the same way
+as the usecases document specifies. They would fail if it weren't for
+changing around the whitespace in the expected results.
+
+Q3 fails because of a missing comma in the output, however I feel that
+it should appear in the expected results and it doesn't.
+  [ Serialization issue: how should an XML fragment be serialized? ]
+
+Q6 fails because of a type error in the function local:section-summary
+which is defined in the context file.
+
+Rest of the tests pass.
+
+3. Use case "SEQ" - Queries Based on Sequence
+=============================================
+Q2 fails because the actual output is bracketed by <xq:result> and
+</xq:result> whereas these tags are nowhere in sight in the expected
+output. Also, no newline would be a problem.
+  [ Serialization issue: how should an atomic value that is not
+    contained in an XML element serialized? ]
+
+Q3 and Q4 both have the same problem, however I didn't change the
+expected results because I'm waiting to find out what we want to do
+about this.
+
+The rest of the tests pass.
+
+4. Use case "REL" - Queries on Relational Data
+==============================================
+Q5, Q14 has different format than expected output however the data is
+correct
+  [ Serialization & whitespace issue: Is all whitespace in input
+    preserved?  Does it depend on validation? If preserved, is it serialized? ]
+
+Q6, Q13 The prices which are expected end in .0 whereas the actual output
+does not have any decimal. Example: It should output 1004.0 but we
+output 1004. I didn't change this in the expect file, but should I?
+  [ Q06: we think this is a bug in the use case, which assumes that
+    the Bid input is a decimal, but it looks like an integer ]
+
+Implemented Q1, Q8, and Q9 which involved date functions. Q1 will only
+produce the correct output if the system date is set as 1999-01-31. Q9
+produces the right data in the wrong format.
+
+All other tests pass
+
+5. Use case "SGML" - Standardized General Markup Language
+=========================================================
+Check Q8a, Q8b, and Q10. I'm not sure what the output is supposed to be
+
+6. Use case "STRING" - Queries on strings
+=========================================
+Q1, Q2 are bracketed by <xq:result> and not formatted correctly. I didn't
+change this.
+
+  [ Serialization issue: how should an atomic value that is not
+    contained in an XML element serialized? ]
+
+7. Use case "NS" - Queries Using Namespaces
+===========================================
+Updated to include the Q7 and Q8, and updated Q1
+
+Q2 - Q8 all fail due to various differences in the way Galax handles
+namespaces, and the way in which the specification handles
+namespaces. None cause the output to differ greatly from the expected
+output, hwoever there are differences. 
+
+8. Use case "Parts" - Queries Using Recursion
+=============================================
+The only test passed
+
+SUMMARY - 2004-06-08
+====================
+Overall the tests passed for the most part. The problems are small and
+can probably be corrected very easily. The most common problem is that
+on certain queries the output is wrapped between <xq:result> tags for
+no apparent reason. Also, on these queries, the output is not
+structured and has no format.
+
+Other small problems have to do with the newlines and whitespace here
+and there, and it is possible that there are actually typos in the
+usecase document.
+
+
+
+5 Nov 2003 - Mary
+
+  - The usecases are aligned with the November 2003 Usecase Last Call
+    Working Draft.
+
+Status of XQuery 1.0 Use Case Examples
+======================================
+
+The following use cases are not yet implemented:  STRONG
+
+Sections below identify functionality required by given use case that
+is not supported yet.
+
+To run use cases, execute in ${GALAXHOME}/usecases,
+
+  make 
+
+to run all the use cases.  Their output is written to into {use-case-name}_usecase.xml.
+
+1. Use Case "NS" - Queries Using Namespaces
+===========================================
+
+  NS.Q1: Namespace definitions are not emitted correctly in result
+  document. 
+  
+  NS.Q1:  
+
+     What is the namespace-uri of a namespace attribute? e.g., 
+     <record xmlns="http://www.example.org/music/records">
+
+     Technically, it should not be included as an attribute.
+
+  NS.Q7: Parsing bug evaluating "*:ID"
+  
+    (: Q7: Join on namespace URI :)
+    (: Q7: Select the homepage of all auctions where both seller and
+           high bidder are registered at the same auctioneer. :)
+
+    <Q7>
+      {
+        for $a in $auction//ma:Auction
+        let $seller_id := $a/ma:Trading_Partners/ma:Seller/*:ID,
+            $buyer_id := $a/ma:Trading_Partners/ma:High_Bidder/*:ID
+        where namespace-uri($seller_id) = namespace-uri($buyer_id)
+        return
+              $a/ma:AuctionHomepage
+       }
+    </Q7>
+  
+  NS.Q8: Parsing bug evaluating "*:ID"
+  
+    (: Q8: Select on element value :)
+    (: Q8: Select all traders (either seller or high bidder) without
+    negative comments :)
+    <Q8>
+       {
+         for $s in $auction//ma:Trading_Partners/(ma:Seller | ma:High_Bidder)
+         where $s/*:NegativeComments = 0 
+         return $s
+       }
+    </Q8>
+
+2. Use Case "REL" - Access to Relational Data
+==============================================
+
+  Type of Q07.xq is incorrect: bug in typing of FLWR that includes
+  both  "where" and "order by"  clauses.
+  
+  REL.Q5: unordered not supported.
+
+  REL.Q1,Q8,Q9: current-date() function not implemented
+
+(: Q1: Query the docuement :)
+(: Q1: List the item number and description of all bicycles that
+currently have an auction in progress, ordered by item number.  :)
+(: Q1: current date is undefined :)
+<result>
+   {
+     for $i in $items//item_tuple
+     where $i/start_date <= current-date()
+       and $i/end_date >= current-date()
+       and contains($i/description, "Bicycle")
+     return
+         <item_tuple>
+             { $i/itemno }
+             { $i/description }
+         </item_tuple>
+     sort by (itemno)
+   }
+</result>
+
+(:Q8: count query :)
+(:Q8: How many items were actioned (auction ended) in March 1999? :)
+
+let $item := $items//item_tuple
+   [end_date >= xsd:date("1999-03-01") and end_date <= xsd:date("1999-03-31")]
+return
+     <item_count>
+       {
+         count($item)
+       }
+     </item_count>
+
+
+(: Q9: Listing and ordering :)
+(: Q9: List the number of items auctioned each month in 1999 for
+which data is available, ordered by month.:)
+
+<result>
+   {
+     let $end_dates := $items//item_tuple/end_date
+     for $m in distinct-values(for $e in $end_dates
+                               return get-month-from-date($e))
+     let $item := $items
+         //item_tuple[get-year-from-date(end_date) = 1999
+                      and get-month-from-date(end_date) = $m]
+     return
+         <monthly_result>
+             <month>{ $m }</month>
+             <item_count>{ count($item) }</item_count>
+         </monthly_result>
+     sort by (month)
+   }
+</result>
+
+
+4. Formal Semantics Use Case (SEMANTICS)
+========================================
+
+  No known bugs.
+
+5. Use Case "SEQ" - Queries based on Sequence
+=============================================
+
+  No known bugs.
+
+6. Use Case "STRING": String search
+===================================================
+
+  No known bugs.
+
+7. XML Schema Use Case (XMLSCHEMA)
+==================================
+
+  XMLSCHEMA.Q4 has an intentional static type error, which is reported
+  to stderr. 
+
+8. Use Case "XMP": Experiences and Exemplars
+============================================
+
+  Q12.xq : fn:deep-equal is undefined
+
+  Type of Q07.xq is incorrect: bug in typing of FLWR that includes
+  both  "where" and "order by"  clauses.
+  
+9. Use Case "PARTS" - Recursive Parts Explosion
+===============================================
+
+  No known bugs.
+
+10. Use Case "TREE"
+===============================================
+
+  No known bugs.
+
+
+11. Use Case "STRONG"
+=====================
+
+  Not yet implemented. 
+
+11. XMark Use Case (XMARK)
+==========================
+
+
+(: Q19. Give an alphabetically ordered list of all
+         items along with their location. :)
+
+(: Q14. Return the names of all items whose description contains the 
+         word `gold'. :)
+
+(: Problem in function call. UnknownSimpleType not casted to string.
+    This is an open issue in XQuery. No casting is done right now, the
+    reason being what kind of cast should you do in the case of union
+    types? e.g., numeric
+    - Jerome
+
+for $i in $auction/site//:item
+where contains($i/description,"gold")
+return $i/name/text();
+:)
+
+(: BUG: what happens in the sort criteria here? - Jerome
+
+for    $b in $auction/site/regions//:item
+let    $k := $b/name/text()
+return <item name="{ $k }"> { $b/location/text() } </item>
+sortby (.)
+
+:)
+

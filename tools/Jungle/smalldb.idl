@@ -1,0 +1,209 @@
+
+quote(C, "typedef DB_ENV * dbenvpointer;")
+quote(C, "typedef DB * dbpointer;")
+quote(C, "typedef DB * recpointer;")
+quote(C, "typedef DBC * cursor_pointer;") 
+quote(C, "typedef DBC * reccursor_pointer;") 
+
+enum DBTYPE { DB_BTREE, DB_HASH, DB_RECNO, DB_QUEUE, DB_UNKNOWN };
+
+enum galaxDBflags {
+    G_DB_AFTER,     
+    G_DB_APPEND,     
+    G_DB_BEFORE,      
+    G_DB_CACHED_COUNTS,
+    //    G_DB_COMMIT, 
+    G_DB_CONSUME,       
+    G_DB_CONSUME_WAIT,   
+    G_DB_CURRENT,   
+    G_DB_FAST_STAT,  
+    G_DB_FIRST,       
+    G_DB_GET_BOTH,     
+    G_DB_GET_BOTHC,     
+    G_DB_GET_BOTH_RANGE, 
+    G_DB_GET_RECNO,    
+    G_DB_JOIN_ITEM,     
+    G_DB_KEYFIRST, 
+    G_DB_KEYLAST,
+    G_DB_LAST,
+    G_DB_NEXT,    
+    G_DB_NEXT_DUP, 
+    G_DB_NEXT_NODUP,  
+    G_DB_NODUPDATA,  
+    G_DB_NOOVERWRITE, 
+    G_DB_NOSYNC,   
+    G_DB_POSITION,  
+    //G_DB_POSITIONI,  
+    G_DB_PREV,        
+    G_DB_PREV_NODUP,   
+    G_DB_RECORDCOUNT,   
+    G_DB_SET,            
+    G_DB_SET_LOCK_TIMEOUT,
+    G_DB_SET_RANGE,
+    G_DB_SET_RECNO,    
+    G_DB_SET_TXN_NOW,   
+    G_DB_SET_TXN_TIMEOUT,
+    G_DB_UPDATE_SECONDARY,
+    G_DB_WRITECURSOR,
+    G_DB_WRITELOCK, 
+    G_DB_MULTIPLE,   
+    G_DB_MULTIPLE_KEY,
+    G_DB_RMW,          
+    G_DB_AUTO_COMMIT,   
+    G_DB_DIRTY_READ,     
+    G_DB_CREATE,     
+    G_DB_FORCE,       
+    G_DB_NOMMAP,       
+    G_DB_RDONLY,        
+    G_DB_RECOVER,        
+    G_DB_THREAD,         
+    G_DB_TRUNCATE,       
+    G_DB_TXN_NOSYNC,     
+    G_DB_USE_ENVIRON,    
+    G_DB_USE_ENVIRON_ROOT,
+    G_DB_EXCL,
+    //G_DB_CHKSUM_SHA1,    
+    G_DB_DUP,     
+    G_DB_DUPSORT,  
+    G_DB_ENCRYPT,   
+    G_DB_RECNUM,     
+    G_DB_RENUMBER,    
+    G_DB_REVSPLITOFF,  
+    G_DB_SNAPSHOT,
+    G_DB_INIT_LOCK,     
+    G_DB_INIT_TXN,       
+    G_DB_INIT_LOG        
+};
+
+typedef [set] enum galaxDBflags flag_set;
+// ************************************************
+// This allows us to plugin a custom copy routine 
+// ************************************************
+//[mltype ("char array"), c2ml( copy_outgoing ), ml2c( copy_incoming ) ] struct outgoing_array { int length; [size_is(length),length_is(length)] char* contents; };
+[mltype ("char array")] struct outgoing_array { int length; [size_is(length), length_is(length)] char* contents; };
+
+quote(C, "typedef struct outgoing_array marshalled_array;");
+typedef [mltype ("char array") , c2ml( copy_outgoing_hack )   ] struct outgoing_array marshalled_array;
+
+typedef [abstract, ptr] void * dbenvpointer;
+typedef [abstract, ptr] void * dbpointer;
+typedef [abstract, ptr] void * recpointer;
+typedef [abstract, ptr] void * cursor_pointer;
+typedef [abstract, ptr] void * reccursor_pointer;
+
+int GalaxDB_Env_open([in] dbenvpointer * dbenvp, [in, string] char * db_home, 
+		     [in] flag_set flg, [in] int mode);
+int GalaxDB_Env_close([in] dbenvpointer dbenvp);
+
+int GalaxDBopen ([out] dbpointer * pdbp, [in, string] char * filename, [in] enum DBTYPE type, 
+		 [in] flag_set open_flags, [in] flag_set set_flags, 
+		 [in] int dbbuffsize);
+
+int GalaxDBclose([in] dbpointer dbp);
+int GalaxDBsync([in] dbpointer dbp);
+/* Associate a Btree/Hash Secondary Index with Btree/Hash Primary Database */
+int GalaxDBassociate([in] dbpointer pdbp, [in] dbpointer sdbp, [in, string] char * keyExtractFunc, 
+		     [in] flag_set flags);
+
+/* Associate a Record Secondary Index with Btree/Hash Primary Database */
+int GalaxDBassociate_rec([in] dbpointer pdbp, [in] recpointer sdbp, 
+			 [in, string] char * keyExtractFunc, [in] flag_set flags);
+
+/* Associate a Btree/Hash Secondary Index with Record Primary Database */
+int GalaxDBassociate_with_rec([in] recpointer pdbp, [in] dbpointer sdbp, 
+			      [in, string] char * keyExtractFunc, 
+			      [in] flag_set flags);
+
+/* Associate a Record Secondary Index with Record Primary Database */
+int GalaxDBassociate_rec_with_rec([in] recpointer pdbp, [in] recpointer sdbp, 
+				  [in, string] char * keyExtractFunc, 
+				  [in] flag_set flags);
+
+int GalaxDBput ([in] dbpointer dbp, [in,ref] marshalled_array *k, [in,ref] marshalled_array *v,  [in] flag_set flags);
+
+
+int GalaxDBget ([in] dbpointer dbp, [in,ref] marshalled_array *k, 
+		[out,unique] marshalled_array *data, [in] flag_set flags);
+
+
+int GalaxDBgetall_first([in] cursor_pointer cursorp, 
+			[in,ref] marshalled_array *key,
+			[out,ref] marshalled_array *data);
+
+//int GalaxDBgetall_next([in] cursor_pointer cursorp, 
+//		       [in,out,ref] marshalled_array* k, 
+//		       [in,out,ref] marshalled_array* v);
+
+int GalaxDBgetall_next([in] cursor_pointer cursorp, 
+		       [out,ref] marshalled_array* k, 
+		       [out,ref] marshalled_array* v);
+
+int GalaxDBdel    ([in] dbpointer dbp, [in,ref] marshalled_array *k);
+int GalaxDBdelete_all([in] dbpointer dbp, [in,ref] marshalled_array *key);
+int GalaxDBdelete ([in] dbpointer dbp,  
+		   [in,ref] marshalled_array *k, [in,ref] marshalled_array *v);
+
+int GalaxDBopen_rec([out] recpointer * precp, [in, string] char * filename, 
+		    [in] flag_set open_flags, [in] flag_set set_flags, 
+		    [in] int dbbuffsize, 
+		    [in] boolean bfixed, [in] int fixed_size);
+
+
+int GalaxDBclose_rec([in] recpointer recp);
+int GalaxDBclose_no_sync_rec([in] recpointer recp);
+int GalaxDBsync_rec([in] recpointer recp);
+
+int GalaxDBput_rec([in] recpointer recp, [in] unsigned int recno, [in, size_is(datalen)] char * data, 
+		   [in] int datalen, [in] flag_set flags);
+
+int GalaxDBget_rec([in] recpointer recp, [in] unsigned int recno, 
+		   [out,unique] marshalled_array* data, [in] flag_set flg);
+
+int GalaxDBdel_rec([in] recpointer recp, [in] unsigned int recno);
+
+int GalaxDBCursor([in] dbpointer dbp, [out] cursor_pointer * cursorp,  
+		  [in] flag_set flags);
+
+int GalaxDBCurClose([in] cursor_pointer cursor);
+
+int GalaxDBCurput([in] cursor_pointer cursor, [in, size_is(keylen)] char * inkey, [in] int keylen, 
+		  [in, size_is(datalen)] char * indata, [in] int datalen, [in] flag_set flags);
+
+int GalaxDBCurget([in] cursor_pointer cursor, 
+		  [out] marshalled_array* k,
+		  [out] marshalled_array* v,
+		  [in] flag_set flags);
+
+// _set refers to only the key being used in the find (the flag determines, if this is a _range or not)
+int GalaxDBCurget_set([in] cursor_pointer cursor, 
+		      [in,out] marshalled_array* k,
+		      [out] marshalled_array* v,
+		      [in] flag_set flags);
+
+// _both refers to only the key * value being used in the find (the flag determines, if this is a _range or not)
+int GalaxDBCurget_both([in] cursor_pointer cursor, 
+		       [in,out] marshalled_array* k,
+		       [in,out] marshalled_array* v,
+		       [in] flag_set flags);
+
+int GalaxDBCurdel([in] cursor_pointer cursor);
+
+int GalaxDBCursor_rec([in] recpointer dbp, [out] reccursor_pointer * cursorp, [in] flag_set flags);
+
+int GalaxDBCurClose_rec([in] reccursor_pointer cursor);
+
+int GalaxDBCurput_rec([in] reccursor_pointer cursor, [in, size_is(datalen)] char indata[], 
+		      [in] int datalen, [in] flag_set flags);
+
+int GalaxDBCurget_rec([in] reccursor_pointer cursor, 
+		      [out] marshalled_array* data,
+		      [in] flag_set flags);
+
+int GalaxDBCurget_set_rec([in] reccursor_pointer cursor, 
+			  [in] unsigned int recno,
+			  [out,unique] marshalled_array* v,
+			  [in] flag_set flags);
+
+int GalaxDBCurdel_rec([in] reccursor_pointer cursor);
+// compatibility functions
+int get_const_DB_NOTFOUND();
