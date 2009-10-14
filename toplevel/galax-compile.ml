@@ -21,6 +21,8 @@ open Print_top
 open Error
 open Dm
 
+open Galax_server
+
 open Processing_context
 open Monitoring_context
 
