@@ -1249,6 +1249,16 @@ clean::
 	cd tools/escaping ; $(MAKE) clean
 	cd tools/ucs2_to_utf8 ; $(MAKE) clean
 
+## Website
+#
+
+install::
+
+uninstall::
+
+clean::
+	cd website ; $(MAKE) clean
+
 #########################################################################
 # Section:	Makefile post-includes
 # Description:

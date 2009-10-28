@@ -250,6 +250,7 @@ uninstall:
 	$(RM) $(CONF_GALAX_REGRESS)/Makefile
 
 clean: 
+	$(RM) testconfig.xml
 	$(RM) testresults-W3C.xml
 	$(RM) testresults-Galax.xml
 	$(RM) buildbot.diffs

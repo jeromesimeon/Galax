@@ -2,6 +2,12 @@
 | Changelog |
  -----------
 
+October 28, 2009 - Jerome
+
+  o Config:
+      - Minor cleanups of Makefiles. Notably missing clean targets in
+        website and regression.
+
 October 15, 2009 - Jerome
 
   o Minor fixes to top-level

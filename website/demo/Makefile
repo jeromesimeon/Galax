@@ -35,22 +35,23 @@ OBJS=demo_conf.cmo querycgi.cmo
 VIEWOBJS=demo_conf.cmo
 USECASEOBJS=demo_conf.cmo usecase.cmo
 OPTUSECASEOBJS=$(USECASEOBJS:.cmo=.cmx)
+WGALAX_ALL_INCLUDES=$(GALAX_ALL_INCLUDES) -I $(CONF_OCAML_PKGLIB)/netcgi1
                   
 all: $(USECASETARGET) $(CGITARGET) 
 
 opt: $(OPTUSECASETARGET) $(OPTCGITARGET) 
 
 $(USECASETARGET): $(USECASEOBJS)
-	$(OCAMLC) -custom -linkall -o $@ $(OCAMLC_FLAGS) $(GALAX_ALL_INCLUDES) $(GALAX_ALL_LIBS) $(USECASEOBJS)
+	$(OCAMLC) -custom -linkall -o $@ $(OCAMLC_FLAGS) $(WGALAX_ALL_INCLUDES) $(GALAX_ALL_LIBS) $(USECASEOBJS)
 
 $(OPTUSECASETARGET): $(USECASEOBJS:.cmo=.cmx)
-	$(OCAMLOPT) -linkall -o $@ $(OCAMLOPT_FLAGS) $(GALAX_ALL_INCLUDES) $(GALAX_ALL_OPTLIBS)  $(USECASEOBJS:.cmo=.cmx)
+	$(OCAMLOPT) -linkall -o $@ $(OCAMLOPT_FLAGS) $(WGALAX_ALL_INCLUDES) $(GALAX_ALL_OPTLIBS) $(USECASEOBJS:.cmo=.cmx)
 
 $(CGITARGET): $(OBJS)
-	$(OCAMLC) -custom -linkall -o $@ $(OCAMLC_FLAGS) $(GALAX_ALL_INCLUDES) -I $(CONF_OCAML_PKGLIB)/cgi $(GALAX_ALL_LIBS) $(CONF_OCAML_PKGLIB)/netcgi1/cgi.cma $(OBJS)
+	$(OCAMLC) -custom -linkall -o $@ $(OCAMLC_FLAGS) $(WGALAX_ALL_INCLUDES) -I $(CONF_OCAML_PKGLIB)/cgi $(GALAX_ALL_LIBS) $(CONF_OCAML_PKGLIB)/netcgi1/cgi.cma $(OBJS)
 
 $(OPTCGITARGET): $(OBJS:.cmo=.cmx)
-	$(OCAMLOPT) -linkall -o $@ $(OCAMLOPT_FLAGS) $(GALAX_ALL_INCLUDES) -I $(CONF_OCAML_PKGLIB)/cgi  $(GALAX_ALL_OPTLIBS) $(CONF_OCAML_PKGLIB)/netcgi1/cgi.cmxa $(OBJS:.cmo=.cmx)
+	$(OCAMLOPT) -linkall -o $@ $(OCAMLOPT_FLAGS) $(WGALAX_ALL_INCLUDES) -I $(CONF_OCAML_PKGLIB)/cgi  $(GALAX_ALL_OPTLIBS) $(CONF_OCAML_PKGLIB)/netcgi1/cgi.cmxa $(OBJS:.cmo=.cmx)
 installdocs:
 	if test -d $(DEMOSITE); then : ; else $(MKDIR) $(DEMOSITE); fi
 	if test -d $(DEMOSITE)/docs; then rm -f $(DEMOSITE)/docs/*: ; else $(MKDIR) $(DEMOSITE)/docs; fi
@@ -86,11 +87,19 @@ clean:
 tags: 
 	etags *.ml *.mli *.mll *.mly
 
+include .depend
+
+.SUFFIXES:	.ml .mli .mll .cmo .cmi .cmx .java .class
+
+.mll.ml:
+	$(OCAMLLEX) $<
+
 .ml.cmo:
-	$(OCAMLC) $(OCAMLC_FLAGS) $(GALAX_ALL_INCLUDES) -I $(CONF_OCAML_PKGLIB)/netcgi1 -c $<
+	$(OCAMLC) $(OCAMLC_FLAGS) $(WGALAX_ALL_INCLUDES) -c $<
+
+.mli.cmi:
+	$(OCAMLC) $(OCAMLC_FLAGS) $(WGALAX_ALL_INCLUDES) -c $<
 
 .ml.cmx:
-	$(OCAMLOPT) $(OCAMLOPT_FLAGS) $(GALAX_ALL_INCLUDES) -I $(CONF_OCAML_PKGLIB)/netcgi1 -c $<
-
-include .depend
+	$(OCAMLOPT) $(OCAMLOPT_FLAGS) $(WGALAX_ALL_INCLUDES) -c $<
 
