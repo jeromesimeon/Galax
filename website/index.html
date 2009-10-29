@@ -22,277 +22,92 @@
 	    </center>
 
 	    <center>
-              <i><strong>``The XQuery implementation for
-   	      discriminating hackers''</strong></i><br/><br/><br/>
+              <i><strong>XML processing in
+              O'Caml</strong></i><br/><br/><br/>
             </center>
 
 	    <center>
             <table width="80%">
               <tbody>
-
                 <tr>
-                  <td><b>Welcome to the Galax Website!</b> Galax is an
-		  open-source implementation of <a
-		  href="http://www.w3c.org/TR/xquery">XQuery 1.0</a>,
-		  the W3C XML Query Language. Galax closely tracks the
-		  definition of XQuery 1.0 as specified by the W3C and
-		  also implements XPath 2.0, which is a subset of
-		  XQuery 1.0. </td> </tr>
-
-                <tr>
-                  <td>We are working hard to make Galax <b>fully
-                  conformant</b> with the XQuery specifications, but
-                  also to make it an implementation which <b>runs
-                  fast</b> and is <b>fun to use!</b></td> </tr>
-
-                <tr>
-                  <td>Galax's primary goal was to serve as a reference
-		  implementation for the XQuery 1.0 language, but it
-		  has evolved quite a lot since the very first
-		  prototype written by J&eacute;r&ocirc;me at the beginning of
-		  2001. We are now working on advanced XQuery features
-		  (notably support for <b>XML Schema validation</b>),
-		  support for <b>XML updates</b>, applications of
-		  XQuery to <b>Web services</b>, and <b>XQuery
-		  optimization</b>.</td>
-		</tr>
-
-                <tr>
-                  <td>This site contains information about Galax, some
-                  documentation, downloads for Galax source code and binaries.</td>
+                  <td><b>What is Galax?</b> Galax is an open-source
+		  implementation
+		  of <a href="http://www.w3.org/XML/Query" class="title">XQuery</a>,
+		  the W3C XML Query Language. It includes several
+		  advanced extensions
+		  for XML updates, scripting, and distributed
+		  programming.<br/><br/>Most of Galax's architecture is formally documented, making it ideal for users interested in teaching XQuery, in building new language extensions, or developing new optimizations.<br/><br/>Galax is implemented in <a
+                href="http://caml.inria.fr" class="title">O'Caml</a>, a fast,
+                modern, type-inferring, functional programming
+                language descended from the ML (Meta Language) family.</td>
                 </tr>
+                <tr><td>&nbsp;</td></tr>
+                <tr>
+                  <td><b>Key Features.</b>
+                    <ul>
+                       <li><a href="http://www.w3c.org/TR/xquery" class="title">XQuery 1.0</a> and <a href="http://www.w3c.org/TR/xpath20" class="title">XPath 2.0</a> support with 99.4% <a href="http://www.w3.org/XML/Query/test-suite/XQTSReportSimple.html" class="title">conformance</a>.</li>
+                       <li>XQuery type checking, modules, and
+                       XML schema import.</li>
+                       <li><a href="http://www.w3.org/TR/xquery-update-10/" class="title">XQuery Updates</a>, <a href="http://www.w3.org/TR/xquery-sx-10/" class="title">XQuery Scripting</a>.</li>
+                       <li>Web Services, and Distributed XQuery.</li>
+                    </ul>
+                  </td></tr>
+                <tr>
+                  <td><b>Galax v1.0.1.</b>
+                    <ul>
+                       <li><strong>Source code:</strong> <a href="http://sourceforge.net/projects/galax/files/galax-1.0.1-src.tar.gz/download" class="title">galax-1.0.1-src.tar.gz</a></li>
+                       <li><strong>Linux binary:</strong> <a href="http://sourceforge.net/projects/galax/files/galax-1.0.1-linux.tgz/download" class="title">galax-1.0.1-linux.tgz</a></li>
+                    </ul>
+                  </td></tr>
+                <tr>
+                  <td><b>News</b>
+                    <ul>
+                       <li><strong>October 1, 2009:</strong> We have moved to <a href="http://galax.sourceforge.net/" class="title">sourceforge<a/>.</li>
+                    </ul>
+                  </td></tr>
               </tbody>
             </table>
             </center>
-
-<!--
-            <p>Galax also comes with full support for XML Schema,
-            and is one of the first system to implement XQuery's
-            static type system.</p>
-
-                <p>Galax is a lightweight, very portable
-                implementation, with a liberal open source license
-                which makes it ideal for:</p>
-
-                <ul>
-                  <li>XQuery users who want to learn the language and
-                  be able to try queries on a running system;</li>
-
-                  <li>Students and researcher who want to experiments
-                  with an actual XQuery implementation;</li>
-
-                  <li>XML application developers who need a
-                  lightweight, easily embeddable, XQuery engine for
-                  their application;</li>
-
-                  <li>Implementors of XQuery systems who want to get
-                  access to the internals of an XQuery engine.</li>
-
-                  <li>Anybody who needs an implementation of XQuery
-                  which provides static typing guarantees.</p> </ul>
-
-                <p>Galax is implemented in <a
-                href="http://caml.inria.fr">O'Caml</a>, a fast,
-                modern, type-inferring, functional programming
-                language descended from the ML (Meta Language) family.
-                In this version, Galax is available in source code
-                form. Next version will also come in binary form for a
-                number of architectures. Galax can also be wrapped in
-                a C library directly embedable within your C
-                application. The Galax engine comes with a
-                command-line interface, a Web interface and a simple
-                Java API.</p>
--->
-
-	    <p>&nbsp;&nbsp;<b>Latest News <img src="images/hot.gif"
-            alt="[HOT!]"/></b> </p>
-
-	    <ul>
-
-	      <!-- Breaking news here - Try to keep to *eight* entries -->
-
-                <li><strong>October 1, 2009.</strong>
-
-      	        <p><b>Galax Web Site.</b> We just moved to sourceforge.</p>
-
-	      <!-- End of Breaking news -->
-
-	    </ul>
-
-	    <p>&nbsp;&nbsp;<b>Past News</b></p>
-
-	    <ul>
-
-<!--
-                <li><strong>May 17, 2006.</strong>
-
-      	        <p><b>Galax 0.6.5 is out!</b> This release is based on
-                the <b>November 2005 Candidate Recommendation</b> drafts.</p>
-                <p>Galax 0.6.5 is a <a href="http://godi.ocaml-programming.de">GODI</a> package. See <a
-                href="doc/install.html">installation instructions</a>
-                for automated configuration and installation
-                options.</p></li>
-
-                <li><strong>December 13, 2005.</strong>
-                <b><a
-                href="http://xquerybang.cs.washington.edu/">XQuery!</a>
-                is available!</b> XQuery! (pronounced "XQuery Bang")
-                is a fully compositional update language that extends
-                XQuery 1.0, the W3C XML Query Language. </li>
-
-	        <li><strong>February 15, 2005.</strong>
-
-      	        <b><a href="distrib.html">Galax release 0.5.0</a> is
-                out!</b> This release delivers better run-time
-                performances and is based on the October 2004 XQuery
-                working drafts.</li>
-
-                <li><strong>February 15, 2005.</strong>The <a
-                href="demo/galax_demo.html">demo</a> is now running
-                Galax 0.5.0.</li>
-
-	        <li><strong>September 24, 2004.</strong>
-
-      	        <a href="galatex/">Demonstration of GalaTex</a>, an
-                implementation of the XQuery 1.0 and XPath 2.0
-                Full-Text Features, is available.  GalaTex uses Galax
-                0.4.0 and is implemented by Sihem Amer-Yahia and
-                Emiran Curtmola.</li>
-
-	        <li><strong>August 15, 2004.</strong>
-
-      	        <a href="distrib.html">Galax pre-release 0.4.0</a> is
-                now available!</b> This pre-release is still based on
-                the July 2004 XQuery working drafts. It includes
-                source code and binaries for Linux.</p>
-
-	        <li><strong>October 31, 2003.</strong>
-
-      	        <a
-                href="http://ncc.research.bell-labs.com:8081/cgi-bin/cvsweb/">Galax
-                CVS server</a> is now on-line. Out of popular demand,
-                you can now download the latest development snapshots
-                of Galax and track down our progress.</li>
-
-	        <li><strong>June 23, 2003.</strong>
-
-      	        <a href="distrib.html">Galax release 0.3.1</a> is now
-                available!</b> This release is still based on the
-                November 2002 XQuery working drafts. It features a new
-                SAX parser, and a complete set of Caml, C, C++ and
-                Java APIs. The <a href="demo/galax_demo.html">demo</a>
-                is now running Galax 0.3.1.</li>
-
-	        <li><strong>June 23, 2003.</strong>
-
-      	        <a href="users.html" class="title">Who are
-      	        YOU?</a></b> We now have a list of <a
-      	        href="users.html">applications or system that use
-      	        Galax.</a> If you are a Galax user and want to be
-      	        listed, please <a
-      	        href="mailto:simeon@us.ibm.com,mff@research.att.com">drop
-      	        us a note</a>.</li>
-
-	        <li><strong>June 23, 2003.</strong>
-
-      	        New Galax Web site. The Web site has also been
-      	        revised, with some new <a
-      	        href="doc.html">documentation</a>, pointers to <a
-      	        href="research.html">research papers</a>, and a new
-      	        page on <a href="optimization/">XQuery
-      	        optimization</a>.</li>
-
--->
-
-	      <!-- Old news
-
-	        <li><strong>March 20, 2003.</strong>
-
-      	        <b><a href="optimization/" class="title">Optimization
-                in Galax.</a></b> Please visit our new page on <a
-                href="optimization/">XML Query optimization</a> for
-                more information about how we are making Galax run
-                faster!</li>
-
-	        <li><strong>January 23, 2003.</strong>
-
-      	        <b>The new <a href="distrib.html">Galax version
-                0.3.0</a> is now available!</b> This release
-                implements the November 2002 working drafts. The <a
-                href="demo/galax_demo.html">demo</a> features Galax
-                0.3.0.</li>
-
-              -->
-
-	    </ul>
 
 	  </td>
 	</tr>
         <tr>
 	  <td valign="top" bgcolor="PowderBlue" class="border">
 
+
+
+
             <p>
-	      <b><a href="about.html" class="title">Galax Overview</a></b>
-	    </br>
+	      <b><a href="about.html" class="title">Overview</a></b></br>
 
-	    <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
-		      &nbsp;<a href="about.html#xquery">About&nbsp;XQuery</a></br>
-		      &nbsp;<a href="about.html#galax">About&nbsp;Galax</a></br>
-		      &nbsp;<a href="about.html#team">The&nbsp;Galax&nbsp;Team</a></br>
-		      &nbsp;<a href="about.html#thanks">Thanks!</a></br></br>
+	          <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
+		      &nbsp;<a href="about.html#xquery" class="title">About&nbsp;XQuery</a></br>
+		      &nbsp;<a href="about.html#galax" class="title">About&nbsp;Galax</a></br>
+		      &nbsp;<a href="about.html#team" class="title">The&nbsp;Galax&nbsp;Team</a></br>
+		      &nbsp;<a href="about.html#thanks" class="title">Acknowledgments</a></br>
 		  </td></tr></tbody></table>
-</p>
-
-	    <p>
-		<b><a href="doc.html" class="title">W3C Documentation</a></b>
             </p>
-
-		<b><a href="http://www.w3.org/XML/Query" class="title">W3C XQuery / XPath</a></b>
-	    <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
-		      &nbsp;<a href="http://www.w3.org/TR/xquery/">XQuery 1.0</a></br>
-		      &nbsp;<a href="http://www.w3.org/TR/xpath20/">XPath 2.0</a></br>
-		      &nbsp;<a href="http://www.w3.org/TR/xpath-datamodel/">Data Model</a></br>
-		      &nbsp;<a href="http://www.w3.org/TR/xpath-functions/">Functions&amp;Operators</a></br>
-		      &nbsp;<a href="http://www.w3.org/TR/xquery-semantics/">Formal&nbsp;Semantics</a></br>
-		      &nbsp;<a href="http://www.w3.org/TR/xmlquery-use-cases">Use&nbsp;Cases</a></br></br>
+	      <b>Quick Links</b></br>
+	          <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
+		      &nbsp;<a href="http://sourceforge.net/projects/galax/" class="title">Sourceforge</a></br>
+		      &nbsp;<a href="http://sourceforge.net/projects/galax/files/" class="title">Downloads</a></br>
+		      &nbsp;<a href="https://sourceforge.net/project/memberlist.php?group_id=274294" class="title">Contribute</a></br>
+                      &nbsp;<a href="http://sourceforge.net/projects/galax/develop" class="title">SVN</a></br>
+                      &nbsp;<a href="http://sourceforge.net/tracker/?group_id=274294" class="title">Bug Tracker</a></br>
+                      &nbsp;<a href="doc.html" class="title">Documentation</a></br>
+                      &nbsp;<a href="http://www.w3.org/XML/Query/test-suite/XQTSReportSimple.html" class="title">Conformance</a></br>
+                      &nbsp;<a href="http://www.w3.org/XML/Query" class="title">W3C XQuery</a></br>
+		      &nbsp;<a href="LICENSE" class="title">License</a></br>
 		  </td></tr></tbody></table>
-
-		<b><a href="http://www.w3.org/XML/Schema" class="title">W3C XML Schema</a></b>
-
-	    <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
-		      &nbsp;<a href="http://www.w3c.org/TR/xmlschema-0/">Part&nbsp;0:&nbsp;Primer</a></br>
-		      &nbsp;<a href="http://www.w3c.org/TR/xmlschema-1/">Part&nbsp;1:&nbsp;Structures</a></br>
-                      &nbsp;<a href="http://www.w3c.org/TR/xmlschema-2/">Part&nbsp;2:&nbsp;Datatypes</a></br><br/>
-		  </td></tr></tbody></table>
-
-	    </p>
-
-	    <p>
-		<b><a href="doc.html#galaxdoc" class="title">Galax&nbsp;Documentation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></b>
-
-	    <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
-		      &nbsp;<a href="doc.html#manual">User's Manual</a></br>
-		      &nbsp;<a href="doc.html#presentations">Presentations</a></br>
-		  </td></tr></tbody></table>
-	    </p>
-
 
 	  </td>
+<!--
 	  <td valign="top" bgcolor="PowderBlue" class="border">
 	
 	    <p>
 
-		<b><a href="distrib.html" class="title">Download Galax</a></b>
-	      </br>
 
-	    <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
-		      &nbsp;<a href="distrib.html#new">Latest Release (0.6.8)</a></br>
-		      &nbsp;<a href="LICENSE">License</a><br></br>
-		  </td></tr></tbody></table>
-	      <b>Galax Live!</b>
-	    </br>
-
-<!--
+            <b>Galax Live!</b></br>
 	    <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
 		      &#183; <a href="demo/galax_demo.html">Galax&nbsp;Demo</a></br>
   	    </td></tr><tr><td>
@@ -300,7 +115,6 @@
   	    </td></tr></tbody></table>
 
             </br>
--->
             <b>XQuery Extensions</b>
 
 	    <table border=0 cellspacing=4 cellpadding=0><tbody>
@@ -336,9 +150,10 @@
 
 	    <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
 		      &nbsp;<a href="users.html">Galax&nbsp;Users</a></br>
-		      &nbsp;<a href="http://bugzilla.galaxquery.net/">Report&nbsp;a&nbsp;bug</a></br>
+		      &nbsp;<a href="http://sourceforge.net/tracker/?group_id=274294">Report&nbsp;a&nbsp;bug</a></br>
 		  </td></tr></tbody></table>
 	    </p>
+-->
 
 	  </td>
 	</tr></tbody></table>
@@ -360,8 +175,7 @@
 		  href="mailto:galax-users@research.att.com">galax-users@research.att.com</A>
 		  (you must be subscribed first).<BR> 
 
-		  Report a bug at: <a
-		  href="http://bugzilla.galaxquery.net/">http://bugzilla.galaxquery.net/</A>.<BR> 
+		 To report a bug: <a href="http://sourceforge.net/tracker/?func=add&group_id=274294&atid=1165629">http://sourceforge.net/tracker/</A>.<BR> 
 
 </address>
 
