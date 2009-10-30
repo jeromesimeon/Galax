@@ -2,11 +2,8 @@
 
 <html>
   <head>
-    <!-- Copied shamelessly from http://www.ocaml.org/
-         Copyright (c) 2001 Julian Assange, ALL RIGHTS RESERVED.
-         Style inspired by the NetBSD Project, see http://www.netbsd.org/ -->
     <link rev="made" href="mailto:galax-users@research.att.com">
-    <title>Galax: XQuery Optimization</title>
+    <title>Galax: Optimization</title>
     <meta name="DESCRIPTION" content="galax, xquery, query language, ocaml">
     <meta name="KEYWORDS" content="galax, xquery, query language, ocaml">
     <link href="../galax.css" type="text/css" rel="stylesheet">
@@ -14,39 +11,43 @@
 
   <body>
 
-    <table border="0" cellspacing="4" cellpadding="0" width="100%" bgcolor="#ffd400">
+    <table border="0" cellspacing="4" cellpadding="0" width="100%">
+      <tbody>
       <tr>
-        <td valign="top" ><a href="../">Galax Home</a></td>
-<!--
         <td colspan="2" valign="top">
-          </br><img src="../images/galax.gif" alt="[Galax]" border="0" hspace="4" vspace="5"></br>
+          </br><a href="../" class="title"><img src="../images/galax.gif" alt="[Galax]" border="0" hspace="4" vspace="5"></a></br>
         </td>
--->
       </tr>
       <tr>
-        <td valign="top" >
+        <td valign="top" bgcolor="#ffd400" class="border">
           <p>
-            <b><a href="index.html" class="title">XQuery&nbsp;Optimization&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></b>
-            </br>
+	      <b>Tech.&nbsp;Center</b>
+	    </br>
 
+	    <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
+ 		&nbsp;<a href="research.html" class="title">Publications</a></br>
+		&nbsp;<a href="optimization/" class="title">Optimization</a></br>
+		&nbsp;<a href="static.html" class="title">Static&nbsp;Typing</a></br>
+	    </td></tr></tbody></table>
+            </p><p>
+            <b><a href="index.html" class="title">Optimization</a></b>
+            </br>
             <table border=0 cellspacing=4 cellpadding=0>
               <tr><td>
-                &nbsp;<a href="#overview" class="border">Overview</a></br>
-                &nbsp;<a href="#rewriting">Pre-processing</a></br>
-                &nbsp;<a href="#algebra">Algebraic&nbsp;Optimization</a></br>
-                &nbsp;<a href="#operations">Specific&nbsp;Operations</a></br>
-                &nbsp;<a href="#physical">Physical&nbsp;Storage</a></br></br>
+                &nbsp;<a href="#overview" class="title">Overview</a></br>
+                &nbsp;<a href="#rewriting" class="title">Pre-processing</a></br>
+                &nbsp;<a href="#algebra" class="title">Algebraic&nbsp;Optimization</a></br>
+                &nbsp;<a href="#operations" class="title">Specialized&nbsp;Optimization</a></br>
+                &nbsp;<a href="#physical" class="title">Physical&nbsp;Layer</a></br>
               </td></tr>
             </table>
-          </p>
-
-          <p>
-            <b><a href="#operations" class="title">Specific&nbsp;Operations</a></b>
+            </p><p>
+            <b><a href="#operations" class="title">Specialized&nbsp;Optimizations</a></b>
             </br>
 
             <table border=0 cellspacing=4 cellpadding=0>
               <tr><td>
-                &nbsp;<a href="#projection">Document&nbsp;Projection</a></br></br>
+                &nbsp;<a href="#projection" class="title">Document&nbsp;Projection</a></br>
               </td></tr>
             </table>
           </p>
@@ -61,7 +62,7 @@
         developing state of the art XML query optimization in
         Galax. We are currently redesigning Galax's architecture to
         support query optimization, and we are working on a number of
-        specific optimization features.</p>
+        specialized XML optimization features.</p>
 
         <p>What you will find here:</p>
 
@@ -133,7 +134,7 @@
     	  query processing require the development of specific
     	  algorithms.</li>
 
-          <li><a href="#storage">Physical representation, storage and
+          <li><a href="#physical">Physical representation, storage and
           indices</a></il>
         </ul>
 
@@ -196,7 +197,7 @@
 
     <hr/>
 
-    <h1><a name="operations"></a>Specific XQuery Operations</h1>
+    <h1><a name="operations"></a>Specialized XML Optimizations</h1>
 
     <center>
       <img src="archi_operations.gif"
@@ -210,7 +211,7 @@
     classes of operations which are expensive or used very often
     during XQuery processing. Note that efficient support for those
     operations typically assumes specific knowledge about the <a
-    hred="#physical">physical representation</a>.</p>
+    href="#physical">physical representation</a>.</p>
 
     <h2><a name="projection"></a>XML Projection</h2>
 
@@ -249,7 +250,7 @@
 
     <hr/>
 
-    <h1><a name="#physical"></a>Physical representation, storage and
+    <h1><a name="physical"></a>Physical representation, storage and
     indices</h1>
 
     <center>
