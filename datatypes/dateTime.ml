@@ -1736,7 +1736,7 @@ let dayTimeDuration_compare dtd1 dtd2 =
 let multiply_dayTimeDuration dtd mult =
   let dtdnorm = normalize_dayTimeDuration dtd in
   let newsecs = (Decimal._float_of_decimal dtdnorm) *. mult in
-  standardize_dayTimeDuration (mkdayTimeDuration (0, 0, 0, Decimal._decimal_of_float newsecs))
+  standardize_dayTimeDuration (mkdayTimeDuration (0, 0, 0, Decimal._small_decimal_of_float newsecs))
 let multiply_dayTimeDuration2 mult dtd =
   multiply_dayTimeDuration dtd mult
 

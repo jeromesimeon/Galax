@@ -86,6 +86,13 @@ let _decimal_of_string s =
 
 let _decimal_of_float f = 
   try
+    _decimal_of_string(Printf.sprintf "%.10F" f)
+  with
+  | _ -> 
+      _decimal_of_string(Printf.sprintf "%f" f)
+
+let _small_decimal_of_float f = 
+  try
     _decimal_of_string(Printf.sprintf "%F" f)
   with
   | _ -> 

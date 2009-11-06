@@ -11,7 +11,7 @@ Test Boolean:
 <glx:result xmlns:glx="http://www.galaxquery.org">false</glx:result>
 
 Test Float:
-<glx:result xmlns:glx="http://www.galaxquery.org">98.5489998</glx:result>
+<glx:result xmlns:glx="http://www.galaxquery.org">98.549</glx:result>
 
 Test Double:
 <glx:result xmlns:glx="http://www.galaxquery.org">98.549</glx:result>
@@ -133,6 +133,13 @@ Test eval_statement 5:
 Test rebinding of variables:
 <glx:result xmlns:glx="http://www.galaxquery.org">30 60</glx:result>
 
-Parsing Error: Parse error in file ../docs/xmlschema_context.xq [File "../docs/xmlschema_context.xq", line 4, characters 7-16:]
+Test import_library_module:
+<glx:result xmlns:glx="http://www.galaxquery.org"><quantity xmlns:HisPo="http://www.hispo.com/">1</quantity><quantity xmlns:HisPo="http://www.hispo.com/">2</quantity></glx:result>
+
+Test typed_value:
+<glx:result xmlns:glx="http://www.galaxquery.org">1</glx:result>
+:atomicValue
+Raise an error intentionally:
+ERROR: Unable to open the external entity: [toplevel] = SYSTEM "file://localhost/home/simeon/Galax/galax/examples/caml_api/no-such-file.xml"; reason: Other exception: Sys_error("/home/simeon/Galax/galax/examples/caml_api/no-such-file.xml: No such file or directory")
 [WARNING] This is an intensional error
 

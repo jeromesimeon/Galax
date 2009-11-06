@@ -329,7 +329,6 @@ report1.xml \
 sgml.xml \
 string.xml \
 users.xml \
-xmark.0.xml \
 xmark.xml \
 xmpbib.xml \
 xmpreviews.xml

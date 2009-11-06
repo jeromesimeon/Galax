@@ -10,7 +10,7 @@
 
 (* $Id: datatypes_util.ml,v 1.44 2007/07/05 08:35:53 simeon Exp $ *)
 
-(* Module Datatypes_util
+(* Module: Datatypes_util
    Description:
      This module contains basic operations on atomic values and atomic
      types, at the Caml level.

@@ -1,7 +1,7 @@
 (: --------------------------------------
        Use Case "XMLS" : XML Schema Primer
      -------------------------------------- :)
-module namespace xmlschema = "test";
+declare namespace xmlschema = "test";
 
 import schema namespace HisPo = "http://www.hispo.com/" at "../docs/hispo.xsd";
 

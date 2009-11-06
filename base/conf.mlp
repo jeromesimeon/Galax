@@ -28,6 +28,8 @@ let copyright = "Copyright "^system^" Contributors 2001-2006"
 
 let status = "%%STATUS%%"
 
+let build = "Galax[" ^ version ^ "].Caml[" ^ Sys.ocaml_version ^ "].OS[" ^ Sys.os_type ^ "]." ^ ()
+
 let motd = "Thank you for using "^system^"!\n"
 
 let xquery_version = "1.0"

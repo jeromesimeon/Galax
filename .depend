@@ -353,6 +353,7 @@
 ./datatypes/dateTime.cmi: ./datatypes/decimal.cmi 
 ./datatypes/decimal.cmi: 
 ./datatypes/regularexp.cmi: 
+./datatypes/datatypes_lexer.cmi: ./datatypes/datatypes.cmi 
 ./dm/cursor_context.cmi: ./base/error.cmi ./dm/base/cursor.cmi 
 ./dm/cursor_descendant.cmi: ./dm/base/dm_types.cmi ./dm/base/cursor.cmi 
 ./dm/dm.cmi: ./ast/xquery_type_core_ast.cmi ./ast/xquery_common_ast.cmi \
@@ -955,16 +956,18 @@ datatypes/anyURI.cmo: ./base/whitespace.cmi ./base/gmisc.cmi \
 datatypes/anyURI.cmx: ./base/whitespace.cmx ./base/gmisc.cmx \
     ./base/galax_io.cmx ./base/error.cmx ./base/conf.cmx datatypes/anyURI.cmi 
 datatypes/datatypes_lexer.cmo: ./base/whitespace.cmi ./base/gmisc.cmi \
-    ./base/error.cmi ./datatypes/decimal.cmi ./datatypes/dateTime.cmi 
+    ./base/error.cmi ./datatypes/decimal.cmi ./datatypes/dateTime.cmi \
+    datatypes/datatypes_lexer.cmi 
 datatypes/datatypes_lexer.cmx: ./base/whitespace.cmx ./base/gmisc.cmx \
-    ./base/error.cmx ./datatypes/decimal.cmx ./datatypes/dateTime.cmx 
+    ./base/error.cmx ./datatypes/decimal.cmx ./datatypes/dateTime.cmx \
+    datatypes/datatypes_lexer.cmi 
 datatypes/datatypes_util.cmo: ./base/whitespace.cmi \
     ./namespace/namespace_symbols_util.cmi \
     ./namespace/namespace_symbols_builtin.cmi \
     ./namespace/namespace_symbols.cmi ./namespace/namespace_resolve.cmi \
     ./namespace/namespace_names.cmi ./namespace/namespace_context.cmi \
     ./base/gmisc.cmi ./base/error.cmi ./datatypes/decimal.cmi \
-    ./datatypes/dateTime.cmi ./datatypes/datatypes_lexer.cmo \
+    ./datatypes/dateTime.cmi ./datatypes/datatypes_lexer.cmi \
     ./datatypes/datatypes.cmi ./base/conf.cmi ./datatypes/anyURI.cmi \
     datatypes/datatypes_util.cmi 
 datatypes/datatypes_util.cmx: ./base/whitespace.cmx \
@@ -1773,7 +1776,7 @@ parsing/parse_xqueryx.cmx: ./ast/xquery_ast_util.cmx ./ast/xquery_ast.cmi \
 parsing/lexers_utf8.cmo: ./lexing/text_lexer_utf8.cmo \
     ./namespace/qname_lexer_utf8.cmo ./namespace/qname_lexer.cmi \
     ./parsing/parse_util.cmi ./lexing/opening_tag_lexer_utf8.cmo \
-    ./lexing/lexing_util.cmi ./datatypes/datatypes_lexer.cmo \
+    ./lexing/lexing_util.cmi ./datatypes/datatypes_lexer.cmi \
     ./lexing/closing_tag_lexer_utf8.cmo parsing/lexers_utf8.cmi 
 parsing/lexers_utf8.cmx: ./lexing/text_lexer_utf8.cmx \
     ./namespace/qname_lexer_utf8.cmx ./namespace/qname_lexer.cmx \
@@ -1783,7 +1786,7 @@ parsing/lexers_utf8.cmx: ./lexing/text_lexer_utf8.cmx \
 parsing/lexers_iso88591.cmo: ./lexing/text_lexer_iso88591.cmo \
     ./namespace/qname_lexer_iso88591.cmo ./namespace/qname_lexer.cmi \
     ./parsing/parse_util.cmi ./lexing/opening_tag_lexer_iso88591.cmo \
-    ./lexing/lexing_util.cmi ./datatypes/datatypes_lexer.cmo \
+    ./lexing/lexing_util.cmi ./datatypes/datatypes_lexer.cmi \
     ./lexing/closing_tag_lexer_iso88591.cmo parsing/lexers_iso88591.cmi 
 parsing/lexers_iso88591.cmx: ./lexing/text_lexer_iso88591.cmx \
     ./namespace/qname_lexer_iso88591.cmx ./namespace/qname_lexer.cmx \
@@ -4624,7 +4627,7 @@ galapi/caml_api/dm_functions.cmo: ./streaming/streaming_constructors.cmi \
     ./datamodel/galax_dm.cmi ./base/error.cmi ./dm/dm_util.cmi \
     ./dm/atomic/dm_atomic_util.cmi ./dm/atomic/dm_atomic.cmi ./dm/dm.cmi \
     ./datatypes/decimal.cmi ./datatypes/datatypes_util.cmi \
-    ./datatypes/datatypes_lexer.cmo ./dm/base/cursor.cmi \
+    ./datatypes/datatypes_lexer.cmi ./dm/base/cursor.cmi \
     ./datatypes/anyURI.cmi galapi/caml_api/dm_functions.cmi 
 galapi/caml_api/dm_functions.cmx: ./streaming/streaming_constructors.cmx \
     ./procctxt/processing_context.cmx ./physicaldm/physical_value_util.cmx \

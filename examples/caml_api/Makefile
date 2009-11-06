@@ -235,7 +235,7 @@ test$(BYTE):	test.cmo
 test$(OPT):	test.cmx
 	$(OCAMLOPT) -linkall $(OCAMLOPT_FLAGS) -o $@ $(GALAX_ALL_INCLUDES) $(GALAX_ALL_OPTLIBS) test.cmx
 
-runexample:	example$(BYTE)
+runexample: example$(BYTE)
 	$(RM) example.out
 	./example$(BYTE) > example.out
 	if [[ -z "`cmp example.out example.expect`" ]]; then echo "examples/caml_api/example$(BYTE) passed"; else $(MAKE) TEST=example$(BYTE) error; fi;

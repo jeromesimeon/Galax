@@ -204,5 +204,25 @@
     </groups>
   </test-unit>
 
+  <test-unit id="Galax" name="Galax Test Suite">
+    <!-- Where is the Galax test-suite installed? -->
+    <testdir>GALAXUNIT</testdir>
+
+    <!-- Where should the results go? -->
+    <resultfile>testresults-Galax.xml</resultfile>
+
+    <!-- Other important locations, relative to the test-unit -->
+    <catalogdir></catalogdir>
+    <catalog>GLXTSCatalog.xml</catalog>
+    <querydir>Queries/XQuery</querydir>
+    <expecteddir>ExpectedTestResults</expecteddir>
+
+    <!-- Which test group should be run? -->
+    <groups>
+      <test-group name="UseCase"/>
+      <test-group name="Optimization"/>
+      <test-group name="Interfaces"/>
+    </groups>
+  </test-unit>
 </config>
 

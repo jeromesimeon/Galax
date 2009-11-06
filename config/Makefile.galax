@@ -1936,6 +1936,7 @@ $(LOCALPREFIX)/datatypes/datatypes_util.cmi \
 $(LOCALPREFIX)/datatypes/dateTime.cmi \
 $(LOCALPREFIX)/datatypes/decimal.cmi \
 $(LOCALPREFIX)/datatypes/regularexp.cmi \
+$(LOCALPREFIX)/datatypes/datatypes_lexer.cmi \
 $(LOCALPREFIX)/dm/cursor_context.cmi \
 $(LOCALPREFIX)/dm/cursor_descendant.cmi \
 $(LOCALPREFIX)/dm/dm.cmi \
@@ -2153,7 +2154,7 @@ ok:
 # Description:
 #		These variables are used to generate base/conf.ml
 #########################################################################
-RELEASE=1.0
+RELEASE=1.0.2
 STATUS=Stable
 
 #########################################################################

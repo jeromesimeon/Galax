@@ -2,6 +2,24 @@
 | Changelog |
  -----------
 
+November 6, 2009 - Jerome
+
+  o Web site:
+      - Added pointers to DXQ articles.
+      - Fixed some of the material in optimization.
+
+  o Test suite:
+      - Fixed issue with test configuration, not running the separate
+        Galax test suite.
+
+  o Caml:
+      - Upgraded to O'Caml 3.11.1. Fixed some minor serialization
+        issues for floating point numbers resulting from changes in
+        the O'Caml standard library.
+
+  o Datatypes:
+      - Added proper interface for the datatype lexer.
+
 October 29, 2009 - Jerome
 
   o Web Site:

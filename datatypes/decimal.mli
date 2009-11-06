@@ -36,12 +36,13 @@ val _decimal_two      	 : _decimal
 val _decimal_ten      	 : _decimal
 val _decimal_onehalf   	 : _decimal
   
-val _decimal_of_float     : float -> _decimal
-val _decimal_of_string 	 : string -> _decimal
-val _string_of_decimal 	 : _decimal -> string
+val _decimal_of_float          : float -> _decimal
+val _small_decimal_of_float    : float -> _decimal
+val _decimal_of_string 	       : string -> _decimal
+val _string_of_decimal 	       : _decimal -> string
 val _decimal_string_of_decimal : _decimal -> string
-val _float_of_decimal 	 : _decimal -> float
-val _string_of_float     : float -> string
+val _float_of_decimal 	       : _decimal -> float
+val _string_of_float           : float -> string
 
 val _decimal_eq        	 : _decimal -> _decimal -> bool
 val _decimal_lt        	 : _decimal -> _decimal -> bool
