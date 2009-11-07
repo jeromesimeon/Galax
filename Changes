@@ -4,6 +4,11 @@
 
 November 6, 2009 - Jerome
 
+  o Toplevel:
+      - Added build information to the version message.
+
+November 6, 2009 - Jerome
+
   o Web site:
       - Updated the description of the compiler, reflecting the most
         recent architecture, along with pointers to corresponding

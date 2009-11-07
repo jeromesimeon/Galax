@@ -32,6 +32,9 @@ val copyright : string
 val status : string
     (* This release's status *)
 
+val build : string
+    (* Build information *)
+
 val motd : string
     (* Any additional notice *)
 

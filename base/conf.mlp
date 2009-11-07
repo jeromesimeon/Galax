@@ -28,7 +28,13 @@ let copyright = "Copyright "^system^" Contributors 2001-2006"
 
 let status = "%%STATUS%%"
 
-let build = "Galax[" ^ version ^ "].Caml[" ^ Sys.ocaml_version ^ "].OS[" ^ Sys.os_type ^ "]." ^ ()
+let build =
+  let timeofday = Unix.gettimeofday() in 
+  let local_time = Unix.localtime timeofday in 
+  let year = string_of_int (local_time.Unix.tm_year + 1900) in
+  let month = string_of_int (local_time.Unix.tm_mon + 1) in
+  let day = string_of_int (local_time.Unix.tm_mday) in
+  "Galax[" ^ version ^ "].Caml[" ^ Sys.ocaml_version ^ "].OS[" ^ Sys.os_type ^ "]." ^ year ^ month ^ day
 
 let motd = "Thank you for using "^system^"!\n"
 

@@ -33,7 +33,8 @@ let print_version () =
     printf "\n";
     printf "  This is %s version %s\n" Conf.system Conf.version;
     printf "  %s\n\n" Conf.copyright;
-    printf "  Status of this release is: %s\n" Conf.status;
+    printf "  Build reference: %s\n" Conf.build;
+    printf "  Status: %s\n" Conf.status;
     printf "  %s library directory: %s\n\n" Conf.system Conf.galax_library
   end
 
