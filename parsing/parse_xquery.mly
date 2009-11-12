@@ -84,7 +84,7 @@ let wrap_p f =
 let wrap_dxq f =
   if Conf.is_dxq()
   then f ()
-  else raise (Query (Toplevel_Error "DXQ tokens found, please use -language xqueryp"))
+  else raise (Query (Toplevel_Error "DXQ tokens found, please use -language dxq"))
 
 let check_pragma_content content =
   if (((String.length content) > 0) && (String.get content 0 != ' ')) then

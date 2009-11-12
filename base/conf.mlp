@@ -24,7 +24,7 @@ let system = "Galax"
 
 let version = "%%RELEASE%%"
 
-let copyright = "Copyright "^system^" Contributors 2001-2006"
+let copyright = "Copyright "^system^" individual contributors 2001-2009"
 
 let status = "%%STATUS%%"
 

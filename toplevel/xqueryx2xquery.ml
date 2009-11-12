@@ -225,13 +225,13 @@ let process_main_module proc_ctxt mod_ctxt mod_file print_mm =
   end
 
 let process_one_module proc_ctxt mod_ctxt mod_file (p1,p2,p3)=
-(*  try *)
+  try
     try process_main_module proc_ctxt mod_ctxt mod_file p1 with
     | _ ->
 	process_library_module proc_ctxt mod_ctxt mod_file p2
-(*  with
+  with
   | _ ->
-      process_interface_module proc_ctxt mod_ctxt mod_file p3 *)
+      process_interface_module proc_ctxt mod_ctxt mod_file p3
 
 let process_module proc_ctxt mod_ctxt mod_file =
   let p1,p2,p3 =

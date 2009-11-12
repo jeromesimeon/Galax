@@ -1,6 +1,5 @@
 body {
   font-family: helvetica;
-  font-size: 10pt;
   margin-left: .25in;
   margin-right: .25in;
   color: "#003366";
@@ -44,9 +43,9 @@ tt { font-family: courier; }
   margin-left: 1cm;
 }
 	  
-h1 { font-size: 12pt; color: DarkBlue; }
-h2 { font-size: 10pt; color: DarkBlue; }
-h3 { font-size: 8pt; color: DarkBlue; text-indent:.5cm; }
+h1 { color: DarkBlue; }
+h2 { color: DarkBlue; }
+h3 { color: DarkBlue; text-indent:.5cm; }
 
 a.title:visited, a.title:link {
   color: DarkBlue; 

@@ -1,7 +1,6 @@
 body {
   background-color: white;
   font-family: arial,helvetica;
-  font-size: small;
   margin-left: .25in;
   margin-right: .25in;
   color: "#003366";
@@ -53,9 +52,9 @@ table.border,tr.border,td.border {
   margin-left: 1cm;
 }
 
-h1 { font-size: medium; color: DarkBlue; }
-h2 { font-size: small; color: DarkBlue;	}
-h3 { font-size: x-small; color: DarkBlue;  text-indent:.5cm; }
+h1 { color: DarkBlue; }
+h2 { color: DarkBlue;	}
+h3 { color: DarkBlue;  text-indent:.5cm; }
 
 .warn {
   color: red;

@@ -2,6 +2,16 @@
 | Changelog |
  -----------
 
+November 12, 2009 - Jerome
+
+  o Parsing:
+      - Fixed error message properly pointing to DXQ option when parsing
+        DXQ programs.
+
+  o XQueryX embedding:
+      - Re-enabled parsing/printing of XQueryX embedding of DXQ
+        interfaces.
+
 November 6, 2009 - Jerome
 
   o Toplevel:
