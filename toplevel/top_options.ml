@@ -969,7 +969,7 @@ let make_options proc_ctxt usage option_list =
     !args
   end
 
-let make_options_argv proc_ctxt usage option_list args =
+let make_options_argv proc_ctxt usage option_list gargs =
   (* Build the functions to process each options *)
   let bo f = f proc_ctxt in
   let bo_unit f = Arg.Unit (bo f) in
@@ -979,9 +979,20 @@ let make_options_argv proc_ctxt usage option_list args =
   let bo_clear f = Arg.Clear (bo f) in
   let bos = (bo_unit,bo_int,bo_string,bo_set,bo_clear) in
 
+  (* Initialize the remaining arguments *)
+  let args = ref [] in
+
   (* Create the arguments parsing operation *)
   let (parse_list,real_usage) = 
     make_parse_list bos usage option_list true
   in
-  Arg.parse_argv ~current:(ref 0) args parse_list (fun arg -> ()) real_usage
-
+  begin
+    begin
+      try
+	Arg.parse_argv ~current:(ref 0) gargs parse_list (fun arg -> args := arg :: !args) real_usage;
+      with
+      | Arg.Bad msg -> eprintf "%s" msg; exit 2;
+      | Arg.Help msg -> printf "%s" msg; exit 0;
+    end;
+    !args
+  end

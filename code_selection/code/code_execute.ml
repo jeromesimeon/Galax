@@ -63,7 +63,9 @@ let recmem msg =
   coerce_nodep coerce_unit_to_sax
 *)
 let build_boxed_closure code_ctxt algop_remote =
+(* Unused -JS
   let comp_ctxt = annotated_compile_context_from_code_selection_context code_ctxt in
+*)
 
   (* Compile-time 1. Identify all the free variables ($x_k) and tuple fields accessed in the remote plan. *)
 

@@ -472,5 +472,5 @@ val usage_zerod         : string
 
 val make_options : processing_context -> string -> option_classes list -> string list
 val make_options_argv :
-    processing_context -> string -> option_classes list -> string array -> unit
+    processing_context -> string -> option_classes list -> string array -> string list
 

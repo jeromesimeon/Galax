@@ -3,14 +3,14 @@
 (*                                 GALAX                               *)
 (*                             XQuery Engine                           *)
 (*                                                                     *)
-(*  Copyright 2001-2007.                                               *)
+(*  Copyright 2001-2009.                                               *)
 (*  Distributed only by permission.                                    *)
 (*                                                                     *)
 (***********************************************************************)
 
-(* $Id: galax-parse.ml,v 1.36 2007/02/01 22:08:55 simeon Exp $ *)
+(* $Id$ *)
 
-(* Module: Galax-parse
+(* Module: Top_parse
    Description:
      This module implements a simple front-end for Galax XML
      parser/validator and serialization.
@@ -232,12 +232,13 @@ let process_file proc_ctxt uri_string =
 (* Command line arguments *)
 (**************************)
 
-let process_args proc_ctxt =
+let process_args proc_ctxt gargs =
   let args =
-    make_options
+    make_options_argv
       proc_ctxt
       usage_galax_parse
       [ GalaxParse_Options;Misc_Options;Monitoring_Options;Encoding_Options;DataModel_Options;Serialization_Options;PrintParse_Options ]
+      gargs
   in
   match args with
   | [] -> failwith "Input file(s) not specified"
@@ -269,9 +270,9 @@ let parse_typed_xml_stream_from_io pc gio =
   typed_xml_stream
 
 
-let go () =
+let go gargs =
   let proc_ctxt = Processing_context.default_processing_context() in
-  let input_files = process_args proc_ctxt in
+  let input_files = process_args proc_ctxt gargs in
   (* Test if -diff is passed *)
 
   if (!Top_config.diff) then 
@@ -285,5 +286,3 @@ let go () =
   else
     exec main proc_ctxt input_files
 
-let _ =
-  low_exec go ()

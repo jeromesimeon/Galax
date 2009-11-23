@@ -11,42 +11,6 @@
 # $Id: Makefile-inst,v 1.2 2007/02/01 22:08:46 simeon Exp $ #
 
 #########################################################################
-# Author:	Christopher A. Rath (AT&T Labs Research)
-# Descripton:
-#		This is the installed Makefile for the Galax OCaml API examples
-# History:
-#	$Log: Makefile-inst,v $
-#	Revision 1.2  2007/02/01 22:08:46  simeon
-#	February 1, 2007 - Jerome
-#	
-#	  o Code cleanup:
-#	     - Cleaned up all the source file headers. Added module
-#	       descriptions when missing, as well as CVS Id.
-#	     - Removed obsolete modules: Optimization_rules_treepattern_old,
-#	       Factorize_sideeffects.
-#	
-#	  o AST Walker:
-#	     - Added support for a generic fold operation on the AST (useful
-#	       to compute a boolean property on the AST for instance).
-#	
-#	  o Normalization:
-#	     - Small fix to the normalization of comparisons to re-enable join
-#	       detection, not using let bindings for the comparator
-#	       anymore. [hack]
-#	
-#	  o Rewriting:
-#	     - Added a judgment to check for side-effects, removed
-#	       corresponding obsolete judgment in Factorization.
-#	     - Moved the snap removal rule from optimization to rewriting,
-#	       cleaning up the plans as early as possible.
-#	
-#	Revision 1.1  2006/04/17 18:10:40  car
-#	April 17, 2006 - Chris Rath
-#	  o Changes necessary to align with GODI
-#	
-#########################################################################
-
-#########################################################################
 # Section:	Default target
 # Description:
 #		The default target for this Makefile is "all"

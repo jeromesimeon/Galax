@@ -14,60 +14,6 @@
 # Author:	Christopher A. Rath (AT&T Labs Research)
 # Descripton:
 #		This is the installed Makefile for the Galax usecases
-# History:
-#	$Log: Makefile-inst,v $
-#	Revision 1.3  2007/02/01 22:08:55  simeon
-#	February 1, 2007 - Jerome
-#	
-#	  o Code cleanup:
-#	     - Cleaned up all the source file headers. Added module
-#	       descriptions when missing, as well as CVS Id.
-#	     - Removed obsolete modules: Optimization_rules_treepattern_old,
-#	       Factorize_sideeffects.
-#	
-#	  o AST Walker:
-#	     - Added support for a generic fold operation on the AST (useful
-#	       to compute a boolean property on the AST for instance).
-#	
-#	  o Normalization:
-#	     - Small fix to the normalization of comparisons to re-enable join
-#	       detection, not using let bindings for the comparator
-#	       anymore. [hack]
-#	
-#	  o Rewriting:
-#	     - Added a judgment to check for side-effects, removed
-#	       corresponding obsolete judgment in Factorization.
-#	     - Moved the snap removal rule from optimization to rewriting,
-#	       cleaning up the plans as early as possible.
-#	
-#	Revision 1.2  2006/08/16 20:30:08  simeon
-#	August 16, 2006 - Jerome
-#	
-#	  o Release:
-#	    - Set the version number to 0.6.8.
-#	    - Added 0.6.8 entries in the documentation and Web sites.
-#	    - Some minor fixes the documentation, notably updating the
-#	      contributor's list.
-#	    - Added some text for support for ULTF, XQueryP in the release
-#	      notes.
-#	    - Fixed the ns_usecase expected result to match the one generated
-#	      by Galax. Namespace handling in constructors may be fixed at
-#	      some point and result in subsequent changes.
-#	    - Fixed usecase Makefile to not set monitoring on.
-#	  o ULTF/XQuery!/XQueryP Trilogy:
-#	    - Added -language ultf option for W3C Update Facility.
-#	    - Added minimalistic tutorial in the documentation for how to run
-#	      those.
-#	    - Added examples in ./examples/extensions for each of the 3
-#	      languages.
-#	  o F&O:
-#	    - Fixed fn:matches function to not take optional second and third
-#	      arguments anymore.
-#	
-#	Revision 1.1  2006/04/17 18:10:41  car
-#	April 17, 2006 - Chris Rath
-#	  o Changes necessary to align with GODI
-#	
 #########################################################################
 
 #########################################################################
@@ -138,15 +84,15 @@ bootstrap-double-core:
 	$(MAKE) -s run-compiled-double-core
 
 %_usecase.xml: %_usecase.xq %_context.xq
-	($(CONF_GALAX_BIN)/galax-run -serialize wf -static-typing on -typing ${TYPE_KIND} -context $*_context.xq $*_usecase.xq >$*_usecase.xml; \
+	($(CONF_GALAX_BIN)/galax xquery -serialize wf -static-typing on -typing ${TYPE_KIND} -context $*_context.xq $*_usecase.xq >$*_usecase.xml; \
 	$(MAKE) -k -s check T=$*_usecase E=$*_usecase; )
 
 %_type.xml: %_usecase.xq %_context.xq
-	(echo "$*: none"; time $(CONF_GALAX_BIN)/galax-run -static-typing on -typing none -context $*_context.xq $*_usecase.xq -dynamic off; \
-	echo "$*: weak"; time $(CONF_GALAX_BIN)/galax-run -static-typing on -typing weak -context $*_context.xq $*_usecase.xq -dynamic off)
+	(echo "$*: none"; time $(CONF_GALAX_BIN)/galax xquery -static-typing on -typing none -context $*_context.xq $*_usecase.xq -dynamic off; \
+	echo "$*: weak"; time $(CONF_GALAX_BIN)/galax xquery -static-typing on -typing weak -context $*_context.xq $*_usecase.xq -dynamic off)
 
-#	(time $(CONF_GALAX_BIN)/galax-run -serialize wf -static-typing on -typing none -context $*_context.xq $*_usecase.xq -dynamic off; \
-#	time $(CONF_GALAX_BIN)/galax-run -serialize wf -static-typing on -typing weak -context $*_context.xq $*_usecase.xq -dynamic off)
+#	(time $(CONF_GALAX_BIN)/galax xquery -serialize wf -static-typing on -typing none -context $*_context.xq $*_usecase.xq -dynamic off; \
+#	time $(CONF_GALAX_BIN)/galax xquery -serialize wf -static-typing on -typing weak -context $*_context.xq $*_usecase.xq -dynamic off)
 
 run-type:
 	@echo "";\
@@ -163,8 +109,8 @@ run-xmark-type:
 	echo "=============" ;\
 	echo "";\
 	(for t in Q*.xq; do \
-	echo "$${t}: none"; time $(CONF_GALAX_BIN)/galax-run -static-typing on -typing none -context xmark_context.xq $${t} -dynamic off; \
-	echo "$${t}: weak"; time $(CONF_GALAX_BIN)/galax-run -static-typing on -typing weak -context xmark_context.xq $${t} -dynamic off; \
+	echo "$${t}: none"; time $(CONF_GALAX_BIN)/galax xquery -static-typing on -typing none -context xmark_context.xq $${t} -dynamic off; \
+	echo "$${t}: weak"; time $(CONF_GALAX_BIN)/galax xquery -static-typing on -typing weak -context xmark_context.xq $${t} -dynamic off; \
 	done)
 
 run-orig:
@@ -176,7 +122,7 @@ run-orig:
 	make -k -s $${t}_usecase.xml ; \
 	done)
 
-#	$(CONF_GALAX_BIN)/galax-run -treejoin-log twig  -serialize wf -context $${t}_context.xq $${t}_usecase.xq >$${t}_usecase.xml; \
+#	$(CONF_GALAX_BIN)/galax xquery -treejoin-log twig  -serialize wf -context $${t}_context.xq $${t}_usecase.xq >$${t}_usecase.xml; \
 
 run-compiled:
 	@echo;\
@@ -184,7 +130,7 @@ run-compiled:
 	echo "=======================" ;\
 	echo "";\
 	(for t in $(USECASES) xmark; \
-	do $(CONF_GALAX_BIN)/galax-run -serialize wf -optimization on $${t}_usecase_pretty.xq > $${t}_usecase_pretty.xml; \
+	do $(CONF_GALAX_BIN)/galax xquery -serialize wf -optimization on $${t}_usecase_pretty.xq > $${t}_usecase_pretty.xml; \
 	$(MAKE) -k -s check T=$${t}_usecase_pretty E=$${t}_usecase; \
 	done)
 
@@ -194,7 +140,7 @@ run-compiled-core:
 	echo "====================" ;\
 	echo "";\
 	(for t in $(USECASES) xmark; \
-	do $(CONF_GALAX_BIN)/galax-run -factorization off -execute normalized -serialize wf -optimization on $${t}_usecase_pretty_core.xq > $${t}_usecase_pretty_core.xml; \
+	do $(CONF_GALAX_BIN)/galax xquery -factorization off -execute normalized -serialize wf -optimization on $${t}_usecase_pretty_core.xq > $${t}_usecase_pretty_core.xml; \
 	$(MAKE) -k -s check T=$${t}_pretty_core E=$${t}_usecase; \
 	done)
 
@@ -204,24 +150,24 @@ run-logical-plan:
 	echo "=====================" ;\
 	echo "";\
 	(for t in $(USECASES) xmark; \
-	do $(CONF_GALAX_BIN)/galax-run -dynamic off -print-plan-kind xml -output-logical-plan $${t}_plan.xml -print-logical-plan on -context $${t}_context.xq $${t}_usecase.xq; \
-	$(CONF_GALAX_BIN)/galax-run -execute logical $${t}_plan.xml  >$*_usecase.xml; \
+	do $(CONF_GALAX_BIN)/galax xquery -dynamic off -print-plan-kind xml -output-logical-plan $${t}_plan.xml -print-logical-plan on -context $${t}_context.xq $${t}_usecase.xq; \
+	$(CONF_GALAX_BIN)/galax xquery -execute logical $${t}_plan.xml  >$*_usecase.xml; \
 	$(MAKE) -k -s check T=$*_usecase E=$*_usecase; \
 	done)
 
 compile:
 	(for t in $(USECASES) xmark; \
-	do $(CONF_GALAX_BIN)/galax-compile -print-optimized-plan off -print-prolog on -print-expr on -context $${t}_context.xq $${t}_usecase.xq > $${t}_usecase_pretty.xq; \
+	do $(CONF_GALAX_BIN)/galax compile -print-optimized-plan off -print-prolog on -print-expr on -context $${t}_context.xq $${t}_usecase.xq > $${t}_usecase_pretty.xq; \
 	done)
 
 compile-core:
 	(for t in $(USECASES) xmark; \
-	do $(CONF_GALAX_BIN)/galax-compile -print-optimized-plan off -print-prolog on -print-normalized-expr on -context $${t}_context.xq $${t}_usecase.xq > $${t}_usecase_pretty_core.xq; \
+	do $(CONF_GALAX_BIN)/galax compile -print-optimized-plan off -print-prolog on -print-normalized-expr on -context $${t}_context.xq $${t}_usecase.xq > $${t}_usecase_pretty_core.xq; \
 	done)
 
 compile-double-core:
 	(for t in $(USECASES) xmark; \
-	do $(CONF_GALAX_BIN)/galax-compile -execute normalized -print-optimized-plan off -print-prolog on -print-normalized-expr on $${t}_usecase_pretty_core.xq > $${t}_usecase_double_pretty_core.xq; \
+	do $(CONF_GALAX_BIN)/galax compile -execute normalized -print-optimized-plan off -print-prolog on -print-normalized-expr on $${t}_usecase_pretty_core.xq > $${t}_usecase_double_pretty_core.xq; \
 	done)
 
 #########################################################################

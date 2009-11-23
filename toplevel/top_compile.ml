@@ -8,11 +8,11 @@
 (*                                                                     *)
 (***********************************************************************)
 
-(* $Id: galax-compile.ml,v 1.25 2007/05/16 15:32:13 mff Exp $ *)
+(* $Id$ *)
 
-(* Module: Galax-compile
+(* Module: Top_compile
    Description:
-     The galax-compile command can be used to process the query
+     The "galax compile" command can be used to process the query
      through successive compilation phases.
  *)
 
@@ -37,12 +37,13 @@ open Procmod_compiler
 (* Command-line options *)
 (************************)
 
-let process_args proc_ctxt =
+let process_args proc_ctxt gargs =
   let args =
-    make_options
+    make_options_argv
       proc_ctxt
       usage_galax_compile
       [ Misc_Options;Monitoring_Options;Context_Options;Behavior_Options;ProcessingPhases_Options;Printing_Options;Optimization_Options;CodeSelection_Options ]
+      gargs
   in
   match args with
   | [] -> failwith "Input file(s) not specified"
@@ -95,15 +96,13 @@ let main proc_ctxt module_files =
 (* Let's go! *)
 (*************)
 
-let go() =
+let go gargs =
   (* 1. First get the default processing context for galax-compile *)
   let proc_ctxt = galax_compile_proc_ctxt () in
 
   (* 2. Parses the command-line arguments *)
-  let module_files = process_args proc_ctxt in
+  let module_files = process_args proc_ctxt gargs in
 
   (* 3. Compile the input queries *)
   exec main proc_ctxt module_files
 
-let _ =
-  low_exec go ()

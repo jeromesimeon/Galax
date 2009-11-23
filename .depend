@@ -778,6 +778,10 @@
     ./namespace/namespace_symbols.cmi 
 ./subtyping/subtyping_top.cmi: ./ast/xquery_type_core_ast.cmi 
 ./tools/stemmer/stemmer.cmi: 
+./toplevel/top_parse.cmi: ./toplevel/top_args.cmi 
+./toplevel/top_run.cmi: ./toplevel/top_args.cmi 
+./toplevel/top_compile.cmi: ./toplevel/top_args.cmi 
+./toplevel/top_args.cmi: 
 ./toplevel/top_config.cmi: ./procctxt/processing_context.cmi 
 ./toplevel/top_options.cmi: ./procctxt/processing_context.cmi 
 ./toplevel/top_util.cmi: ./procctxt/processing_context.cmi \
@@ -4743,6 +4747,60 @@ toplevel/galax_server.cmx: ./ast/xquery_physical_type_ast_util.cmx \
     ./code_selection/code_selection_context.cmx \
     ./code_selection/code/code_fn.cmx ./base/args.cmx \
     toplevel/galax_server.cmi 
+toplevel/top_run.cmo: ./toplevel/top_util.cmi ./toplevel/top_options.cmi \
+    ./toplevel/top_config.cmi ./streaming/streaming_ops.cmi \
+    ./base/register_handlers.cmi ./procctxt/processing_context.cmi \
+    ./ast_printer/print_top.cmi ./procctxt/monitoring_context.cmi \
+    ./monitor/monitor.cmi ./tools/http/http.cmi ./toplevel/galax_server.cmi \
+    ./base/galax_io.cmi ./galapi/caml_api/galax.cmi ./base/error.cmi \
+    ./dm/dm.cmi ./base/debug.cmi ./base/conf.cmi toplevel/top_run.cmi 
+toplevel/top_run.cmx: ./toplevel/top_util.cmx ./toplevel/top_options.cmx \
+    ./toplevel/top_config.cmx ./streaming/streaming_ops.cmx \
+    ./base/register_handlers.cmx ./procctxt/processing_context.cmx \
+    ./ast_printer/print_top.cmx ./procctxt/monitoring_context.cmx \
+    ./monitor/monitor.cmx ./tools/http/http.cmx ./toplevel/galax_server.cmx \
+    ./base/galax_io.cmx ./galapi/caml_api/galax.cmx ./base/error.cmx \
+    ./dm/dm.cmx ./base/debug.cmx ./base/conf.cmx toplevel/top_run.cmi 
+toplevel/top_parse.cmo: ./ast/xquery_ast.cmi ./toplevel/top_util.cmi \
+    ./toplevel/top_options.cmi ./toplevel/top_config.cmi \
+    ./streaming/streaming_parse.cmi ./streaming/streaming_ops.cmi \
+    ./streaming/streaming_diff.cmi ./serialization/serialization.cmi \
+    ./schema/schema_validation.cmi ./schema/schema_norm.cmi \
+    ./schema/schema_import.cmi ./schema/schema_dtd_import.cmi \
+    ./procctxt/processing_context.cmi ./physicaldm/physical_load.cmi \
+    ./physicaldm/physical_export.cmi ./dm/base/nodeid_context.cmi \
+    ./namespace/namespace_context.cmi ./procctxt/monitoring_context.cmi \
+    ./monitor/monitor.cmi ./base/galax_io.cmi ./base/error.cmi \
+    ./dm/base/cursor.cmi ./base/conf.cmi ./datatypes/anyURI.cmi \
+    toplevel/top_parse.cmi 
+toplevel/top_parse.cmx: ./ast/xquery_ast.cmi ./toplevel/top_util.cmx \
+    ./toplevel/top_options.cmx ./toplevel/top_config.cmx \
+    ./streaming/streaming_parse.cmx ./streaming/streaming_ops.cmx \
+    ./streaming/streaming_diff.cmx ./serialization/serialization.cmx \
+    ./schema/schema_validation.cmx ./schema/schema_norm.cmx \
+    ./schema/schema_import.cmx ./schema/schema_dtd_import.cmx \
+    ./procctxt/processing_context.cmx ./physicaldm/physical_load.cmx \
+    ./physicaldm/physical_export.cmx ./dm/base/nodeid_context.cmx \
+    ./namespace/namespace_context.cmx ./procctxt/monitoring_context.cmx \
+    ./monitor/monitor.cmx ./base/galax_io.cmx ./base/error.cmx \
+    ./dm/base/cursor.cmx ./base/conf.cmx ./datatypes/anyURI.cmx \
+    toplevel/top_parse.cmi 
+toplevel/top_compile.cmo: ./toplevel/top_util.cmi ./toplevel/top_options.cmi \
+    ./toplevel/top_config.cmi ./procmod/procmod_compiler.cmi \
+    ./procctxt/processing_context.cmi ./ast_printer/print_top.cmi \
+    ./procctxt/monitoring_context.cmi ./monitor/monitor.cmi \
+    ./toplevel/galax_server.cmi ./base/galax_io.cmi \
+    ./galapi/caml_api/galax.cmi ./base/error.cmi ./dm/dm.cmi ./base/conf.cmi \
+    toplevel/top_compile.cmi 
+toplevel/top_compile.cmx: ./toplevel/top_util.cmx ./toplevel/top_options.cmx \
+    ./toplevel/top_config.cmx ./procmod/procmod_compiler.cmx \
+    ./procctxt/processing_context.cmx ./ast_printer/print_top.cmx \
+    ./procctxt/monitoring_context.cmx ./monitor/monitor.cmx \
+    ./toplevel/galax_server.cmx ./base/galax_io.cmx \
+    ./galapi/caml_api/galax.cmx ./base/error.cmx ./dm/dm.cmx ./base/conf.cmx \
+    toplevel/top_compile.cmi 
+toplevel/top_args.cmo: toplevel/top_args.cmi 
+toplevel/top_args.cmx: toplevel/top_args.cmi 
 regress/test_core.cmo: ./base/whitespace.cmi ./toplevel/top_util.cmi \
     ./streaming/streaming_util.cmi ./streaming/streaming_types.cmi \
     ./streaming/streaming_parse.cmi ./streaming/streaming_ops.cmi \
@@ -4763,20 +4821,12 @@ regress/test_core.cmx: ./base/whitespace.cmx ./toplevel/top_util.cmx \
     ./galapi/caml_api/galax.cmx ./base/error.cmx ./dm/atomic/dm_atomic.cmx \
     ./dm/dm.cmx ./datatypes/dateTime.cmx ./datatypes/datatypes.cmi \
     ./dm/base/cursor.cmx ./base/conf.cmx 
-toplevel/galax-run.cmo: ./toplevel/top_util.cmi ./toplevel/top_options.cmi \
-    ./toplevel/top_config.cmi ./streaming/streaming_ops.cmi \
-    ./base/register_handlers.cmi ./procctxt/processing_context.cmi \
-    ./ast_printer/print_top.cmi ./procctxt/monitoring_context.cmi \
-    ./monitor/monitor.cmi ./tools/http/http.cmi ./toplevel/galax_server.cmi \
-    ./base/galax_io.cmi ./galapi/caml_api/galax.cmi ./base/error.cmi \
-    ./dm/dm.cmi ./base/debug.cmi ./base/conf.cmi 
-toplevel/galax-run.cmx: ./toplevel/top_util.cmx ./toplevel/top_options.cmx \
-    ./toplevel/top_config.cmx ./streaming/streaming_ops.cmx \
-    ./base/register_handlers.cmx ./procctxt/processing_context.cmx \
-    ./ast_printer/print_top.cmx ./procctxt/monitoring_context.cmx \
-    ./monitor/monitor.cmx ./tools/http/http.cmx ./toplevel/galax_server.cmx \
-    ./base/galax_io.cmx ./galapi/caml_api/galax.cmx ./base/error.cmx \
-    ./dm/dm.cmx ./base/debug.cmx ./base/conf.cmx 
+toplevel/galax_main.cmo: ./toplevel/top_util.cmi ./toplevel/top_run.cmi \
+    ./toplevel/top_parse.cmi ./toplevel/top_compile.cmi \
+    ./toplevel/top_args.cmi 
+toplevel/galax_main.cmx: ./toplevel/top_util.cmx ./toplevel/top_run.cmx \
+    ./toplevel/top_parse.cmx ./toplevel/top_compile.cmx \
+    ./toplevel/top_args.cmx 
 toplevel/galax-mapschema.cmo: ./toplevel/top_util.cmi \
     ./toplevel/top_config.cmi ./streaming/streaming_parse.cmi \
     ./streaming/streaming_ops.cmi ./schema/schema_norm.cmi \
@@ -4791,28 +4841,6 @@ toplevel/galax-mapschema.cmx: ./toplevel/top_util.cmx \
     ./procctxt/processing_context.cmx ./ast_printer/print_type.cmx \
     ./ast_printer/print_top.cmx ./namespace/namespace_names.cmx \
     ./namespace/namespace_context.cmx ./base/galax_io.cmx ./base/error.cmx 
-toplevel/galax-parse.cmo: ./ast/xquery_ast.cmi ./toplevel/top_util.cmi \
-    ./toplevel/top_options.cmi ./toplevel/top_config.cmi \
-    ./streaming/streaming_parse.cmi ./streaming/streaming_ops.cmi \
-    ./streaming/streaming_diff.cmi ./serialization/serialization.cmi \
-    ./schema/schema_validation.cmi ./schema/schema_norm.cmi \
-    ./schema/schema_import.cmi ./schema/schema_dtd_import.cmi \
-    ./procctxt/processing_context.cmi ./physicaldm/physical_load.cmi \
-    ./physicaldm/physical_export.cmi ./dm/base/nodeid_context.cmi \
-    ./namespace/namespace_context.cmi ./procctxt/monitoring_context.cmi \
-    ./monitor/monitor.cmi ./base/galax_io.cmi ./base/error.cmi \
-    ./dm/base/cursor.cmi ./base/conf.cmi ./datatypes/anyURI.cmi 
-toplevel/galax-parse.cmx: ./ast/xquery_ast.cmi ./toplevel/top_util.cmx \
-    ./toplevel/top_options.cmx ./toplevel/top_config.cmx \
-    ./streaming/streaming_parse.cmx ./streaming/streaming_ops.cmx \
-    ./streaming/streaming_diff.cmx ./serialization/serialization.cmx \
-    ./schema/schema_validation.cmx ./schema/schema_norm.cmx \
-    ./schema/schema_import.cmx ./schema/schema_dtd_import.cmx \
-    ./procctxt/processing_context.cmx ./physicaldm/physical_load.cmx \
-    ./physicaldm/physical_export.cmx ./dm/base/nodeid_context.cmx \
-    ./namespace/namespace_context.cmx ./procctxt/monitoring_context.cmx \
-    ./monitor/monitor.cmx ./base/galax_io.cmx ./base/error.cmx \
-    ./dm/base/cursor.cmx ./base/conf.cmx ./datatypes/anyURI.cmx 
 toplevel/galax-mapwsdl.cmo: ./ast/xquery_ast.cmi ./wsdl/wsdl_load.cmi \
     ./wsdl/wsdl_import.cmi ./wsdl/wsdl_export.cmi ./toplevel/top_util.cmi \
     ./streaming/streaming_parse.cmi ./procctxt/processing_context.cmi \
@@ -4855,18 +4883,6 @@ toplevel/xquery2soap.cmx: ./ast/xquery_ast.cmi ./wsdl/wsdl_load.cmx \
     ./wsdl/wsdl_apache.cmx ./toplevel/top_util.cmx \
     ./streaming/streaming_parse.cmx ./procctxt/processing_context.cmx \
     ./base/galax_url.cmx ./base/galax_io.cmx ./base/error.cmx 
-toplevel/galax-compile.cmo: ./toplevel/top_util.cmi \
-    ./toplevel/top_options.cmi ./toplevel/top_config.cmi \
-    ./procmod/procmod_compiler.cmi ./procctxt/processing_context.cmi \
-    ./ast_printer/print_top.cmi ./procctxt/monitoring_context.cmi \
-    ./monitor/monitor.cmi ./toplevel/galax_server.cmi ./base/galax_io.cmi \
-    ./galapi/caml_api/galax.cmi ./base/error.cmi ./dm/dm.cmi ./base/conf.cmi 
-toplevel/galax-compile.cmx: ./toplevel/top_util.cmx \
-    ./toplevel/top_options.cmx ./toplevel/top_config.cmx \
-    ./procmod/procmod_compiler.cmx ./procctxt/processing_context.cmx \
-    ./ast_printer/print_top.cmx ./procctxt/monitoring_context.cmx \
-    ./monitor/monitor.cmx ./toplevel/galax_server.cmx ./base/galax_io.cmx \
-    ./galapi/caml_api/galax.cmx ./base/error.cmx ./dm/dm.cmx ./base/conf.cmx 
 regress/galax-test.cmo: ./toplevel/top_options.cmi ./regress/test_core.cmo \
     ./streaming/streaming_util.cmi ./streaming/streaming_types.cmi \
     ./streaming/streaming_ops.cmi ./streaming/streaming_diff.cmi \

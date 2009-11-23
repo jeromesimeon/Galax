@@ -11,578 +11,6 @@
 # $Id: Makefile,v 1.354 2008/02/21 21:41:21 simeon Exp $ #
 
 #########################################################################
-# Author:	Christopher A. Rath (AT&T Labs Research)
-# Descripton:
-#		This is a replacement Makefile for Galax that relies on the output
-#		of a configuration script.  It is an attempt to clean up the
-#		existing build process and make it more amenable to packaging
-#		systems like GODI.
-# History:
-#	$Log: Makefile,v $
-#	Revision 1.354  2008/02/21 21:41:21  simeon
-#	February 21, 2008 - Jerome
-#	
-#	  o Debian:
-#	     - Folded in Stefano's patches.
-#	
-#	  o Documentation:
-#	     - Re-enabled documentation generation.
-#	     - Fixed some formatting issues.
-#	
-#	Revision 1.353  2007/09/27 19:19:28  simeon
-#	September 20, 2007 - Jerome
-#	
-#	** Please run configure again due to changes to detect Camomile's version **
-#	
-#	  o Galax Compilation:
-#	     - Fixes to ./configure to support camomile's version.
-#	     - Upgraded to Ocaml 3.10
-#	       (changes in compilation due to new camlp4)
-#	     - Added support for Camomile 0.7.* on top of Camomile 0.6.
-#	       (changes due to new library names)
-#	     - Now forcing use of Netsys, coming with latest ocamlnet.
-#	
-#	  o Join optimization:
-#	     - Another fix to the compiler, to properly clean-up selec
-#	       clause for join detection.
-#	
-#	Revision 1.352  2007/08/09 20:21:22  simeon
-#	August 9, 2007 - Jerome
-#	
-#	  o XQueryX:
-#	    - Added support for module interfaces in xqueryx2xquery.
-#	
-#	  o Interfaces:
-#	    - Fixed pretty-printing of module interfaces.
-#	
-#	  o Galax Compilation:
-#	    - Added missing dependencies for some target executables to the Galax
-#	      library.
-#	
-#	Revision 1.351  2007/08/01 18:06:30  simeon
-#	August 1, 2007 - Jerome
-#	
-#	  o XQueryX: First-cut support for XQueryX with trivial embedding
-#	    in Galax. It supports the following features:
-#	
-#	     (1) Compiling XQueryX to XQuery using a command line tool called
-#	         xqueryx2xquery.
-#	
-#	     (2) Running XQueryX with galax-run with the flag '-syntax
-#	         xqueryx'.
-#	
-#	     (3) Embedding XQueryX expressions directly within XQuery.
-#	
-#	  (1) and (2) work on whole modules, while (3) only works with
-#	  expressions since it has to be integrated with the rest of the
-#	  grammar.
-#	
-#	  o Processing model:
-#	     - Fixed ugly bug in the way parse handlers were built. Now
-#	       properly taking configuration into account.
-#	
-#	Revision 1.350  2007/07/31 17:34:08  simeon
-#	July 31, 2007 - Jerome
-#	
-#	  o Parsing:
-#	     - Fixed another lurking bug in the lexing of sequence types,
-#	       transitioning to the wrong state... (Was tripped by e.g.,
-#	       instance of or typeswitch inside a constructor).
-#	
-#	       [Replaced old hack by better working new hack...sigh
-#	
-#	        Queries to test:
-#	        <a>{1 instance of item()}</a>
-#	        <a>{1 instance of item()*}</a>
-#	        <a>{1 instance of item()(::)*}</a>
-#	        every $a as item()* in (1, 2), $b as item()* in $a satisfies $b]
-#	
-#	  o Prolog:
-#	     - Fixed another lurking bug in cyclic variable dependency
-#	       checking (not clearing up the previous variable table in
-#	       parallel branches of the dependency graph).
-#	
-#	  o XQueryX Trivial Embedding:
-#	     - Started prepare for it. Added hook in normalization.
-#	
-#	Revision 1.349  2007/07/23 18:15:19  ndonose
-#	fixed makefile options for zerod
-#	
-#	Revision 1.348  2007/07/21 17:46:07  ndonose
-#	July 21, 2007 - Nicola
-#	
-#	  o Workflows:
-#	    First version of an HTTP server providing an interface for
-#	    ProjectZero workflows and acting as proxy towards the DXQ
-#	    server running the workflow script.
-#	    The current version does not support yet receive activities
-#	    that are not enabled from the beginning.
-#	
-#	Revision 1.347  2007/07/18 16:54:18  simeon
-#	July 18, 2007 - Jerome
-#	
-#	  Feature Galax
-#	  Minimal Conformance	          14528 / 96 / 14637  (99.3%)
-#	  Optional Features
-#	    Schema Import Feature	  0   	/ 0   / 174
-#	    Schema Validation Feature	  0   	/ 0   / 25
-#	    Static Typing Feature	  46  	/ 0   / 46
-#	    Full Axis Feature	 	  130 	/ 0   / 130
-#	    Module Feature	 	  0 	/ 0   / 32
-#	    Trivial XML Embedding Feature 0 	/ 0   / 4
-#	
-#	  o WSDL:
-#	     - Removing wsdl_load.ml at cleanup-time, since it's being
-#	       generated.
-#	
-#	  o Prolog:
-#	     - Added check for cyclic definitions of global variable in
-#	       modules.
-#	
-#	  o Testing:
-#	     - Added group testing for the XQuery Appendices.
-#	
-#	Revision 1.346  2007/07/13 18:24:42  mff
-#	July 13, 2007 - Mary
-#	
-#	   o Xquery_algebra_ast.mli + all files that depends on Algebra AST
-#	     - Changes names of AST nodes for imported variables & functions.
-#	       Conflated interfaces with imported
-#	
-#	   o Changed Pervasives _back_ to an XQuery module from an interface,
-#	     because it really is a module whose functions are built-in.
-#	     Sorry for churn on this.
-#	
-#	     - Removed stdlib/pervasive.xqi
-#	     - Added glx:string_of_item
-#	
-#	   o Planio
-#	     - Fixed bug in parsing of ElementKind and AttributeKind
-#	
-#	   o Code_execute
-#	
-#	     - Temporarily disabled optimization of Execute expressions to
-#	       local server, which simply evaluate the remote expression
-#	       locally, because there is an insidious bug when its called.
-#	
-#	   o Parse_xquery
-#	     - Changed parsing of interfaces so that variables and functions
-#	       are correctly tagged as coming from interfaces.  Previously,
-#	       did this with an ugly hack in normalization.
-#	
-#	   o Galaxd & Galax_server
-#	     - Added exception-handler argument to tcp_server and udp_server
-#	       so that internal errors and async errors can be reported to the
-#	       Gui.
-#	
-#	Revision 1.345  2007/06/28 15:17:30  ndonose
-#	June 28, 2007 - Nicola
-#	
-#	  o WSDL: Updated the WSDL parser to make it work again with the
-#	    latest changes in Galax.
-#	
-#	  o Removed wsdl_load.ml from the repository, as it is supposed to
-#	    be generated from wsdl_load.mlp
-#	
-#	Revision 1.344  2007/05/16 15:32:07  mff
-#	
-#	
-#	May 16, 2007 - Mary
-#	
-#	  MODULES and INTERFACES
-#	  *** PLEASE READ THE WHOLE MESSAGE ***
-#	
-#	  o Deep changes to support separate module interfaces and module
-#	    implementations.
-#	
-#	    - Compilation/evaluation now occur within context of a "compiled
-#	      program".  (In new module code_selection/Compiled_program_units)
-#	
-#	      A compiled program consists of imported module interfaces,
-#	      imported library modules, and an optional main module.
-#	
-#	    - All program units (statements,prologs,modules) are compiled in
-#	      context of a compiled_program unit.
-#	
-#	    - New pre-processing phase (before normalization), computes
-#	      transitive closure of imported library modules.  Used to
-#	      populate compiled_program unit.
-#	
-#	    - Recursive module imports (as per standard) are prohibited.
-#	
-#	   o Changes to ASTs:
-#	
-#	     We distinguish between "external" functions/vars (which are
-#	     defined in external programming environment) from "imported"
-#	     functions/vars (which are defined in imported XQuery modules)
-#	
-#	     New kinds of declarations:
-#	     Xquery_ast : EFunctionInterface and EVarInterface
-#	     Xquery_core_ast : CEFunctionInterface and CEVarInterface
-#	     Xquery_algebra_ast : AOEFunctionInterface and AOEVarDeclInterface
-#	
-#	   o Importing interfaces and modules
-#	
-#	     Module interfaces are imported during normalization.  Variable
-#	     and function declarations in the Core rep of the imported
-#	     interface are merged into the Core rep of the importing module.
-#	
-#	     If a module does not have an interface, an interface is created
-#	     for it during the pre-processing stage.
-#	
-#	   o New interface stdlib/pervasive.xqi replaces stdlib/pervasive.xq
-#	
-#	     - Removed stdlib/pervasive.xq
-#	     - NB: new file suffix ".xqi" for module interfaces.
-#	
-#	   o Code selection
-#	
-#	     References to imported variables and functions are resolved
-#	     during code selection of the importing module.
-#	
-#	     The code_selection_context for a module points to the
-#	     code_selection_contexts of the modules that it imports to resolve
-#	     references to imported variables/functions.
-#	
-#	   o What works:
-#	
-#	     - Usecase, XQuery testsuite, and Galax regressions all pass
-#	
-#	   o What doesn't work:
-#	
-#	     - examples/caml_api/test.ml
-#	     - C or Java APIs
-#	     - Any DXQ program
-#	
-#	   o TODO:
-#	
-#	     - Physical types for external and imported variables: Right now,
-#	     they are completely materialized XML values.
-#	
-#	Revision 1.343  2007/05/02 19:14:08  mff
-#	
-#	Targets for buildbot regressions
-#	
-#	Revision 1.342  2007/05/01 21:03:06  mff
-#	
-#	fast-regression added to Makefile
-#	
-#	Revision 1.341  2007/05/01 20:32:24  mff
-#	
-#	Added usecases: target for automated testing
-#	
-#	Revision 1.340  2007/03/21 15:52:52  mff
-#	March 21, 2007 - Mary
-#	
-#	  o Galax_server:
-#	    - Removed log of query-response size that was growing without
-#	      bound!
-#	    - Drip, drip, drip: other small memory leaks abound...
-#	
-#	Revision 1.339  2007/02/12 21:15:33  simeon
-#	February 12, 2007 - Jerome
-#	
-#	  o Code clean up:
-#	     - Removed obsolete modules: Factorize_update, Factorize_util.
-#	
-#	  o Galax Test Suite:
-#	     - Added a first version of the Galax test suite in the CVS
-#	       repository. This currently contains a few tests for: plan
-#	       stability of the use cases, and join detection tests.
-#	
-#	  o Testing:
-#	     - Finalized support for comparing query plans in the test
-#	       harness.
-#	     - Added an option to automatically generate expected results in
-#	       case the file for that expected result is missing.
-#	
-#	       Usage: [galax-test -generate-results] to generate results.
-#	
-#	  o Toplevel:
-#	     - Added three plan conversion utilities for convenience.
-#	        [xquery2plan] generates a plan from an XQuery. **
-#	        [xquery2xmlplan] generates an XML plan from an XQuery.
-#	        [xmlplan2plan] generates a plan from an XML plan.
-#	
-#	      **you can turn optimization on by writing -optimization on.
-#	
-#	  o Updates/Parsing:
-#	     - Removed 'snap delete' etc. variants for the update
-#	       operations. Fixing shift/reduce conflicts. (e.g., WITH could
-#	       parse as either a do replace or a snap replace).
-#	
-#	       The changes are:
-#	         MapFromItem[$x]{P1}(P2) --> Map{P1}(P2) where occurrence of $x
-#	         in P1 is turned into ID.
-#	         MapToItem{P1}(P2) --> Map{P1}(P2)
-#	         INPUT --> ID
-#	         snap { P } --> Snap(P), same for Delete,Replace,Insert,Rename.
-#	
-#	  o Pretty printer:
-#	     - Fixed the algebraic pretty-printer to align with the current
-#	       formalization of the algebra [Ghelli,Onose,Rose,Simeon].
-#	
-#	  o Compiler:
-#	     - Consolidated name creation (variables, tuple fields, etc.)
-#	       throughout the compiler. This is now handled by a proper module
-#	       [Namespace_generate]. This is important notably for the
-#	       regression tests to ensure stability of variable names accross
-#	       separate sets of compilation.
-#	
-#	Revision 1.338  2007/02/01 22:08:45  simeon
-#	February 1, 2007 - Jerome
-#	
-#	  o Code cleanup:
-#	     - Cleaned up all the source file headers. Added module
-#	       descriptions when missing, as well as CVS Id.
-#	     - Removed obsolete modules: Optimization_rules_treepattern_old,
-#	       Factorize_sideeffects.
-#	
-#	  o AST Walker:
-#	     - Added support for a generic fold operation on the AST (useful
-#	       to compute a boolean property on the AST for instance).
-#	
-#	  o Normalization:
-#	     - Small fix to the normalization of comparisons to re-enable join
-#	       detection, not using let bindings for the comparator
-#	       anymore. [hack]
-#	
-#	  o Rewriting:
-#	     - Added a judgment to check for side-effects, removed
-#	       corresponding obsolete judgment in Factorization.
-#	     - Moved the snap removal rule from optimization to rewriting,
-#	       cleaning up the plans as early as possible.
-#	
-#	Revision 1.337  2007/01/18 20:13:23  mff
-#	
-#	
-#	January 18, 2007 - Mary
-#	
-#	  o PlanIO
-#	    - Paired down XML rep of plans to something reasonable.
-#	      TODO: Omit function signatures from serialization of Call ops
-#	
-#	  o Tail recursion
-#	
-#	    - Modified Call operators in Core/Algebra ASTs to include tag for
-#	      tail-recursive function calls.
-#	
-#	      XQueryP while loops, compiled into tail-recursive calls, are
-#	      tagged.
-#	
-#	    - Still working on changes to interpreter to evaluate tail-recursive
-#	      XQuery function calls in O'Caml while loops (which are tail
-#	      recursive!)
-#	
-#	  o Webgui [DXQ]
-#	
-#	    - Moved XHTML pretty printing into GUI.
-#	
-#	Revision 1.336  2006/12/08 15:18:53  trevor
-#	  o GUI changed to display asynchronous queries and jobs differently
-#	    than synchronous queries/jobs.
-#	  o Galaxd submits jobs to GUI using UDP
-#	
-#	Revision 1.335  2006/10/13 16:27:15  mff
-#	October 13, 2006 - Mary
-#	  o Put glx:deep-distinct() back.
-#	
-#	Revision 1.334  2006/10/03 18:46:47  mff
-#	
-#	
-#	October 3, 2006 - Mary
-#	
-#	  o Extricated threads module/options from all modules except Galaxd.
-#	
-#	    Galax_server is now a functor, which takes the "kind" of server
-#	    module (Thread or Forked) as an argument.
-#	
-#	    Extended processing context to include the server function to
-#	    invoke a remote query, because it depends on the kind of
-#	    Galax_server.  The "toplevel" program (galaxd) determines what
-#	    kind of server to use.
-#	
-#	    The server's query function must be available to the Execute
-#	    operator, so I extended the Processing_context to include it.
-#	
-#	Revision 1.333  2006/09/22 02:15:40  mff
-#	September 21, 2006 - Mary
-#	 o Makefile fixes
-#	
-#	Revision 1.332  2006/09/21 16:52:33  mff
-#	**********************************
-#	*** You must re-run configure. ***
-#	**********************************
-#	
-#	September 21, 2006 - Mary
-#	
-#	 o Removed "-with-galaxd" option from configure script.  Switch no
-#	   longer necessary.  Makefile now compiles & links all top-level
-#	   targets appropriately: galaxd links with galax-threads.cm*a and all
-#	   other targets with galax.cm*a
-#	
-#	   Removed toplevel/top_server.ml from CVS b/c it's generated.
-#	
-#	Revision 1.331  2006/09/13 19:04:27  mff
-#	**********************************
-#	*** You must re-run configure. ***
-#	**********************************
-#	
-#	September 13, 2006 - Mary
-#	
-#	 o Added "-with-galaxd" option to configure script (default without)
-#	
-#	   -with-galaxd (re)compiles all modules with threads enabled,
-#	    link with threads library, and creates galaxd.
-#	
-#	   !!NB!!: All top-level executables will be thread-enabled and
-#	   therefore *RUN SLOW*.  Only use -with-galaxd if you really need it.
-#	
-#	
-#	 o Added toplevel/{top,thread,unix}_server.  Makefile selects
-#	   appropriate server based on config options.
-#	
-#	Revision 1.330  2006/08/21 14:51:13  trevor
-#	 o Added the web interface for galaxd.
-#	
-#	Revision 1.329  2006/08/16 20:30:08  simeon
-#	August 16, 2006 - Jerome
-#	
-#	  o Release:
-#	    - Set the version number to 0.6.8.
-#	    - Added 0.6.8 entries in the documentation and Web sites.
-#	    - Some minor fixes the documentation, notably updating the
-#	      contributor's list.
-#	    - Added some text for support for ULTF, XQueryP in the release
-#	      notes.
-#	    - Fixed the ns_usecase expected result to match the one generated
-#	      by Galax. Namespace handling in constructors may be fixed at
-#	      some point and result in subsequent changes.
-#	    - Fixed usecase Makefile to not set monitoring on.
-#	  o ULTF/XQuery!/XQueryP Trilogy:
-#	    - Added -language ultf option for W3C Update Facility.
-#	    - Added minimalistic tutorial in the documentation for how to run
-#	      those.
-#	    - Added examples in ./examples/extensions for each of the 3
-#	      languages.
-#	  o F&O:
-#	    - Fixed fn:matches function to not take optional second and third
-#	      arguments anymore.
-#	
-#	Revision 1.328  2006/08/14 16:02:17  simeon
-#	*** empty log message ***
-#	
-#	Revision 1.327  2006/08/12 18:28:04  mff
-#	
-#	Removed xml-diff target, which was added incorrectly.
-#	
-#	Revision 1.326  2006/08/11 20:09:35  kristi
-#	August 11, 2006 - Kristi (Distributed XQuery)
-#	
-#	 o Modified galax-parse.ml, top_options.ml, top_config.ml, top_config.mli
-#	   to support -diff option (compares 2 XML files), so can use galax-parse -diff to diff 2 XML
-#	   files
-#	
-#	o Added preliminary test cases for DXQ in examples/dxq/test/q
-#	  along with 2 programs, run-tests and generate-tests
-#	  run-tests is a shell script that calls galax-parse -diff to check
-#	  if tests passed.  generate-tests is a perl script that
-#	  generates null-ary test cases
-#	
-#	Revision 1.325  2006/06/15 23:59:58  simeon
-#	June 15, 2006 - Jerome
-#	
-#	 o Updates:
-#	    - Fixed bug in physical typing of insert/replace/rename.
-#	
-#	    - Added top-level flag to select the language support (between
-#	      XQuery 1.0 and XQuery!). Default is XQuery 1.0. Please use the
-#	      following option to turn XQuery! support on:
-#	
-#	       -language xquerybang
-#	
-#	      Notes:
-#	        * This only currently work with optimization off!! Something
-#	          got broken in the safety checks of the optimizer with all
-#	          the work we are going on it...
-#	        * This also turning static typing off since it is not
-#	          implemented (and wouldn't be safe!).
-#	
-#	Revision 1.324  2006/05/16 23:33:59  simeon
-#	May 16, 2006 - Jerome
-#	
-#	  *** Test suite change: we now run 0.9.0.
-#	     WARNINGS:
-#	       - 0.8.6 will NOT run, because of xdt: to xs: namespace changes.
-#	       - several Galax bugs are being exposed by 0.9.0 which are not
-#	         fixed yet. ***
-#	
-#	  o Printing:
-#	     - Fixed issue with flushing of formatters in pretty-printing
-#	       stubs. (Gmisc module).
-#	
-#	  o Alignment:
-#	     - Removed xdt: namespace, now replaced by xs: namespace.
-#	     - Added support for 'encoding' option in the XQuery version
-#	       declaration.
-#	     - Implemented fn:codepoint-equal() function.
-#	     - Fixed bug in parsing for 'castable as' expression with an
-#	       optional type.
-#	
-#	  o Arithmetics:
-#	     - Fixed long-standing bug in arithmetics of dates and time not
-#	       dealing with the empty sequence properly, both in the type
-#	       signatures and evaluation code.
-#	     - Short-circuits the evaluation in the case one of the operand is
-#	       the empty sequence.
-#	
-#	  o Constructor functions:
-#	     - Constructor functions are now properly normalized to cast based
-#	       on whether the function name derives from xs:anyAtomicType,
-#	       instead of just as being in the xs: namespace.
-#	     - Constructor functions now properly normalized to a cast
-#	       expression with an optional type.
-#	
-#	  o Testing:
-#	     - Fixed test harness to handle cases where the error comes out of
-#	       serialization rather than evaluation.
-#	
-#	Revision 1.323  2006/05/15 15:20:36  car
-#	May 15, 2006 - Chris Rath
-#	  o Added a new target, "byte" to the toplevel and subordinate Makefiles.
-#	    - Only creates the byte-code galax library and byte-code toplevel applications.
-#	  o Added a new target "byteworld" that works like "make world"
-#		 - Only creates the byte-code galax library and byte-code toplevel applications.
-#	
-#	Revision 1.322  2006/05/12 18:15:00  car
-#	May 12, 2006 - Chris Rath
-#	  o Fixed missing files and typos in Makefile.galax
-#	  o Added "regression" target to top level Makefile.
-#	  o Removed regress/testconfig.xml from CVS; this file is now generated from testconfig-tmpl.xml
-#	  o Updated all lower-level Makefiles to ensure they all have the standard targets
-#	
-#	Revision 1.321  2006/05/11 16:54:58  simeon
-#	May 11, 2006 - Jerome
-#	
-#	  ** The test-suite should work again **
-#	
-#	  o XML Parsing:
-#	     - Fixed bug introduced last week about resolution of attributes
-#	       in the default namespace, affecting testing.
-#	
-#	Revision 1.320  2006/04/26 14:25:04  car
-#	April 26, 2006 - Chris Rath
-#	  o Added toplevel command sources to the .depend target.
-#	  o Updated the configure script to support -enable-profiling option.
-#	  o Updated Makefile.galax to support profiling.
-#	
-#	Revision 1.319  2006/04/17 18:10:40  car
-#	April 17, 2006 - Chris Rath
-#	  o Changes necessary to align with GODI
-#	
-#########################################################################
-
-#########################################################################
 # Section:	Default target
 # Description:
 #		The default target for this Makefile is "all"
@@ -611,24 +39,18 @@ endif
 
 # Galax top-level apps
 
-TARGETNAME1=galax-run
+TARGETNAME1=galax
 TARGET1=$(TARGETNAME1)$(EXE)
 OPTTARGET1=$(TARGETNAME1)$(OPT)
 BYTETARGET1=$(TARGETNAME1)$(BYTE)
 OPTPROFTARGET1=$(TARGETNAME1).optprof
-TARGETOBJS1= toplevel/$(TARGETNAME1).cmo
+TARGETOBJS1=toplevel/galax_main.cmo
 
 TARGETNAME2=galax-mapschema
 TARGET2=$(TARGETNAME2)$(EXE)
 OPTTARGET2=$(TARGETNAME2)$(OPT)
 BYTETARGET2=$(TARGETNAME2)$(BYTE)
 TARGETOBJS2=toplevel/$(TARGETNAME2).cmo
-
-TARGETNAME3=galax-parse
-TARGET3=$(TARGETNAME3)$(EXE)
-OPTTARGET3=$(TARGETNAME3)$(OPT)
-BYTETARGET3=$(TARGETNAME3)$(BYTE)
-TARGETOBJS3=toplevel/$(TARGETNAME3).cmo
 
 TARGETNAME4=galax-mapwsdl
 TARGET4=$(TARGETNAME4)$(EXE)
@@ -647,12 +69,6 @@ TARGET6=$(TARGETNAME6)$(EXE)
 OPTTARGET6=$(TARGETNAME6)$(OPT)
 BYTETARGET6=$(TARGETNAME6)$(BYTE)
 TARGETOBJS6=toplevel/$(TARGETNAME6).cmo
-
-TARGETNAME7=galax-compile
-TARGET7=$(TARGETNAME7)$(EXE)
-OPTTARGET7=$(TARGETNAME7)$(OPT)
-BYTETARGET7=$(TARGETNAME7)$(BYTE)
-TARGETOBJS7= toplevel/$(TARGETNAME7).cmo
 
 TARGETNAME8=galax-test
 TARGET8=$(TARGETNAME8)$(EXE)
@@ -706,11 +122,9 @@ TARGETOBJS15= toplevel/$(TARGETNAME15).cmo
 GALAX_ALL_LNCOMMANDS=\
 $(TARGETNAME1) \
 $(TARGETNAME2) \
-$(TARGETNAME3) \
 $(TARGETNAME4) \
 $(TARGETNAME5) \
 $(TARGETNAME6) \
-$(TARGETNAME7) \
 $(TARGETNAME8) \
 $(TARGETNAME9) \
 $(TARGETNAME10) \
@@ -723,11 +137,9 @@ $(TARGETNAME15)
 GALAX_BYTE_COMMANDS=\
 $(BYTETARGET1) \
 $(BYTETARGET2) \
-$(BYTETARGET3) \
 $(BYTETARGET4) \
 $(BYTETARGET5) \
 $(BYTETARGET6) \
-$(BYTETARGET7) \
 $(BYTETARGET8) \
 $(BYTETARGET9) \
 $(BYTETARGET10) \
@@ -743,11 +155,9 @@ GALAX_ALL_COMMANDS=$(GALAX_BYTE_COMMANDS)
 GALAX_ALL_COMMAND_OBJS=\
 $(TARGETOBJS1) \
 $(TARGETOBJS2) \
-$(TARGETOBJS3) \
 $(TARGETOBJS4) \
 $(TARGETOBJS5) \
 $(TARGETOBJS6) \
-$(TARGETOBJS7) \
 $(TARGETOBJS8) \
 $(TARGETOBJS9) \
 $(TARGETOBJS10) \
@@ -761,11 +171,9 @@ ifdef OCAMLOPT
 GALAX_ALL_COMMANDS+=\
 $(OPTTARGET1) \
 $(OPTTARGET2) \
-$(OPTTARGET3) \
 $(OPTTARGET4) \
 $(OPTTARGET5) \
 $(OPTTARGET6) \
-$(OPTTARGET7) \
 $(OPTTARGET8)  \
 $(OPTTARGET9) \
 $(OPTTARGET10) \
@@ -964,9 +372,6 @@ $(BYTETARGET1):	$(GALAX_LIB) $(TARGETOBJS1)
 $(BYTETARGET2):	$(GALAX_LIB) $(TARGETOBJS2)
 	$(OCAMLC) -custom -linkall -o $@ $(OCAMLC_FLAGS) $(GALAX_ALL_INCLUDES) $(GALAX_ALL_LIBS) $(TARGETOBJS2)
 
-$(BYTETARGET3):	$(GALAX_LIB) $(TARGETOBJS3)
-	$(OCAMLC) -custom -linkall -o $@ $(OCAMLC_FLAGS) $(GALAX_ALL_INCLUDES) $(GALAX_ALL_LIBS) $(TARGETOBJS3)
-
 $(BYTETARGET4):	$(GALAX_LIB) $(TARGETOBJS4)
 	$(OCAMLC) -custom -linkall -o $@ $(OCAMLC_FLAGS) $(GALAX_ALL_INCLUDES) $(GALAX_ALL_LIBS) $(TARGETOBJS4)
 
@@ -975,9 +380,6 @@ $(BYTETARGET5):	$(GALAX_LIB) $(TARGETOBJS5)
 
 $(BYTETARGET6):	$(GALAX_LIB) $(TARGETOBJS6)
 	$(OCAMLC) -custom -linkall -o $@ $(OCAMLC_FLAGS) $(GALAX_ALL_INCLUDES) $(GALAX_ALL_LIBS) $(TARGETOBJS6)
-
-$(BYTETARGET7):	$(GALAX_LIB) $(TARGETOBJS7)
-	$(OCAMLC) -custom -linkall -o $@ $(OCAMLC_FLAGS) $(GALAX_ALL_INCLUDES) $(GALAX_ALL_LIBS) $(TARGETOBJS7)
 
 $(BYTETARGET8):	$(GALAX_LIB) $(TARGETOBJS8)
 	$(OCAMLC) -custom -linkall -o $@ $(OCAMLC_FLAGS) $(GALAX_ALL_INCLUDES) $(GALAX_ALL_LIBS) $(GALAX_TESTING) $(TARGETOBJS8)
@@ -1020,9 +422,6 @@ $(OPTTARGET1):	$(GALAX_OPTLIB) $(TARGETOBJS1:.cmo=.cmx)
 $(OPTTARGET2):	$(GALAX_OPTLIB) $(TARGETOBJS2:.cmo=.cmx)
 	$(OCAMLOPT) -linkall -o $@ $(OCAMLOPT_FLAGS) $(GALAX_ALL_INCLUDES) $(GALAX_ALL_OPTLIBS) $(TARGETOBJS2:.cmo=.cmx)
 
-$(OPTTARGET3):	$(GALAX_OPTLIB) $(TARGETOBJS3:.cmo=.cmx)
-	$(OCAMLOPT) -linkall -o $@ $(OCAMLOPT_FLAGS) $(GALAX_ALL_INCLUDES) $(GALAX_ALL_OPTLIBS) $(TARGETOBJS3:.cmo=.cmx)
-
 $(OPTTARGET4):	$(GALAX_OPTLIB) $(TARGETOBJS4:.cmo=.cmx)
 	$(OCAMLOPT) -linkall -o $@ $(OCAMLOPT_FLAGS) $(GALAX_ALL_INCLUDES) $(GALAX_ALL_OPTLIBS) $(TARGETOBJS4:.cmo=.cmx)
 
@@ -1031,9 +430,6 @@ $(OPTTARGET5):	$(GALAX_OPTLIB) $(TARGETOBJS5:.cmo=.cmx)
 
 $(OPTTARGET6):	$(GALAX_OPTLIB) $(TARGETOBJS6:.cmo=.cmx)
 	$(OCAMLOPT) -linkall -o $@ $(OCAMLOPT_FLAGS) $(GALAX_ALL_INCLUDES) $(GALAX_ALL_OPTLIBS) $(TARGETOBJS6:.cmo=.cmx)
-
-$(OPTTARGET7):	$(GALAX_OPTLIB) $(TARGETOBJS7:.cmo=.cmx)
-	$(OCAMLOPT) -linkall -o $@ $(OCAMLOPT_FLAGS) $(GALAX_ALL_INCLUDES) $(GALAX_ALL_OPTLIBS) $(TARGETOBJS7:.cmo=.cmx)
 
 $(OPTTARGET8):	$(GALAX_OPTLIB) $(TARGETOBJS8:.cmo=.cmx)
 	$(OCAMLOPT) -linkall -o $@ $(OCAMLOPT_FLAGS) $(GALAX_ALL_INCLUDES) $(GALAX_ALL_OPTLIBS) $(GALAX_TESTING_OPTOBJECTS) $(TARGETOBJS8:.cmo=.cmx)

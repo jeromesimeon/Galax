@@ -8,11 +8,11 @@
 (*                                                                     *)
 (***********************************************************************)
 
-(* $Id: galax-run.ml,v 1.92 2007/10/26 15:49:33 simeon Exp $ *)
+(* $Id$ *)
 
-(* Module: Galax-run
+(* Module: Top_run
    Description:
-     This module contains the main function for the galax-run command.
+     This module contains the main function for the "galax xquery" command.
  *)
 
 open Format
@@ -48,12 +48,13 @@ module DummyServer = Galax_server.Server(DummyServerKind)
 (* Command-line options *)
 (************************)
 
-let process_args proc_ctxt =
+let process_args proc_ctxt gargs =
   let args =
-    make_options
+    make_options_argv
       proc_ctxt
       usage_galax_run
       [ Misc_Options;Monitoring_Options;Encoding_Options;Context_Options;DataModel_Options;Serialization_Options;Behavior_Options;ProcessingPhases_Options;Printing_Options;Optimization_Options;CodeSelection_Options;Runtime_Options]
+      gargs
   in
   match args with
   | [] -> failwith "Input file(s) not specified"
@@ -153,12 +154,12 @@ let main proc_ctxt module_files =
 (* Let's go! *)
 (*************)
 
-let go () =
+let go gargs =
   (* 1. First get the default processing context for galax-run *)
   let proc_ctxt = galax_run_proc_ctxt () in
 
   (* 2. Parses the command-line arguments *)
-  let module_files = process_args proc_ctxt in
+  let module_files = process_args proc_ctxt gargs in
 
   Processing_context.set_dxq_server proc_ctxt 
     (DummyServer.evaluate_closure, DummyServer.evaluate_remote_query, DummyServer.async_eval, DummyServer.interpret_hostport_string);
@@ -180,5 +181,3 @@ let go () =
     ret
   end
 
-let _ =
-  low_exec go ()

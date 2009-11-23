@@ -2,6 +2,15 @@
 | Changelog |
  -----------
 
+November 23, 2009 - Jerome
+
+  o Toplevel:
+      - Started consolidating command-line executable under a single
+        'galax' command. New commands are:
+           galax-run [options]    --> galax xquery [options]
+           galax-parse [options]  --> galax xml [options]
+           galax-compile [options --> galax compile [options]
+
 November 18, 2009 - Jerome
 
   o Examples:
