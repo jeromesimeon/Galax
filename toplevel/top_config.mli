@@ -51,6 +51,13 @@ val prefix        : bool ref
 val load       	  : bool ref
 val export     	  : bool ref
 
+val import_type   : bool ref
+val prefix_opt    : string option ref
+val print_type    : bool ref
+val output_type   : string option ref
+val normalize_type           : bool ref
+val print_normalized_type    : bool ref
+val output_normalized_type   : string option ref
 
 (*********************************)
 (* Argument Processing functions *)

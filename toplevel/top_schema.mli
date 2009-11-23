@@ -10,19 +10,12 @@
 
 (* $Id$ *)
 
-(* Module: Top_args
+(* Module: Top_schema
    Description:
-     This module contains code for generic processing of galax
-     executable command-line arguments.
+     This module contains the main function for the "galax xmlschema"
+     command. This command takes an XML Schema and produces the
+     proprietary XQuery system syntax supported by Galax.
  *)
 
-type executable_kind =
-  | XQueryExec
-  | XQueryCompileExec
-  | XMLExec
-  | XMLSchemaExec
-
-type gargs = string array
-
-val dispatch_args: unit -> executable_kind * gargs
+val go: Top_args.gargs -> unit
 

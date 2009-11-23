@@ -31,6 +31,8 @@ let dispatch_go ek gargs =
       Top_compile.go gargs
   | XMLExec ->
       Top_parse.go gargs
+  | XMLSchemaExec ->
+      Top_schema.go gargs
 
 let go() =
   (* 1. Pre-process the arguments *)

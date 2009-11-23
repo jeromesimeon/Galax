@@ -20,13 +20,15 @@ type executable_kind =
   | XQueryExec
   | XQueryCompileExec
   | XMLExec
+  | XMLSchemaExec
 
 type gargs = string array
 
 let dispatch_table =
   ["xquery",XQueryExec;
    "compile",XQueryCompileExec;
-   "xml",XMLExec]
+   "xml",XMLExec;
+   "xmlschema",XMLSchemaExec]
 
 let do_dispatch_args actual_args =
   let effective =

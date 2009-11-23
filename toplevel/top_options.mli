@@ -463,6 +463,7 @@ val title_galax_parse_options        : string
 (*****************)
 
 val usage_galax_run     : string
+val usage_galax_schema  : string
 val usage_galax_daemon  : string
 val usage_galax_parse   : string
 val usage_galax_compile : string

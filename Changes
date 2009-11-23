@@ -4,6 +4,16 @@
 
 November 23, 2009 - Jerome
 
+  o Toplevel:
+      - Added schema parsing/mapping to main command-line tool:
+          galax-mapschema [options]    --> galax xmlschema [options]
+
+  o Config:
+      - Fixed duplicate clean up of .depend files in some of the tools
+        (removing Warning).
+
+November 23, 2009 - Jerome
+
   o Documentation:
       - Cleaned up the documentation generation so it doesn't choke on
         nested URLs and properly generates the table of content.

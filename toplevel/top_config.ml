@@ -56,6 +56,14 @@ let prefix  	  = ref false     (* True if prefixing *)
 let load       	  = ref false     (* True if building the data model instance *)
 let export     	  = ref false     (* True if exporting data model to stream *)
 
+let prefix_opt 	  = ref None 
+(* XML Schema - XQuery types processing phases *)
+let import_type            = ref true
+let normalize_type         = ref false
+let print_type             = ref true
+let print_normalized_type  = ref false
+let output_type		   = ref None  (* Set to a filename *)
+let output_normalized_type = ref None  (* Set to a filename *)
 
 (*********************************)
 (* Argument Processing functions *)
