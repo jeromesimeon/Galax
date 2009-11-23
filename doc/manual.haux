@@ -1,0 +1,133 @@
+\@addtocsec{htoc}{1}{-2}{\@print{Part I}\quad{}User's Manual{}}
+\@addtocsec{htoc}{2}{-1}{\@print{Chapter 1}\quad{}Getting Started{}}
+\newlabel{sec:readme}{{1}{X}}
+\@addtocsec{htoc}{3}{0}{\@print{1.1}\quad{}What is XQuery 1.0?{}}
+\@addtocsec{htoc}{4}{0}{\@print{1.2}\quad{}What is Galax?{}}
+\@addtocsec{htoc}{5}{1}{\@print{1.2.1}\quad{}Changes since the last version{}}
+\@addtocsec{htoc}{6}{0}{\@print{1.3}\quad{}Downloading and installing Galax{}}
+\@addtocsec{htoc}{7}{0}{\@print{1.4}\quad{}How to use Galax{}}
+\@addtocsec{htoc}{8}{1}{\@print{1.4.1}\quad{}Using Galax from the command line{}}
+\@addtocsec{htoc}{9}{1}{\@print{1.4.2}\quad{}Web interface{}}
+\@addtocsec{htoc}{10}{1}{\@print{1.4.3}\quad{}Language API's{}}
+\@addtocsec{htoc}{11}{-1}{\@print{Chapter 2}\quad{}Installation{}}
+\newlabel{sec:install}{{2}{X}}
+\@addtocsec{htoc}{12}{0}{\@print{2.1}\quad{}Prerequisites{}}
+\newlabel{sec:prelim}{{2.1}{X}}
+\@addtocsec{htoc}{13}{0}{\@print{2.2}\quad{}Source Installation{}}
+\newlabel{sec:src-dist}{{2.2}{X}}
+\@addtocsec{htoc}{14}{1}{\@print{2.2.1}\quad{}
+Installing Galax using GODI installation and configuration tool{}}
+\@addtocsec{htoc}{15}{1}{\@print{2.2.2}\quad{}Installing Galax source by hand{}}
+\@addtocsec{htoc}{16}{0}{\@print{2.3}\quad{}XQuery Test Suite{}}
+\newlabel{sec:testsuite}{{2.3}{X}}
+\@addtocsec{htoc}{17}{0}{\@print{2.4}\quad{}Web Site Interface{}}
+\newlabel{sec:website}{{2.4}{X}}
+\@addtocsec{htoc}{18}{1}{\@print{2.4.1}\quad{}Prerequisites{}}
+\@addtocsec{htoc}{19}{1}{\@print{2.4.2}\quad{}Installation of Website Interface{}}
+\@addtocsec{htoc}{20}{-1}{\@print{Chapter 3}\quad{}Tutorial{}}
+\newlabel{sec:tutorial}{{3}{X}}
+\@addtocsec{htoc}{21}{0}{\@print{3.1}\quad{}Executing a query{}}
+\@addtocsec{htoc}{22}{0}{\@print{3.2}\quad{}Accessing Input{}}
+\@addtocsec{htoc}{23}{0}{\@print{3.3}\quad{}Controlling Output{}}
+\@addtocsec{htoc}{24}{0}{\@print{3.4}\quad{}Controlling Compilation{}}
+\@addtocsec{htoc}{25}{0}{\@print{3.5}\quad{}Updates and Procedural Extensions{}}
+\@addtocsec{htoc}{26}{-2}{\@print{Part II}\quad{}Reference Manual{}}
+\@addtocsec{htoc}{27}{-1}{\@print{Chapter 4}\quad{}XQuery 1.0 Conformance{}}
+\newlabel{sec:alignment}{{4}{X}}
+\@addtocsec{htoc}{28}{0}{\@print{4.1}\quad{}Data Model{}}
+\@addtocsec{htoc}{29}{0}{\@print{4.2}\quad{}XQuery{}}
+\@addtocsec{htoc}{30}{0}{\@print{4.3}\quad{}XQuery 1.0 Formal Semantics{}}
+\@addtocsec{htoc}{31}{0}{\@print{4.4}\quad{}Functions and Operators{}}
+\@addtocsec{htoc}{32}{0}{\@print{4.5}\quad{}Use Cases{}}
+\@addtocsec{htoc}{33}{0}{\@print{4.6}\quad{}Galax \version\ extensions{}}
+\@addtocsec{htoc}{34}{1}{\@print{4.6.1}\quad{}Defining XQuery Types in the Query Prolog{}}
+\@addtocsec{htoc}{35}{1}{\@print{4.6.2}\quad{}Galax specific functions{}}
+\@addtocsec{htoc}{36}{-1}{\@print{Chapter 5}\quad{}Command Line Tools{}}
+\newlabel{sec:commandline}{{5}{X}}
+\@addtocsec{htoc}{37}{0}{\@print{5.1}\quad{}\code{galax-run} : The Galax XQuery interpreter{}}
+\@addtocsec{htoc}{38}{1}{\@print{5.1.1}\quad{}Input options{}}
+\newlabel{sec:inputoptions}{{5.1.1}{X}}
+\@addtocsec{htoc}{39}{1}{\@print{5.1.2}\quad{}Output options{}}
+\@addtocsec{htoc}{40}{1}{\@print{5.1.3}\quad{}Evaluation options{}}
+\@addtocsec{htoc}{41}{1}{\@print{5.1.4}\quad{}Normalization options{}}
+\@addtocsec{htoc}{42}{1}{\@print{5.1.5}\quad{}Static typing options{}}
+\@addtocsec{htoc}{43}{1}{\@print{5.1.6}\quad{}Rewriting options{}}
+\@addtocsec{htoc}{44}{1}{\@print{5.1.7}\quad{}Factorization options{}}
+\@addtocsec{htoc}{45}{1}{\@print{5.1.8}\quad{}Compilation options{}}
+\@addtocsec{htoc}{46}{1}{\@print{5.1.9}\quad{}Optimization options{}}
+\@addtocsec{htoc}{47}{1}{\@print{5.1.10}\quad{}Miscellaneous printing options{}}
+\@addtocsec{htoc}{48}{1}{\@print{5.1.11}\quad{}Document projection options{}}
+\@addtocsec{htoc}{49}{1}{\@print{5.1.12}\quad{}Miscellaneous options{}}
+\@addtocsec{htoc}{50}{0}{\@print{5.2}\quad{}\code{galax-parse}: XML parser and XML Schema validator{}}
+\@addtocsec{htoc}{51}{0}{\@print{5.3}\quad{}\code{galax-mapschema} : XML Schema validator{}}
+\@addtocsec{htoc}{52}{0}{\@print{5.4}\quad{}\code{galaxd} : The Galax network server{}}
+\@addtocsec{htoc}{53}{1}{\@print{5.4.1}\quad{}Running simulations{}}
+\@addtocsec{htoc}{54}{-1}{\@print{Chapter 6}\quad{}Application Programming Interfaces (APIS){}}
+\newlabel{sec:api}{{6}{X}}
+\@addtocsec{htoc}{55}{0}{\@print{6.1}\quad{}Galax API Functionality{}}
+\newlabel{sec:apisupport}{{6.1}{X}}
+\@addtocsec{htoc}{56}{1}{\@print{6.1.1}\quad{}Linking and Running{}}
+\@addtocsec{htoc}{57}{0}{\@print{6.2}\quad{}Quick Start to using the APIs{}}
+\newlabel{sec:quickstart}{{6.2}{X}}
+\@addtocsec{htoc}{58}{0}{\@print{6.3}\quad{}XQuery Data Model{}}
+\@addtocsec{htoc}{59}{1}{\@print{6.3.1}\quad{}Types and Constructors{}}
+\@addtocsec{htoc}{60}{1}{\@print{6.3.2}\quad{}Using XQuery data model values{}}
+\@addtocsec{htoc}{61}{1}{\@print{6.3.3}\quad{}Accessors{}}
+\@addtocsec{htoc}{62}{1}{\@print{6.3.4}\quad{}Loading documents{}}
+\@addtocsec{htoc}{63}{0}{\@print{6.4}\quad{}Query Evaluation{}}
+\@addtocsec{htoc}{64}{1}{\@print{6.4.1}\quad{}Module context{}}
+\@addtocsec{htoc}{65}{1}{\@print{6.4.2}\quad{}Evaluating queries/expressions{}}
+\@addtocsec{htoc}{66}{1}{\@print{6.4.3}\quad{}Serializing XQuery data model values{}}
+\@addtocsec{htoc}{67}{0}{\@print{6.5}\quad{}C API Specifics{}}
+\@addtocsec{htoc}{68}{1}{\@print{6.5.1}\quad{}Memory Management{}}
+\newlabel{sec:cmemory}{{6.5.1}{X}}
+\@addtocsec{htoc}{69}{1}{\@print{6.5.2}\quad{}Exceptions{}}
+\@addtocsec{htoc}{70}{0}{\@print{6.6}\quad{}Java API Specifics{}}
+\@addtocsec{htoc}{71}{1}{\@print{6.6.1}\quad{}General Info{}}
+\@addtocsec{htoc}{72}{1}{\@print{6.6.2}\quad{}Exceptions{}}
+\@addtocsec{htoc}{73}{1}{\@print{6.6.3}\quad{}Memory Management{}}
+\@addtocsec{htoc}{74}{0}{\@print{6.7}\quad{}Operation-System Notes{}}
+\@addtocsec{htoc}{75}{1}{\@print{6.7.1}\quad{}Windows{}}
+\newlabel{sec:api-notes-mingw}{{6.7.1}{X}}
+\@addtocsec{htoc}{76}{-1}{\@print{Chapter 7}\quad{}For Galax Developers{}}
+\newlabel{sec:developers}{{7}{X}}
+\@addtocsec{htoc}{77}{0}{\@print{7.1}\quad{}Galax Source Code Architecture{}}
+\@addtocsec{htoc}{78}{1}{\@print{7.1.1}\quad{}General{}}
+\@addtocsec{htoc}{79}{1}{\@print{7.1.2}\quad{}Datamodel{}}
+\@addtocsec{htoc}{80}{1}{\@print{7.1.3}\quad{}Processing Model{}}
+\@addtocsec{htoc}{81}{1}{\@print{7.1.4}\quad{}Query Parsing{}}
+\@addtocsec{htoc}{82}{1}{\@print{7.1.5}\quad{}Normalization{}}
+\@addtocsec{htoc}{83}{1}{\@print{7.1.6}\quad{}Static Typing{}}
+\@addtocsec{htoc}{84}{1}{\@print{7.1.7}\quad{}Schema/Validation{}}
+\@addtocsec{htoc}{85}{1}{\@print{7.1.8}\quad{}Rewriting{}}
+\@addtocsec{htoc}{86}{1}{\@print{7.1.9}\quad{}Compilation{}}
+\@addtocsec{htoc}{87}{1}{\@print{7.1.10}\quad{}Evaluation{}}
+\@addtocsec{htoc}{88}{1}{\@print{7.1.11}\quad{}Serialization{}}
+\@addtocsec{htoc}{89}{1}{\@print{7.1.12}\quad{}Testing{}}
+\@addtocsec{htoc}{90}{1}{\@print{7.1.13}\quad{}APIs{}}
+\@addtocsec{htoc}{91}{1}{\@print{7.1.14}\quad{}External libraries \& tools{}}
+\@addtocsec{htoc}{92}{1}{\@print{7.1.15}\quad{}Extensions{}}
+\@addtocsec{htoc}{93}{1}{\@print{7.1.16}\quad{}Experimental Galax extensions{}}
+\@addtocsec{htoc}{94}{1}{\@print{7.1.17}\quad{}Documentation{}}
+\@addtocsec{htoc}{95}{1}{\@print{7.1.18}\quad{}Generated executables{}}
+\@addtocsec{htoc}{96}{-1}{\@print{Chapter 8}\quad{}Release Notes{}}
+\newlabel{sec:releasenotes}{{8}{X}}
+\@addtocsec{htoc}{97}{0}{\@print{8.1}\quad{}Galax 1.0 (March 2008){}}
+\@addtocsec{htoc}{98}{0}{\@print{8.2}\quad{}Galax 0.7.2 (February 2007){}}
+\@addtocsec{htoc}{99}{0}{\@print{8.3}\quad{}Galax 0.6.8 (August 2006){}}
+\@addtocsec{htoc}{100}{0}{\@print{8.4}\quad{}Galax 0.6.5 (May 2006){}}
+\@addtocsec{htoc}{101}{0}{\@print{8.5}\quad{}Galax 0.5.0 (February 2005){}}
+\@addtocsec{htoc}{102}{0}{\@print{8.6}\quad{}Galax 0.4.0 (August 2004){}}
+\@addtocsec{htoc}{103}{0}{\@print{8.7}\quad{}Galax 0.3.5 (December 2003){}}
+\@addtocsec{htoc}{104}{0}{\@print{8.8}\quad{}Galax 0.3.1 (June 2003){}}
+\@addtocsec{htoc}{105}{0}{\@print{8.9}\quad{}Galax 0.3.0 (January 2003){}}
+\@addtocsec{htoc}{106}{0}{\@print{8.10}\quad{}Galax 0.2.0 (October 2002){}}
+\@addtocsec{htoc}{107}{-1}{\@print{Chapter 9}\quad{}General{}}
+\newlabel{sec:general}{{9}{X}}
+\@addtocsec{htoc}{108}{0}{\@print{9.1}\quad{}The Galax Team{}}
+\@addtocsec{htoc}{109}{0}{\@print{9.2}\quad{}Feedback{}}
+\@addtocsec{htoc}{110}{0}{\@print{9.3}\quad{}Copyright and License{}}
+\newlabel{sec:license}{{9.3}{X}}
+\@addtocsec{htoc}{111}{0}{\@print{9.4}\quad{}Bugs and Limitations{}}
+\newlabel{sec:bugs}{{9.4}{X}}
+\@addtocsec{htoc}{112}{0}{\@print{9.5}\quad{}Known Bugs and Limitations{}}

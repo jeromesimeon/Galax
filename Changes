@@ -4,6 +4,12 @@
 
 November 23, 2009 - Jerome
 
+  o Documentation:
+      - Cleaned up the documentation generation so it doesn't choke on
+        nested URLs and properly generates the table of content.
+
+November 23, 2009 - Jerome
+
   o Toplevel:
       - Started consolidating command-line executable under a single
         'galax' command. New commands are:

@@ -250,13 +250,12 @@ uninstall:
 	for i in $(HTMLFILES); do ($(RM) $(CONF_GALAX_MAN)/$$i); done
 	for i in *.gif; do ($(RM) $(CONF_GALAX_MAN)/$$i); done
 
-clean: 
+realclean: 
 	$(RM) manual.log manual.pdf *.aux *.haux *.htoc *.html
+clean: 
+	$(RM) manual.log manual.pdf *.aux *.html
 
 clobber::
-
-realclean: clean
-	$(RM) *.html manual.pdf
 
 #########################################################################
 # Sub-Section:  Secondary targets
@@ -265,7 +264,7 @@ realclean: clean
 #########################################################################
 
 manual.html:	manual.pdf 
-	hevea -exec /bin/date manual.tex
+	hevea -fix -exec xxdate.exe manual.tex
 	hacha manual.html
 
 manual.pdf:	manual.tex $(SOURCES) 

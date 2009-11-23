@@ -1,0 +1,165 @@
+\begin{tocenv}
+\tocitem \@locref{htoc1}{\begin{@norefs}\@print{Part I}\quad{}User's Manual{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc2}{\begin{@norefs}\@print{Chapter 1}\quad{}Getting Started{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc3}{\begin{@norefs}\@print{1.1}\quad{}What is XQuery 1.0?{}\end{@norefs}}
+\tocitem \@locref{htoc4}{\begin{@norefs}\@print{1.2}\quad{}What is Galax?{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc5}{\begin{@norefs}\@print{1.2.1}\quad{}Changes since the last version{}\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc6}{\begin{@norefs}\@print{1.3}\quad{}Downloading and installing Galax{}\end{@norefs}}
+\tocitem \@locref{htoc7}{\begin{@norefs}\@print{1.4}\quad{}How to use Galax{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc8}{\begin{@norefs}\@print{1.4.1}\quad{}Using Galax from the command line{}\end{@norefs}}
+\tocitem \@locref{htoc9}{\begin{@norefs}\@print{1.4.2}\quad{}Web interface{}\end{@norefs}}
+\tocitem \@locref{htoc10}{\begin{@norefs}\@print{1.4.3}\quad{}Language API's{}\end{@norefs}}
+\end{tocenv}
+\end{tocenv}
+\tocitem \@locref{htoc11}{\begin{@norefs}\@print{Chapter 2}\quad{}Installation{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc12}{\begin{@norefs}\@print{2.1}\quad{}Prerequisites{}\end{@norefs}}
+\tocitem \@locref{htoc13}{\begin{@norefs}\@print{2.2}\quad{}Source Installation{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc14}{\begin{@norefs}\@print{2.2.1}\quad{}
+Installing Galax using GODI installation and configuration tool{}\end{@norefs}}
+\tocitem \@locref{htoc15}{\begin{@norefs}\@print{2.2.2}\quad{}Installing Galax source by hand{}\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc16}{\begin{@norefs}\@print{2.3}\quad{}XQuery Test Suite{}\end{@norefs}}
+\tocitem \@locref{htoc17}{\begin{@norefs}\@print{2.4}\quad{}Web Site Interface{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc18}{\begin{@norefs}\@print{2.4.1}\quad{}Prerequisites{}\end{@norefs}}
+\tocitem \@locref{htoc19}{\begin{@norefs}\@print{2.4.2}\quad{}Installation of Website Interface{}\end{@norefs}}
+\end{tocenv}
+\end{tocenv}
+\tocitem \@locref{htoc20}{\begin{@norefs}\@print{Chapter 3}\quad{}Tutorial{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc21}{\begin{@norefs}\@print{3.1}\quad{}Executing a query{}\end{@norefs}}
+\tocitem \@locref{htoc22}{\begin{@norefs}\@print{3.2}\quad{}Accessing Input{}\end{@norefs}}
+\tocitem \@locref{htoc23}{\begin{@norefs}\@print{3.3}\quad{}Controlling Output{}\end{@norefs}}
+\tocitem \@locref{htoc24}{\begin{@norefs}\@print{3.4}\quad{}Controlling Compilation{}\end{@norefs}}
+\tocitem \@locref{htoc25}{\begin{@norefs}\@print{3.5}\quad{}Updates and Procedural Extensions{}\end{@norefs}}
+\end{tocenv}
+\end{tocenv}
+\tocitem \@locref{htoc26}{\begin{@norefs}\@print{Part II}\quad{}Reference Manual{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc27}{\begin{@norefs}\@print{Chapter 4}\quad{}XQuery 1.0 Conformance{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc28}{\begin{@norefs}\@print{4.1}\quad{}Data Model{}\end{@norefs}}
+\tocitem \@locref{htoc29}{\begin{@norefs}\@print{4.2}\quad{}XQuery{}\end{@norefs}}
+\tocitem \@locref{htoc30}{\begin{@norefs}\@print{4.3}\quad{}XQuery 1.0 Formal Semantics{}\end{@norefs}}
+\tocitem \@locref{htoc31}{\begin{@norefs}\@print{4.4}\quad{}Functions and Operators{}\end{@norefs}}
+\tocitem \@locref{htoc32}{\begin{@norefs}\@print{4.5}\quad{}Use Cases{}\end{@norefs}}
+\tocitem \@locref{htoc33}{\begin{@norefs}\@print{4.6}\quad{}Galax \version\ extensions{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc34}{\begin{@norefs}\@print{4.6.1}\quad{}Defining XQuery Types in the Query Prolog{}\end{@norefs}}
+\tocitem \@locref{htoc35}{\begin{@norefs}\@print{4.6.2}\quad{}Galax specific functions{}\end{@norefs}}
+\end{tocenv}
+\end{tocenv}
+\tocitem \@locref{htoc36}{\begin{@norefs}\@print{Chapter 5}\quad{}Command Line Tools{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc37}{\begin{@norefs}\@print{5.1}\quad{}\code{galax-run} : The Galax XQuery interpreter{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc38}{\begin{@norefs}\@print{5.1.1}\quad{}Input options{}\end{@norefs}}
+\tocitem \@locref{htoc39}{\begin{@norefs}\@print{5.1.2}\quad{}Output options{}\end{@norefs}}
+\tocitem \@locref{htoc40}{\begin{@norefs}\@print{5.1.3}\quad{}Evaluation options{}\end{@norefs}}
+\tocitem \@locref{htoc41}{\begin{@norefs}\@print{5.1.4}\quad{}Normalization options{}\end{@norefs}}
+\tocitem \@locref{htoc42}{\begin{@norefs}\@print{5.1.5}\quad{}Static typing options{}\end{@norefs}}
+\tocitem \@locref{htoc43}{\begin{@norefs}\@print{5.1.6}\quad{}Rewriting options{}\end{@norefs}}
+\tocitem \@locref{htoc44}{\begin{@norefs}\@print{5.1.7}\quad{}Factorization options{}\end{@norefs}}
+\tocitem \@locref{htoc45}{\begin{@norefs}\@print{5.1.8}\quad{}Compilation options{}\end{@norefs}}
+\tocitem \@locref{htoc46}{\begin{@norefs}\@print{5.1.9}\quad{}Optimization options{}\end{@norefs}}
+\tocitem \@locref{htoc47}{\begin{@norefs}\@print{5.1.10}\quad{}Miscellaneous printing options{}\end{@norefs}}
+\tocitem \@locref{htoc48}{\begin{@norefs}\@print{5.1.11}\quad{}Document projection options{}\end{@norefs}}
+\tocitem \@locref{htoc49}{\begin{@norefs}\@print{5.1.12}\quad{}Miscellaneous options{}\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc50}{\begin{@norefs}\@print{5.2}\quad{}\code{galax-parse}: XML parser and XML Schema validator{}\end{@norefs}}
+\tocitem \@locref{htoc51}{\begin{@norefs}\@print{5.3}\quad{}\code{galax-mapschema} : XML Schema validator{}\end{@norefs}}
+\tocitem \@locref{htoc52}{\begin{@norefs}\@print{5.4}\quad{}\code{galaxd} : The Galax network server{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc53}{\begin{@norefs}\@print{5.4.1}\quad{}Running simulations{}\end{@norefs}}
+\end{tocenv}
+\end{tocenv}
+\tocitem \@locref{htoc54}{\begin{@norefs}\@print{Chapter 6}\quad{}Application Programming Interfaces (APIS){}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc55}{\begin{@norefs}\@print{6.1}\quad{}Galax API Functionality{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc56}{\begin{@norefs}\@print{6.1.1}\quad{}Linking and Running{}\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc57}{\begin{@norefs}\@print{6.2}\quad{}Quick Start to using the APIs{}\end{@norefs}}
+\tocitem \@locref{htoc58}{\begin{@norefs}\@print{6.3}\quad{}XQuery Data Model{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc59}{\begin{@norefs}\@print{6.3.1}\quad{}Types and Constructors{}\end{@norefs}}
+\tocitem \@locref{htoc60}{\begin{@norefs}\@print{6.3.2}\quad{}Using XQuery data model values{}\end{@norefs}}
+\tocitem \@locref{htoc61}{\begin{@norefs}\@print{6.3.3}\quad{}Accessors{}\end{@norefs}}
+\tocitem \@locref{htoc62}{\begin{@norefs}\@print{6.3.4}\quad{}Loading documents{}\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc63}{\begin{@norefs}\@print{6.4}\quad{}Query Evaluation{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc64}{\begin{@norefs}\@print{6.4.1}\quad{}Module context{}\end{@norefs}}
+\tocitem \@locref{htoc65}{\begin{@norefs}\@print{6.4.2}\quad{}Evaluating queries/expressions{}\end{@norefs}}
+\tocitem \@locref{htoc66}{\begin{@norefs}\@print{6.4.3}\quad{}Serializing XQuery data model values{}\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc67}{\begin{@norefs}\@print{6.5}\quad{}C API Specifics{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc68}{\begin{@norefs}\@print{6.5.1}\quad{}Memory Management{}\end{@norefs}}
+\tocitem \@locref{htoc69}{\begin{@norefs}\@print{6.5.2}\quad{}Exceptions{}\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc70}{\begin{@norefs}\@print{6.6}\quad{}Java API Specifics{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc71}{\begin{@norefs}\@print{6.6.1}\quad{}General Info{}\end{@norefs}}
+\tocitem \@locref{htoc72}{\begin{@norefs}\@print{6.6.2}\quad{}Exceptions{}\end{@norefs}}
+\tocitem \@locref{htoc73}{\begin{@norefs}\@print{6.6.3}\quad{}Memory Management{}\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc74}{\begin{@norefs}\@print{6.7}\quad{}Operation-System Notes{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc75}{\begin{@norefs}\@print{6.7.1}\quad{}Windows{}\end{@norefs}}
+\end{tocenv}
+\end{tocenv}
+\tocitem \@locref{htoc76}{\begin{@norefs}\@print{Chapter 7}\quad{}For Galax Developers{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc77}{\begin{@norefs}\@print{7.1}\quad{}Galax Source Code Architecture{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc78}{\begin{@norefs}\@print{7.1.1}\quad{}General{}\end{@norefs}}
+\tocitem \@locref{htoc79}{\begin{@norefs}\@print{7.1.2}\quad{}Datamodel{}\end{@norefs}}
+\tocitem \@locref{htoc80}{\begin{@norefs}\@print{7.1.3}\quad{}Processing Model{}\end{@norefs}}
+\tocitem \@locref{htoc81}{\begin{@norefs}\@print{7.1.4}\quad{}Query Parsing{}\end{@norefs}}
+\tocitem \@locref{htoc82}{\begin{@norefs}\@print{7.1.5}\quad{}Normalization{}\end{@norefs}}
+\tocitem \@locref{htoc83}{\begin{@norefs}\@print{7.1.6}\quad{}Static Typing{}\end{@norefs}}
+\tocitem \@locref{htoc84}{\begin{@norefs}\@print{7.1.7}\quad{}Schema/Validation{}\end{@norefs}}
+\tocitem \@locref{htoc85}{\begin{@norefs}\@print{7.1.8}\quad{}Rewriting{}\end{@norefs}}
+\tocitem \@locref{htoc86}{\begin{@norefs}\@print{7.1.9}\quad{}Compilation{}\end{@norefs}}
+\tocitem \@locref{htoc87}{\begin{@norefs}\@print{7.1.10}\quad{}Evaluation{}\end{@norefs}}
+\tocitem \@locref{htoc88}{\begin{@norefs}\@print{7.1.11}\quad{}Serialization{}\end{@norefs}}
+\tocitem \@locref{htoc89}{\begin{@norefs}\@print{7.1.12}\quad{}Testing{}\end{@norefs}}
+\tocitem \@locref{htoc90}{\begin{@norefs}\@print{7.1.13}\quad{}APIs{}\end{@norefs}}
+\tocitem \@locref{htoc91}{\begin{@norefs}\@print{7.1.14}\quad{}External libraries \& tools{}\end{@norefs}}
+\tocitem \@locref{htoc92}{\begin{@norefs}\@print{7.1.15}\quad{}Extensions{}\end{@norefs}}
+\tocitem \@locref{htoc93}{\begin{@norefs}\@print{7.1.16}\quad{}Experimental Galax extensions{}\end{@norefs}}
+\tocitem \@locref{htoc94}{\begin{@norefs}\@print{7.1.17}\quad{}Documentation{}\end{@norefs}}
+\tocitem \@locref{htoc95}{\begin{@norefs}\@print{7.1.18}\quad{}Generated executables{}\end{@norefs}}
+\end{tocenv}
+\end{tocenv}
+\tocitem \@locref{htoc96}{\begin{@norefs}\@print{Chapter 8}\quad{}Release Notes{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc97}{\begin{@norefs}\@print{8.1}\quad{}Galax 1.0 (March 2008){}\end{@norefs}}
+\tocitem \@locref{htoc98}{\begin{@norefs}\@print{8.2}\quad{}Galax 0.7.2 (February 2007){}\end{@norefs}}
+\tocitem \@locref{htoc99}{\begin{@norefs}\@print{8.3}\quad{}Galax 0.6.8 (August 2006){}\end{@norefs}}
+\tocitem \@locref{htoc100}{\begin{@norefs}\@print{8.4}\quad{}Galax 0.6.5 (May 2006){}\end{@norefs}}
+\tocitem \@locref{htoc101}{\begin{@norefs}\@print{8.5}\quad{}Galax 0.5.0 (February 2005){}\end{@norefs}}
+\tocitem \@locref{htoc102}{\begin{@norefs}\@print{8.6}\quad{}Galax 0.4.0 (August 2004){}\end{@norefs}}
+\tocitem \@locref{htoc103}{\begin{@norefs}\@print{8.7}\quad{}Galax 0.3.5 (December 2003){}\end{@norefs}}
+\tocitem \@locref{htoc104}{\begin{@norefs}\@print{8.8}\quad{}Galax 0.3.1 (June 2003){}\end{@norefs}}
+\tocitem \@locref{htoc105}{\begin{@norefs}\@print{8.9}\quad{}Galax 0.3.0 (January 2003){}\end{@norefs}}
+\tocitem \@locref{htoc106}{\begin{@norefs}\@print{8.10}\quad{}Galax 0.2.0 (October 2002){}\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc107}{\begin{@norefs}\@print{Chapter 9}\quad{}General{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc108}{\begin{@norefs}\@print{9.1}\quad{}The Galax Team{}\end{@norefs}}
+\tocitem \@locref{htoc109}{\begin{@norefs}\@print{9.2}\quad{}Feedback{}\end{@norefs}}
+\tocitem \@locref{htoc110}{\begin{@norefs}\@print{9.3}\quad{}Copyright and License{}\end{@norefs}}
+\tocitem \@locref{htoc111}{\begin{@norefs}\@print{9.4}\quad{}Bugs and Limitations{}\end{@norefs}}
+\tocitem \@locref{htoc112}{\begin{@norefs}\@print{9.5}\quad{}Known Bugs and Limitations{}\end{@norefs}}
+\end{tocenv}
+\end{tocenv}
+\end{tocenv}

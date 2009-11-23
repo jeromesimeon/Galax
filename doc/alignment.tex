@@ -45,7 +45,7 @@ The alignment issues in this section follow the outline of the
 subsection is not listed here, it means that Galax \version\ implements
 the semantics described in that section.
 
-\subsection*{\ahref{\xqueryurl\#static_context}{XQuery Section 2.1.1 Static Context}}
+\subsection*{\ahref{\rawxqueryurl\#static_context}{XQuery Section 2.1.1 Static Context}}
 
    Galax \version\ does not support:
 \begin{itemize}
@@ -56,23 +56,23 @@ the semantics described in that section.
 \item The \term{ordering mode}.  Input order is always preserved. 
 \end{itemize}
 
-\subsection*{\ahref{\xqueryurl\#dynamic_context}{XQuery Section 2.1.2 Dynamic Context}}
+\subsection*{\ahref{\rawxqueryurl\#dynamic_context}{XQuery Section 2.1.2 Dynamic Context}}
 The \term{implicit timezone} is set to the local timezone. 
 
-\subsection*{\ahref{\xqueryurl\#id-processing-model}{XQuery Section 2.2 Processing Model}}
+\subsection*{\ahref{\rawxqueryurl\#id-processing-model}{XQuery Section 2.2 Processing Model}}
 
 Galax's processing model is similar to XQuery's abstract processing
 model.  See Section~\ref{sec:developers} for more information on
 Galax's internal processing model. 
 
-\subsection*{\ahref{\xqueryurl\#id-serialization}{XQuery Section 2.2.4 Serialization}}
+\subsection*{\ahref{\rawxqueryurl\#id-serialization}{XQuery Section 2.2.4 Serialization}}
 
-\subsection*{\ahref{\xqueryurl\#id-ebv}{XQuery Section 2.3.3 Effective Boolean Value}}
+\subsection*{\ahref{\rawxqueryurl\#id-ebv}{XQuery Section 2.3.3 Effective Boolean Value}}
 
    Galax \version\ does not check that a numeric value is equal to NaN
    when computing an effective boolean value.
 
-\subsection*{\ahref{\xqueryurl\#id-input-sources}{XQuery Section 2.3.4 Input Sources}}
+\subsection*{\ahref{\rawxqueryurl\#id-input-sources}{XQuery Section 2.3.4 Input Sources}}
 
    Galax \version\ does not support the \func{fn:collection()} function.
  
@@ -80,44 +80,44 @@ Galax's internal processing model.
    on the command line or in the API.  See
    Sections~\ref{sec:inputoptions} and~\ref{sec:quickstart}.
 
-\subsection*{\ahref{\xqueryurl\#id-sequencetype-matching}{XQuery Section 2.4.4 SequenceType Matching}}
+\subsection*{\ahref{\rawxqueryurl\#id-sequencetype-matching}{XQuery Section 2.4.4 SequenceType Matching}}
 
 Galax requires that all actual types, that is, those types that annotate
 input documents be in the in-scope schema definitions.   Galax
 will raise a dynamic error if it encounters a type in a document that
 is not imported into the query by an \term{import schema} prolog statement.
 
-\subsection*{\ahref{\xqueryurl\#id-optional-features}{XQuery Section 2.6 Optional Features}}
+\subsection*{\ahref{\rawxqueryurl\#id-optional-features}{XQuery Section 2.6 Optional Features}}
 
 Galax supports the \term{Schema Import}, \term{Static Typing}, and
 \term{Full Axis} features. 
 
-\subsection*{\ahref{\xqueryurl\#id-module-feature}{XQuery Section 2.6.4 Module Feature}}
+\subsection*{\ahref{\rawxqueryurl\#id-module-feature}{XQuery Section 2.6.4 Module Feature}}
 
    Galax \version\ supports the Module feature.
 
-\subsection*{\ahref{\xqueryurl\#id-pragmas}{XQuery Section 2.6.5 Pragmas}}
+\subsection*{\ahref{\rawxqueryurl\#id-pragmas}{XQuery Section 2.6.5 Pragmas}}
 
    Galax \version\ does not support the \term{Pragmas} feature.
 
-\subsection*{\ahref{\xqueryurl\#id-must-understand}{XQuery Section 2.6.6 Must-Understand Extensions}}
+\subsection*{\ahref{\rawxqueryurl\#id-must-understand}{XQuery Section 2.6.6 Must-Understand Extensions}}
 
    Galax \version\ does not support must-understand extensions.
 
-\subsection*{\ahref{\xqueryurl\#id-static-extensions}{XQuery Section 2.6.7 Static Typing Extensions}}
+\subsection*{\ahref{\rawxqueryurl\#id-static-extensions}{XQuery Section 2.6.7 Static Typing Extensions}}
 
    Galax \version\ does not support static typing extensions.
 
-\subsection*{\ahref{\xqueryurl\#id-literals}{XQuery Section 3.1.1 Literals}}
+\subsection*{\ahref{\rawxqueryurl\#id-literals}{XQuery Section 3.1.1 Literals}}
 
    Galax \version\ implements an xsd:float value as an xsd:double value.
 
-\subsection*{\ahref{\xqueryurl\#axes}{XQuery Section 3.2.1.1 Axes}}
+\subsection*{\ahref{\rawxqueryurl\#axes}{XQuery Section 3.2.1.1 Axes}}
 
    Galax \version\ supports all axes with the exception of the
    \term{preceding} and \term{following} axes.
 
-\subsection*{\ahref{\xqueryurl\#id-constructors}{XQuery Section 3.7 Constructors}}
+\subsection*{\ahref{\rawxqueryurl\#id-constructors}{XQuery Section 3.7 Constructors}}
 
 When constructing a new element, Galax \version always
 erases/eliminates type annotations on copied elements. 
@@ -125,41 +125,41 @@ erases/eliminates type annotations on copied elements.
 When constructing a new element, Galax \version requires that 
 the new element's attributes precede its other content. 
 
-\subsection*{\ahref{\xqueryurl\#id-ns-nodes-on-elements}{XQuery Section 3.7.4 In-scope Namespaces of a Constructed Element}}
+\subsection*{\ahref{\rawxqueryurl\#id-ns-nodes-on-elements}{XQuery Section 3.7.4 In-scope Namespaces of a Constructed Element}}
 
 Namespace declarations in input and output documents and in input
 queries are not handled consistently. 
 We are working on
 this.
 
-\subsection*{\ahref{\xqueryurl\#id-unordered-expressions}{XQuery 
+\subsection*{\ahref{\rawxqueryurl\#id-unordered-expressions}{XQuery 
 Section 3.9 Ordered and Unordered Expressions}}
 
 Galax \version\ will accept queries that contain the \code{ordered} or
    \code{unordered} expressions, but they have no effect on query
   evaluation (i.e., they are no-ops). 
 
-\subsection*{\ahref{\xqueryurl\#id-module-declaration}{XQuery Section 4.2 Module Declaration}}
-\subsection*{\ahref{\xqueryurl\#id-module-imports}{XQuery Section 4.2 Module Import}}
+\subsection*{\ahref{\rawxqueryurl\#id-module-declaration}{XQuery Section 4.2 Module Declaration}}
+\subsection*{\ahref{\rawxqueryurl\#id-module-imports}{XQuery Section 4.2 Module Import}}
 
 Galax \version\ supports the Module feature.
 
-\subsection*{\ahref{\xqueryurl\#id-default-collation-declaration}{XQuery
+\subsection*{\ahref{\rawxqueryurl\#id-default-collation-declaration}{XQuery
     Section 4.4 Default Collation Declaration}}
 
     Galax \version\ does not support collations.
 
-\subsection*{\ahref{\xqueryurl\#id-construction-declaration}{XQuery
+\subsection*{\ahref{\rawxqueryurl\#id-construction-declaration}{XQuery
 Section 4.6 Construction Declaration}}
 
 Galax \version\ does not support the construction declaration. 
 
-\subsection*{\ahref{\xqueryurl\#id-default-ordering-decl}{XQuery
+\subsection*{\ahref{\rawxqueryurl\#id-default-ordering-decl}{XQuery
 Section 4.8 Default Ordering Declaration}}
 
 Galax \version\ does not support the default ordering declaration. 
 
-\subsection*{\ahref{\xqueryurl\#id-schema-imports}{XQuery
+\subsection*{\ahref{\rawxqueryurl\#id-schema-imports}{XQuery
 Section 4.9 Schema Import}}
 
       Schema components in an imported schema are mapped into XQuery 
@@ -190,11 +190,11 @@ Section 4.9 Schema Import}}
   fn:collection
 \end{verbatim}
 
-\subsection*{\ahref{\fandourl\#func-trace}{Functions and Operators Section 4 The Trace Function}}
+\subsection*{\ahref{\rawfandourl\#func-trace}{Functions and Operators Section 4 The Trace Function}}
 
     The \code{fn:trace} function emits its input sequence and message are to standard output. 
 
-\subsection*{\ahref{\fandourl\#constructor-functions-for-user-defined-types}{Functions
+\subsection*{\ahref{\rawfandourl\#constructor-functions-for-user-defined-types}{Functions
 and Operators Section 5.2 Constructor Functions for User-Defined Types}}
 Galax \version does not support constructor functions for user-defined
 types. 
