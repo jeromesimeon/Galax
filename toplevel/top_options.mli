@@ -462,12 +462,12 @@ val title_galax_parse_options        : string
 (* Usage message *)
 (*****************)
 
-val usage_galax_run     : string
-val usage_galax_schema  : string
-val usage_galax_daemon  : string
-val usage_galax_parse   : string
-val usage_galax_compile : string
-val usage_zerod         : string 
+val usage_galax_run     : unit -> string
+val usage_galax_schema  : unit -> string
+val usage_galax_daemon  : unit -> string
+val usage_galax_parse   : unit -> string
+val usage_galax_compile : unit -> string
+val usage_zerod         : unit -> string 
 
 (* Build option operations *)
 

@@ -236,7 +236,7 @@ let process_args proc_ctxt gargs =
   let args =
     make_options_argv
       proc_ctxt
-      usage_galax_parse
+      (usage_galax_parse ())
       [ GalaxParse_Options;Misc_Options;Monitoring_Options;Encoding_Options;DataModel_Options;Serialization_Options;PrintParse_Options ]
       gargs
   in
@@ -259,7 +259,6 @@ let main proc_ctxt input_files =
 (* Let's go! *)
 (*************)
 
-
 let parse_typed_xml_stream_from_io pc gio =
 	  (* 1. Open a SAX cursor on the input document *)
   let (diff_opt, xml_stream) = Streaming_parse.open_xml_stream_from_io gio  in
@@ -268,7 +267,6 @@ let parse_typed_xml_stream_from_io pc gio =
 	  (* 3. Apply type annotations *)
   let typed_xml_stream = Streaming_ops.typed_of_resolved_xml_stream resolved_xml_stream in
   typed_xml_stream
-
 
 let go gargs =
   let proc_ctxt = Processing_context.default_processing_context() in

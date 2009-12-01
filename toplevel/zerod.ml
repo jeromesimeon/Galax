@@ -259,7 +259,7 @@ let process_args proc_ctxt =
   let args =
     make_options
       proc_ctxt
-      usage_zerod
+      (usage_zerod ())
       [Zerod_Options]
   in 
     match args with

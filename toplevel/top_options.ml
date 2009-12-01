@@ -675,30 +675,30 @@ let title_galax_parse_options        = "\n\n // Parse specific options\n"
 (* Usage message *)
 (*****************)
 
-let msg_galax_run = 
+let msg_galax_run () = 
   sprintf "Usage: %s %s [options] input-queries (or '-' for stdin)" Sys.argv.(0) Sys.argv.(1)
 
-let msg_galax_schema = 
+let msg_galax_schema () = 
   sprintf "Usage: %s %s [options] input-queries (or '-' for stdin)" Sys.argv.(0) Sys.argv.(1)
 
-let msg_galax_daemon = 
+let msg_galax_daemon () =
   sprintf "Usage: %s [options] )" Sys.argv.(0)
 
-let msg_galax_parse = 
+let msg_galax_parse () =
   sprintf "Usage: %s %s [options] input-xml-documents (or '-' for stdin)" Sys.argv.(0) Sys.argv.(1)
 
-let msg_galax_compile =
+let msg_galax_compile () =
   sprintf "Usage: %s %s [options] input-queries (or '-' for stdin)" Sys.argv.(0) Sys.argv.(1)
 
-let msg_zerod = 
+let msg_zerod () =
   sprintf "Usage: %s [options] )" Sys.argv.(0)
 
-let usage_galax_run   	= msg_galax_run ^ title_main
-let usage_galax_schema 	= msg_galax_schema ^ title_main
-let usage_galax_daemon 	= msg_galax_daemon ^ title_main
-let usage_galax_parse 	= msg_galax_parse ^ title_main
-let usage_galax_compile = msg_galax_compile ^ title_main ^ title_misc_options
-let usage_zerod 	= msg_zerod ^ title_main
+let usage_galax_run ()  	= (msg_galax_run ()) ^ title_main
+let usage_galax_schema ()	= (msg_galax_schema ()) ^ title_main
+let usage_galax_daemon ()	= (msg_galax_daemon ()) ^ title_main
+let usage_galax_parse ()	= (msg_galax_parse ()) ^ title_main
+let usage_galax_compile ()      = (msg_galax_compile ()) ^ title_main ^ title_misc_options
+let usage_zerod ()	        = (msg_zerod ()) ^ title_main
 
 (* Galax parse options *)
 let make_galax_parse_options bos title =

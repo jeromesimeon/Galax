@@ -4,6 +4,13 @@
 
 December 1, 2009 - Jerome
 
+  o Toplevel:
+      - Fixed bug in command-line usage processing, which wrongly
+        assumed it was always embedded in a galax executable, breaking
+        user-generated executables with galax libraries in them.
+
+December 1, 2009 - Jerome
+
   o Configuration:
       Fixed issues related to circular module dependencies being
       dropped during compilation of Galax.

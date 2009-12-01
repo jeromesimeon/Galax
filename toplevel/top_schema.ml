@@ -32,7 +32,7 @@ let process_args proc_ctxt gargs =
   let args =
     make_options_argv
       proc_ctxt
-      usage_galax_schema
+      (usage_galax_schema ())
       [ GalaxParse_Options;Misc_Options;Monitoring_Options;Encoding_Options;DataModel_Options;Serialization_Options;PrintParse_Options ]
       gargs
   in

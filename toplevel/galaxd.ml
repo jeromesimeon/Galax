@@ -458,7 +458,7 @@ let process_args proc_ctxt =
   let args =
     make_options
       proc_ctxt
-      usage_galax_daemon
+      (usage_galax_daemon ())
       [Daemon_Options;Misc_Options;Monitoring_Options;ProcessingPhases_Options;Behavior_Options;Printing_Options;Optimization_Options;CodeSelection_Options]
   in
   List.rev args
