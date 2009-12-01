@@ -18,7 +18,7 @@
 open Xquery_algebra_ast
 open Xquery_physical_type_ast
 
-open Logical_algebra_types
+open Ast_logical_algebra_types
 
 val access_no_type                      : Xquery_algebra_ast.input_signature -> unit
 val access_one_non_discarded_xml_type   : Xquery_algebra_ast.input_signature -> physical_xml_type

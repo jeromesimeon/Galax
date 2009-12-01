@@ -20,7 +20,7 @@
 
 val project_xml_stream_from_document :
     Datatypes.xs_anyURI ->
-	Alg_path_struct.rooted_path_sequence ->
+	Ast_path_struct.rooted_path_sequence ->
 	  Streaming_types.typed_xml_stream -> Streaming_types.typed_xml_stream
 (*
 val project_xml_stream_from_variable :

@@ -22,11 +22,10 @@ open Namespace_builtin
 open Xquery_algebra_ast
 open Xquery_algebra_ast_util
 open Xquery_algebra_ast_annotation_util
-open Logical_algebra_types
+open Ast_logical_algebra_types
 open Compile_context
 open Compile_annotate
 open Processing_context
-open Alg_path_struct
 
 type optimization_rewrite_rule = 
     (logical_compile_context ->

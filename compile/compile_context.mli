@@ -108,4 +108,4 @@ val copy_without_functions : ('a,'b) compile_context ->('c,'d) compile_context
 val map_function_bodies    : ('a,'b) compile_context -> ((('c,'d) aalgop_function_body) Namespace_util.RQNameIntHashtbl.t -> (cfname * int) -> ('a,'b) aalgop_function_body -> unit) -> ('c,'d) compile_context
 val update_compile_context : ('a,'b) compile_context -> ('a,'b) compile_context -> ('a,'b) compile_context
 
-
+type logical_compile_context = (unit, Ast_path_struct.path_annotation) compile_context

@@ -21,7 +21,7 @@ open Xquery_common_ast
 open Xquery_ast
 open Xquery_core_ast
 open Xquery_algebra_ast
-open Logical_algebra_types
+open Ast_logical_algebra_types
 open Algebra_type
 
 open Dm_atomic

@@ -167,7 +167,7 @@ let process_query_file proc_ctxt uri_string =
   (*let _ = Alg_path_analysis.print_full_analysis formatter paths in*)
 
   let get_docids paths =
-    let docid_lists = List.map (fun (id, _) -> match id with | Alg_path_struct.Document_id docid -> [docid] | _ -> []) paths in
+    let docid_lists = List.map (fun (id, _) -> match id with | Ast_path_struct.Document_id docid -> [docid] | _ -> []) paths in
     let docids = List.concat docid_lists in
       Gmisc.remove_duplicates docids
   in

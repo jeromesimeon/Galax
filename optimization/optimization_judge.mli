@@ -20,7 +20,7 @@ open Compile_context
 
 open Xquery_common_ast
 
-open Logical_algebra_types
+open Ast_logical_algebra_types
 
 
 (****************)

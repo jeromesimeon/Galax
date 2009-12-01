@@ -1565,7 +1565,7 @@ let expression_parser parse_algop st =
 let unbox_logical_algebra_statement comp_ctxt st =
   expression_parser (algop_of_undecorated_element comp_ctxt) st
 
-let parse_logical_algebra_statement proc_ctxt (comp_ctxt:Logical_algebra_types.logical_compile_context) input =
+let parse_logical_algebra_statement proc_ctxt (comp_ctxt:Compile_context.logical_compile_context) input =
   let nsenv                = add_all_ns (Processing_context.get_external_nsenv proc_ctxt) algebra_bindings in
   let _                    = Processing_context.set_namespace_env proc_ctxt nsenv in
   let (dtdopt, the_stream) = Streaming_parse.open_xml_stream_from_io input in   
@@ -1823,7 +1823,7 @@ let algebra_module_parser parse_algop st =
 let unbox_logical_algebra_module comp_ctxt st =
   algebra_module_parser (algop_of_undecorated_element comp_ctxt) st
 
-let parse_logical_algebra_module proc_ctxt (comp_ctxt:Logical_algebra_types.logical_compile_context) input =
+let parse_logical_algebra_module proc_ctxt (comp_ctxt:Compile_context.logical_compile_context) input =
   let nsenv                = add_all_ns (Processing_context.get_external_nsenv proc_ctxt) algebra_bindings in
   let _                    = Processing_context.set_namespace_env proc_ctxt nsenv in
   let (dtdopt, the_stream) = Streaming_parse.open_xml_stream_from_io input in   
@@ -1915,7 +1915,7 @@ let unbox_closure comp_ctxt attrs st =
 let closure_parser comp_ctxt st =
   element_parser closure_elem_name (unbox_closure comp_ctxt) "Closure" st
 
-let parse_closure proc_ctxt (comp_ctxt:Logical_algebra_types.logical_compile_context) input =
+let parse_closure proc_ctxt (comp_ctxt:Compile_context.logical_compile_context) input =
   let nsenv                = add_all_ns (Processing_context.get_external_nsenv proc_ctxt) algebra_bindings in
   let _                    = Processing_context.set_namespace_env proc_ctxt nsenv in
   let (dtdopt, the_stream) = Streaming_parse.open_xml_stream_from_io input in   

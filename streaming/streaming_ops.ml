@@ -22,8 +22,6 @@ open Namespace_symbols
 open Namespace_resolve
 open Namespace_context
 
-open Xquery_common_ast
-
 open Streaming_types
 open Streaming_util
 

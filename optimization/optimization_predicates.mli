@@ -16,7 +16,7 @@
 *)
 
 open Xquery_algebra_ast
-open Logical_algebra_types
+open Ast_logical_algebra_types
 
 val is_simple_conjunct         : logical_algop_expr -> bool
 

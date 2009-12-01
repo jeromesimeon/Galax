@@ -18,7 +18,7 @@
 
 open Compile_context
 
-open Logical_algebra_types
+open Ast_logical_algebra_types
 
 
 (* More expensive, strip functions of their annotations *)

@@ -24,7 +24,7 @@ open Compile_context
 
 open Optimization_util
 open Optimization_walker
-open Logical_algebra_types
+open Ast_logical_algebra_types
 
 val cleanup_rules:
     ((bool ref -> logical_compile_context ->

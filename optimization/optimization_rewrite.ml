@@ -29,7 +29,7 @@ open Compile_annotate
 open Optimization_util
 open Optimization_walker
 
-open Alg_path_struct
+open Ast_path_struct
 
 (***********************************************************************) 
 (* Optimzer - This module's main task is to apply the several          *)
@@ -61,7 +61,7 @@ open Alg_path_struct
 
 type input_tuple_state =
     { mutable consumed : bool;
-      op               : Logical_algebra_types.logical_algop_expr;
+      op               : Ast_logical_algebra_types.logical_algop_expr;
       mutable valid    : bool;}
 
 let build_invalid root = 
@@ -301,7 +301,7 @@ let leftmost_join_input_tuple op cd =
   (* Currently we only support pushing down simple conjuncts *)
 *)
 (* below relies on returning the original on failure! *)
-let pushdown_individual_select simple_conjunct (comp_ctxt:Logical_algebra_types.logical_compile_context) op_to_try =
+let pushdown_individual_select simple_conjunct (comp_ctxt:Compile_context.logical_compile_context) op_to_try =
   let eh       = simple_conjunct.palgop_expr_origin in 
   let fi       = simple_conjunct.palgop_expr_loc    in
   let accessed_fields = algop_get_accessed_fields simple_conjunct in
@@ -324,7 +324,7 @@ let pushdown_individual_select simple_conjunct (comp_ctxt:Logical_algebra_types.
     else false, op_to_try
   else false, op_to_try
 
-let pushdown_individual indep_dep (comp_ctxt:Logical_algebra_types.logical_compile_context) select_op =
+let pushdown_individual indep_dep (comp_ctxt:Compile_context.logical_compile_context) select_op =
   let return_not_applied = select_op, false in
     if (is_select select_op) &&
       (Optimization_predicates.is_simple_conjunct select_op) then
@@ -2098,7 +2098,7 @@ let rec map_concat_pushdown comp_ctxt algop =
 *)
 type singleton_map_inline_return =
   | SMI_no_match
-  | SMI_does_match of (Xquery_common_ast.crname * Logical_algebra_types.logical_algop_expr) list
+  | SMI_does_match of (Xquery_common_ast.crname * Ast_logical_algebra_types.logical_algop_expr) list
 
 let combine_singleton_map_inline_return l r = 
   match (l,r) with

@@ -19,7 +19,7 @@
 open Xquery_core_ast
 open Xquery_algebra_ast
 
-open Logical_algebra_types
+open Ast_logical_algebra_types
 
 (* Note:
      During this stage of compilation, we do not put actual running
@@ -31,6 +31,6 @@ open Logical_algebra_types
 (* Expressions *)
 (***************)
 
-val compile_statement : logical_compile_context -> acstatement -> logical_algop_expr
-val compile_prolog    : logical_compile_context -> acprolog -> (logical_compile_context * logical_algop_prolog)
-val compile_xmodule   : logical_compile_context -> acxmodule   -> (logical_compile_context * logical_algop_xmodule)
+val compile_statement : Compile_context.logical_compile_context -> acstatement -> logical_algop_expr
+val compile_prolog    : Compile_context.logical_compile_context -> acprolog -> (Compile_context.logical_compile_context * logical_algop_prolog)
+val compile_xmodule   : Compile_context.logical_compile_context -> acxmodule   -> (Compile_context.logical_compile_context * logical_algop_xmodule)

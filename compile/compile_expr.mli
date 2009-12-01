@@ -17,7 +17,7 @@
      the algebra *)
 
 open Xquery_core_ast
-open Logical_algebra_types
+open Ast_logical_algebra_types
 
-val compile_cexpr : logical_compile_context -> acexpr -> logical_algop_expr 
+val compile_cexpr : Compile_context.logical_compile_context -> acexpr -> logical_algop_expr 
 

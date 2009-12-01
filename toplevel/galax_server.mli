@@ -15,7 +15,7 @@ val server_error_msg : exn -> string
 
 module type SERVERKIND =
   sig
-    val async_eval : async_eval_sig
+    val async_eval : Processing_context.async_eval_sig
     val delay : float -> unit
     type http_request = 
 	(in_channel * out_channel * Http.HTTP.http_method * Http.HTTP.header list * string option)
@@ -41,12 +41,12 @@ module type GALAXSERVER =
        and inter-server latencies, if known. 
     *)
     val init : bool -> string option -> int option -> Top_util.Graph.graph_edge list -> unit
-    val async_eval : Galax_server_util.async_eval_ext_sig
+    val async_eval : Processing_context.async_eval_ext_sig
 
     (* Map host-port-string to virtual-host, physical-host, physical-port triple *)
-    val interpret_hostport_string : Galax_server_util.interpret_hostport_sig
-    val evaluate_closure : Galax_server_util.evaluate_closure_sig
-    val evaluate_remote_query : Galax_server_util.evaluate_remote_query_sig
+    val interpret_hostport_string : Processing_context.interpret_hostport_sig
+    val evaluate_closure : Processing_context.evaluate_closure_sig
+    val evaluate_remote_query : Processing_context.evaluate_remote_query_sig
     val start_server      : string -> int -> 
       (* Namespace prefix and URI of exported module *)
       (Namespace_names.ncname * string * Galax.prepared_program) -> string -> unit

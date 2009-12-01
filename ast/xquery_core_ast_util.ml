@@ -449,18 +449,13 @@ let set_annotation_for_cexpr cexpr annot =
   set_annotation existing_annot annot
 
 let get_type_annotation_from_cexpr cexpr =
-  try
-    get_type_annot cexpr.pcexpr_annot
-  with
-  | Query(Annotation_Error(e)) ->
-      raise (Query(Annotation_Error(Print_top.bprintf_acexpr (e^" in ") cexpr)))
+  get_type_annot cexpr.pcexpr_annot
 
 let set_type_annotation_for_cexpr cexpr cxtype =
   set_type_annot cexpr.pcexpr_annot cxtype
 
-
-
-let get_expr_from_insert_location loc = match loc with
+let get_expr_from_insert_location loc =
+  match loc with
   | CUAsLastInto x 
   | CUAsFirstInto x
   | CUInto x
@@ -480,3 +475,4 @@ let has_max_one acexpr =
 	| _ -> false
       end
   | _ -> false
+

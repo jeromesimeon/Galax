@@ -34,7 +34,7 @@ type physical_annotation =
     { has_nested_snap   : bool;
       has_side_effect   : bool;
       has_delta_update  : bool;
-      path_annotation   : Alg_path_struct.path_annotation;
+      path_annotation   : Ast_path_struct.path_annotation;
       mutable materialize_tuple_stream: bool }
 
 (*******************)

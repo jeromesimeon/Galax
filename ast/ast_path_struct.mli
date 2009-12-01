@@ -59,7 +59,7 @@ type rooted_path_sequence = rooted_path list
 
 (* returned paths of an expression, returned paths contained in tuple fields, paths accessed by an expression,
 paths modified by an expression*)
-type paths = rooted_path_sequence * (Xquery_common_ast.crname * rooted_path_sequence) list * rooted_path_sequence * rooted_path_sequence
+type paths = rooted_path_sequence * (crname * rooted_path_sequence) list * rooted_path_sequence * rooted_path_sequence
 
 
 (* Path annotation *)

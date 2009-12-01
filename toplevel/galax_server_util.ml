@@ -11,7 +11,9 @@
 open Error
 open Namespace_builtin
 open Streaming_constructors
+open Processing_context
 open Top_util
+
 open InternalQuery
 
 let dxq_default_port = ref 3000
@@ -193,26 +195,6 @@ module Gui = struct
 	end
 	  
 end (* module Gui *)
-
-                       (* Virtual host name, physical host name, physical port *)
-type server_location = (Gui.nodeName * string * int)
-
-type xquery_kind =
-    XQueryString
-  | XQueryPlan
-  | XQueryPlanAsync
-
-type evaluate_remote_query_sig = 
-    (bool * server_location * xquery_kind * string * string -> string option )
-
-type evaluate_closure_sig = 
-    string -> string -> (Xquery_physical_type_ast.physical_type * Physical_value.physical_value)
-
-(* Executed once, in the main process *)
-type async_eval_sig = bool -> (exn -> unit) -> (unit -> unit) -> unit
-type async_eval_ext_sig = (unit -> unit) -> unit
-
-type interpret_hostport_sig = string -> server_location
 
 module Sim = struct
   type portmap = (string, (int * string * string)) Hashtbl.t

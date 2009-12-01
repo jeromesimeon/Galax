@@ -34,7 +34,7 @@ open Xquery_algebra_ast
 open Xquery_algebra_ast_util
 open Xquery_common_ast
 
-open Alg_path_struct
+open Ast_path_struct
 
 open Error
 

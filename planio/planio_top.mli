@@ -37,9 +37,9 @@ val serialize_logical_algebra_statement :
 
 val parse_logical_algebra_statement :
     Processing_context.processing_context ->
-      Logical_algebra_types.logical_compile_context ->
+      Compile_context.logical_compile_context ->
 	Galax_io.input_spec -> 
-	  Logical_algebra_types.logical_algop_expr
+	  Ast_logical_algebra_types.logical_algop_expr
 
 (******************)
 (* MODULES        *)
@@ -52,9 +52,9 @@ val box_logical_algebra_module :
 
 val parse_logical_algebra_module :
     Processing_context.processing_context -> 
-      Logical_algebra_types.logical_compile_context -> 
+      Compile_context.logical_compile_context -> 
 	Galax_io.input_spec ->
-	  (Logical_algebra_types.logical_algop_xmodule * Logical_algebra_types.logical_compile_context)
+	  (Ast_logical_algebra_types.logical_algop_xmodule * Compile_context.logical_compile_context)
 
 (******************)
 (* CLOSURES       *)
@@ -77,10 +77,10 @@ val box_closure :
 
 val parse_closure:
     Processing_context.processing_context -> 
-      Logical_algebra_types.logical_compile_context -> 
+      Compile_context.logical_compile_context -> 
 	Galax_io.input_spec ->
     (* ((Variable, Value) list * (Tuple-field Value) list) * Algebraic plan *)
 	  ((Namespace_names.rqname * Streaming_types.resolved_xml_stream) list * 
 	     (Namespace_names.rqname * Streaming_types.resolved_xml_stream) list) *
-	    Logical_algebra_types.logical_algop_expr
+	    Ast_logical_algebra_types.logical_algop_expr
 

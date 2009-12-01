@@ -18,7 +18,7 @@
 (* Type used for the projection context *)
 
 type project_context =
-    { project_pfs                  : (Alg_path_struct.path_fragment_sequence option) Stack.t;
+    { project_pfs                  : (Ast_path_struct.path_fragment_sequence option) Stack.t;
       mutable project_local_buffer : Streaming_types.typed_annotated_sax_event list;
       mutable project_temp_buffer  : Streaming_types.typed_annotated_sax_event list;
       project_stream               : Streaming_types.typed_xml_stream}

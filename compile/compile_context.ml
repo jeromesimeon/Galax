@@ -223,5 +223,5 @@ let update_compile_context context_1 context_2 =
   in
     map_function_bodies context_2 check_fn 
 
+type logical_compile_context = (unit, Ast_path_struct.path_annotation) compile_context
 
-(* let _ = print_string("Compile_context\n") *)

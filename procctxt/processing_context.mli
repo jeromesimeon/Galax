@@ -120,6 +120,33 @@ val set_default_collation    : module_processing_context -> string -> unit
 
 val get_name_generator : module_processing_context -> Namespace_names.prefix -> Namespace_names.uri -> string -> Namespace_generate.name_gen ref
 
+
+(**************************)
+(* DXQ-related signatures *)
+(**************************)
+
+(* Moved there due to circular module depdendencies. - JS *)
+
+                       (* Virtual host name, physical host name, physical port *)
+type server_location = (string * string * int)
+
+type xquery_kind =
+    XQueryString
+  | XQueryPlan
+  | XQueryPlanAsync
+
+type evaluate_remote_query_sig = 
+    (bool * server_location * xquery_kind * string * string -> string option )
+
+type evaluate_closure_sig = 
+    string -> string -> (Xquery_physical_type_ast.physical_type * Physical_value.physical_value)
+
+(* Executed once, in the main process *)
+type async_eval_sig = bool -> (exn -> unit) -> (unit -> unit) -> unit
+type async_eval_ext_sig = (unit -> unit) -> unit
+
+type interpret_hostport_sig = string -> server_location
+
 (*****************************************************************)
 (* PROGRAM processing context : shared by all program components *)
 (*****************************************************************)
@@ -162,10 +189,10 @@ type processing_context =
 
  (* DXQ configuration options *)
       mutable dxq_server : 
-      (Galax_server_util.evaluate_closure_sig *
-	 Galax_server_util.evaluate_remote_query_sig * 
-	 Galax_server_util.async_eval_ext_sig * 
-	 Galax_server_util.interpret_hostport_sig) option; 
+      (evaluate_closure_sig *
+	 evaluate_remote_query_sig * 
+	 async_eval_ext_sig * 
+	 interpret_hostport_sig) option; 
       mutable dxq_optimization   : bool; 
       mutable dxq_host  : string option;  
       mutable dxq_port  : int option; 
@@ -221,10 +248,10 @@ val set_streaming            : processing_context -> bool -> unit
 val set_infer_independence   : processing_context -> bool -> unit
 
 (* DXQ options *)
-val set_dxq_server           : processing_context -> (Galax_server_util.evaluate_closure_sig *
-							Galax_server_util.evaluate_remote_query_sig * 
-							Galax_server_util.async_eval_ext_sig * 
-							Galax_server_util.interpret_hostport_sig) -> unit
+val set_dxq_server           : processing_context -> (evaluate_closure_sig *
+							evaluate_remote_query_sig * 
+							async_eval_ext_sig * 
+							interpret_hostport_sig) -> unit
 val set_dxq                  : processing_context -> bool -> unit
 val set_dxq_host_port        : processing_context -> string option -> int option -> unit
 val set_dxq_source           : processing_context -> dxq_execution_kind -> unit

@@ -15,7 +15,7 @@
      This module implements the context used during projection.
 *)
 
-open Alg_path_struct
+open Ast_path_struct
 
 
 (* Type used for the projection context *)

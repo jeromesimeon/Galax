@@ -15,8 +15,8 @@
      This module contains algebraic optimizations.
 *)
 
-open Logical_algebra_types
+open Ast_logical_algebra_types
 
 val rewrite_expression :
-    logical_compile_context -> logical_algop_expr -> logical_algop_expr 
+    Compile_context.logical_compile_context -> logical_algop_expr -> logical_algop_expr 
 

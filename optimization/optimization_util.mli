@@ -18,7 +18,7 @@
 
 open Namespace_names
 open Algebra_type
-open Logical_algebra_types
+open Ast_logical_algebra_types
 open Xquery_algebra_ast
 open Xquery_common_ast
 
@@ -29,7 +29,7 @@ val replace_tuple_field_name :
     rqname -> rqname -> bool -> logical_algop_expr -> logical_algop_expr * bool
 
 val replace_tuple_name :
-    logical_compile_context -> 
+    Compile_context.logical_compile_context -> 
       rqname -> 
 	rqname ->  
 	  logical_algop_expr ->
@@ -47,13 +47,13 @@ val wrap_map_null_named : crname -> logical_algop_expr -> logical_algop_expr
 val wrap_map_null       : ('a,'b) Compile_context.compile_context -> logical_algop_expr -> crname * logical_algop_expr
 
 val generic_snap_free_wrapper :
-    (logical_compile_context ->
+    (Compile_context.logical_compile_context ->
       logical_algop_expr ->
 	logical_algop_expr * bool) ->
 	  bool ref ->
-	    logical_compile_context ->
+	    Compile_context.logical_compile_context ->
 	      logical_algop_expr ->
-    ((unit, Alg_path_struct.path_annotation) aalgop_expr * sub_expr_kind * int) option ->
+    ((unit, Ast_path_struct.path_annotation) aalgop_expr * sub_expr_kind * int) option ->
       logical_algop_expr ->
 	logical_algop_expr
 

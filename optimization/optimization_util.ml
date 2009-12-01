@@ -24,7 +24,7 @@ open Xquery_algebra_ast_util
 open Xquery_algebra_ast_annotation_util
 
 open Optimization_walker
-open Logical_algebra_types
+open Ast_logical_algebra_types
 open Error
 
 

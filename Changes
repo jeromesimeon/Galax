@@ -2,6 +2,25 @@
 | Changelog |
  -----------
 
+December 1, 2009 - Jerome
+
+  o Configuration:
+      Fixed issues related to circular module dependencies being
+      dropped during compilation of Galax.
+        - Moved some signature and type definitions used in DXQ from
+        server utilities to processing context.
+        - Eliminated a rarely (never?) used dependency of the AST
+        utils onto the AST pretty printer.
+
+  o Code reorganization:
+      Cleaned up some of the module dependencies and ensured properly
+      staged compilation order for all the Caml modules.
+        - Moved Logical_algebra_types from ./compilation to ./ast/Ast_logical_algebra_types.
+        - Moved Alg_path_struct from ./projection to ./ast/Ast_path_struct.
+        - Removed unused module in Streaming_ops (referencing the AST).
+        - Removed unused module in Code_execute to (referencing
+          Galax_server_util which is toplevel).
+
 November 23, 2009 - Jerome
 
   o Toplevel:
@@ -168,7 +187,7 @@ February 12, 2008 - Mary
 
 January 29, 2008 - Mary [DXQ]
 
-  o Galaxd
+  o Galaxd:
 
     BUG ALERT:
     Added default configuration: Conf.set_materialize_tables Conf.Always;
@@ -176,28 +195,29 @@ January 29, 2008 - Mary [DXQ]
     do analysis) to Always, due to quadratic memory usage bug somewhere
     in Alg_path_structutil.path_sequences_with_disjoint_roots
 
-  o Typing_expr
+  o Typing_expr:
     
     Bugs in typing Eval and Insert.
 
-  o Webgui
+  o Webgui:
 
     Added new graph-drawing for <node> and (sub)<tree>
  
-  o Top_util
+  o Top_util:
 
     load_graph raises error if named graph does not exist.
 
-  o Procmod_phases
+  o Procmod_phases:
   
     Permitted code selection phase to be optional
 
 January 14, 2008 - Mary [DXQ]
+
   o Playing with Willow
 
 December 5, 2007 - Mary
 
-  o Java API
+  o Java API:
     - Changes to get Java API to link
     
     TODO: align examples/galapi/java_api
@@ -205,7 +225,7 @@ December 5, 2007 - Mary
 
 November 26, 2007 - Mary 
 
-  o C API
+  o C API:
 
     Makefile.galax: Had to add "-lrt" and CONF_C_LIBPCRE to C-API link
     opitons.  
@@ -225,12 +245,13 @@ November 16, 2007 - Mary [DXQ]
     describe both, which conflates meaning.  This will eventually bite
     us when we want to optimize an expression for a particular server.
 
-  o Updated Willow example
+  o Updated Willow example:
     - Changes friend for a domain based on latency
     
 November 7, 2007 - Mary [DXQ]
 
   o Changed glx:gettime() to use Unix.gettimeofday() 
+
   o Fixed bug in normalization & code selection for 
     'for server P box { E }' to have same semantics as the remote
     execute expressions.
@@ -242,7 +263,7 @@ November 6, 2007 - Mary [DXQ]
 
     See examples/dxq/narada/latencies.xml & examples/dxq/willow/topology.xml
 
-  o Webgui 
+  o Webgui:
     Added "-t graph.xml" option to load initial neighbor topology from file. 
 
 October 25, 2007 - Jerome
@@ -270,12 +291,12 @@ October 24, 2007 - Mary
     code-selection-context of imported module instead of importing
     module.
 
-  o configure script
+  o configure script:
 
     Disabled C and Java APIs until we figure out what we want to do
     with them.
 
-  o OCaml API examples
+  o OCaml API examples:
 
     Aligned with new processing model 
 

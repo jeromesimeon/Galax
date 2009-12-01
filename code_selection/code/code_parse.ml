@@ -31,7 +31,7 @@ open Code_selection_context
 
 open Processing_context
 
-open Alg_path_struct
+open Ast_path_struct
 
 (*****************************)
 (* XPath evaluation - Michael*)

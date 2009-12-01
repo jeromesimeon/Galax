@@ -32,7 +32,7 @@ open Xquery_algebra_ast
 
 open Streaming_types
 
-open Alg_path_struct
+open Ast_path_struct
 
 open Xquery_algebra_ast_util
 

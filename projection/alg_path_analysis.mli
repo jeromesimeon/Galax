@@ -18,7 +18,7 @@
 (* Path analysis over the XQuery algebra. Intended for use
    with document projection and streaming. - Michael *)
 
-open Alg_path_struct
+open Ast_path_struct
 open Alg_analysis_context
 open Xquery_algebra_ast
 open Processing_context
@@ -28,13 +28,13 @@ open Processing_context
 (*****************)
 
 val path_analysis_of_logical_algop_expr :
-  Logical_algebra_types.logical_algop_expr -> unit
+  Ast_logical_algebra_types.logical_algop_expr -> unit
 
 val path_analysis_of_logical_algop_prolog :
-  Logical_algebra_types.logical_algop_prolog  -> unit
+  Ast_logical_algebra_types.logical_algop_prolog  -> unit
 
 val path_analysis_of_logical_algop_xmodule :
-  Logical_algebra_types.logical_algop_xmodule  -> unit
+  Ast_logical_algebra_types.logical_algop_xmodule  -> unit
 
 (* This function is used in a hackish way by Galax-project.
    It should be removed. - Michael *)
@@ -58,4 +58,4 @@ val print_full_analysis :
 
 
 val print_intermediate_analysis :
-  Format.formatter -> Alg_path_struct.paths -> unit
+  Format.formatter -> Ast_path_struct.paths -> unit

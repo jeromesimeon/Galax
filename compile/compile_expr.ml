@@ -27,7 +27,7 @@ open Xquery_core_ast_util
 open Xquery_algebra_ast
 open Xquery_algebra_ast_util
 
-open Logical_algebra_types
+open Ast_logical_algebra_types
 
 open Compile_context
 open Compile_util

@@ -16,7 +16,7 @@
 open Xquery_algebra_ast
 open Xquery_physical_type_ast
 
-open Logical_algebra_types
+open Ast_logical_algebra_types
 
 (************************)
 (* Annotation accessors *)

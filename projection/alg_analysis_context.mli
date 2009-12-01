@@ -15,7 +15,7 @@
      Path analysis for document projection over the XQuery algebra.
 *)
 
-open Alg_path_struct
+open Ast_path_struct
 
 type analysis_context
 

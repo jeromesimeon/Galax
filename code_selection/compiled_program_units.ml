@@ -17,7 +17,7 @@
 open Error
 
 open Xquery_algebra_ast
-open Logical_algebra_types
+open Ast_logical_algebra_types
 open Algebra_type
 
 open Processing_context

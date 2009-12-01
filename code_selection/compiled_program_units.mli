@@ -15,7 +15,7 @@
 *)
 
 open Xquery_algebra_ast
-open Logical_algebra_types
+open Ast_logical_algebra_types
 open Algebra_type
 
 
@@ -135,8 +135,8 @@ val norm_context_of_standard_library : compiled_program -> Norm_context.norm_con
 val norm_context_of_prolog      : compiled_prolog -> Norm_context.norm_context
 val static_context_of_module    : compiled_prolog -> Typing_context.static_context
 val static_context_of_main_module  : compiled_program -> Typing_context.static_context
-val compile_context_of_module      : compiled_prolog -> Logical_algebra_types.logical_compile_context
-val compile_context_of_main_module : compiled_program -> Logical_algebra_types.logical_compile_context
+val compile_context_of_module      : compiled_prolog -> Compile_context.logical_compile_context
+val compile_context_of_main_module : compiled_program -> Compile_context.logical_compile_context
 val code_selection_context_of_module : compiled_prolog -> Code_selection_context.code_selection_context
 val code_selection_context_of_main_module : compiled_program -> Code_selection_context.code_selection_context
 

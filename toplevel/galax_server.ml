@@ -16,6 +16,7 @@ open Galax_server_util
 open Http
 open Namespace_builtin
 open Streaming_constructors
+open Processing_context
 
 (******************* DXQ BUILT-IN FUNCTIONS ********************)
 

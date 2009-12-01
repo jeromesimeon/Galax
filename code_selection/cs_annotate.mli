@@ -16,7 +16,7 @@
      layer.
 *)
 
-open Logical_algebra_types
+open Ast_logical_algebra_types
 open Algebra_type
 
 (* NOTE:
@@ -25,17 +25,17 @@ open Algebra_type
    which physical types should be used for each operator.
 *)
 
-val annotate_context   : logical_compile_context -> alg_compile_context
+val annotate_context   : Compile_context.logical_compile_context -> alg_compile_context
 val annotate_statement : alg_compile_context -> logical_algop_expr -> algop_expr
 val annotate_expr      : alg_compile_context -> logical_algop_expr -> algop_expr
 val annotate_prolog    :
-    logical_compile_context -> logical_algop_prolog ->
+    Compile_context.logical_compile_context -> logical_algop_prolog ->
       algop_prolog * alg_compile_context
 val annotate_prolog_with_bindings :
     alg_compile_context -> logical_algop_prolog ->
       algop_prolog * alg_compile_context
 val annotate_module :
-    logical_compile_context -> logical_algop_xmodule ->
+    Compile_context.logical_compile_context -> logical_algop_xmodule ->
       algop_xmodule * alg_compile_context
 val annotate_module_with_bindings :
     alg_compile_context -> logical_algop_xmodule ->

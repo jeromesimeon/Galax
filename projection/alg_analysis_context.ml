@@ -19,7 +19,7 @@ open Error
 
 open Xquery_common_ast
 
-open Alg_path_struct
+open Ast_path_struct
 
 
 (* returned paths of an expression, returned paths contained in tuple fields, used paths of an expression, paths modified by an expression  *)

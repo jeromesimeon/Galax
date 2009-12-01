@@ -332,3 +332,4 @@ module Graph =  struct
     with
     |	exn -> raise (Query(Internal_Error("In Graph.load_graph "^(Error.bprintf_error "" exn))))
 end
+

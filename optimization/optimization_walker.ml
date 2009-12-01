@@ -26,22 +26,21 @@ open Xquery_algebra_ast_annotation_util
 open Compile_context
 open Compile_annotate
 open Processing_context
-open Alg_path_struct
 
 (******************************)
 (* *** Rewrite Rule Types *** *)
 (******************************)
 
 type optimization_rewrite_rule = 
-    (Logical_algebra_types.logical_compile_context ->
-      Logical_algebra_types.logical_algop_expr ->
-	Logical_algebra_types.logical_algop_expr * bool) 
+    (Compile_context.logical_compile_context ->
+      Ast_logical_algebra_types.logical_algop_expr ->
+	Ast_logical_algebra_types.logical_algop_expr * bool) 
 
 type optimization_removal_rewrite_rule =
-    (Logical_algebra_types.logical_compile_context ->
-      Logical_algebra_types.logical_algop_expr ->
-	Logical_algebra_types.logical_algop_expr ->
-	  Logical_algebra_types.logical_algop_expr * bool)
+    (Compile_context.logical_compile_context ->
+      Ast_logical_algebra_types.logical_algop_expr ->
+	Ast_logical_algebra_types.logical_algop_expr ->
+	  Ast_logical_algebra_types.logical_algop_expr * bool)
 
 (*************************)
 (* *** Generic Stuff *** *)

@@ -21,7 +21,7 @@ open Streaming_types
 open Streaming_util
 open Streaming_ops
 
-open Alg_path_struct
+open Ast_path_struct
 open Alg_path_structutil
 open Alg_project_context
 

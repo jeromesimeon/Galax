@@ -15,8 +15,7 @@
      Utilities for path analysis over the XQuery algebra.
 *)
 
-open Alg_path_struct
-
+open Ast_path_struct
 
 (* Type for actions resulting from path navigation *)
 

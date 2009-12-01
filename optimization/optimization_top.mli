@@ -16,20 +16,20 @@
      optimizer.
 *)
 
-open Logical_algebra_types
+open Ast_logical_algebra_types
 
 val optimize_statement :
-    logical_compile_context -> logical_algop_expr -> logical_algop_expr
+    Compile_context.logical_compile_context -> logical_algop_expr -> logical_algop_expr
 
 val optimize_prolog :
-    logical_compile_context ->
-      logical_algop_prolog -> logical_compile_context * logical_algop_prolog
+    Compile_context.logical_compile_context ->
+      logical_algop_prolog -> Compile_context.logical_compile_context * logical_algop_prolog
 
 val optimize_library_module :
-    logical_compile_context ->
-      logical_algop_xmodule -> logical_compile_context * logical_algop_xmodule
+    Compile_context.logical_compile_context ->
+      logical_algop_xmodule -> Compile_context.logical_compile_context * logical_algop_xmodule
 
 val optimize_main_module :
-    logical_compile_context ->
-      logical_algop_xmodule -> logical_compile_context * logical_algop_xmodule
+    Compile_context.logical_compile_context ->
+      logical_algop_xmodule -> Compile_context.logical_compile_context * logical_algop_xmodule
 

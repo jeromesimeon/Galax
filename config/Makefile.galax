@@ -476,12 +476,12 @@ datatypes/anyURI.cmo datatypes/datatypes_lexer.cmo \
 datatypes/datatypes_util.cmo datatypes/regularexp.cmo
 
 GALAX_DM_BASE=dm/base/cursor.cmo dm/base/nodeid.cmo \
-dm/base/nodeid_context.cmo
+dm/base/nodeid_context.cmo dm/base/dm_types.cmo
 
 GALAX_DM_ATOMIC=dm/atomic/dm_atomic.cmo \
 dm/atomic/dm_atomic_util.cmo \
 dm/atomic/dm_atomic_btree.cmo \
-dm/atomic/dm_atomic_btree_util.cmo
+dm/atomic/dm_atomic_btree_util.cmo \
 
 GALAX_STREAMING=streaming/sax_annot.cmo streaming/streaming_util.cmo \
 streaming/resolve_stream_context.cmo \
@@ -498,7 +498,8 @@ ast/xquery_type_core_ast_annotation.cmo \
 ast/xquery_type_core_ast_util.cmo \
 ast/xquery_algebra_ast_util.cmo \
 ast/xquery_physical_type_ast_util.cmo \
-ast/xquery_algebra_ast_annotation_util.cmo
+ast/xquery_algebra_ast_annotation_util.cmo \
+ast/xquery_core_ast_util.cmo
 
 GALAX_AST_PRINTER_AND_WALKER=ast_printer/print_common.cmo ast_printer/print_type.cmo \
 ast_walker/ast_walker_rewrite_context.cmo \
@@ -511,10 +512,9 @@ ast_printer/print_xquery_algebra.cmo \
 ast_printer/print_xquery_core.cmo \
 ast_printer/print_type_core.cmo \
 ast_printer/print_top.cmo \
-ast/xquery_core_ast_util.cmo \
 ast_walker/ast_walker_rewrite.cmo
 
-GALAX_PROCESSINGCONTEXT=toplevel/galax_server_util.cmo procctxt/monitoring_context.cmo procctxt/processing_context.cmo
+GALAX_PROCESSINGCONTEXT=procctxt/monitoring_context.cmo procctxt/processing_context.cmo
 
 GALAX_SCHEMA=schema/schema_util.cmo schema/schema_builtin.cmo \
 schema/schema_prefix_manager.cmo schema/schema_import.cmo \
@@ -567,7 +567,6 @@ physicaldm/physical_table.cmo physicaldm/physical_value_util.cmo \
 physicaldm/physical_name_index.cmo \
 physicaldm/physical_value_index.cmo \
 physicaldm/physical_index_load.cmo 
-
 
 GALAX_SERIALIZATION=serialization/serialization_context.cmo \
 serialization/serialization.cmo
@@ -645,6 +644,18 @@ optimization/optimization_rules_treepattern.cmo\
 optimization/optimization_rewrite.cmo\
 optimization/optimization_top.cmo\
 
+GALAX_CODE_CONTEXT=code_selection/code_typing_context.cmo \
+code_selection/cs_annotate.cmo\
+code_selection/update_ordering.cmo \
+code_selection/execution_context.cmo \
+code_selection/tuple_context_manager.cmo \
+code_selection/variable_context_manager.cmo \
+code_selection/code_selection_context.cmo \
+code_selection/cs_util_coercion.cmo \
+code_selection/cs_util.cmo \
+code_selection/compiled_program_units.cmo \
+code_selection/cs_code_top.cmo 
+
 GALAX_CODE=code_selection/code/code_binding.cmo \
 code_selection/code/code_util_ridlist.cmo \
 code_selection/code/code_util_predicates.cmo \
@@ -678,18 +689,6 @@ code_selection/code/code_type_operators.cmo \
 code_selection/code/code_update.cmo \
 code_selection/code/code_user_defined_fn.cmo
 
-GALAX_CODE_CONTEXT=code_selection/code_typing_context.cmo \
-code_selection/cs_annotate.cmo\
-code_selection/update_ordering.cmo \
-code_selection/execution_context.cmo \
-code_selection/tuple_context_manager.cmo \
-code_selection/variable_context_manager.cmo \
-code_selection/code_selection_context.cmo \
-code_selection/cs_util_coercion.cmo \
-code_selection/cs_util.cmo \
-code_selection/compiled_program_units.cmo \
-code_selection/cs_code_top.cmo 
-
 GALAX_CODE_SELECTION=$(GALAX_CODE) \
 code_selection/cs_code_typing_top.cmo \
 code_selection/cs_code_selection_expr.cmo \
@@ -708,7 +707,6 @@ shredded/shredded_dm.cmo
 GALAX_SHREDDED_COMMON=shredded/shredded_common/shredded_encode.cmo \
 shredded/shredded_common/shredded_common.cmo 
 
-
 GALAX_SHREDDED_MAIN_MEMORY=$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_record.cmo \
 $(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_basetypes.cmo \
 $(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_recno.cmo \
@@ -724,7 +722,7 @@ GALAX_PROCESSINGMODEL=procmod/procmod_phases.cmo procmod/procmod_compiler.cmo
 GALAX_API=galapi/caml_api/dm_functions.cmo galapi/caml_api/galax.cmo
 
 GALAX_TOPLEVEL=toplevel/top_config.cmo toplevel/top_util.cmo \
-               toplevel/top_options.cmo toplevel/galax_server.cmo \
+               toplevel/top_options.cmo toplevel/galax_server_util.cmo toplevel/galax_server.cmo \
 	       toplevel/top_args.cmo toplevel/top_run.cmo toplevel/top_parse.cmo \
                toplevel/top_compile.cmo toplevel/top_schema.cmo
 
@@ -788,6 +786,8 @@ $(LOCALPREFIX)/ast/xquery_type_ast_util.cmi \
 $(LOCALPREFIX)/ast/xquery_type_core_ast.cmi \
 $(LOCALPREFIX)/ast/xquery_type_core_ast_util.cmi \
 $(LOCALPREFIX)/ast/xquery_type_core_ast_annotation.cmi \
+$(LOCALPREFIX)/ast/ast_path_struct.cmi \
+$(LOCALPREFIX)/ast/ast_logical_algebra_types.cmi \
 $(LOCALPREFIX)/ast_printer/print_common.cmi \
 $(LOCALPREFIX)/ast_printer/print_top.cmi \
 $(LOCALPREFIX)/ast_printer/print_type.cmi \
@@ -876,7 +876,6 @@ $(LOCALPREFIX)/compile/compile_context_util.cmi \
 $(LOCALPREFIX)/compile/compile_expr.cmi \
 $(LOCALPREFIX)/compile/compile_top.cmi \
 $(LOCALPREFIX)/compile/compile_util.cmi \
-$(LOCALPREFIX)/compile/logical_algebra_types.cmi \
 $(LOCALPREFIX)/datamodel/galax_copy_node.cmi \
 $(LOCALPREFIX)/datamodel/galax_dm.cmi \
 $(LOCALPREFIX)/datamodel/galax_load.cmi \
@@ -988,7 +987,6 @@ $(LOCALPREFIX)/procmod/procmod_phases.cmi \
 $(LOCALPREFIX)/procmod/procmod_types.cmi \
 $(LOCALPREFIX)/projection/alg_analysis_context.cmi \
 $(LOCALPREFIX)/projection/alg_path_analysis.cmi \
-$(LOCALPREFIX)/projection/alg_path_struct.cmi \
 $(LOCALPREFIX)/projection/alg_path_structutil.cmi \
 $(LOCALPREFIX)/projection/analysis_context.cmi \
 $(LOCALPREFIX)/projection/function_analysis.cmi \

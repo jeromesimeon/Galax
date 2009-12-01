@@ -20,7 +20,6 @@ open Compile_context
 open Cs_util
 open Cs_util_coercion
 open Debug
-open Galax_server_util
 open Error
 open Execution_context
 open Namespace_names

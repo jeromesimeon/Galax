@@ -30,7 +30,7 @@ open Physical_value
 
 open Processing_context
 open Typing_context
-open Logical_algebra_types
+open Ast_logical_algebra_types
 open Algebra_type
 open Variable_context_manager
 open Tuple_context_manager
@@ -102,7 +102,7 @@ val cxschema_from_code_selection_context :
     code_selection_context -> Xquery_type_core_ast.cxschema
 
 val compile_context_from_code_selection_context :
-    code_selection_context -> logical_compile_context
+    code_selection_context -> Compile_context.logical_compile_context
 
 val replace_compile_context_in_code_selection_context :
     alg_compile_context -> code_selection_context -> code_selection_context

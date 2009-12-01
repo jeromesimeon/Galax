@@ -23,7 +23,7 @@ val code_selection_statement :
     (Compiled_program_units.compiled_program * 
     string (* Module URI *) *
     Code_selection_context.code_selection_context) ->
-    Logical_algebra_types.logical_algop_expr ->
+    Ast_logical_algebra_types.logical_algop_expr ->
     Code_selection_context. code_selection_context *
     Algebra_type.algop_expr
 
@@ -31,7 +31,7 @@ val code_selection_prolog :
     (Compiled_program_units.compiled_program *
     string (* Module URI *) *
     Code_selection_context.code_selection_context) ->
-    Logical_algebra_types.logical_algop_prolog ->
+    Ast_logical_algebra_types.logical_algop_prolog ->
     Code_selection_context. code_selection_context *
     Algebra_type.algop_prolog
 
@@ -39,7 +39,7 @@ val code_selection_module :
     (Compiled_program_units.compiled_program *
     string (* Module URI *) *
     Code_selection_context.code_selection_context) ->
-    Logical_algebra_types.logical_algop_xmodule ->
+    Ast_logical_algebra_types.logical_algop_xmodule ->
     Code_selection_context.code_selection_context *
     Algebra_type.algop_xmodule
 
