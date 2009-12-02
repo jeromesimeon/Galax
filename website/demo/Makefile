@@ -17,7 +17,7 @@
 LOCALPREFIX=../..
 
 # User configuration
--include $(LOCALPREFIX)/config/Makefile.galax
+-include $(LOCALPREFIX)/config/Makefile.galax.website
 
 # Web site configuration
 include ../Makefile.config
@@ -35,7 +35,6 @@ OBJS=demo_conf.cmo querycgi.cmo
 VIEWOBJS=demo_conf.cmo
 USECASEOBJS=demo_conf.cmo usecase.cmo
 OPTUSECASEOBJS=$(USECASEOBJS:.cmo=.cmx)
-WGALAX_ALL_INCLUDES=$(GALAX_ALL_INCLUDES) -I $(CONF_OCAML_PKGLIB)/netcgi1
                   
 all: $(USECASETARGET) $(CGITARGET) 
 
@@ -88,18 +87,4 @@ tags:
 	etags *.ml *.mli *.mll *.mly
 
 include .depend
-
-.SUFFIXES:	.ml .mli .mll .cmo .cmi .cmx .java .class
-
-.mll.ml:
-	$(OCAMLLEX) $<
-
-.ml.cmo:
-	$(OCAMLC) $(OCAMLC_FLAGS) $(WGALAX_ALL_INCLUDES) -c $<
-
-.mli.cmi:
-	$(OCAMLC) $(OCAMLC_FLAGS) $(WGALAX_ALL_INCLUDES) -c $<
-
-.ml.cmx:
-	$(OCAMLOPT) $(OCAMLOPT_FLAGS) $(WGALAX_ALL_INCLUDES) -c $<
 

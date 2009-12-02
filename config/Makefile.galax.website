@@ -12,29 +12,25 @@
 
 include $(LOCALPREFIX)/config/Makefile.galax.common
 
+WGALAX_ALL_INCLUDES=$(GALAX_ALL_INCLUDES) -I $(CONF_OCAML_PKGLIB)/netcgi1
+
 #########################################################################
 # Section:	Make rules
 # Description:
 #		These are the rules for compiling OCaml programs
 #########################################################################
+
 .SUFFIXES:	.ml .mli .mll .cmo .cmi .cmx .java .class
 
 .mll.ml:
 	$(OCAMLLEX) $<
 
 .ml.cmo:
-	$(OCAMLC) $(OCAMLC_FLAGS) $(GALAX_ALL_INCLUDES) -c $<
+	$(OCAMLC) $(OCAMLC_FLAGS) $(WGALAX_ALL_INCLUDES) -c $<
 
 .mli.cmi:
-	$(OCAMLC) $(OCAMLC_FLAGS) $(GALAX_ALL_INCLUDES) -c $<
+	$(OCAMLC) $(OCAMLC_FLAGS) $(WGALAX_ALL_INCLUDES) -c $<
 
 .ml.cmx:
-	$(OCAMLOPT) $(OCAMLOPT_FLAGS) $(GALAX_ALL_INCLUDES) -c $<
-
-.java.class:
-	$(JAVAC) $(JAVAC_FLAGS) $(JAVACLASSPATH) $<
-
-updatedepend::
-
-clobber::	clean
+	$(OCAMLOPT) $(OCAMLOPT_FLAGS) $(WGALAX_ALL_INCLUDES) -c $<
 

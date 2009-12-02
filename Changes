@@ -4,6 +4,14 @@
 
 December 1, 2009 - Jerome
 
+  o Configuration:
+      - Slight reorganization of the makefiles to allow for various
+        sub-components to share most of the configuration, and differ
+        on some of the target rules. Main galax configuration is now
+        in ./config/Makefile.galax.common
+
+December 1, 2009 - Jerome
+
   o Toplevel:
       - Fixed bug in command-line usage processing, which wrongly
         assumed it was always embedded in a galax executable, breaking

@@ -1,0 +1,1114 @@
+#########################################################################
+#                                                                       #
+#                                  GALAX                                #
+#                               XQuery Engine                           #
+#                                                                       #
+#   Copyright 2001-2007.                                                #
+#   Distributed only by permission.                                     #
+#                                                                       #
+#########################################################################
+
+# $Id: Makefile.galax,v 1.50 2008/03/12 22:30:57 simeon Exp $ #
+
+$(LOCALPREFIX)/config/Makefile.conf:
+	@echo
+	@echo "You must run the Configure script before attempting to build Galax!"
+	@echo "  e.g. $(LOCALPREFIX)/Configure"
+	@echo
+	@echo "Read the INSTALL file for more details!"
+	@echo
+
+include $(LOCALPREFIX)/config/Makefile.conf
+
+###########################################################################
+# Section:	Namespace configuration
+# Description:
+#		These variables are used to set the URI values for namespaces
+###########################################################################
+
+XMLURI=http://www.w3.org/XML/1998/namespace
+XMLNSURI=http://www.w3.org/2000/xmlns/
+XSURI=http://www.w3.org/2001/XMLSchema
+XSDURI=http://www.w3.org/2001/XMLSchema-datatypes
+XSIURI=http://www.w3.org/2001/XMLSchema-instance
+FNURI=http://www.w3.org/2005/xpath-functions
+XQUERYXURI=http://www.w3.org/2005/XQueryX
+OPURI=http://www.w3.org/2005/xpath-operators
+FSURI=http://www.w3.org/2004/10/xquery-semantics
+COLLURI=http://www.w3.org/2005/xpath-functions/collation/codepoint
+LOCALURI=http://www.w3.org/2005/xquery-local-functions
+GLXURI=http://www.galaxquery.org
+ERRURI=http://www.w3.org/2005/xqt-errors
+
+#########################################################################
+# Section:	Variables
+# Description:
+#		These are variables used by various Makefiles
+#
+#	GALAX_INCLUDES:		All of the directories to search for Galax MLI files
+#	OCAML_LIB_INCLUDES:	All of the directories to search for OCAML library MLI files
+#	ALL_INCLUDES:			All of the directories to search for MLI files
+#########################################################################
+HERE:=`pwd`
+
+#########################################################################
+# Sub-Section: Compilation flags
+# Description:
+#		This section defines the flags to the O'Caml compiler.
+#########################################################################
+OCAMLC_FLAGS+=-w m
+OCAMLOPT_FLAGS+=-w m
+
+#########################################################################
+# Sub-Section:	INCLUDE directory flags
+# Description:
+#		This section sets up the list of directories to search for mli and cmi
+#		files.
+#########################################################################
+
+GALAX_TOOLS_INCLUDES=\
+-I $(LOCALPREFIX)/tools/http \
+-I $(LOCALPREFIX)/tools/stemmer
+
+GALAX_INCLUDES=\
+-I $(LOCALPREFIX)/base \
+-I $(LOCALPREFIX)/fsa \
+-I $(LOCALPREFIX)/namespace \
+-I $(LOCALPREFIX)/datatypes \
+-I $(LOCALPREFIX)/ast \
+-I $(LOCALPREFIX)/ast_walker \
+-I $(LOCALPREFIX)/ast_printer \
+-I $(LOCALPREFIX)/procctxt \
+-I $(LOCALPREFIX)/lexing \
+-I $(LOCALPREFIX)/parsing \
+-I $(LOCALPREFIX)/dm/base \
+-I $(LOCALPREFIX)/dm/atomic \
+-I $(LOCALPREFIX)/streaming \
+-I $(LOCALPREFIX)/serialization \
+-I $(LOCALPREFIX)/schema \
+-I $(LOCALPREFIX)/dm \
+-I $(LOCALPREFIX)/subtyping \
+-I $(LOCALPREFIX)/wsdl \
+-I $(LOCALPREFIX)/normalization \
+-I $(LOCALPREFIX)/projection \
+-I $(LOCALPREFIX)/code_util \
+-I $(LOCALPREFIX)/streaming_xpath \
+-I $(LOCALPREFIX)/datamodel \
+-I $(LOCALPREFIX)/monitor \
+-I $(LOCALPREFIX)/stdlib \
+-I $(LOCALPREFIX)/typing \
+-I $(LOCALPREFIX)/rewriting \
+-I $(LOCALPREFIX)/factorization \
+-I $(LOCALPREFIX)/physicaldm \
+-I $(LOCALPREFIX)/compile \
+-I $(LOCALPREFIX)/optimization \
+-I $(LOCALPREFIX)/code_selection/code \
+-I $(LOCALPREFIX)/code_selection \
+-I $(LOCALPREFIX)/planio \
+-I $(LOCALPREFIX)/evaluation \
+-I $(LOCALPREFIX)/procmod \
+-I $(LOCALPREFIX)/toplevel \
+-I $(LOCALPREFIX)/galapi/caml_api \
+-I $(LOCALPREFIX)/extensions/jabber \
+-I $(LOCALPREFIX)/extensions/apache \
+-I $(LOCALPREFIX)/shredded \
+-I $(LOCALPREFIX)/shredded/shredded_main_memory \
+-I $(LOCALPREFIX)/shredded/shredded_common \
+-I $(LOCALPREFIX)/regress
+
+# Note: We may remove LIBPXP_UTF8 and LIBPXP_ISO88591 and make them
+# dependent on WITH_CHARSET_UTF8 and WITH_CHARSET_ISO88591
+# -I $(CONF_OCAML_STDLIB) 
+#
+OCAML_LIB_INCLUDES=\
+-I $(CONF_OCAML_STDLIB) \
+-I $(CONF_OCAML_LIBPCRE) \
+-I $(CONF_OCAML_LIBNETSTRING) \
+-I $(CONF_OCAML_EQUEUE) \
+-I $(CONF_OCAML_LIBNETCLIENT) \
+-I $(CONF_OCAML_LIBPXP) \
+-I $(CONF_OCAML_LIBPXP_UTF8) \
+-I $(CONF_OCAML_LIBPXP_ISO88591) \
+-I $(CONF_OCAML_LIBCAMOMILE)
+
+# Unfortunately, the netsys library depends on the O'Caml version
+ifeq ($(CONF_WITH_NETSYS), true)
+OCAML_LIB_INCLUDES+=-I $(CONF_OCAML_LIBNETSYS) 
+endif
+
+# If Jungle has been enabled, include it in the include search path
+# and make sure the BDB libraries are included as well.
+#
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+GALAX_INCLUDES+=-I $(LOCALPREFIX)/tools/Jungle
+endif
+
+# GALAX_ALL_INCLUDES:	All of the directories to search for MLI files
+#
+GALAX_ALL_INCLUDES=-I . -I $(LOCALPREFIX) $(OCAML_LIB_INCLUDES) $(GALAX_TOOLS_INCLUDES) $(GALAX_INCLUDES)
+GALAX_CAPI_INCLUDES=-I $(LOCALPREFIX)/galapi/c_api $(GALAX_ALL_INCLUDES)
+GALAX_JAVAAPI_INCLUDES=-I $(JAVAINCLUDE) -I $(LOCALPREFIX)/galapi/c_api -I $(LOCALPREFIX)/galapi/java_api $(GALAX_ALL_INCLUDES)
+ifdef JAVASYSINC
+GALAX_JAVAAPI_INCLUDES+=-I $(JAVASYSINC)
+endif
+
+#########################################################################
+# Sub-Section:	library search flags
+# Description:
+#		This section sets up the library names and link command line options
+#########################################################################
+
+#########################################################################
+# Sub-Sub-Section:   library names
+# Description:
+#     Here are the names of the various library files in Galax
+#########################################################################
+
+GALAX_LIB=galax.cma
+GALAX_OPTLIB=galax.cmxa
+
+GALAX_CLIB=galax.a
+GALAX_LIB_PATH=$(LOCALPREFIX)/$(GALAX_LIB)
+GALAX_OPTLIB_PATH=$(LOCALPREFIX)/$(GALAX_OPTLIB)
+GALAX_CAPI_OPTLIB=libgalaxopt.a
+GALAX_CAPI_OPTSHAREDLIB=libgalaxopt$(DLL)
+GALAX_JAVAAPI_OPTSHAREDLIB=libgalaxoptj$(JNIDLL)
+GALAX_JAVAAPI_ARCHIVE=$(GALAX_JAVA_PACKAGE).jar
+GALAX_JAVA_PACKAGE=galapi
+
+ifeq ($(SUPPORTS_RPATH), true)
+	GALAX_OCAML_RPATH_OPTIONS=$(OCAML_RPATHFLAGS)$(CONF_C_LIBPCRE)
+	ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+		GALAX_OCAML_RPATH_OPTIONS+=$(OCAML_RPATHFLAGS)$(CONF_C_LIBBDB)
+	endif
+endif
+
+#########################################################################
+# Sub-Sub-Section:   OCaml byte-code libraries
+# Description:
+#     This section contains the command line flags for linking in
+#     OCaml byte-code libraries.
+#########################################################################
+GALAX_LIBS=\
+$(GALAX_LIB)
+
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+GALAX_LIBS+=jungle.cma
+endif
+
+OCAML_LIBS=\
+nums.cma \
+unix.cma \
+str.cma \
+bigarray.cma \
+pcre.cma 
+ifeq ($(CONF_WITH_NETSYS), true)
+OCAML_LIBS+=netsys.cma 
+endif
+OCAML_LIBS+=\
+netstring.cma \
+equeue.cma \
+netclient.cma \
+pxp_engine.cma \
+pxp_lex_utf8.cma pxp_lex_link_utf8.cmo \
+pxp_lex_iso88591.cma pxp_lex_link_iso88591.cmo \
+camomile.cma
+
+GALAX_ALL_LIBS=$(OCAML_LIBS) $(GALAX_LIBS) $(GALAX_OCAML_RPATH_OPTIONS)
+GALAXD_ALL_LIBS=$(OCAML_LIBS) threads/threads.cma $(GALAX_LIBS) $(GALAX_OCAML_RPATH_OPTIONS)
+
+#########################################################################
+# Sub-Sub-Section:   OCaml native-code libraries
+# Description:
+#     This section contains the command line flags for linking in
+#     OCaml native-code libraries.
+#########################################################################
+GALAX_OPTLIBS=\
+$(GALAX_OPTLIB)
+
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+GALAX_OPTLIBS+=jungle.cmxa
+endif
+
+OCAML_OPTLIBS=\
+nums.cmxa \
+unix.cmxa \
+str.cmxa \
+bigarray.cmxa \
+pcre.cmxa 
+ifeq ($(CONF_WITH_NETSYS), true)
+OCAML_OPTLIBS+=netsys.cmxa 
+endif
+OCAML_OPTLIBS+=\
+netstring.cmxa \
+equeue.cmxa \
+netclient.cmxa \
+pxp_engine.cmxa \
+pxp_lex_utf8.cmxa pxp_lex_link_utf8.cmx \
+pxp_lex_iso88591.cmxa pxp_lex_link_iso88591.cmx \
+camomile.cmxa
+
+GALAX_ALL_OPTLIBS=$(OCAML_OPTLIBS) $(GALAX_OPTLIBS) $(GALAX_OCAML_RPATH_OPTIONS)
+GALAXD_ALL_OPTLIBS=$(OCAML_OPTLIBS) threads/threads.cmxa $(GALAX_OPTLIBS) $(GALAX_OCAML_RPATH_OPTIONS)
+
+#########################################################################
+# Sub-Sub-Section:   C API library flags
+# Description:
+#     This section contains the command line flags for linking applications
+#     and shared libraries using the Galax C API static libraries.
+#########################################################################
+GALAX_CAPI_OPTLIB_PATHS=\
+-L$(LOCALPREFIX)/galapi/c_api
+
+GALAX_CAPI_OPTLIBS=\
+-lgalaxopt
+
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+GALAX_CAPI_OPTLIB_PATHS+=-L$(CONF_C_LIBBDB) -L$(HERE)/$(LOCALPREFIX)/tools/Jungle -L$(CONF_OCAML_IDL)
+GALAX_CAPI_OPTLIBS+=-l$(CONF_C_LIBBDB_NAME) -ljungle -lcamlidl -lm
+endif
+
+OCAML_CAPI_OPTLIB_PATHS=\
+-L$(CONF_OCAML_STDLIB) 
+
+ifeq ($(CONF_WITH_NETSYS), true)
+OCAML_CAPI_OPTLIB_PATHS+=-L$(CONF_OCAML_LIBNETSYS) 
+endif 
+
+OCAML_CAPI_OPTLIB_PATHS+=\
+-L$(CONF_OCAML_LIBPCRE) \
+-L$(CONF_C_LIBPCRE) \
+-L$(CONF_C_LIBASMRUN)
+
+OCAML_CAPI_OPTLIBS=\
+-lnums -lunix -lstr -lbigarray \
+-lpcre_stubs \
+-lpcre \
+-lnetsys \
+-lrt \
+-lasmrun
+
+# If we ever provide the C API for the Galax Daemon, we need to
+# include these flags.                   
+# ifeq ($(CONF_WITH_GALAXD), true)
+# OCAML_CAPI_OPTLIBS+=-lthreadsnat -lpthread 
+# endif
+
+ifeq ($(SUPPORTS_STARTGROUP), true)
+GALAX_ALL_CAPI_OPTLIBS=$(GALAX_CAPI_OPTLIB_PATHS) $(OCAML_CAPI_OPTLIB_PATHS) $(STARTGROUP) $(OCAML_CAPI_OPTLIBS) $(GALAX_CAPI_OPTLIBS) $(ENDGROUP)
+else
+GALAX_ALL_CAPI_OPTLIBS=$(GALAX_CAPI_OPTLIB_PATHS) $(OCAML_CAPI_OPTLIB_PATHS) $(OCAML_CAPI_OPTLIBS) $(GALAX_CAPI_OPTLIBS) $(OCAML_CAPI_OPTLIBS) -lm
+endif
+
+#########################################################################
+# Sub-Sub-Section:   OCaml C API shared libraries
+# Description:
+#     This section contains the command line flags for linking applications
+#     and shared libraries using the Galax C API static libraries.
+#########################################################################
+ifeq ($(SUPPORTS_RPATH), true)
+	_GALAX_RPATH:=$(LOCALPREFIX)/galapi/c_api
+	ifeq ($(CONF_WITH_EXT_JUNGLE),true)
+		_GALAX_RPATH:=$(_GALAX_RPATH):$(CONF_C_LIBBDB)
+		GALAX_CAPI_RPATH_OPTIONS=$(RPATHFLAGS)$(CONF_C_LIBBDB)
+	endif
+	GALAX_RPATH_OPTIONS=$(RPATHFLAGS)$(_GALAX_RPATH) $(RPATHFLAGS)$(CONF_C_LIBPCRE)
+endif
+
+# C API shared library compile flags
+GALAX_CAPI_OPTSHAREDLIBS=\
+-L$(LOCALPREFIX)/galapi/c_api -lgalaxopt $(GALAX_RPATH_OPTIONS) 
+
+GALAX_ALL_CAPI_OPTSHAREDLIBS=$(GALAX_CAPI_OPTSHAREDLIBS)
+
+# This is for the galapi development only
+#
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+GALAX_CAPI_SHAREDLIBFLAGS=-L$(HERE)/$(LOCALPREFIX)/tools/Jungle -ljungle \
+-L$(CONF_C_LIBBDB) -l$(CONF_C_LIBBDB_NAME) \
+-L$(CONF_OCAML_IDL) -lcamlidl
+endif
+
+GALAX_CAPI_SHAREDLIBFLAGS+=-lm $(LIBDL) $(GALAX_CAPI_RPATH_OPTIONS)
+
+#########################################################################
+# Sub-Sub-Section:   Jungle library flags
+# Description:
+#		This section is only used in the development environment.  The
+#		variables are shared between Jungle and the C API.
+#
+#	GALAX_JUNGLE_LIBFLAGS:	extra flags used when building OCaml libs
+#	GALAX_JUNGLE_SHAREDLIBFLAGS:	extra flags used when building shared native libs
+#########################################################################
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+
+GALAX_JUNGLE_LIBFLAGS=-ccopt -L$(CONF_GALAX_OCAMLLIB) -ccopt -L. -ccopt -L$(HERE)/$(LOCALPREFIX)/tools/Jungle -cclib -ljungle \
+-ccopt -L$(CONF_C_LIBBDB) -cclib -l$(CONF_C_LIBBDB_NAME) \
+-ccopt -L$(CONF_OCAML_IDL) -cclib -lcamlidl \
+-cclib -lm
+
+ifeq ($(NEEDLIBDL), true)
+GALAX_JUNGLE_LIBFLAGS+=-cclib $(LIBDL)
+endif
+
+endif
+
+
+#########################################################################
+# Section:	subcomponent variable setup
+# Description:
+#		This section sets up the GALAX_ALL_SUBCOMPONENTS
+#########################################################################
+
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+GALAX_ALL_SUBCOMPONENTS=tools/Jungle
+else
+GALAX_ALL_SUBCOMPONENTS=
+endif
+GALAX_ALL_SUBCOMPONENTS+=galapi doc examples usecases regress
+
+#########################################################################
+# Section:	installation directory targets
+# Description:
+#########################################################################
+ALL_GALAX_DIRS=\
+$(CONF_GALAX_BIN) \
+$(CONF_GALAX_LIB) \
+$(CONF_GALAX_MAN) \
+$(CONF_GALAX_OCAMLLIB) \
+$(CONF_GALAX_CONFIG) \
+$(CONF_GALAX_EXAMPLES) \
+$(CONF_GALAX_USECASES) \
+$(CONF_GALAX_REGRESS) \
+$(CONF_GALAX_C_API) \
+$(CONF_GALAX_JAVA_API)
+
+$(ALL_GALAX_DIRS):
+	$(MKDIR) $@
+
+#########################################################################
+# Section:	Configuration options for APIs and examples
+# Description:
+#		These are variables used by the galapi and examples subdirectory
+#########################################################################
+GALAX_APIS=caml_api
+ifeq ($(CONF_WITH_API_C), true)
+GALAX_APIS+=c_api
+endif
+
+ifeq ($(CONF_WITH_API_JAVA), true)
+GALAX_APIS+=java_api
+endif
+
+GALAX_EXAMPLE_DIRS=$(GALAX_APIS) docs extensions
+ifeq ($(CONF_WITH_EXT_JUNGLE), true)
+GALAX_EXAMPLE_DIRS+=jungle
+endif
+
+#########################################################################
+# Section:	GALAX CAML API files
+# Description:
+#		These are variables used by the galapi/caml_api and toplevel
+#		Makefile.
+#########################################################################
+
+ifeq ($(CONF_WITH_CHARSET_UTF8), true)
+GALAX_UTF8_NAMESPACE_OBJECTS=namespace/qname_lexer_utf8.cmo
+GALAX_UTF8_LEXING_OBJECTS=\
+lexing/opening_tag_lexer_utf8.cmo \
+lexing/closing_tag_lexer_utf8.cmo \
+lexing/text_lexer_utf8.cmo
+GALAX_UTF8_INIT_OBJECTS=parsing/lexers_utf8.cmo
+GALAX_UTF8_MLLFILES=\
+namespace/qname_lexer_utf8.mll \
+lexing/opening_tag_lexer_utf8.mll \
+lexing/closing_tag_lexer_utf8.mll \
+lexing/text_lexer_utf8.mll
+endif
+
+ifeq ($(CONF_WITH_CHARSET_ISO88591), true)
+GALAX_ISO88591_NAMESPACE_OBJECTS=namespace/qname_lexer_iso88591.cmo
+GALAX_ISO88591_LEXING_OBJECTS=\
+lexing/opening_tag_lexer_iso88591.cmo \
+lexing/closing_tag_lexer_iso88591.cmo \
+lexing/text_lexer_iso88591.cmo
+GALAX_ISO88591_INIT_OBJECTS=parsing/lexers_iso88591.cmo
+GALAX_ISO88591_MLLFILES=\
+namespace/qname_lexer_iso88591.mll \
+lexing/opening_tag_lexer_iso88591.mll \
+lexing/closing_tag_lexer_iso88591.mll \
+lexing/text_lexer_iso88591.mll
+endif
+
+#########################################################################
+# Section:	Variables
+# Description:
+#		This is where variables are initialized that are used throughout
+#		the Makefile and are not configuration-dependent.
+#########################################################################
+
+GALAX_TOOLS=\
+tools/http/http.cmo \
+tools/stemmer/stemmer.cmo
+
+GALAX_BASE=base/pervasive.cmo base/conf.cmo \
+base/gmisc.cmo base/id.cmo \
+base/pool.cmo base/dynamic_buffer.cmo \
+base/finfo.cmo base/debug.cmo \
+base/error.cmo base/encoding.cmo base/galax_pxp.cmo base/whitespace.cmo \
+base/galax_url.cmo base/galax_camomile.cmo \
+base/args.cmo base/occurrence.cmo \
+base/galax_io.cmo base/register_handlers.cmo \
+base/dynamic_stack.cmo
+
+GALAX_NAMESPACE=$(GALAX_UTF8_NAMESPACE_OBJECTS) $(GALAX_ISO88591_NAMESPACE_OBJECTS) \
+namespace/qname_lexer.cmo namespace/namespace_names.cmo \
+namespace/namespace_util.cmo namespace/namespace_builtin.cmo \
+namespace/namespace_context.cmo namespace/namespace_symbols.cmo \
+namespace/namespace_symbols_builtin.cmo namespace/namespace_generate.cmo \
+namespace/namespace_symbols_util.cmo namespace/namespace_resolve.cmo
+
+GALAX_FSA=fsa/fsautil.cmo fsa/nfa.cmo \
+fsa/dfa.cmo fsa/regexp.cmo
+
+GALAX_DATATYPES=datatypes/decimal.cmo datatypes/dateTime.cmo \
+datatypes/anyURI.cmo datatypes/datatypes_lexer.cmo \
+datatypes/datatypes_util.cmo datatypes/regularexp.cmo
+
+GALAX_DM_BASE=dm/base/cursor.cmo dm/base/nodeid.cmo \
+dm/base/nodeid_context.cmo dm/base/dm_types.cmo
+
+GALAX_DM_ATOMIC=dm/atomic/dm_atomic.cmo \
+dm/atomic/dm_atomic_util.cmo \
+dm/atomic/dm_atomic_btree.cmo \
+dm/atomic/dm_atomic_btree_util.cmo \
+
+GALAX_STREAMING=streaming/sax_annot.cmo streaming/streaming_util.cmo \
+streaming/resolve_stream_context.cmo \
+streaming/streaming_ordered_context.cmo \
+streaming/prefix_context.cmo streaming/small_stream_context.cmo \
+streaming/streaming_ops.cmo streaming/streaming_diff.cmo \
+streaming/streaming_conv.cmo streaming/streaming_constructors.cmo \
+streaming/streaming_parse.cmo
+
+GALAX_AST=ast/xquery_common_ast.cmo ast/xquery_common_ast_util.cmo \
+ast/xquery_ast_util.cmo ast/xquery_type_ast_util.cmo \
+ast/xquery_core_ast_annotation.cmo \
+ast/xquery_type_core_ast_annotation.cmo \
+ast/xquery_type_core_ast_util.cmo \
+ast/xquery_algebra_ast_util.cmo \
+ast/xquery_physical_type_ast_util.cmo \
+ast/xquery_algebra_ast_annotation_util.cmo \
+ast/xquery_core_ast_util.cmo
+
+GALAX_AST_PRINTER_AND_WALKER=ast_printer/print_common.cmo ast_printer/print_type.cmo \
+ast_walker/ast_walker_rewrite_context.cmo \
+ast_walker/ast_walker_fold.cmo \
+ast_walker/ast_walker_annotate_context.cmo \
+ast_walker/ast_walker_annotate.cmo \
+ast_printer/print_xquery.cmo \
+ast_printer/print_xquery_physical_type.cmo \
+ast_printer/print_xquery_algebra.cmo \
+ast_printer/print_xquery_core.cmo \
+ast_printer/print_type_core.cmo \
+ast_printer/print_top.cmo \
+ast_walker/ast_walker_rewrite.cmo
+
+GALAX_PROCESSINGCONTEXT=procctxt/monitoring_context.cmo procctxt/processing_context.cmo
+
+GALAX_SCHEMA=schema/schema_util.cmo schema/schema_builtin.cmo \
+schema/schema_prefix_manager.cmo schema/schema_import.cmo \
+schema/schema_namer.cmo schema/schema_norm.cmo \
+schema/schema_judge.cmo schema/schema_simplification.cmo \
+schema/schema_validation_context.cmo schema/schema_validation.cmo \
+schema/schema_dtd_import.cmo schema/schema_norm_util.cmo
+
+GALAX_DM=dm/cursor_context.cmo dm/cursor_descendant.cmo \
+dm/dm_step.cmo dm/dm.cmo dm/dm_util.cmo
+
+GALAX_LEXING=lexing/lexing_util.cmo lexing/default_lexer.cmo \
+$(GALAX_UTF8_LEXING_OBJECTS) $(GALAX_ISO88591_LEXING_OBJECTS) \
+lexing/xmldecl_lexer.cmo lexing/type_lexer.cmo lexing/schema_lexer.cmo \
+lexing/itemtype_lexer.cmo \
+lexing/kindtest_lexer.cmo lexing/varname_lexer.cmo \
+lexing/pragma_lexer.cmo lexing/operator_lexer.cmo \
+lexing/namespacedecl_lexer.cmo lexing/namespacekeyword_lexer.cmo \
+lexing/copynamespaces_lexer.cmo
+
+GALAX_PARSING=parsing/parse_io.cmo \
+parsing/parse_context.cmo \
+parsing/parse_xquery.cmo \
+parsing/parse_util.cmo \
+parsing/parse_top.cmo \
+parsing/parse_xqueryx.cmo \
+$(GALAX_UTF8_INIT_OBJECTS) $(GALAX_ISO88591_INIT_OBJECTS)
+
+GALAX_SUBGALAX_TYPING=subtyping/subtyping_letter.cmo \
+subtyping/subtyping_glushkov.cmo \
+subtyping/subtyping_build_regexp.cmo \
+subtyping/subtyping_top.cmo
+
+GALAX_WSDL=wsdl/xquery_type_ast_map.cmo wsdl/wsdl_astutil.cmo \
+wsdl/wsdl_util.cmo wsdl/wsdl_load.cmo \
+wsdl/wsdl_import.cmo wsdl/wsdl_export.cmo wsdl/wsdl_apache.cmo \
+wsdl/wsdl_printer.cmo wsdl/wsdl_maker.cmo
+
+GALAX_NORMALIZATION=normalization/norm_var_graph.cmo normalization/norm_context.cmo \
+normalization/norm_overloaded.cmo normalization/norm_util.cmo \
+normalization/norm_expr.cmo normalization/norm_top.cmo normalization/norm_ident_expr.cmo \
+normalization/norm_ident_top.cmo
+
+GALAX_PHYSICALDM=physicaldm/physical_list.cmo physicaldm/physical_sequence.cmo \
+physicaldm/physical_item.cmo physicaldm/physical_item_util.cmo \
+physicaldm/physical_export_context.cmo physicaldm/physical_export.cmo \
+physicaldm/physical_load.cmo \
+physicaldm/physical_util.cmo physicaldm/physical_xml_value.cmo \
+physicaldm/physical_table.cmo physicaldm/physical_value_util.cmo \
+physicaldm/physical_name_index.cmo \
+physicaldm/physical_value_index.cmo \
+physicaldm/physical_index_load.cmo 
+
+GALAX_SERIALIZATION=serialization/serialization_context.cmo \
+serialization/serialization.cmo
+
+GALAX_GALAXDM=datamodel/galax_nodeid.cmo datamodel/galax_dm.cmo \
+datamodel/galax_load_context.cmo datamodel/galax_load.cmo \
+datamodel/galax_copy_node.cmo
+
+# Add your own data model here! - Jerome
+EXTERNAL_DMS=$(UDDATAMODEL)
+
+GALAX_MONITOR=monitor/monitor.cmo
+
+GALAX_STDLIB=stdlib/fn_doc.cmo stdlib/fn_error.cmo
+
+GALAX_TYPING=typing/typing_util.cmo typing/typing_context.cmo \
+typing/typing_notyping.cmo typing/typing_errors.cmo \
+typing/typing_fn.cmo typing/typing_call.cmo typing/typing_step.cmo \
+typing/typing_expr.cmo typing/typing_top.cmo 
+
+GALAX_REWRITING=rewriting/rewriting_judgments.cmo \
+rewriting/rewriting_rules_notyping.cmo rewriting/rewriting_top.cmo \
+rewriting/rewriting_rules_typing.cmo
+
+GALAX_CODE_UTIL=code_util/code_util_matching.cmo code_util/code_util_xpath.cmo \
+code_util/code_util.cmo
+
+GALAX_STREAMING_XPATH=streaming_xpath/df_struct.cmo \
+streaming_xpath/df_analysis_context.cmo \
+streaming_xpath/df_analysis.cmo \
+streaming_xpath/sxp_context.cmo \
+streaming_xpath/streaming_xpath.cmo
+#                streaming_xpath/stream_analysis_builtin.cmo \
+#                streaming_xpath/stream_analysis.cmo \
+
+GALAX_PROJECTION=projection/path_structutil.cmo projection/optim_vars.cmo \
+projection/analysis_context.cmo projection/function_analysis.cmo \
+projection/path_analysis.cmo projection/project_context.cmo \
+projection/stream_project.cmo \
+projection/alg_path_structutil.cmo \
+projection/alg_analysis_context.cmo projection/alg_path_analysis.cmo \
+projection/alg_project_context.cmo \
+projection/alg_stream_project.cmo
+
+GALAX_FACTORIZATION=factorization/factorize_unique.cmo \
+factorization/factorize_free_var.cmo \
+factorization/factorize_iteration.cmo \
+factorization/factorize_flwor.cmo \
+factorization/factorize_tpnf_util.cmo \
+factorization/factorize_tpnf_rules.cmo \
+factorization/factorize_tpnf.cmo \
+factorization/factorize_top.cmo
+
+#factorization/factorize_globals.cmo \
+
+GALAX_COMPILE=compile/compile_util.cmo compile/compile_context.cmo \
+compile/compile_annotate.cmo compile/compile_expr.cmo compile/compile_top.cmo \
+compile/compile_context_util.cmo
+
+GALAX_PLANIO=planio/planio_common.cmo \
+planio/planio_util.cmo \
+planio/planio_physical_value.cmo \
+planio/planio_top.cmo 
+
+GALAX_OPTIMIZATION=optimization/optimization_predicates.cmo \
+optimization/optimization_judge.cmo\
+optimization/optimization_walker.cmo\
+optimization/optimization_util.cmo\
+optimization/optimization_rules_sbdo_automaton.cmo \
+optimization/optimization_rules_sbdo.cmo \
+optimization/optimization_dxq.cmo\
+optimization/optimization_rules_cleanup.cmo\
+optimization/optimization_rules_treejoin.cmo\
+optimization/optimization_rules_treepattern.cmo\
+optimization/optimization_rewrite.cmo\
+optimization/optimization_top.cmo\
+
+GALAX_CODE_CONTEXT=code_selection/code_typing_context.cmo \
+code_selection/cs_annotate.cmo\
+code_selection/update_ordering.cmo \
+code_selection/execution_context.cmo \
+code_selection/tuple_context_manager.cmo \
+code_selection/variable_context_manager.cmo \
+code_selection/code_selection_context.cmo \
+code_selection/cs_util_coercion.cmo \
+code_selection/cs_util.cmo \
+code_selection/compiled_program_units.cmo \
+code_selection/cs_code_top.cmo 
+
+GALAX_CODE=code_selection/code/code_binding.cmo \
+code_selection/code/code_util_ridlist.cmo \
+code_selection/code/code_util_predicates.cmo \
+code_selection/code/code_util_pattern_matcher.cmo \
+code_selection/code/code_util_materialize.cmo \
+code_selection/code/code_fn.cmo \
+code_selection/code/code_builtin_fn.cmo \
+code_selection/code/code_constructors.cmo \
+code_selection/code/code_functional_ops.cmo \
+code_selection/code/code_overloaded_fn.cmo \
+code_selection/code/code_group_order.cmo \
+code_selection/code/code_item_tuple.cmo \
+code_selection/code/code_util_join.cmo \
+code_selection/code/code_hash_join.cmo \
+code_selection/code/code_sort_join.cmo \
+code_selection/code/code_join.cmo \
+code_selection/code/code_execute.cmo \
+code_selection/code/code_map.cmo \
+code_selection/code/code_prune.cmo \
+code_selection/code/code_nestedloop.cmo \
+code_selection/code/code_parse.cmo \
+code_selection/code/code_util_tj.cmo\
+code_selection/code/code_tj_pathstack.cmo \
+code_selection/code/code_tj_twigstack.cmo \
+code_selection/code/code_sc_join.cmo \
+code_selection/code/code_treejoin.cmo \
+code_selection/code/code_tuple.cmo \
+code_selection/code/code_tuple_tree_pattern.cmo \
+code_selection/code/code_typeswitch.cmo \
+code_selection/code/code_type_operators.cmo \
+code_selection/code/code_update.cmo \
+code_selection/code/code_user_defined_fn.cmo
+
+GALAX_CODE_SELECTION=$(GALAX_CODE) \
+code_selection/cs_code_typing_top.cmo \
+code_selection/cs_code_selection_expr.cmo \
+code_selection/cs_code_selection_top.cmo 
+
+GALAX_SHREDDED=shredded/shredded_file_util.cmo \
+shredded/shredded_renumber.cmo \
+shredded/shredded_load_context.cmo \
+shredded/shredded_load.cmo \
+shredded/shredded_qname_mapping.cmo \
+shredded/shredded_dm_step.cmo \
+shredded/shredded_store.cmo \
+shredded/shredded_register.cmo \
+shredded/shredded_dm.cmo 
+
+GALAX_SHREDDED_COMMON=shredded/shredded_common/shredded_encode.cmo \
+shredded/shredded_common/shredded_common.cmo 
+
+GALAX_SHREDDED_MAIN_MEMORY=$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_record.cmo \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_basetypes.cmo \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_recno.cmo \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_btree.cmo \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_hash.cmo \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_store.cmo \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_dm.cmo
+
+GALAX_EVALUATION=evaluation/evaluation_expr.cmo evaluation/evaluation_top.cmo
+
+GALAX_PROCESSINGMODEL=procmod/procmod_phases.cmo procmod/procmod_compiler.cmo
+
+GALAX_API=galapi/caml_api/dm_functions.cmo galapi/caml_api/galax.cmo
+
+GALAX_TOPLEVEL=toplevel/top_config.cmo toplevel/top_util.cmo \
+               toplevel/top_options.cmo toplevel/galax_server_util.cmo toplevel/galax_server.cmo \
+	       toplevel/top_args.cmo toplevel/top_run.cmo toplevel/top_parse.cmo \
+               toplevel/top_compile.cmo toplevel/top_schema.cmo
+
+GALAX_TESTING=regress/test_core.cmo
+GALAX_TESTING_OPTOBJECTS=$(GALAX_TESTING:.cmo=.cmx)
+
+GALAX_ALL_OBJECTS=$(GALAX_TOOLS) $(GALAX_BASE) $(GALAX_NAMESPACE) $(GALAX_FSA) \
+$(GALAX_DATATYPES) \
+$(GALAX_DM_BASE) $(GALAX_DM_ATOMIC) $(GALAX_STREAMING) \
+$(GALAX_AST) $(GALAX_AST_PRINTER_AND_WALKER) $(GALAX_PROCESSINGCONTEXT) \
+$(GALAX_SCHEMA) $(GALAX_DM) \
+$(GALAX_LEXING) $(GALAX_PARSING) \
+$(GALAX_SUBGALAX_TYPING) $(GALAX_WSDL) $(GALAX_NORMALIZATION) \
+$(GALAX_PHYSICALDM) $(GALAX_SERIALIZATION) $(GALAX_GALAXDM) $(EXTERNAL_DMS) \
+$(GALAX_MONITOR) $(GALAX_STDLIB) \
+$(GALAX_SHREDDED) $(GALAX_SHREDDED_COMMON) $(GALAX_SHREDDED_MAIN_MEMORY) \
+$(GALAX_TYPING) $(GALAX_REWRITING) $(GALAX_CODE_UTIL) $(GALAX_STREAMING_XPATH) \
+$(GALAX_PROJECTION) $(GALAX_FACTORIZATION) $(GALAX_COMPILE) \
+$(GALAX_PLANIO) $(GALAX_OPTIMIZATION) $(GALAX_CODE_CONTEXT) \
+$(GALAX_EVALUATION) $(GALAX_CODE_SELECTION) \
+$(GALAX_PROCESSINGMODEL) $(GALAX_API) $(GALAX_TOPLEVEL) 
+
+GALAX_ALL_OPTOBJECTS=$(GALAX_ALL_OBJECTS:.cmo=.cmx)
+
+GALAX_MLFILES=$(GALAX_ALL_OBJECTS:.cmo=.ml) $(GALAX_TESTING:.cmo=.ml)
+
+GALAX_MLLFILES=\
+datatypes/datatypes_lexer.mll \
+lexing/copynamespaces_lexer.mll \
+lexing/default_lexer.mll \
+lexing/itemtype_lexer.mll \
+lexing/kindtest_lexer.mll \
+lexing/namespacedecl_lexer.mll \
+lexing/namespacekeyword_lexer.mll \
+lexing/operator_lexer.mll \
+lexing/pragma_lexer.mll \
+lexing/schema_lexer.mll \
+lexing/type_lexer.mll \
+lexing/varname_lexer.mll \
+lexing/xmldecl_lexer.mll \
+$(GALAX_UTF8_MLLFILES) \
+$(GALAX_ISO88591_MLLFILES)
+
+GALAX_CMIFILES=\
+$(LOCALPREFIX)/ast/xquery_algebra_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_algebra_ast_annotation.cmi \
+$(LOCALPREFIX)/ast/xquery_algebra_ast_annotation_util.cmi \
+$(LOCALPREFIX)/ast/xquery_algebra_ast_util.cmi \
+$(LOCALPREFIX)/ast/xquery_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_ast_util.cmi \
+$(LOCALPREFIX)/ast/xquery_common_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_common_ast_util.cmi \
+$(LOCALPREFIX)/ast/xquery_core_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_core_ast_annotation.cmi \
+$(LOCALPREFIX)/ast/xquery_core_ast_util.cmi \
+$(LOCALPREFIX)/ast/xquery_physical_algebra_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_physical_type_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_physical_type_ast_util.cmi \
+$(LOCALPREFIX)/ast/xquery_type_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_type_ast_util.cmi \
+$(LOCALPREFIX)/ast/xquery_type_core_ast.cmi \
+$(LOCALPREFIX)/ast/xquery_type_core_ast_util.cmi \
+$(LOCALPREFIX)/ast/xquery_type_core_ast_annotation.cmi \
+$(LOCALPREFIX)/ast/ast_path_struct.cmi \
+$(LOCALPREFIX)/ast/ast_logical_algebra_types.cmi \
+$(LOCALPREFIX)/ast_printer/print_common.cmi \
+$(LOCALPREFIX)/ast_printer/print_top.cmi \
+$(LOCALPREFIX)/ast_printer/print_type.cmi \
+$(LOCALPREFIX)/ast_printer/print_type_core.cmi \
+$(LOCALPREFIX)/ast_printer/print_xquery.cmi \
+$(LOCALPREFIX)/ast_printer/print_xquery_algebra.cmi \
+$(LOCALPREFIX)/ast_printer/print_xquery_core.cmi \
+$(LOCALPREFIX)/ast_printer/print_xquery_physical_type.cmi \
+$(LOCALPREFIX)/ast_walker/ast_walker_annotate.cmi \
+$(LOCALPREFIX)/ast_walker/ast_walker_annotate_context.cmi \
+$(LOCALPREFIX)/ast_walker/ast_walker_fold.cmi \
+$(LOCALPREFIX)/ast_walker/ast_walker_rewrite.cmi \
+$(LOCALPREFIX)/ast_walker/ast_walker_rewrite_context.cmi \
+$(LOCALPREFIX)/base/args.cmi \
+$(LOCALPREFIX)/base/conf.cmi \
+$(LOCALPREFIX)/base/debug.cmi \
+$(LOCALPREFIX)/base/dynamic_buffer.cmi \
+$(LOCALPREFIX)/base/dynamic_stack.cmi \
+$(LOCALPREFIX)/base/encoding.cmi \
+$(LOCALPREFIX)/base/error.cmi \
+$(LOCALPREFIX)/base/finfo.cmi \
+$(LOCALPREFIX)/base/galax_camomile.cmi \
+$(LOCALPREFIX)/base/galax_url.cmi \
+$(LOCALPREFIX)/base/galax_io.cmi \
+$(LOCALPREFIX)/base/galax_pxp.cmi \
+$(LOCALPREFIX)/base/gmisc.cmi \
+$(LOCALPREFIX)/base/id.cmi \
+$(LOCALPREFIX)/base/occurrence.cmi \
+$(LOCALPREFIX)/base/pervasive.cmi \
+$(LOCALPREFIX)/base/pool.cmi \
+$(LOCALPREFIX)/base/register_handlers.cmi \
+$(LOCALPREFIX)/base/whitespace.cmi \
+$(LOCALPREFIX)/code_selection/algebra_type.cmi \
+$(LOCALPREFIX)/code_selection/code_selection_context.cmi \
+$(LOCALPREFIX)/code_selection/code_typing_context.cmi \
+$(LOCALPREFIX)/code_selection/cs_annotate.cmi \
+$(LOCALPREFIX)/code_selection/cs_code_selection_expr.cmi \
+$(LOCALPREFIX)/code_selection/cs_code_selection_top.cmi \
+$(LOCALPREFIX)/code_selection/cs_code_top.cmi \
+$(LOCALPREFIX)/code_selection/cs_code_typing_top.cmi \
+$(LOCALPREFIX)/code_selection/cs_util.cmi \
+$(LOCALPREFIX)/code_selection/cs_util_coercion.cmi \
+$(LOCALPREFIX)/code_selection/execution_context.cmi \
+$(LOCALPREFIX)/code_selection/tuple_context_manager.cmi \
+$(LOCALPREFIX)/code_selection/update_ordering.cmi \
+$(LOCALPREFIX)/code_selection/compiled_program_units.cmi \
+$(LOCALPREFIX)/code_selection/variable_context_manager.cmi \
+$(LOCALPREFIX)/code_selection/code/code_builtin_fn.cmi \
+$(LOCALPREFIX)/code_selection/code/code_constructors.cmi \
+$(LOCALPREFIX)/code_selection/code/code_fn.cmi \
+$(LOCALPREFIX)/code_selection/code/code_functional_ops.cmi \
+$(LOCALPREFIX)/code_selection/code/code_group_order.cmi \
+$(LOCALPREFIX)/code_selection/code/code_hash_join.cmi \
+$(LOCALPREFIX)/code_selection/code/code_item_tuple.cmi \
+$(LOCALPREFIX)/code_selection/code/code_join.cmi \
+$(LOCALPREFIX)/code_selection/code/code_map.cmi \
+$(LOCALPREFIX)/code_selection/code/code_nestedloop.cmi \
+$(LOCALPREFIX)/code_selection/code/code_overloaded_fn.cmi \
+$(LOCALPREFIX)/code_selection/code/code_parse.cmi \
+$(LOCALPREFIX)/code_selection/code/code_prune.cmi \
+$(LOCALPREFIX)/code_selection/code/code_sc_join.cmi \
+$(LOCALPREFIX)/code_selection/code/code_sort_join.cmi \
+$(LOCALPREFIX)/code_selection/code/code_tj_pathstack.cmi \
+$(LOCALPREFIX)/code_selection/code/code_tj_twigstack.cmi \
+$(LOCALPREFIX)/code_selection/code/code_treejoin.cmi \
+$(LOCALPREFIX)/code_selection/code/code_tuple.cmi \
+$(LOCALPREFIX)/code_selection/code/code_tuple_tree_pattern.cmi \
+$(LOCALPREFIX)/code_selection/code/code_type_operators.cmi \
+$(LOCALPREFIX)/code_selection/code/code_typeswitch.cmi \
+$(LOCALPREFIX)/code_selection/code/code_update.cmi \
+$(LOCALPREFIX)/code_selection/code/code_user_defined_fn.cmi \
+$(LOCALPREFIX)/code_selection/code/code_util_join.cmi \
+$(LOCALPREFIX)/code_selection/code/code_util_materialize.cmi \
+$(LOCALPREFIX)/code_selection/code/code_util_pattern_matcher.cmi \
+$(LOCALPREFIX)/code_selection/code/code_util_predicates.cmi \
+$(LOCALPREFIX)/code_selection/code/code_util_ridlist.cmi \
+$(LOCALPREFIX)/code_selection/code/code_util_tj.cmi \
+$(LOCALPREFIX)/code_selection/code/code_binding.cmi \
+$(LOCALPREFIX)/code_selection/code/code_execute.cmi \
+$(LOCALPREFIX)/code_util/code_util.cmi \
+$(LOCALPREFIX)/code_util/code_util_matching.cmi \
+$(LOCALPREFIX)/code_util/code_util_xpath.cmi \
+$(LOCALPREFIX)/compile/compile_annotate.cmi \
+$(LOCALPREFIX)/compile/compile_context.cmi \
+$(LOCALPREFIX)/compile/compile_context_util.cmi \
+$(LOCALPREFIX)/compile/compile_expr.cmi \
+$(LOCALPREFIX)/compile/compile_top.cmi \
+$(LOCALPREFIX)/compile/compile_util.cmi \
+$(LOCALPREFIX)/datamodel/galax_copy_node.cmi \
+$(LOCALPREFIX)/datamodel/galax_dm.cmi \
+$(LOCALPREFIX)/datamodel/galax_load.cmi \
+$(LOCALPREFIX)/datamodel/galax_load_context.cmi \
+$(LOCALPREFIX)/datamodel/galax_nodeid.cmi \
+$(LOCALPREFIX)/datatypes/anyURI.cmi \
+$(LOCALPREFIX)/datatypes/datatypes.cmi \
+$(LOCALPREFIX)/datatypes/datatypes_util.cmi \
+$(LOCALPREFIX)/datatypes/dateTime.cmi \
+$(LOCALPREFIX)/datatypes/decimal.cmi \
+$(LOCALPREFIX)/datatypes/regularexp.cmi \
+$(LOCALPREFIX)/datatypes/datatypes_lexer.cmi \
+$(LOCALPREFIX)/dm/cursor_context.cmi \
+$(LOCALPREFIX)/dm/cursor_descendant.cmi \
+$(LOCALPREFIX)/dm/dm.cmi \
+$(LOCALPREFIX)/dm/dm_step.cmi \
+$(LOCALPREFIX)/dm/dm_util.cmi \
+$(LOCALPREFIX)/dm/atomic/dm_atomic.cmi \
+$(LOCALPREFIX)/dm/atomic/dm_atomic_btree.cmi \
+$(LOCALPREFIX)/dm/atomic/dm_atomic_btree_util.cmi \
+$(LOCALPREFIX)/dm/atomic/dm_atomic_util.cmi \
+$(LOCALPREFIX)/dm/base/cursor.cmi \
+$(LOCALPREFIX)/dm/base/dm_types.cmi \
+$(LOCALPREFIX)/dm/base/nodeid.cmi \
+$(LOCALPREFIX)/dm/base/nodeid_context.cmi \
+$(LOCALPREFIX)/evaluation/evaluation_expr.cmi \
+$(LOCALPREFIX)/evaluation/evaluation_top.cmi \
+$(LOCALPREFIX)/extensions/jabber/glx_jabber.cmi \
+$(LOCALPREFIX)/factorization/factorize_tpnf_util.cmi \
+$(LOCALPREFIX)/factorization/factorize_tpnf_rules.cmi \
+$(LOCALPREFIX)/factorization/factorize_tpnf.cmi \
+$(LOCALPREFIX)/factorization/factorize_flwor.cmi \
+$(LOCALPREFIX)/factorization/factorize_free_var.cmi \
+$(LOCALPREFIX)/factorization/factorize_globals.cmi \
+$(LOCALPREFIX)/factorization/factorize_iteration.cmi \
+$(LOCALPREFIX)/factorization/factorize_top.cmi \
+$(LOCALPREFIX)/factorization/factorize_unique.cmi \
+$(LOCALPREFIX)/fsa/dfa.cmi \
+$(LOCALPREFIX)/fsa/fsautil.cmi \
+$(LOCALPREFIX)/fsa/nfa.cmi \
+$(LOCALPREFIX)/fsa/regexp.cmi \
+$(LOCALPREFIX)/galapi/c_api/galax_wrap.cmi \
+$(LOCALPREFIX)/galapi/caml_api/dm_functions.cmi \
+$(LOCALPREFIX)/galapi/caml_api/galax.cmi \
+$(LOCALPREFIX)/lexing/lexing_util.cmi \
+$(LOCALPREFIX)/monitor/monitor.cmi \
+$(LOCALPREFIX)/namespace/namespace_generate.cmi \
+$(LOCALPREFIX)/namespace/namespace_builtin.cmi \
+$(LOCALPREFIX)/namespace/namespace_context.cmi \
+$(LOCALPREFIX)/namespace/namespace_names.cmi \
+$(LOCALPREFIX)/namespace/namespace_resolve.cmi \
+$(LOCALPREFIX)/namespace/namespace_symbols.cmi \
+$(LOCALPREFIX)/namespace/namespace_symbols_builtin.cmi \
+$(LOCALPREFIX)/namespace/namespace_symbols_util.cmi \
+$(LOCALPREFIX)/namespace/namespace_util.cmi \
+$(LOCALPREFIX)/namespace/qname_lexer.cmi \
+$(LOCALPREFIX)/normalization/norm_var_graph.cmi \
+$(LOCALPREFIX)/normalization/norm_context.cmi \
+$(LOCALPREFIX)/normalization/norm_util.cmi \
+$(LOCALPREFIX)/normalization/norm_expr.cmi \
+$(LOCALPREFIX)/normalization/norm_ident_expr.cmi \
+$(LOCALPREFIX)/normalization/norm_ident_top.cmi \
+$(LOCALPREFIX)/normalization/norm_top.cmi \
+$(LOCALPREFIX)/normalization/norm_overloaded.cmi \
+$(LOCALPREFIX)/optimization/optimization_judge.cmi \
+$(LOCALPREFIX)/optimization/optimization_walker.cmi \
+$(LOCALPREFIX)/optimization/optimization_util.cmi \
+$(LOCALPREFIX)/optimization/optimization_predicates.cmi \
+$(LOCALPREFIX)/optimization/optimization_dxq.cmi \
+$(LOCALPREFIX)/optimization/optimization_rules_cleanup.cmi \
+$(LOCALPREFIX)/optimization/optimization_rules_treejoin.cmi \
+$(LOCALPREFIX)/optimization/optimization_rules_treepattern.cmi \
+$(LOCALPREFIX)/optimization/optimization_rewrite.cmi \
+$(LOCALPREFIX)/optimization/optimization_top.cmi \
+$(LOCALPREFIX)/optimization/optimization_rules_sbdo_automaton.cmi \
+$(LOCALPREFIX)/optimization/optimization_rules_sbdo.cmi \
+$(LOCALPREFIX)/parsing/lexers_iso88591.cmi \
+$(LOCALPREFIX)/parsing/lexers_utf8.cmi \
+$(LOCALPREFIX)/parsing/parse_context.cmi \
+$(LOCALPREFIX)/parsing/parse_io.cmi \
+$(LOCALPREFIX)/parsing/parse_top.cmi \
+$(LOCALPREFIX)/parsing/parse_xquery.cmi \
+$(LOCALPREFIX)/parsing/parse_util.cmi \
+$(LOCALPREFIX)/parsing/parse_xquery.cmi \
+$(LOCALPREFIX)/parsing/parse_xqueryx.cmi \
+$(LOCALPREFIX)/physicaldm/physical_export.cmi \
+$(LOCALPREFIX)/physicaldm/physical_export_context.cmi \
+$(LOCALPREFIX)/physicaldm/physical_index_load.cmi \
+$(LOCALPREFIX)/physicaldm/physical_item.cmi \
+$(LOCALPREFIX)/physicaldm/physical_item_util.cmi \
+$(LOCALPREFIX)/physicaldm/physical_list.cmi \
+$(LOCALPREFIX)/physicaldm/physical_load.cmi \
+$(LOCALPREFIX)/physicaldm/physical_name_index.cmi \
+$(LOCALPREFIX)/physicaldm/physical_sequence.cmi \
+$(LOCALPREFIX)/physicaldm/physical_table.cmi \
+$(LOCALPREFIX)/physicaldm/physical_util.cmi \
+$(LOCALPREFIX)/physicaldm/physical_value.cmi \
+$(LOCALPREFIX)/physicaldm/physical_value_index.cmi \
+$(LOCALPREFIX)/physicaldm/physical_value_util.cmi \
+$(LOCALPREFIX)/physicaldm/physical_xml_value.cmi \
+$(LOCALPREFIX)/planio/planio_common.cmi \
+$(LOCALPREFIX)/planio/planio_util.cmi \
+$(LOCALPREFIX)/planio/planio_physical_value.cmi \
+$(LOCALPREFIX)/planio/planio_top.cmi \
+$(LOCALPREFIX)/procctxt/monitoring_context.cmi \
+$(LOCALPREFIX)/procctxt/processing_context.cmi \
+$(LOCALPREFIX)/procmod/procmod_compiler.cmi \
+$(LOCALPREFIX)/procmod/procmod_phases.cmi \
+$(LOCALPREFIX)/procmod/procmod_types.cmi \
+$(LOCALPREFIX)/projection/alg_analysis_context.cmi \
+$(LOCALPREFIX)/projection/alg_path_analysis.cmi \
+$(LOCALPREFIX)/projection/alg_path_structutil.cmi \
+$(LOCALPREFIX)/projection/analysis_context.cmi \
+$(LOCALPREFIX)/projection/function_analysis.cmi \
+$(LOCALPREFIX)/projection/optim_vars.cmi \
+$(LOCALPREFIX)/projection/path_analysis.cmi \
+$(LOCALPREFIX)/projection/path_struct.cmi \
+$(LOCALPREFIX)/projection/path_structutil.cmi \
+$(LOCALPREFIX)/projection/project_context.cmi \
+$(LOCALPREFIX)/projection/stream_project.cmi \
+$(LOCALPREFIX)/projection/alg_project_context.cmi \
+$(LOCALPREFIX)/projection/alg_stream_project.cmi \
+$(LOCALPREFIX)/rewriting/rewriting_judgments.cmi \
+$(LOCALPREFIX)/rewriting/rewriting_rules_notyping.cmi \
+$(LOCALPREFIX)/rewriting/rewriting_rules_typing.cmi \
+$(LOCALPREFIX)/rewriting/rewriting_top.cmi \
+$(LOCALPREFIX)/schema/schema_builtin.cmi \
+$(LOCALPREFIX)/schema/schema_dtd_import.cmi \
+$(LOCALPREFIX)/schema/schema_import.cmi \
+$(LOCALPREFIX)/schema/schema_judge.cmi \
+$(LOCALPREFIX)/schema/schema_namer.cmi \
+$(LOCALPREFIX)/schema/schema_norm.cmi \
+$(LOCALPREFIX)/schema/schema_norm_util.cmi \
+$(LOCALPREFIX)/schema/schema_prefix_manager.cmi \
+$(LOCALPREFIX)/schema/schema_simplification.cmi \
+$(LOCALPREFIX)/schema/schema_util.cmi \
+$(LOCALPREFIX)/schema/schema_validation.cmi \
+$(LOCALPREFIX)/schema/schema_validation_context.cmi \
+$(LOCALPREFIX)/serialization/serialization.cmi \
+$(LOCALPREFIX)/serialization/serialization_context.cmi \
+$(LOCALPREFIX)/shredded/shredded_dm_step.cmi \
+$(LOCALPREFIX)/shredded/shredded_file_util.cmi \
+$(LOCALPREFIX)/shredded/shredded_load.cmi \
+$(LOCALPREFIX)/shredded/shredded_load_context.cmi \
+$(LOCALPREFIX)/shredded/shredded_load_sigs.cmi \
+$(LOCALPREFIX)/shredded/shredded_load_update.cmi \
+$(LOCALPREFIX)/shredded/shredded_store.cmi \
+$(LOCALPREFIX)/shredded/shredded_store_sigs.cmi \
+$(LOCALPREFIX)/shredded/shredded_common/shredded_encode.cmi \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_basetypes.cmi \
+$(LOCALPREFIX)/shredded/shredded_main_memory/shredded_main_memory_btree.cmi \
+$(LOCALPREFIX)/stdlib/fn_doc.cmi \
+$(LOCALPREFIX)/stdlib/fn_error.cmi \
+$(LOCALPREFIX)/streaming/prefix_context.cmi \
+$(LOCALPREFIX)/streaming/resolve_stream_context.cmi \
+$(LOCALPREFIX)/streaming/sax_annot.cmi \
+$(LOCALPREFIX)/streaming/small_stream_ast.cmi \
+$(LOCALPREFIX)/streaming/small_stream_context.cmi \
+$(LOCALPREFIX)/streaming/streaming_constructors.cmi \
+$(LOCALPREFIX)/streaming/streaming_conv.cmi \
+$(LOCALPREFIX)/streaming/streaming_diff.cmi \
+$(LOCALPREFIX)/streaming/streaming_ops.cmi \
+$(LOCALPREFIX)/streaming/streaming_ordered_context.cmi \
+$(LOCALPREFIX)/streaming/streaming_parse.cmi \
+$(LOCALPREFIX)/streaming/streaming_types.cmi \
+$(LOCALPREFIX)/streaming/streaming_util.cmi \
+$(LOCALPREFIX)/streaming_xpath/df_analysis.cmi \
+$(LOCALPREFIX)/streaming_xpath/df_analysis_context.cmi \
+$(LOCALPREFIX)/streaming_xpath/df_struct.cmi \
+$(LOCALPREFIX)/streaming_xpath/stream_analysis.cmi \
+$(LOCALPREFIX)/streaming_xpath/stream_analysis_builtin.cmi \
+$(LOCALPREFIX)/streaming_xpath/streaming_xpath.cmi \
+$(LOCALPREFIX)/streaming_xpath/sxp_context.cmi \
+$(LOCALPREFIX)/subtyping/subtyping_build_regexp.cmi \
+$(LOCALPREFIX)/subtyping/subtyping_glushkov.cmi \
+$(LOCALPREFIX)/subtyping/subtyping_letter.cmi \
+$(LOCALPREFIX)/subtyping/subtyping_top.cmi \
+$(LOCALPREFIX)/tools/stemmer/stemmer.cmi \
+$(LOCALPREFIX)/toplevel/top_parse.cmi \
+$(LOCALPREFIX)/toplevel/top_run.cmi \
+$(LOCALPREFIX)/toplevel/top_compile.cmi \
+$(LOCALPREFIX)/toplevel/top_schema.cmi \
+$(LOCALPREFIX)/toplevel/top_args.cmi \
+$(LOCALPREFIX)/toplevel/top_config.cmi \
+$(LOCALPREFIX)/toplevel/top_options.cmi \
+$(LOCALPREFIX)/toplevel/top_util.cmi \
+$(LOCALPREFIX)/toplevel/galax_server_util.cmi \
+$(LOCALPREFIX)/toplevel/galax_server.cmi \
+$(LOCALPREFIX)/typing/typing_call.cmi \
+$(LOCALPREFIX)/typing/typing_context.cmi \
+$(LOCALPREFIX)/typing/typing_errors.cmi \
+$(LOCALPREFIX)/typing/typing_expr.cmi \
+$(LOCALPREFIX)/typing/typing_fn.cmi \
+$(LOCALPREFIX)/typing/typing_notyping.cmi \
+$(LOCALPREFIX)/typing/typing_step.cmi \
+$(LOCALPREFIX)/typing/typing_top.cmi \
+$(LOCALPREFIX)/typing/typing_util.cmi \
+$(LOCALPREFIX)/website/demo/demo_conf.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_apache.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_ast.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_export.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_import.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_load.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_maker.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_printer.cmi \
+$(LOCALPREFIX)/wsdl/wsdl_util.cmi \
+$(LOCALPREFIX)/wsdl/xquery_type_ast_map.cmi
+
+GALAX_MLIFILES=$(GALAX_CMIFILES:.cmi=.mli)
+
+#########################################################################
+# Section:	Standard targets for checking Galax results
+# Description:
+#		These are targets that various other Makefiles rely on to
+#		compare results with expected values.
+#########################################################################
+
+check:
+	if [ -f $${T}.xml ]; then cmp $${T}.xml $${E}.expect >$${T}.cmp 2>&1; if [ -s $${T}.cmp ]; then $(MAKE) error  T=$${T};  else $(MAKE) ok T=$${T}; fi; else $(MAKE) error T=$${T}; fi; \
+
+error:
+	@echo "******"
+	@echo "* $${T} failed : $${T}.xml $${E}.expect differ"
+	@echo "******"
+
+ok: 
+	@echo "$${T} passed :-)"
+
+#########################################################################
+# Section:	base/conf.ml generation variables
+# Description:
+#		These variables are used to generate base/conf.ml
+#########################################################################
+RELEASE=1.0.2
+STATUS=Stable
+
