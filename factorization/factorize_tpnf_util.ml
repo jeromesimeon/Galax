@@ -48,7 +48,7 @@ open Print_top
 let debug_apply s ce ce' =
   let print_annot ff a =
     begin
-    let (ta, da, fv, sc)  = Xquery_core_ast_annotation.annot_components a in 
+    let (ta, da, fv, sc, st)  = Xquery_core_ast_annotation.annot_components a in 
     Format.fprintf ff "[sc:%s]%!" (Xquery_core_ast_annotation.print_scrambling_annot sc);
     Format.fprintf ff "[type: ";
     (match ta with

@@ -174,7 +174,7 @@ let print_type_annotation ff m =
 
 (* Additional annotations can be printed here *)
 let print_annotation ff a =
-  let (ta, da, fv, sc)  = Xquery_core_ast_annotation.annot_components a in 
+  let (ta, da, fv, sc, st)  = Xquery_core_ast_annotation.annot_components a in 
   begin
     fprintf ff "[type: ";
     (match ta with
@@ -189,6 +189,7 @@ let print_annotation ff a =
     | None -> fprintf ff "None]"
     | Some fl -> fprintf ff "%s]" (Xquery_core_ast_annotation.print_free_var_annot fl));
     fprintf ff "[sc:%s]" (Xquery_core_ast_annotation.print_scrambling_annot sc);
+    fprintf ff "[stream:%s]" (Xquery_core_ast_annotation.print_stream_annot st);
   end
 
 let print_acexpr ff e = 

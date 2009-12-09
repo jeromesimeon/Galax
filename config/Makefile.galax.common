@@ -598,9 +598,9 @@ GALAX_STREAMING_XPATH=streaming_xpath/df_struct.cmo \
 streaming_xpath/df_analysis_context.cmo \
 streaming_xpath/df_analysis.cmo \
 streaming_xpath/sxp_context.cmo \
-streaming_xpath/streaming_xpath.cmo
-#                streaming_xpath/stream_analysis_builtin.cmo \
-#                streaming_xpath/stream_analysis.cmo \
+streaming_xpath/streaming_xpath.cmo \
+streaming_xpath/stream_analysis_builtin.cmo \
+streaming_xpath/stream_analysis.cmo \
 
 GALAX_PROJECTION=projection/path_structutil.cmo projection/optim_vars.cmo \
 projection/analysis_context.cmo projection/function_analysis.cmo \
@@ -618,9 +618,8 @@ factorization/factorize_flwor.cmo \
 factorization/factorize_tpnf_util.cmo \
 factorization/factorize_tpnf_rules.cmo \
 factorization/factorize_tpnf.cmo \
-factorization/factorize_top.cmo
-
-#factorization/factorize_globals.cmo \
+factorization/factorize_top.cmo \
+factorization/factorize_globals.cmo \
 
 GALAX_COMPILE=compile/compile_util.cmo compile/compile_context.cmo \
 compile/compile_annotate.cmo compile/compile_expr.cmo compile/compile_top.cmo \
@@ -768,7 +767,6 @@ $(GALAX_ISO88591_MLLFILES)
 
 GALAX_CMIFILES=\
 $(LOCALPREFIX)/ast/xquery_algebra_ast.cmi \
-$(LOCALPREFIX)/ast/xquery_algebra_ast_annotation.cmi \
 $(LOCALPREFIX)/ast/xquery_algebra_ast_annotation_util.cmi \
 $(LOCALPREFIX)/ast/xquery_algebra_ast_util.cmi \
 $(LOCALPREFIX)/ast/xquery_ast.cmi \
@@ -903,7 +901,6 @@ $(LOCALPREFIX)/dm/base/nodeid.cmi \
 $(LOCALPREFIX)/dm/base/nodeid_context.cmi \
 $(LOCALPREFIX)/evaluation/evaluation_expr.cmi \
 $(LOCALPREFIX)/evaluation/evaluation_top.cmi \
-$(LOCALPREFIX)/extensions/jabber/glx_jabber.cmi \
 $(LOCALPREFIX)/factorization/factorize_tpnf_util.cmi \
 $(LOCALPREFIX)/factorization/factorize_tpnf_rules.cmi \
 $(LOCALPREFIX)/factorization/factorize_tpnf.cmi \
@@ -917,7 +914,6 @@ $(LOCALPREFIX)/fsa/dfa.cmi \
 $(LOCALPREFIX)/fsa/fsautil.cmi \
 $(LOCALPREFIX)/fsa/nfa.cmi \
 $(LOCALPREFIX)/fsa/regexp.cmi \
-$(LOCALPREFIX)/galapi/c_api/galax_wrap.cmi \
 $(LOCALPREFIX)/galapi/caml_api/dm_functions.cmi \
 $(LOCALPREFIX)/galapi/caml_api/galax.cmi \
 $(LOCALPREFIX)/lexing/lexing_util.cmi \
@@ -1021,7 +1017,6 @@ $(LOCALPREFIX)/shredded/shredded_file_util.cmi \
 $(LOCALPREFIX)/shredded/shredded_load.cmi \
 $(LOCALPREFIX)/shredded/shredded_load_context.cmi \
 $(LOCALPREFIX)/shredded/shredded_load_sigs.cmi \
-$(LOCALPREFIX)/shredded/shredded_load_update.cmi \
 $(LOCALPREFIX)/shredded/shredded_store.cmi \
 $(LOCALPREFIX)/shredded/shredded_store_sigs.cmi \
 $(LOCALPREFIX)/shredded/shredded_common/shredded_encode.cmi \
@@ -1073,7 +1068,6 @@ $(LOCALPREFIX)/typing/typing_notyping.cmi \
 $(LOCALPREFIX)/typing/typing_step.cmi \
 $(LOCALPREFIX)/typing/typing_top.cmi \
 $(LOCALPREFIX)/typing/typing_util.cmi \
-$(LOCALPREFIX)/website/demo/demo_conf.cmi \
 $(LOCALPREFIX)/wsdl/wsdl_apache.cmi \
 $(LOCALPREFIX)/wsdl/wsdl_ast.cmi \
 $(LOCALPREFIX)/wsdl/wsdl_export.cmi \

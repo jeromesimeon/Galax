@@ -92,7 +92,7 @@ type global_passed_env = {
   globals    : cvname list} (* This is really a set *)
 
 let mk_global_passed_env sc rebindings globals =
-  let proc_ctxt = Typing_context.processing_context_from_stat_context sc in
+  let proc_ctxt = Typing_context.processing_context_from_static_context sc in
   let ng =
     Processing_context.get_name_generator
       proc_ctxt Namespace_builtin.fs_prefix Namespace_builtin.fs_uri ""
@@ -211,205 +211,192 @@ let rec factor_globals_walker (genv:global_passed_env) cexpr =
   let build_changed_return desc =
     fmkcexpr desc eh fi 
   in
-    match cexpr.pcexpr_desc with
-      | CEUnordered ce -> 
-	  let fce, renv = factor_globals_walker genv ce in
-	    (build_unmodified_return (CEUnordered fce)), renv
-
-      | CEOrdered ce   -> 
-	  let fce, renv = factor_globals_walker genv ce in
-	    (build_unmodified_return (CEOrdered fce)), renv
-	      
-      | CEFLWOR (cfls, wc, ob, ret) ->
-	  let (fl,wc,ob,ret),renv = factor_global_flwor genv cfls wc ob ret in
-	    (* We must handle the case when all the bindings are gone *)
-	    if (fl = []) then
-	      begin		
-		(* NOTE: Order By can be ignored because only let
-		   bindings are there. This means there is only a singleton
-		   sequence to be ordered *)
-		match wc with
-		  (* Just the return clause should remain *)
-		| None -> ret, renv
-		| (Some wc) -> 
-		    (* This is nasty *)
-		    (* Normalize back to CEIf *)		       
-		    let eh = cexpr.pcexpr_origin     in
-		    let fi = cexpr.pcexpr_loc        in
-		    let empty = fmkcexpr CEEmpty eh fi in 
-		    (build_changed_return (CEIf (wc, ret,empty))), renv
-	      end
-	    else	       
-	      (build_changed_return (CEFLWOR (fl,wc,ob,ret))), renv
-
-      | CEIf (cond, ce1, ce2) ->
-	  let fcond,renv = factor_globals_walker genv cond in
-	  let fce1       = dump_let_bindings 
-			     (factor_globals_walker genv ce1) in
-	  let fce2       = dump_let_bindings 
-			     (factor_globals_walker genv ce2) in	
-	    (build_unmodified_return (CEIf(fcond, fce1, fce2))), renv
-
-      | CETypeswitch (on_cond, patterns) ->
-	  let fcond,renv = factor_globals_walker genv on_cond in 
-	  let typeswitch_patterns (cp, ovn, ce) =
-	    let genv = add_opt_non_global_binding genv ovn in 
-	    let fce  = dump_let_bindings 
+  match cexpr.pcexpr_desc with
+  | CEUnordered ce -> 
+      let fce, renv = factor_globals_walker genv ce in
+      (build_unmodified_return (CEUnordered fce)), renv
+  | CEOrdered ce   -> 
+      let fce, renv = factor_globals_walker genv ce in
+      (build_unmodified_return (CEOrdered fce)), renv
+  | CEFLWOR (cfls, wc, ob, ret) ->
+      let (fl,wc,ob,ret),renv = factor_global_flwor genv cfls wc ob ret in
+      (* We must handle the case when all the bindings are gone *)
+      if (fl = []) then
+	begin		
+	  (* NOTE: Order By can be ignored because only let
+	     bindings are there. This means there is only a singleton
+	     sequence to be ordered *)
+	  match wc with
+	    (* Just the return clause should remain *)
+	  | None -> ret, renv
+	  | (Some wc) -> 
+	      (* This is nasty *)
+	      (* Normalize back to CEIf *)		       
+	      let eh = cexpr.pcexpr_origin     in
+	      let fi = cexpr.pcexpr_loc        in
+	      let empty = fmkcexpr CEEmpty eh fi in 
+	      (build_changed_return (CEIf (wc, ret,empty))), renv
+	end
+      else	       
+	(build_changed_return (CEFLWOR (fl,wc,ob,ret))), renv
+  | CEIf (cond, ce1, ce2) ->
+      let fcond,renv = factor_globals_walker genv cond in
+      let fce1       = dump_let_bindings 
+	  (factor_globals_walker genv ce1) in
+      let fce2       = dump_let_bindings 
+	  (factor_globals_walker genv ce2) in	
+      (build_unmodified_return (CEIf(fcond, fce1, fce2))), renv
+  | CETypeswitch (on_cond, patterns) ->
+      let fcond,renv = factor_globals_walker genv on_cond in 
+      let typeswitch_patterns (cp, ovn, ce) =
+	let genv = add_opt_non_global_binding genv ovn in 
+	let fce  = dump_let_bindings 
 			 (factor_globals_walker genv ce) in 
-	      (cp, ovn, fce)
-	  in
-	  let pats = List.map typeswitch_patterns patterns in
-	    (build_unmodified_return (CETypeswitch (fcond, pats))), renv
-	      
-      | CECall(cfname, cexprs, ti, upd, selfrecur) ->	  
-	  let fconds, renv = factor_globals_walker_map genv cexprs in
-	    (build_unmodified_return (CECall(cfname, fconds, ti, upd, selfrecur))), renv
-
-      | CEOverloadedCall(name, cexprs, sigtable) ->
-	  let fconds, renv = factor_globals_walker_map genv cexprs in
-	    (build_unmodified_return (CEOverloadedCall(name, fconds, sigtable))), renv
-
-
-      | CESeq(ce1,ce2) ->
-	  let fce1,renv1  = factor_globals_walker genv ce1 in 
-	  let fce2,renv2  = factor_globals_walker genv ce2 in
-	  let renv        = combine_global_envs renv1 renv2 in 
-	    (build_unmodified_return (CESeq (fce1, fce2))), renv
-
-      | CEImperativeSeq(ce1,ce2) ->
-	  let fce1,renv1  = factor_globals_walker genv ce1 in 
-	  let fce2,renv2  = factor_globals_walker genv ce2 in
-	  let renv        = combine_global_envs renv1 renv2 in 
-	    (build_unmodified_return (CEImperativeSeq (fce1, fce2))), renv
-
-      | CEDocument ce ->
-	  let fce,renv    = factor_globals_walker genv ce in
-	    (build_unmodified_return (CEDocument fce)), renv
-
-      | CEPIComputed (ce1, ce2) ->
-	  let fce1,renv1  = factor_globals_walker genv ce1 in 
-	  let fce2,renv2  = factor_globals_walker genv ce2 in
-	  let renv        = combine_global_envs renv1 renv2 in 
-	    (build_unmodified_return (CEPIComputed (fce1, fce2))), renv
-	      
-      | CECommentComputed ce ->
-	  let fce,renv    = factor_globals_walker genv ce in
-	    (build_unmodified_return (CECommentComputed fce)), renv
-
-      | CETextComputed ce ->
-	  let fce,renv    = factor_globals_walker genv ce in
-	    (build_unmodified_return (CETextComputed fce)), renv
-	      
-      | CEElem (name,ns, cexprs) ->
-	  let fces,renv = factor_globals_walker_map genv cexprs in
-	    (build_unmodified_return (CEElem (name,ns, fces))),renv
-
-      | CEAnyElem (ce1, ns, ce2) -> 
-	  let fce1, renv1 = factor_globals_walker genv ce1 in
-	  let fce2, renv2 = factor_globals_walker genv ce2 in 
-	  let renv        = combine_global_envs renv1 renv2 in 
-	    (build_unmodified_return (CEAnyElem (fce1, ns, fce2))), renv
-
-      | CEAttr (name, cexprs) ->
-	  let fces,renv = factor_globals_walker_map genv cexprs in
-	    (build_unmodified_return (CEAttr (name,fces))),renv
-
-      | CEAnyAttr (ce1, nsenv, ce2) ->
-	  let fce1, renv1 = factor_globals_walker genv ce1 in
-	  let fce2, renv2 = factor_globals_walker genv ce2 in 
-	  let renv        = combine_global_envs renv1 renv2 in
-	    (build_unmodified_return (CEAnyAttr (fce1, nsenv, fce2))), renv
-
-      | CEError cexpr_list -> 
-	  let fcexpr_list, renv = factor_globals_walker_map genv cexpr_list in
-	    (build_unmodified_return (CEError fcexpr_list)), renv
-
-      | CETreat (ce, dt) ->
-	  let fce, renv  = factor_globals_walker genv ce in
-	    (build_unmodified_return (CETreat (fce,dt))), renv
-
-      | CEValidate (vm, ce) ->
-	  let fce, renv  = factor_globals_walker genv ce in
-	    (build_unmodified_return (CEValidate (vm,fce))), renv
-
-      | CECast (ce, nsenv, dt) -> 
-	  let fce, renv  = factor_globals_walker genv ce in
-	    (build_unmodified_return (CECast (fce, nsenv, dt))), renv
-
-      | CECastable (ce, nsenv, dt) ->
-	  let fce, renv  = factor_globals_walker genv ce in
-	    (build_unmodified_return (CECastable (fce, nsenv, dt))), renv
-
-
-      | CESome (odt, vn, ce1, ce2) -> 
-	  let fce1, renv1 = factor_globals_walker genv ce1 in
-	  let genv        = add_non_global_binding genv vn in
-	  let fce2, renv2 = factor_globals_walker genv ce2 in
-	  let renv        = combine_global_envs renv1 renv2 in 
-	    (build_unmodified_return (CESome (odt,vn, fce1, fce2))), renv
-
-      | CEEvery (odt, vn, ce1, ce2) ->
-	  let fce1, renv1 = factor_globals_walker genv ce1 in
-	  let genv        = add_non_global_binding genv vn in
-	  let fce2, renv2 = factor_globals_walker genv ce2 in
-	  let renv        = combine_global_envs renv1 renv2 in 
-	    (build_unmodified_return (CEEvery (odt,vn, fce1, fce2))), renv
-
-      (* NOTE: Are the sequence expressions independent or dependent?
-	 They are being treated here as independent. PLEASE MAKE SURE THIS
-	 IS CORRECT.
-	 If they should be dependent just switch the result to a fold walker
-      *)
-      | CECopy ce ->
-	  let fce, renv    = factor_globals_walker genv ce in
-	    (build_unmodified_return (CECopy fce)), renv
-      | CEDelete ce ->
-	  let fce, renv    = factor_globals_walker genv ce in
-	    (build_unmodified_return (CEDelete fce)), renv
-      | CEInsert (ce, aci) ->
-	  let fce, renv1   = factor_globals_walker genv ce in
-	  let faci, renv2  = factor_globals_walker_insert genv aci in 
-	  let renv         = combine_global_envs renv1 renv2 in 
-	  (build_unmodified_return (CEInsert (fce, faci))), renv
-      | CEReplace (vof, ce1, ce2) ->
-	  let fce1, renv1  = factor_globals_walker genv ce1 in
-	  let fce2, renv2  = factor_globals_walker genv ce2 in
-	  let renv         = combine_global_envs renv1 renv2 in 
-	  (build_unmodified_return (CEReplace (vof, fce1, fce2))), renv 
-      | CERename (nsenv, ce1, ce2) ->
-	  let fce1, renv1  = factor_globals_walker genv ce1 in
-	  let fce2, renv2  = factor_globals_walker genv ce2 in
-	  let renv         = combine_global_envs renv1 renv2 in 
-	  (build_unmodified_return (CERename (nsenv, fce1, fce2))), renv 
-      | CESnap (sm,cexpr) -> 
-	  let fce, renv = factor_globals_walker genv cexpr in
-	    (build_unmodified_return (CESnap (sm,fce))), renv
-
-      | CELetvar (odt, vn, ce1, ce2) -> 
-	  let fce1, renv1 = factor_globals_walker genv ce1 in
-	  let genv        = add_non_global_binding genv vn in
-	  let fce2, renv2 = factor_globals_walker genv ce2 in
-	  let renv        = combine_global_envs renv1 renv2 in 
-	    (build_unmodified_return (CELetvar (odt,vn, fce1, fce2))), renv          
-      | CESet (v,cexpr) -> 
-	  let fce, renv = factor_globals_walker genv cexpr in
-	    (build_unmodified_return (CESet (v,fce))), renv
-
-	    (* Mary: I'm assuming that CEExecute behaves like CESnap *)
-      | CEExecute (async, ncname, uri, hostport,cexpr) -> 
-	  let fhostport, renv1 = factor_globals_walker genv hostport in
-	  let fce, renv3   = factor_globals_walker genv cexpr in
-	  let renv'        = combine_global_envs renv1 renv3 in 
-	    (build_unmodified_return (CEExecute (async, ncname, uri, fhostport, fce))), renv'
-
-      (* Should clean variables *)
-      | CEVar vn -> 
-	  (build_changed_return (CEVar (get_rebound_variable genv vn))), empty_renv
-      | CEForwardAxis _ | CEReverseAxis _ (* fs:dot should never be renamed.. *)    
-	    (* Bases *)
-      | CEComment _     | CEText _ | CECharRef _
-      | CEScalar _      | CEProtoValue _ | CEPI _
-      | CEEmpty -> cexpr, empty_renv
+	(cp, ovn, fce)
+      in
+      let pats = List.map typeswitch_patterns patterns in
+      (build_unmodified_return (CETypeswitch (fcond, pats))), renv
+  | CECall(cfname, cexprs, ti, upd, selfrecur) ->	  
+      let fconds, renv = factor_globals_walker_map genv cexprs in
+      (build_unmodified_return (CECall(cfname, fconds, ti, upd, selfrecur))), renv
+  | CEOverloadedCall(name, cexprs, sigtable) ->
+      let fconds, renv = factor_globals_walker_map genv cexprs in
+      (build_unmodified_return (CEOverloadedCall(name, fconds, sigtable))), renv
+  | CESeq(ce1,ce2) ->
+      let fce1,renv1  = factor_globals_walker genv ce1 in 
+      let fce2,renv2  = factor_globals_walker genv ce2 in
+      let renv        = combine_global_envs renv1 renv2 in 
+      (build_unmodified_return (CESeq (fce1, fce2))), renv
+  | CEImperativeSeq(ce1,ce2) ->
+      let fce1,renv1  = factor_globals_walker genv ce1 in 
+      let fce2,renv2  = factor_globals_walker genv ce2 in
+      let renv        = combine_global_envs renv1 renv2 in 
+      (build_unmodified_return (CEImperativeSeq (fce1, fce2))), renv
+  | CEDocument ce ->
+      let fce,renv    = factor_globals_walker genv ce in
+      (build_unmodified_return (CEDocument fce)), renv
+  | CEPIComputed (ce1, ce2) ->
+      let fce1,renv1  = factor_globals_walker genv ce1 in 
+      let fce2,renv2  = factor_globals_walker genv ce2 in
+      let renv        = combine_global_envs renv1 renv2 in 
+      (build_unmodified_return (CEPIComputed (fce1, fce2))), renv
+  | CECommentComputed ce ->
+      let fce,renv    = factor_globals_walker genv ce in
+      (build_unmodified_return (CECommentComputed fce)), renv
+  | CETextComputed ce ->
+      let fce,renv    = factor_globals_walker genv ce in
+      (build_unmodified_return (CETextComputed fce)), renv
+  | CEElem (name,ns, cexprs) ->
+      let fces,renv = factor_globals_walker_map genv cexprs in
+      (build_unmodified_return (CEElem (name,ns, fces))),renv
+  | CEAnyElem (ce1, ns1, ns2, ce2) -> 
+      let fce1, renv1 = factor_globals_walker genv ce1 in
+      let fce2, renv2 = factor_globals_walker genv ce2 in 
+      let renv        = combine_global_envs renv1 renv2 in 
+      (build_unmodified_return (CEAnyElem (fce1, ns1, ns2, fce2))), renv
+  | CEAttr (name, cexprs) ->
+      let fces,renv = factor_globals_walker_map genv cexprs in
+      (build_unmodified_return (CEAttr (name,fces))),renv
+  | CEAnyAttr (ce1, nsenv, ce2) ->
+      let fce1, renv1 = factor_globals_walker genv ce1 in
+      let fce2, renv2 = factor_globals_walker genv ce2 in 
+      let renv        = combine_global_envs renv1 renv2 in
+      (build_unmodified_return (CEAnyAttr (fce1, nsenv, fce2))), renv
+  | CEError cexpr_list -> 
+      let fcexpr_list, renv = factor_globals_walker_map genv cexpr_list in
+      (build_unmodified_return (CEError fcexpr_list)), renv
+  | CETreat (ce, dt) ->
+      let fce, renv  = factor_globals_walker genv ce in
+      (build_unmodified_return (CETreat (fce,dt))), renv
+  | CEValidate (vm, ce) ->
+      let fce, renv  = factor_globals_walker genv ce in
+      (build_unmodified_return (CEValidate (vm,fce))), renv
+  | CECast (ce, nsenv, dt) -> 
+      let fce, renv  = factor_globals_walker genv ce in
+      (build_unmodified_return (CECast (fce, nsenv, dt))), renv
+  | CECastable (ce, nsenv, dt) ->
+      let fce, renv  = factor_globals_walker genv ce in
+      (build_unmodified_return (CECastable (fce, nsenv, dt))), renv
+  | CESome (odt, vn, ce1, ce2) -> 
+      let fce1, renv1 = factor_globals_walker genv ce1 in
+      let genv        = add_non_global_binding genv vn in
+      let fce2, renv2 = factor_globals_walker genv ce2 in
+      let renv        = combine_global_envs renv1 renv2 in 
+      (build_unmodified_return (CESome (odt,vn, fce1, fce2))), renv
+  | CEEvery (odt, vn, ce1, ce2) ->
+      let fce1, renv1 = factor_globals_walker genv ce1 in
+      let genv        = add_non_global_binding genv vn in
+      let fce2, renv2 = factor_globals_walker genv ce2 in
+      let renv        = combine_global_envs renv1 renv2 in 
+      (build_unmodified_return (CEEvery (odt,vn, fce1, fce2))), renv
+	(* NOTE: Are the sequence expressions independent or dependent?
+	   They are being treated here as independent. PLEASE MAKE SURE THIS
+	   IS CORRECT.
+	   If they should be dependent just switch the result to a fold walker
+	 *)
+  | CECopy ce ->
+      let fce, renv    = factor_globals_walker genv ce in
+      (build_unmodified_return (CECopy fce)), renv
+  | CEDelete ce ->
+      let fce, renv    = factor_globals_walker genv ce in
+      (build_unmodified_return (CEDelete fce)), renv
+  | CEInsert (ce, aci) ->
+      let fce, renv1   = factor_globals_walker genv ce in
+      let faci, renv2  = factor_globals_walker_insert genv aci in 
+      let renv         = combine_global_envs renv1 renv2 in 
+      (build_unmodified_return (CEInsert (fce, faci))), renv
+  | CEReplace (vof, ce1, ce2) ->
+      let fce1, renv1  = factor_globals_walker genv ce1 in
+      let fce2, renv2  = factor_globals_walker genv ce2 in
+      let renv         = combine_global_envs renv1 renv2 in 
+      (build_unmodified_return (CEReplace (vof, fce1, fce2))), renv 
+  | CERename (nsenv, ce1, ce2) ->
+      let fce1, renv1  = factor_globals_walker genv ce1 in
+      let fce2, renv2  = factor_globals_walker genv ce2 in
+      let renv         = combine_global_envs renv1 renv2 in 
+      (build_unmodified_return (CERename (nsenv, fce1, fce2))), renv 
+  | CESnap (sm,cexpr) -> 
+      let fce, renv = factor_globals_walker genv cexpr in
+      (build_unmodified_return (CESnap (sm,fce))), renv
+  | CELetvar (odt, vn, ce1, ce2) -> 
+      let fce1, renv1 = factor_globals_walker genv ce1 in
+      let genv        = add_non_global_binding genv vn in
+      let fce2, renv2 = factor_globals_walker genv ce2 in
+      let renv        = combine_global_envs renv1 renv2 in 
+      (build_unmodified_return (CELetvar (odt,vn, fce1, fce2))), renv          
+  | CESet (v,cexpr) -> 
+      let fce, renv = factor_globals_walker genv cexpr in
+      (build_unmodified_return (CESet (v,fce))), renv
+	(* Mary: I'm assuming that CEExecute behaves like CESnap *)
+  | CEExecute (async, ncname, uri, hostport,cexpr) -> 
+      let fhostport, renv1 = factor_globals_walker genv hostport in
+      let fce, renv3   = factor_globals_walker genv cexpr in
+      let renv'        = combine_global_envs renv1 renv3 in 
+      (build_unmodified_return (CEExecute (async, ncname, uri, fhostport, fce))), renv'
+	(* Should clean variables *)
+  | CEVar vn -> 
+      (build_changed_return (CEVar (get_rebound_variable genv vn))), empty_renv
+  | CEWhile (ce1, ce2) -> 
+      let fce1, renv1  = factor_globals_walker genv ce1 in
+      let fce2, renv2  = factor_globals_walker genv ce2 in
+      let renv         = combine_global_envs renv1 renv2 in 
+      (build_unmodified_return (CEWhile (fce1, fce2))), renv 
+  | CEEvalClosure ce ->
+      let fce, renv1   = factor_globals_walker genv ce in
+      (build_unmodified_return (CEEvalClosure fce)), renv1
+  | CEForServerClose (name, str, ce) ->
+      let fce, renv1   = factor_globals_walker genv ce in
+      (build_unmodified_return (CEForServerClose (name, str, fce))), renv1
+  | CELetServerImplement (name, str, ce1, ce2) ->
+      let fce1, renv1  = factor_globals_walker genv ce1 in
+      let fce2, renv2  = factor_globals_walker genv ce2 in
+      let renv         = combine_global_envs renv1 renv2 in 
+      (build_unmodified_return (CELetServerImplement (name, str, fce1, fce2))), renv 
+  | CEForwardAxis _ | CEReverseAxis _ (* fs:dot should never be renamed.. *)    
+      (* Bases *)
+  | CEComment _     | CEText _ | CECharRef _
+  | CEScalar _      | CEProtoValue _ | CEPI _
+  | CEEmpty -> cexpr, empty_renv
 
 (* It is a map, so I am assuming the individual expressions are 
    independent from one another *)

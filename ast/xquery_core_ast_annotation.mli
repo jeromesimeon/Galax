@@ -72,7 +72,7 @@ val set_annotation : ast_annot -> ast_annot -> unit
     @return Tuple of annotation's components *)
 val annot_components :
     ast_annot ->
-      type_annot option * ddo_annot option * free_var_annot option * scrambling_annot
+      type_annot option * ddo_annot option * free_var_annot option * scrambling_annot * bool
 
 (*  Copy an annotation
     @param ast_annotation 
@@ -98,3 +98,9 @@ val print_free_var_annot : free_var_annot -> string
 val set_scrambling_annot   : ast_annot -> scrambling_annot -> unit
 val get_scrambling_annot   : ast_annot -> scrambling_annot
 val print_scrambling_annot : scrambling_annot -> string
+
+(* Streaming annot *)
+val set_stream_annot : ast_annot -> bool -> unit
+val get_stream_annot : ast_annot -> bool
+val print_stream_annot : bool -> string
+

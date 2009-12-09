@@ -4,7 +4,6 @@
     ./namespace/namespace_symbols.cmi ./namespace/namespace_names.cmi \
     ./namespace/namespace_context.cmi ./base/finfo.cmi \
     ./datatypes/datatypes.cmi 
-./ast/xquery_algebra_ast_annotation.cmi: ./ast/xquery_common_ast.cmi 
 ./ast/xquery_algebra_ast_annotation_util.cmi: \
     ./ast/xquery_physical_type_ast.cmi ./ast/xquery_common_ast.cmi \
     ./ast/xquery_algebra_ast.cmi ./ast/ast_logical_algebra_types.cmi 
@@ -383,7 +382,6 @@
     ./code_selection/execution_context.cmi ./code_selection/algebra_type.cmi 
 ./evaluation/evaluation_top.cmi: ./physicaldm/physical_value.cmi \
     ./code_selection/execution_context.cmi ./code_selection/algebra_type.cmi 
-./extensions/jabber/glx_jabber.cmi: 
 ./factorization/factorize_tpnf_util.cmi: ./ast/xquery_type_core_ast.cmi \
     ./ast/xquery_core_ast_util.cmi ./ast/xquery_core_ast_annotation.cmi \
     ./ast/xquery_core_ast.cmi ./ast/xquery_common_ast_util.cmi \
@@ -414,9 +412,6 @@
 ./fsa/nfa.cmi: ./base/error.cmi 
 ./fsa/regexp.cmi: ./base/occurrence.cmi ./fsa/nfa.cmi ./base/error.cmi \
     ./fsa/dfa.cmi 
-./galapi/c_api/galax_wrap.cmi: ./procctxt/processing_context.cmi \
-    ./physicaldm/physical_value.cmi ./namespace/namespace_context.cmi \
-    ./galapi/caml_api/galax.cmi 
 ./galapi/caml_api/dm_functions.cmi: ./physicaldm/physical_value.cmi \
     ./namespace/namespace_context.cmi ./dm/atomic/dm_atomic.cmi ./dm/dm.cmi \
     ./datatypes/anyURI.cmi 
@@ -705,7 +700,6 @@
     ./namespace/namespace_names.cmi ./namespace/namespace_context.cmi \
     ./dm/base/dm_types.cmi ./dm/atomic/dm_atomic.cmi \
     ./datatypes/datatypes.cmi ./dm/base/cursor.cmi 
-./shredded/shredded_load_update.cmi: 
 ./shredded/shredded_store.cmi: ./ast/xquery_type_core_ast.cmi \
     ./ast/xquery_algebra_ast.cmi ./streaming/streaming_types.cmi \
     ./shredded/shredded_store_sigs.cmi ./physicaldm/physical_value.cmi \
@@ -802,8 +796,8 @@
     ./typing/typing_context.cmi 
 ./typing/typing_context.cmi: ./ast/xquery_type_core_ast.cmi \
     ./ast/xquery_core_ast.cmi ./ast/xquery_common_ast.cmi \
-    ./schema/schema_namer.cmi ./normalization/norm_context.cmi \
-    ./base/finfo.cmi 
+    ./schema/schema_namer.cmi ./procctxt/processing_context.cmi \
+    ./normalization/norm_context.cmi ./base/finfo.cmi 
 ./typing/typing_errors.cmi: ./ast/xquery_type_core_ast.cmi \
     ./ast/xquery_core_ast.cmi ./ast/xquery_common_ast.cmi \
     ./typing/typing_context.cmi 
@@ -821,7 +815,6 @@
 ./typing/typing_util.cmi: ./ast/xquery_type_core_ast.cmi \
     ./ast/xquery_core_ast.cmi ./ast/xquery_common_ast.cmi \
     ./ast/xquery_algebra_ast.cmi ./base/occurrence.cmi 
-./website/demo/demo_conf.cmi: 
 ./wsdl/wsdl_apache.cmi: ./wsdl/wsdl_ast.cmi ./namespace/namespace_names.cmi 
 ./wsdl/wsdl_ast.cmi: ./ast/xquery_type_ast.cmi \
     ./namespace/namespace_symbols.cmi ./namespace/namespace_names.cmi \
@@ -2873,6 +2866,24 @@ streaming_xpath/streaming_xpath.cmx: ./ast/xquery_common_ast_util.cmx \
     ./namespace/namespace_names.cmx ./base/finfo.cmx ./base/error.cmx \
     ./dm/base/dm_types.cmx ./dm/dm_step.cmx ./dm/base/cursor.cmx \
     ./code_util/code_util_matching.cmx streaming_xpath/streaming_xpath.cmi 
+streaming_xpath/stream_analysis_builtin.cmo: ./ast/xquery_core_ast.cmi \
+    ./namespace/namespace_builtin.cmi \
+    streaming_xpath/stream_analysis_builtin.cmi 
+streaming_xpath/stream_analysis_builtin.cmx: ./ast/xquery_core_ast.cmi \
+    ./namespace/namespace_builtin.cmx \
+    streaming_xpath/stream_analysis_builtin.cmi 
+streaming_xpath/stream_analysis.cmo: ./ast/xquery_core_ast_annotation.cmi \
+    ./ast/xquery_core_ast.cmi ./ast/xquery_common_ast.cmi \
+    ./streaming_xpath/stream_analysis_builtin.cmi \
+    ./namespace/namespace_builtin.cmi ./base/error.cmi \
+    ./streaming_xpath/df_struct.cmi ./streaming_xpath/df_analysis.cmi \
+    ./base/conf.cmi streaming_xpath/stream_analysis.cmi 
+streaming_xpath/stream_analysis.cmx: ./ast/xquery_core_ast_annotation.cmx \
+    ./ast/xquery_core_ast.cmi ./ast/xquery_common_ast.cmx \
+    ./streaming_xpath/stream_analysis_builtin.cmx \
+    ./namespace/namespace_builtin.cmx ./base/error.cmx \
+    ./streaming_xpath/df_struct.cmx ./streaming_xpath/df_analysis.cmx \
+    ./base/conf.cmx streaming_xpath/stream_analysis.cmi 
 projection/path_structutil.cmo: ./ast/xquery_core_ast_util.cmi \
     ./ast/xquery_core_ast.cmi ./ast/xquery_common_ast_util.cmi \
     ./ast/xquery_common_ast.cmi ./streaming/streaming_types.cmi \
@@ -3083,6 +3094,24 @@ factorization/factorize_top.cmx: ./ast/xquery_core_ast_util.cmx \
     ./ast/xquery_core_ast.cmi ./ast/xquery_common_ast.cmx \
     ./factorization/factorize_tpnf.cmx ./base/error.cmx ./base/conf.cmx \
     factorization/factorize_top.cmi 
+factorization/factorize_globals.cmo: ./ast/xquery_type_core_ast.cmi \
+    ./ast/xquery_core_ast_util.cmi ./ast/xquery_core_ast_annotation.cmi \
+    ./ast/xquery_core_ast.cmi ./ast/xquery_common_ast.cmi \
+    ./typing/typing_context.cmi ./rewriting/rewriting_judgments.cmi \
+    ./procctxt/processing_context.cmi ./ast_printer/print_top.cmi \
+    ./namespace/namespace_names.cmi ./namespace/namespace_generate.cmi \
+    ./namespace/namespace_builtin.cmi ./base/gmisc.cmi \
+    ./factorization/factorize_free_var.cmi \
+    factorization/factorize_globals.cmi 
+factorization/factorize_globals.cmx: ./ast/xquery_type_core_ast.cmi \
+    ./ast/xquery_core_ast_util.cmx ./ast/xquery_core_ast_annotation.cmx \
+    ./ast/xquery_core_ast.cmi ./ast/xquery_common_ast.cmx \
+    ./typing/typing_context.cmx ./rewriting/rewriting_judgments.cmx \
+    ./procctxt/processing_context.cmx ./ast_printer/print_top.cmx \
+    ./namespace/namespace_names.cmx ./namespace/namespace_generate.cmx \
+    ./namespace/namespace_builtin.cmx ./base/gmisc.cmx \
+    ./factorization/factorize_free_var.cmx \
+    factorization/factorize_globals.cmi 
 compile/compile_util.cmo: ./ast/xquery_core_ast.cmi \
     ./ast/xquery_algebra_ast_util.cmi ./ast/xquery_algebra_ast.cmi \
     ./namespace/namespace_symbols.cmi ./compile/compile_context.cmi \

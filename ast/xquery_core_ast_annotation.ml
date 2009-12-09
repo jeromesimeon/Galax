@@ -40,7 +40,8 @@ type ast_annot =
     { mutable type_annot       : type_annot option;      (* Static typing *)
       mutable sbdo_optim_annot : ddo_annot option;       (* SBDO analysis *)
       mutable free_var_annot   : free_var_annot option;  (* free variable analysis *) 
-      mutable scrambling_annot : scrambling_annot;       (* TPNF normalization *) }
+      mutable scrambling_annot : scrambling_annot;       (* TPNF normalization *)
+      mutable streaming_annot  : bool                    (* Streaming annotation *) }
 
 (* Type annotations *)
 
@@ -48,20 +49,23 @@ let empty_ast_annot () =
   { type_annot       = None;
     sbdo_optim_annot = None;
     free_var_annot   = None;
-    scrambling_annot = List; }
+    scrambling_annot = List;
+    streaming_annot  = false }
 
 let annot_components ast_annot = 
   (ast_annot.type_annot,
    ast_annot.sbdo_optim_annot,
    ast_annot.free_var_annot,
-   ast_annot.scrambling_annot)
+   ast_annot.scrambling_annot,
+   ast_annot.streaming_annot)
 
 let copy_annot a =
-  let (ta, da, fva, sa) = annot_components a in
+  let (ta, da, fva, sa, st) = annot_components a in
   { type_annot       = ta;
     sbdo_optim_annot = da;
     free_var_annot   = fva;
-    scrambling_annot = sa }
+    scrambling_annot = sa;
+    streaming_annot  = st }
 
 let set_type_annot ast_annot cxtype = 
   ast_annot.type_annot <- Some cxtype
@@ -115,10 +119,23 @@ let rec print_free_var_annot flist =
     | x :: rest -> 
 	(Namespace_names.prefixed_string_of_rqname x) ^ "," ^ print_free_var_annot rest
 
+(* Streaming annots *)
+
+let set_stream_annot ast_annot st = 
+  ast_annot.streaming_annot <- st
+
+let get_stream_annot ast_annot =
+  ast_annot.streaming_annot
+
+let print_stream_annot annot =
+  if annot then "yes" else "no"
+
 (* Global setting of a given annotation *)
 
 let set_annotation annot1 annot2 =
   annot1.type_annot <- annot2.type_annot;
   annot1.sbdo_optim_annot <- annot2.sbdo_optim_annot;
   annot1.free_var_annot <- annot2.free_var_annot;
-  annot1.scrambling_annot <- annot2.scrambling_annot
+  annot1.scrambling_annot <- annot2.scrambling_annot;
+  annot1.streaming_annot <- annot2.streaming_annot
+

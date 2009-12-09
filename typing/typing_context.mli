@@ -53,7 +53,8 @@ val add_var_to_static_context : static_context -> (cvname * cxtype) -> static_co
 
 (* Accessors *)
 
-val norm_context_from_stat_context   : static_context -> norm_context
-val schema_from_static_context       : static_context -> cxschema
-val schema_namer_from_static_context : static_context -> Schema_namer.t
-val vars_from_static_context         : static_context -> (cvname * cxtype) list
+val processing_context_from_static_context : static_context -> Processing_context.module_processing_context
+val norm_context_from_stat_context   	   : static_context -> norm_context
+val schema_from_static_context       	   : static_context -> cxschema
+val schema_namer_from_static_context 	   : static_context -> Schema_namer.t
+val vars_from_static_context         	   : static_context -> (cvname * cxtype) list

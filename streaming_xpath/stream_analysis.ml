@@ -90,7 +90,7 @@ let get_fn_doc_static_uri ac_handle =
 		      | CEScalar av ->
 			  begin
 			    try
-			      let uri_str = av#getAtomicString () in
+			      let uri_str = string_of_literal av in
 				Some uri_str
 			    with
 			      | Query (Datamodel _) -> None
@@ -136,7 +136,7 @@ let is_fn_doc ac_handle =
       | Some cexpr ->
 	  begin
 	    match cexpr.pcexpr_desc with
-	      | CECall (x, _, _ ) when x = fn_doc -> 
+	      | CECall (x, _, _, _, _) when x = fn_doc -> 
 		  true
 	      | _ -> false
 	  end

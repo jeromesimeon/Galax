@@ -76,10 +76,10 @@ val get_in_scope_nsenv : norm_context -> Namespace_context.nsenv
 (* Extract components from normalization the context *)
   
 val processing_context_from_norm_context : norm_context -> Processing_context.processing_context
-val module_context_from_norm_context : norm_context -> Processing_context.module_processing_context
-val nsenv_from_norm_context          : norm_context -> Namespace_context.nsenv
-val cxschema_from_norm_context 	     : norm_context -> Xquery_type_core_ast.cxschema
-val interface_table_from_norm_context : norm_context -> norm_interface_table
+val module_context_from_norm_context     : norm_context -> Processing_context.module_processing_context
+val nsenv_from_norm_context              : norm_context -> Namespace_context.nsenv
+val cxschema_from_norm_context 	         : norm_context -> Xquery_type_core_ast.cxschema
+val interface_table_from_norm_context    : norm_context -> norm_interface_table
 
 (* Lookup a function's signatures in normalization context *)
 

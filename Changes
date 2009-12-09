@@ -2,6 +2,23 @@
 | Changelog |
  -----------
 
+December 8, 2009 - Jerome
+
+  o Cleanup: Reviewed unused/uncompiled modules.
+      - Removed the unused Xquery_algebra_ast_annotation AST.
+      - Removed Glx_jabber from the target list (unmaintained extension).
+      - Made sure Factorize_global is compiling, and linked-in properly.
+      - Removed Demo_conf from .cmi targets, not linked into galax.cma.
+      - Removed shredded_load_update from .cmi targets, not used or
+        linked into galax.cma.
+      - Removed Galax_wrap from .cmi targets, not used or linked into
+        galax.cma.
+      - Made sure Stream_analysis_builtin and Stream_analysis are
+        compiling, and linked-in properly. Added some basic
+        'streaming' annotation to the core AST to do so. (Note: may
+        have been intended to algebraic annotation, but never seemed
+        to happen...)
+
 December 1, 2009 - Jerome
 
   o Configuration:

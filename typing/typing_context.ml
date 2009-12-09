@@ -91,3 +91,5 @@ let schema_namer_from_static_context stat_ctxt =
 let vars_from_static_context stat_ctxt =
   stat_ctxt.var_type
 
+let processing_context_from_static_context stat_ctxt =
+  module_context_from_norm_context (stat_ctxt.norm_context)
