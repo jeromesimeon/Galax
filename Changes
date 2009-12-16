@@ -2,6 +2,12 @@
 | Changelog |
  -----------
 
+December 15, 2009 - Jerome
+
+  o Toplevel:
+      - Added projection (untested and likely not working) to main
+          command-line tool: galax-project [options] --> galax project [options]
+
 December 8, 2009 - Jerome
 
   o Cleanup: Reviewed unused/uncompiled modules.

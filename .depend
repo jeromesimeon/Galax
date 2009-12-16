@@ -4869,11 +4869,13 @@ regress/test_core.cmx: ./base/whitespace.cmx ./toplevel/top_util.cmx \
     ./dm/dm.cmx ./datatypes/dateTime.cmx ./datatypes/datatypes.cmi \
     ./dm/base/cursor.cmx ./base/conf.cmx 
 toplevel/galax_main.cmo: ./toplevel/top_util.cmi ./toplevel/top_schema.cmi \
-    ./toplevel/top_run.cmi ./toplevel/top_parse.cmi \
-    ./toplevel/top_compile.cmi ./toplevel/top_args.cmi 
+    ./toplevel/top_run.cmi ./toplevel/top_project.cmo \
+    ./toplevel/top_parse.cmi ./toplevel/top_compile.cmi \
+    ./toplevel/top_args.cmi 
 toplevel/galax_main.cmx: ./toplevel/top_util.cmx ./toplevel/top_schema.cmx \
-    ./toplevel/top_run.cmx ./toplevel/top_parse.cmx \
-    ./toplevel/top_compile.cmx ./toplevel/top_args.cmx 
+    ./toplevel/top_run.cmx ./toplevel/top_project.cmx \
+    ./toplevel/top_parse.cmx ./toplevel/top_compile.cmx \
+    ./toplevel/top_args.cmx 
 toplevel/galax-mapwsdl.cmo: ./ast/xquery_ast.cmi ./wsdl/wsdl_load.cmi \
     ./wsdl/wsdl_import.cmi ./wsdl/wsdl_export.cmi ./toplevel/top_util.cmi \
     ./streaming/streaming_parse.cmi ./procctxt/processing_context.cmi \

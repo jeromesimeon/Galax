@@ -17,18 +17,20 @@
  *)
 
 type executable_kind =
-  | XQueryExec
-  | XQueryCompileExec
-  | XMLExec
-  | XMLSchemaExec
+  | ExecXQuery
+  | ExecXQueryCompile
+  | ExecXML
+  | ExecXMLSchema
+  | ExecProject
 
 type gargs = string array
 
 let dispatch_table =
-  ["xquery",XQueryExec;
-   "compile",XQueryCompileExec;
-   "xml",XMLExec;
-   "xmlschema",XMLSchemaExec]
+  [ "xquery",ExecXQuery;
+    "compile",ExecXQueryCompile;
+    "xml",ExecXML;
+    "xmlschema",ExecXMLSchema;
+    "project",ExecProject ]
 
 let do_dispatch_args actual_args =
   let effective =
@@ -38,7 +40,7 @@ let do_dispatch_args actual_args =
       let effective_args = Array.concat [[|actual_args.(0)|];(Array.sub actual_args 2 ((Array.length actual_args)-2))] in
       execkind,effective_args
     with _ ->
-      XQueryExec,actual_args
+      ExecXQuery,actual_args
   in
   effective
 

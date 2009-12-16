@@ -29,6 +29,7 @@ val print_version : unit -> unit
 (***********)
 
 type option_classes =
+  | GalaxProject_Options
   | GalaxParse_Options
   | Misc_Options
   | Monitoring_Options
@@ -455,14 +456,15 @@ val title_prototype_options          : string
 val title_optimization_options       : string
 val title_code_selection_options     : string
 val title_runtime_options            : string
-
 val title_galax_parse_options        : string
+val title_galax_project_options      : string
 
 (*****************)
 (* Usage message *)
 (*****************)
 
 val usage_galax_run     : unit -> string
+val usage_galax_project : unit -> string
 val usage_galax_schema  : unit -> string
 val usage_galax_daemon  : unit -> string
 val usage_galax_parse   : unit -> string

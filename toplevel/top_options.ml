@@ -447,11 +447,6 @@ let arg_aggressive proc_ctxt =
   fun onoff -> Conf.aggressive_sbdo_remove := bool_of_onoff(onoff)
 let msg_aggressive = "Aggressive removal of SBDO calls"
 
-let opt_projection = "-projection"
-let arg_projection proc_ctxt =
-  set_projection_kind_arg proc_ctxt
-let msg_projection = "Document projection behavior [none, standard, or optimized]"
-
 let opt_treejoin_log = "-treejoin-log"
 let arg_treejoin_log proc_ctxt =
   set_treejoin_log_arg proc_ctxt
@@ -531,6 +526,30 @@ let opt_descendant_hack = "-shredded-descendant-hack"
 let arg_descendant_hack proc_ctxt = 
   fun onoff -> Conf.new_descendant_style := bool_of_onoff(onoff)
 let msg_descendant_hack = "Allow preorder descendant hack"
+
+(* galax-project options *)
+
+let opt_projection = "-projection"
+let arg_projection proc_ctxt = set_projection_kind_arg proc_ctxt
+let msg_projection = "Document projection behavior [none, standard, or optimized]"
+
+let opt_output_projection = "-output-projection"
+let arg_output_projection proc_ctxt =
+  fun f ->
+    begin
+      Conf.print_projection := true;
+      init_output_refs f Conf.projection_output Conf.projection_formatter
+    end
+let msg_output_projection = "Output the projections paths to a file"
+
+let opt_output_projected = "-output-projection"
+let arg_output_projected proc_ctxt =
+  fun f ->
+    begin
+      Conf.print_projected_file := true;
+      init_output_refs f Conf.projected_file_output Conf.projected_file_formatter
+    end
+let msg_output_projected = "Output the projected documents to files; this will, for each document identified during analysis, create a new file in the same location, adding " ^ Conf.projection_suffix ^ " to the former filename"
 
 (* galax-parse options *)
 
@@ -667,8 +686,8 @@ let title_runtime_options            = "\n\n // Runtime options\n"
 let title_daemon_options            = "\n\n // DXQ server options\n"
 let title_zerod_options            = "\n\n // Zerod Proxy server options\n"
 let title_xqueryx_options            = "\n\n // XQueryX options\n"
-
 let title_galax_parse_options        = "\n\n // Parse specific options\n"
+let title_galax_project_options        = "\n\n // Project specific options\n"
 
 
 (*****************)
@@ -676,6 +695,9 @@ let title_galax_parse_options        = "\n\n // Parse specific options\n"
 (*****************)
 
 let msg_galax_run () = 
+  sprintf "Usage: %s %s [options] input-queries (or '-' for stdin)" Sys.argv.(0) Sys.argv.(1)
+
+let msg_galax_project () = 
   sprintf "Usage: %s %s [options] input-queries (or '-' for stdin)" Sys.argv.(0) Sys.argv.(1)
 
 let msg_galax_schema () = 
@@ -694,11 +716,20 @@ let msg_zerod () =
   sprintf "Usage: %s [options] )" Sys.argv.(0)
 
 let usage_galax_run ()  	= (msg_galax_run ()) ^ title_main
+let usage_galax_project ()  	= (msg_galax_project ()) ^ title_main
 let usage_galax_schema ()	= (msg_galax_schema ()) ^ title_main
 let usage_galax_daemon ()	= (msg_galax_daemon ()) ^ title_main
 let usage_galax_parse ()	= (msg_galax_parse ()) ^ title_main
 let usage_galax_compile ()      = (msg_galax_compile ()) ^ title_main ^ title_misc_options
 let usage_zerod ()	        = (msg_zerod ()) ^ title_main
+
+(* Galax project options *)
+
+let make_galax_project_options bos title =
+  let (bo_unit,bo_int,bo_string,bo_set,bo_clear) = bos in
+  [ opt_projection, (bo_string arg_projection), msg_projection;
+    opt_output_projection, (bo_string arg_output_projection), msg_output_projection;
+    opt_output_projected, (bo_string arg_output_projected), msg_output_projected ]
 
 (* Galax parse options *)
 let make_galax_parse_options bos title =
@@ -887,8 +918,9 @@ let make_zerod_options bos title =
 let make_xqueryx_options bos title =
   let (bo_unit,bo_int,bo_string,bo_set,bo_clear) = bos in
     [ opt_xqueryx_batch, (bo_unit arg_xqueryx_batch), msg_xqueryx_batch ]
-      
+
 type option_classes =
+  | GalaxProject_Options
   | GalaxParse_Options
   | Misc_Options
   | Monitoring_Options
@@ -909,7 +941,8 @@ type option_classes =
   | XQueryX_Options
 
 let option_table =
-  [ GalaxParse_Options, (make_galax_parse_options,title_galax_parse_options);
+  [ GalaxProject_Options, (make_galax_project_options,title_galax_project_options);
+    GalaxParse_Options, (make_galax_parse_options,title_galax_parse_options);
     Misc_Options, (make_misc_options, title_misc_options);
     Monitoring_Options, (make_monitoring_options, title_monitor_options);
     Encoding_Options, (make_encoding_options, title_character_encoding_options);

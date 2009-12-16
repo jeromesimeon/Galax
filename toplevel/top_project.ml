@@ -36,12 +36,7 @@ open Namespace_builtin
 
 open Path_struct
 
-(***************************)
-(* Configuration variables *)
-(***************************)
-
-let suffix = ".p"
-
+open Top_options
 
 (****************)
 (* Command-line *)
@@ -50,28 +45,17 @@ let suffix = ".p"
 let usage_msg =
   sprintf "Usage: %s [options] file(s)" Sys.argv.(0)
 
-let process_args proc_ctxt =
-  let args = ref [] in
-  Arg.parse
-    [ (*"-projection-kind", Arg.String (set_projection_kind_arg proc_ctxt), " Document projection behavior [none, standard, or optimized]";
-      "-print-projection", Arg.String (fun onoff -> Conf.print_projection := Top_config.bool_of_onoff(onoff)), " Print the projection paths";
-      "-output-projection", Arg.String (fun f -> init_output_refs f Conf.projection_output Conf.projection_formatter), " Output the projections paths to a file";
-      "-output-projected-docs", Arg.String (fun onoff -> Conf.print_projected_file := bool_of_onoff(onoff)), " Output the projected documents to files; this will, for each document identified during analysis, create a new file in the same location, adding " ^ suffix ^ " to the former filename";
-      "-context",  Arg.String (fun f  -> context_file := Some f), " Load the context query from file or '-' for stdin"; "\n\n // Data model configuration\n";
-      "-monitor", 	     Arg.String (fun onoff -> set_monitor_mem proc_ctxt.monitor_context (bool_of_onoff(onoff)); set_monitor_time proc_ctxt.monitor_context (bool_of_onoff(onoff))), " Monitors memory and CPU consumption";
-      "-monitor-mem",    Arg.String (fun onoff -> set_monitor_mem proc_ctxt.monitor_context (bool_of_onoff(onoff))), " Monitors memory consumption";
-      "-monitor-time",   Arg.String (fun onoff -> set_monitor_time proc_ctxt.monitor_context (bool_of_onoff(onoff))), " Monitors CPU consumption";
-      "-output-monitor", Arg.String (fun f -> set_monitor_output proc_ctxt.monitor_context (Galax_io.Channel_Output (open_out(f)))), " Output monitor to file" ;
-      "-serialize", Arg.String (set_serialization_kind_arg proc_ctxt), " Set serialization kind [wf or xquery]\n\n // Processing phases configuration\n";
-      "-print-error-code",   Arg.Clear Conf.verbose_error, " Print only the error code instead of the full error message";
-      "-output-encoding",   Arg.String (fun s -> Encoding.set_output_encoding (Encoding.encoding_of_string s)), " Set the outputx encoding representation\n\n // Input context configuration\n";
-      "-xml-whitespace",    Arg.Unit (set_xml_whitespace_arg proc_ctxt), " Preserves whitespace in XML documents";
-      "-xml-pic",           Arg.Unit (set_xml_pis_and_comments_arg proc_ctxt), " Preserves PI's and comments in XML documents";
-      "-dm", Arg.Set dm, "Also builds the data model instance"*) ]
-    (fun arg -> args := arg :: !args) usage_msg;
-    match !args with
-      | [] -> failwith "No input XML file(s) specified"
-      | fnames -> fnames
+let process_args proc_ctxt gargs =
+  let args =
+    make_options_argv
+      proc_ctxt
+      (usage_galax_project ())
+      [ GalaxProject_Options;Misc_Options;Monitoring_Options;Encoding_Options;Context_Options;DataModel_Options;Serialization_Options;PrintParse_Options ]
+      gargs
+  in
+  match args with
+  | [] -> failwith "No input XML file(s) specified"
+  | fnames -> fnames
 
 let rec doc_uris_from_paths paths =
   match paths with
@@ -125,7 +109,7 @@ let print_projected_document paths doc_uri_string =
 let output_projected_document paths doc_uri_string = 
   let projected_resolved_xml_stream = projected_xml_stream_from_document paths doc_uri_string in
   let proc_ctxt = Processing_context.default_processing_context () in
-  let out_channel = open_out(doc_uri_string ^ suffix) in
+  let out_channel = open_out(doc_uri_string ^ Conf.projection_suffix) in
   let output_spec = Galax_io.Channel_Output out_channel in
   let gout = Parse_io.galax_output_from_output_spec output_spec in
   let fmt = Parse_io.formatter_of_galax_output gout in
@@ -195,8 +179,8 @@ let process_query_file proc_ctxt uri_string =
 let main proc_ctxt query_files =
   List.iter (process_query_file proc_ctxt) query_files
 
-let _ =
+let go gargs =
   let proc_ctxt = Processing_context.default_processing_context() in
-  let query_files = process_args proc_ctxt in
-    exec main proc_ctxt query_files
+  let query_files = process_args proc_ctxt gargs in
+   exec main proc_ctxt query_files
 

@@ -17,10 +17,11 @@
  *)
 
 type executable_kind =
-  | XQueryExec
-  | XQueryCompileExec
-  | XMLExec
-  | XMLSchemaExec
+  | ExecXQuery
+  | ExecXQueryCompile
+  | ExecXML
+  | ExecXMLSchema
+  | ExecProject
 
 type gargs = string array
 

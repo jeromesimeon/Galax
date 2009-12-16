@@ -129,6 +129,8 @@ let print_projected_file     = ref false
 let projected_file_output    = ref stdout
 let projected_file_formatter = ref Format.std_formatter
 
+let projection_suffix = ".p"
+
 let print_algebra_optimization_rewrite = ref false
 let algebra_optimization_rewrite_output = ref stdout
 let algebra_optimization_rewrite_formatter = ref Format.std_formatter

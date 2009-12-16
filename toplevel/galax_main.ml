@@ -25,14 +25,16 @@ open Top_util
 
 let dispatch_go ek gargs =
   match ek with
-  | XQueryExec ->
+  | ExecXQuery ->
       Top_run.go gargs
-  | XQueryCompileExec ->
+  | ExecXQueryCompile ->
       Top_compile.go gargs
-  | XMLExec ->
+  | ExecXML ->
       Top_parse.go gargs
-  | XMLSchemaExec ->
+  | ExecXMLSchema ->
       Top_schema.go gargs
+  | ExecProject ->
+      Top_project.go gargs
 
 let go() =
   (* 1. Pre-process the arguments *)

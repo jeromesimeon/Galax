@@ -132,6 +132,8 @@ val print_projected_file : bool ref
 val projected_file_output : out_channel ref
 val projected_file_formatter : Format.formatter ref
 
+val projection_suffix : string
+
 val glx_stderr : out_channel ref
 val glx_err_formatter : Format.formatter ref
 
