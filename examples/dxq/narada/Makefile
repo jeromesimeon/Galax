@@ -15,7 +15,7 @@ cluster: clean narada.xq cluster.sh
 	(cd $@; ln -s ../cluster-latencies.xml latencies.xml)
 
 go:
-	~/galax/galaxd -s run -t latencies.xml
+	~/galax/glxd -s run -t latencies.xml
 
 clean:
 	$(RM) -r run

@@ -77,7 +77,7 @@ all:
 
 
 %_usecase.xml: %_usecase.xq 
-	($(CONF_GALAX_BIN)/galax$(BINEXT) xquery -language xquerybang -serialize standard $*_usecase.xq >$*_usecase.xml; \
+	($(CONF_GALAX_BIN)/glx$(BINEXT) xquery -language xquerybang -serialize standard $*_usecase.xq >$*_usecase.xml; \
 	$(MAKE) -k -s check T=$*_usecase E=$*_usecase; )
 
 install: $(CONF_GALAX_XQUPDATE_USECASES) $(CONF_GALAX_XQUPDATE_USECASES)/docs
@@ -111,6 +111,6 @@ $(CONF_GALAX_XQUPDATE_USECASES)/docs:
 
 gen:
 	for t in $(USECASES); \
-		do $(CONF_GALAX_BIN)/galax$(BINEXT) xquery -language xquerybang -serialize wf $${t}_usecase.xq >$${t}_usecase.expect; \
+		do $(CONF_GALAX_BIN)/glx$(BINEXT) xquery -language xquerybang -serialize wf $${t}_usecase.xq >$${t}_usecase.expect; \
 	done
 

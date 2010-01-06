@@ -19,7 +19,7 @@ examples/extensions directory. To run one of those languages, you must
 use the corresponding language level option on the command line, as
 follows:
 
-  galax-run -language ultf xquery_updates.xq    (: For the W3C Update Facility :)
-  galax-run -language xquerybang xquery_bang.xq (: For the XQuery! Language :)
-  galax-run -language xqueryp xquery_p.xq       (: For the XQueryP Language :)
+  glx xquery -language ultf xquery_updates.xq    (: For the W3C Update Facility :)
+  glx xquery -language xquerybang xquery_bang.xq (: For the XQuery! Language :)
+  glx xquery -language xqueryp xquery_p.xq       (: For the XQueryP Language :)
 

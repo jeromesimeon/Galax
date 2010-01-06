@@ -7,12 +7,12 @@ run: dns.xq clean run.sh
 	./run.sh
 
 start:
-	exec galaxd -s ./run -language xquerybang &
+	exec glxd -s ./run -language xquerybang &
 	sleep 3
 	exec webgui -s ./run &
 
 stop:
-	killall galaxd webgui
+	killall glxd webgui
 
 clean:
 	$(RM) -r run

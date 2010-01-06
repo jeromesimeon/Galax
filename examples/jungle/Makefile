@@ -176,7 +176,7 @@ tmp/XMark-Metadata.db:
 runcmd:	load
 	($(RM) cmd-jungle.out; \
 	export LD_LIBRARY_PATH=$(CONF_C_LIBBDB):$(LOCALPREFIX)/galapi/c_api; \
-	$(LOCALPREFIX)/tools/Jungle/galax-run$(OPT) -serialize wf jungle1.xq > cmd-jungle.out)
+	$(LOCALPREFIX)/tools/Jungle/glx$(OPT) -serialize wf jungle1.xq > cmd-jungle.out)
 	if [[ -z "`cmp cmd-jungle.out jungle.expect`" ]]; then echo "examples/jungle/commend-line query passed"; else $(MAKE) TEST=cmd-jungle error; fi; 
 
 runcaml: $(EXAMPLE)$(OPT) load

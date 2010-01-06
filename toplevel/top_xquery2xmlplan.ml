@@ -10,7 +10,7 @@
 
 (* $Id: xquery2xmlplan.ml,v 1.1 2007/02/12 21:15:35 simeon Exp $ *)
 
-(* Module: Xquery2xmlplan
+(* Module: Top_xquery2xmlplan
    Description:
      Compiles and XQuery into a logical plan in XML form.
  *)
@@ -34,24 +34,18 @@ open Procmod_compiler
 (* Command-line options *)
 (************************)
 
-let process_args proc_ctxt =
+let override_args proc_ctxt gargs =
   let args =
-    make_options
+    make_options_argv
       proc_ctxt
       (usage_galax_compile ())
       [ Misc_Options;Monitoring_Options;Context_Options;Behavior_Options;ProcessingPhases_Options;Printing_Options;Optimization_Options;CodeSelection_Options ]
+      gargs
   in
   match args with
   | [] -> failwith "Input file(s) not specified"
   | fnames ->
       List.rev fnames
-
-let override_args proc_ctxt args =
-  make_options_argv
-    proc_ctxt
-    (usage_galax_compile ())
-    [ Misc_Options;Monitoring_Options;Context_Options;Behavior_Options;ProcessingPhases_Options;Printing_Options;Optimization_Options;CodeSelection_Options ]
-    args
 
 (*********************************************************************************)
 (* NOTO BENE!                                                                    *)
@@ -99,22 +93,16 @@ let main proc_ctxt module_files =
 (* Let's go! *)
 (*************)
 
-let go() =
+let go gargs =
   (* 1. First get the default processing context for galax-compile *)
   let proc_ctxt = galax_compile_proc_ctxt () in
 
   (* 2. Force proper options for that top-level *)
-  let options =
-    [| Sys.argv.(0); "-optimization"; "off"; "-print-plan-kind"; "xml" |]
-  in
-  override_args proc_ctxt options;
+  let options = [| Sys.argv.(0); "-optimization"; "off"; "-print-plan-kind"; "xml" |] in
 
   (* 3. Parses the command-line arguments *)
-  let module_files = process_args proc_ctxt in
+  let module_files = override_args proc_ctxt options in
 
   (* 4. Compile the input queries *)
   exec main proc_ctxt module_files
-
-let _ =
-  low_exec go ()
 

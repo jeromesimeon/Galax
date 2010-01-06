@@ -25,6 +25,8 @@ open Top_util
 
 let dispatch_go ek gargs =
   match ek with
+  | ExecHelp ->
+      Top_args.exec_help_go gargs
   | ExecXQuery ->
       Top_run.go gargs
   | ExecXQueryCompile ->

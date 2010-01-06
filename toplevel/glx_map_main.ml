@@ -3,36 +3,40 @@
 (*                                 GALAX                               *)
 (*                             XQuery Engine                           *)
 (*                                                                     *)
-(*  Copyright 2001-2007.                                               *)
+(*  Copyright 2001-2009.                                               *)
 (*  Distributed only by permission.                                    *)
 (*                                                                     *)
 (***********************************************************************)
 
 (* $Id$ *)
 
-(* Module: Top_args
+(* Module: Galax_main
    Description:
-     This module contains code for generic processing of galax
-     executable command-line arguments.
+     Main for the galax executable.
  *)
 
-type executable_kind =
-  | ExecHelp
-  | ExecXQuery
-  | ExecXQueryCompile
-  | ExecXML
-  | ExecXMLSchema
-  | ExecProject
 
-type map_executable_kind =
-  | MapHelp
-  | MapXQuery2XML
+(*************)
+(* Let's go! *)
+(*************)
 
-type gargs = string array
+open Top_args
+open Top_util
 
-val dispatch_args: unit -> executable_kind * gargs
-val dispatch_map_args: unit -> map_executable_kind * gargs
+let dispatch_go ek gargs =
+  match ek with
+  | MapHelp ->
+      Top_args.map_help_go gargs
+  | MapXQuery2XML ->
+      Top_xquery2xmlplan.go gargs
 
-val exec_help_go: gargs -> unit
-val map_help_go: gargs -> unit
+let go() =
+  (* 1. Pre-process the arguments *)
+  let ek,gargs = dispatch_map_args () in
+
+  (* 2. Call the proper dispatcher *)
+  dispatch_go ek gargs
+
+let _ =
+  low_exec go ()
 

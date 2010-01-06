@@ -10,6 +10,12 @@
 
 (* $Id: galax-project.ml,v 1.37 2007/09/19 20:01:50 mff Exp $ *)
 
+(* Module: Top_project
+   Description:
+     This module implements a simple front-end for Galax XML
+     projection algorithm.
+ *)
+
 open Format
 
 open Error

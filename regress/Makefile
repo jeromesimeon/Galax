@@ -267,10 +267,10 @@ testconfig.xml:	testconfig-tmpl.xml
 	$(SED) -e "s:XQUERYUNIT:$(CONF_XQUERYUNIT):" -e "s:GALAXUNIT:$(CONF_GALAXUNIT):" -e "s:REGRESS:$(CONF_PACKAGE_SRC)/regress:" testconfig-tmpl.xml > testconfig.xml
 
 tests: testconfig.xml
-	$(LOCALPREFIX)/galax-test$(EXE) testconfig.xml
+	$(LOCALPREFIX)/glx-test$(EXE) testconfig.xml
 
 tests-gen: testconfig.xml
-	$(LOCALPREFIX)/galax-test$(EXE) -generate-results testconfig.xml
+	$(LOCALPREFIX)/glx-test$(EXE) -generate-results testconfig.xml
 
 w3c-diff:
 	echo ""
@@ -278,7 +278,7 @@ w3c-diff:
 	echo "*** Tests which differ from expected run: "
 	echo "******************************************"
 	echo ""
-	$(LOCALPREFIX)/galax-run -var unit=W3C diff.xq
+	$(LOCALPREFIX)/glx -var unit=W3C diff.xq
 	echo ""
 	echo "******************************************"
 
@@ -288,7 +288,7 @@ galax-diff:
 	echo "*** Tests which differ from expected run: "
 	echo "******************************************"
 	echo ""
-	$(LOCALPREFIX)/galax-run -var unit=Galax diff.xq
+	$(LOCALPREFIX)/glx -var unit=Galax diff.xq
 	echo ""
 	echo "******************************************"
 
@@ -297,8 +297,8 @@ silent-diff:
 	if test -f testresults-Galax.xml; then $(MAKE) galax-diff; fi
 
 buildbot-diff: tests
-	if test -f testresults-W3C.xml; then $(LOCALPREFIX)/galax-run -var unit=W3C diff.xq > buildbot.diffs; fi
-	if test -f testresults-Galax.xml; then $(LOCALPREFIX)/galax-run -var unit=Galax diff.xq	>> buildbot.diffs; fi
+	if test -f testresults-W3C.xml; then $(LOCALPREFIX)/glx -var unit=W3C diff.xq > buildbot.diffs; fi
+	if test -f testresults-Galax.xml; then $(LOCALPREFIX)/glx -var unit=Galax diff.xq	>> buildbot.diffs; fi
 	(j=`grep -l diff buildbot.diffs`; if test -n "$$j"; then exit 1; fi)
 
 diff:

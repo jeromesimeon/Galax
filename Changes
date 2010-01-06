@@ -2,6 +2,18 @@
 | Changelog |
  -----------
 
+January 5, 2010 - Jerome
+
+  o Toplevel: More clean-ups of the command-line tools.
+      - galax --> glx
+      - New tool focused on mappings: glx-map
+      - galaxd --> glxd
+      - galax-test --> glx-test
+      - Fixed some module names with '-'.
+      - Added help message in case no specific directive is passed to
+        the command line-tool. e.g., glx help ; glx-map help
+      - Renumbered some of the TARGETS in the main Makefile.
+
 December 15, 2009 - Jerome
 
   o Toplevel:

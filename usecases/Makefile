@@ -138,15 +138,15 @@ bootstrap-double-core:
 	$(MAKE) -s run-compiled-double-core
 
 %_usecase.xml: %_usecase.xq %_context.xq
-	($(BINDIR)/galax$(BINEXT) xquery -serialize wf -static-typing on -typing ${TYPE_KIND} -context $*_context.xq $*_usecase.xq >$*_usecase.xml; \
+	($(BINDIR)/glx$(BINEXT) xquery -serialize wf -static-typing on -typing ${TYPE_KIND} -context $*_context.xq $*_usecase.xq >$*_usecase.xml; \
 	$(MAKE) -k -s check T=$*_usecase E=$*_usecase; )
 
 %_type.xml: %_usecase.xq %_context.xq
-	(echo "$*: none"; time $(BINDIR)/galax$(BINEXT) xquery -static-typing on -typing none -context $*_context.xq $*_usecase.xq -dynamic off; \
-	echo "$*: weak"; time $(BINDIR)/galax$(BINEXT) xquery -static-typing on -typing weak -context $*_context.xq $*_usecase.xq -dynamic off)
+	(echo "$*: none"; time $(BINDIR)/glx$(BINEXT) xquery -static-typing on -typing none -context $*_context.xq $*_usecase.xq -dynamic off; \
+	echo "$*: weak"; time $(BINDIR)/glx$(BINEXT) xquery -static-typing on -typing weak -context $*_context.xq $*_usecase.xq -dynamic off)
 
-#	(time $(BINDIR)/galax$(BINEXT) xquery -monitor-time on -output-monitor $*.mon -serialize wf -static-typing on -typing none -context $*_context.xq $*_usecase.xq -dynamic off; \
-#	time $(BINDIR)/galax$(BINEXT) xquery -monitor-time on -output-monitor $*.typemon -serialize wf -static-typing on -typing weak -context $*_context.xq $*_usecase.xq -dynamic off)
+#	(time $(BINDIR)/glx$(BINEXT) xquery -monitor-time on -output-monitor $*.mon -serialize wf -static-typing on -typing none -context $*_context.xq $*_usecase.xq -dynamic off; \
+#	time $(BINDIR)/glx$(BINEXT) xquery -monitor-time on -output-monitor $*.typemon -serialize wf -static-typing on -typing weak -context $*_context.xq $*_usecase.xq -dynamic off)
 
 run-type:
 	@echo "";\
@@ -163,8 +163,8 @@ run-xmark-type:
 	echo "=============" ;\
 	echo "";\
 	(for t in Q*.xq; do \
-	echo "$${t}: none"; time $(BINDIR)/galax$(BINEXT) xquery -static-typing on -typing none -context xmark_context.xq $${t} -dynamic off; \
-	echo "$${t}: weak"; time $(BINDIR)/galax$(BINEXT) xquery -static-typing on -typing weak -context xmark_context.xq $${t} -dynamic off; \
+	echo "$${t}: none"; time $(BINDIR)/glx$(BINEXT) xquery -static-typing on -typing none -context xmark_context.xq $${t} -dynamic off; \
+	echo "$${t}: weak"; time $(BINDIR)/glx$(BINEXT) xquery -static-typing on -typing weak -context xmark_context.xq $${t} -dynamic off; \
 	done)
 
 run-orig:
@@ -176,7 +176,7 @@ run-orig:
 	make -k -s $${t}_usecase.xml ; \
 	done)
 
-#	$(BINDIR)/galax$(BINEXT) xquery -treejoin-log twig  -serialize wf -context $${t}_context.xq $${t}_usecase.xq >$${t}_usecase.xml; \
+#	$(BINDIR)/glx$(BINEXT) xquery -treejoin-log twig  -serialize wf -context $${t}_context.xq $${t}_usecase.xq >$${t}_usecase.xml; \
 
 run-compiled:
 	@echo;\
@@ -184,7 +184,7 @@ run-compiled:
 	echo "=======================" ;\
 	echo "";\
 	(for t in $(USECASES) xmark; \
-	do $(BINDIR)/galax$(BINEXT) xquery -serialize wf -optimization on $${t}_usecase_pretty.xq > $${t}_usecase_pretty.xml; \
+	do $(BINDIR)/glx$(BINEXT) xquery -serialize wf -optimization on $${t}_usecase_pretty.xq > $${t}_usecase_pretty.xml; \
 	$(MAKE) -k -s check T=$${t}_usecase_pretty E=$${t}_usecase; \
 	done)
 
@@ -194,7 +194,7 @@ run-compiled-core:
 	echo "====================" ;\
 	echo "";\
 	(for t in $(USECASES) xmark; \
-	do $(BINDIR)/galax$(BINEXT) xquery -factorization off -execute normalized -serialize wf -optimization on $${t}_usecase_pretty_core.xq > $${t}_usecase_pretty_core.xml; \
+	do $(BINDIR)/glx$(BINEXT) xquery -factorization off -execute normalized -serialize wf -optimization on $${t}_usecase_pretty_core.xq > $${t}_usecase_pretty_core.xml; \
 	$(MAKE) -k -s check T=$${t}_pretty_core E=$${t}_usecase; \
 	done)
 
@@ -204,24 +204,24 @@ run-logical-plan:
 	echo "=====================" ;\
 	echo "";\
 	(for t in $(USECASES) xmark; \
-	do $(BINDIR)/galax$(BINEXT) xquery -dynamic off -print-plan-kind xml -output-logical-plan $${t}_plan.xml -print-logical-plan on -context $${t}_context.xq $${t}_usecase.xq; \
-	$(BINDIR)/galax$(BINEXT) xquery -execute logical $${t}_plan.xml  >$*_usecase.xml; \
+	do $(BINDIR)/glx$(BINEXT) xquery -dynamic off -print-plan-kind xml -output-logical-plan $${t}_plan.xml -print-logical-plan on -context $${t}_context.xq $${t}_usecase.xq; \
+	$(BINDIR)/glx$(BINEXT) xquery -execute logical $${t}_plan.xml  >$*_usecase.xml; \
 	$(MAKE) -k -s check T=$*_usecase E=$*_usecase; \
 	done)
 
 compile:
 	(for t in $(USECASES) xmark; \
-	do $(BINDIR)/galax$(BINEXT) compile -print-optimized-plan off -print-prolog on -print-expr on -context $${t}_context.xq $${t}_usecase.xq > $${t}_usecase_pretty.xq; \
+	do $(BINDIR)/glx$(BINEXT) compile -print-optimized-plan off -print-prolog on -print-expr on -context $${t}_context.xq $${t}_usecase.xq > $${t}_usecase_pretty.xq; \
 	done)
 
 compile-core:
 	(for t in $(USECASES) xmark; \
-	do $(BINDIR)/galax$(BINEXT) compile -print-optimized-plan off -print-prolog on -print-rewritten-expr on -context $${t}_context.xq $${t}_usecase.xq > $${t}_usecase_pretty_core.xq; \
+	do $(BINDIR)/glx$(BINEXT) compile -print-optimized-plan off -print-prolog on -print-rewritten-expr on -context $${t}_context.xq $${t}_usecase.xq > $${t}_usecase_pretty_core.xq; \
 	done)
 
 compile-double-core:
 	(for t in $(USECASES) xmark; \
-	do $(BINDIR)/galax$(BINEXT) compile -execute normalized -print-optimized-plan off -print-prolog on -print-normalized-expr on $${t}_usecase_pretty_core.xq > $${t}_usecase_double_pretty_core.xq; \
+	do $(BINDIR)/glx$(BINEXT) compile -execute normalized -print-optimized-plan off -print-prolog on -print-normalized-expr on $${t}_usecase_pretty_core.xq > $${t}_usecase_double_pretty_core.xq; \
 	done)
 
 gen: clean	
