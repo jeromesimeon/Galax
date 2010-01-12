@@ -148,7 +148,7 @@ II. Installing Galax source by hand.
 	Berkeley DB (libdb) version 4.3 (only required for Jungle support)
 	PCRE version 6.3 (4.5 or higher works)
 
-   1. Download Galax source from http://www.galaxquery.org/galax-\version.tar.gz
+   1. Download Galax source from http://galax.sourceforge.net/
 
       gunzip galax-\version.tar.gz
       tar xvf galax-\version.tar

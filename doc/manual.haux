@@ -58,9 +58,9 @@ Installing Galax using GODI installation and configuration tool{}}
 \@addtocsec{htoc}{47}{1}{\@print{5.1.10}\quad{}Miscellaneous printing options{}}
 \@addtocsec{htoc}{48}{1}{\@print{5.1.11}\quad{}Document projection options{}}
 \@addtocsec{htoc}{49}{1}{\@print{5.1.12}\quad{}Miscellaneous options{}}
-\@addtocsec{htoc}{50}{0}{\@print{5.2}\quad{}\code{galax-parse}: XML parser and XML Schema validator{}}
-\@addtocsec{htoc}{51}{0}{\@print{5.3}\quad{}\code{galax-mapschema} : XML Schema validator{}}
-\@addtocsec{htoc}{52}{0}{\@print{5.4}\quad{}\code{galaxd} : The Galax network server{}}
+\@addtocsec{htoc}{50}{0}{\@print{5.2}\quad{}\code{glx xml}: XML parser and XML Schema validator{}}
+\@addtocsec{htoc}{51}{0}{\@print{5.3}\quad{}\code{glx xmlschema} : XML Schema validator{}}
+\@addtocsec{htoc}{52}{0}{\@print{5.4}\quad{}\code{glxd} : The Galax network server{}}
 \@addtocsec{htoc}{53}{1}{\@print{5.4.1}\quad{}Running simulations{}}
 \@addtocsec{htoc}{54}{-1}{\@print{Chapter 6}\quad{}Application Programming Interfaces (APIS){}}
 \newlabel{sec:api}{{6}{X}}

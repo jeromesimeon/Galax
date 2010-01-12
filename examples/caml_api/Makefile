@@ -57,7 +57,7 @@ endif
 # Description:
 #     This is where all of the named toplevel targets are placed.
 #
-#  all:        This target builds the TARGETS (temporarily disabled)
+#  all:        This target builds the TARGETS
 #  install::   This target does installation for OCaml API example files
 #  uninstall:: This target uninstalls OCaml API example files
 #  clean::     This target cleans files created in the all section
@@ -133,6 +133,6 @@ runopttest:	test$(OPT)
 #########################################################################
 # Section:  Makefile post-includes
 # Description:
-#		There are currenlty no post-includes for this Makefile
+#		There are currently no post-includes for this Makefile
 #########################################################################
 

@@ -1,24 +1,24 @@
 Galax supports the following stand-alone command-line tools:
 
 \begin{description}
-\item[galax-run] The Galax XQuery interpreter.               
-\item[galax-parse] XML document parser and validator. 
-\item[galax-mapschema] XML Schema validator.  Outputs XML Schema in XQuery type system.
-\item[galaxd] The Galax network server.  Executes Galax query plans
+\item[glx xquery] The Galax XQuery interpreter.               
+\item[glx xml] XML document parser and validator. 
+\item[glx xmlschema] XML Schema validator.  Outputs XML Schema in XQuery type system.
+\item[glxd] The Galax network server.  Executes Galax query plans
   issued from remote client (Under development).
 \end{description}
 
 \section{\code{galax-run} : The Galax XQuery interpreter}
-The simplest way to use Galax is by calling the 'galax-run' interpreter
-from the command line. The interpreter takes an XQuery input file, 
-evaluates it, and yields the result on standard output. 
+The simplest way to use Galax is by calling the 'glx xquery'
+interpreter from the command line. The interpreter takes an XQuery
+input file, evaluates it, and yields the result on standard output.
 
-Usage: \code{galax-run \emph{options} query.xq}
+Usage: \code{glx xquery \emph{options} query.xq}
 
 For instance, the following commands from the Galax home directory:
 \begin{alltt}
 %  echo "<two> { 1+1 } </two>" > test.xq
-%  $(GALAXHOME)/bin/galax-run test.xq
+%  $(GALAXHOME)/bin/glx xquery test.xq
 <two>2</two>
 \end{alltt}
 evaluates the simple query \verb|<two> { 1+1 } </two>| and prints the
@@ -219,12 +219,12 @@ output files.  Here are the available options.  Default values are in
 \item[-output-encoding]  Set the output character encoding representation
 \end{description}
 
-\section{\code{galax-parse}: XML parser and XML Schema validator}
+\section{\code{glx xml}: XML parser and XML Schema validator}
 
-\code{galax-parse} parses an XML document and optionally validates the
-document against an XML Schema. 
+\code{glx xml} parses an XML document and optionally validates the
+document against an XML Schema.
 
-Usage: \code{galax-parse \emph{options} document.xml}
+Usage: \code{glx xml \emph{options} document.xml}
 
 \begin{description}
 \item[-help,--help]    Display this list of options
@@ -250,10 +250,10 @@ Usage: \code{galax-parse \emph{options} document.xml}
 \item[-output-encoding]  Set the output encoding representation
 \end{description}
 
-\section{\code{galax-mapschema} : XML Schema validator}
-\code{galax-mapschema} maps XML schemas in xmlschema(s) into XQuery type expressions.
+\section{\code{glx xmlschema} : XML Schema validator}
+\code{glx xmlschema} maps XML schemas in xmlschema(s) into XQuery type expressions.
 
-Usage: \code{galax-mapschema \emph{options} schema.xsd}
+Usage: \code{glx xmlschema \emph{options} schema.xsd}
 
 \begin{description}
 \item[-prefix] Namespace prefix
@@ -269,12 +269,12 @@ Usage: \code{galax-mapschema \emph{options} schema.xsd}
 \end{description}
 
 
-\section{\code{galaxd} : The Galax network server}
+\section{\code{glxd} : The Galax network server}
 
-\code{galaxd} is a server that allows Galax to be invoked over the  
+\code{glxd} is a server that allows Galax to be invoked over the  
 network.
 
-Usage: \code{galaxd [\emph{options}] [query.xq]}
+Usage: \code{glxd [\emph{options}] [query.xq]}
 
 \begin{description}
 \item[-port \emph{n}] Listen on port \emph{n}.  If the -port option is
@@ -303,11 +303,11 @@ define a local:main() function.  Also, these files can refer to each
 other's local:main() functions using doc("dxq://a/"), doc("dxq://b/"),
 and doc("dxq://c/").  Then start up the three servers as follows:
 \begin{verbatim}
-     galaxd -s example -port 3324
-     galaxd -s example -port 3325
-     galaxd -s example -port 3326
+     glxd -s example -port 3324
+     glxd -s example -port 3325
+     glxd -s example -port 3326
 \end{verbatim}
-\code{galaxd} uses the -s option to find out what the virtual network
+\code{glxd} uses the -s option to find out what the virtual network
 will look like: it will have hosts a, b, and c, operating on
 non-virtual ports 3324, 3325, and 3326 on localhost.  The first
 invocation of \code{galaxd} above uses port 3324, so it uses a.xq to

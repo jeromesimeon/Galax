@@ -145,26 +145,26 @@ distribution. Assuming the Galax distribution is intalled in
 use the main command-line tools.
 
 \begin{description}
-\item[galax-run] The main XQuery interpreter (\term{galax-run}) is the
-simplest way to use Galax. For instance, the following commands:
+\item[glx xquery] The main XQuery interpreter (\term{glx xquery}) is
+  the simplest way to use Galax. For instance, the following commands:
 \begin{verbatim}
 % echo "<two>{ 1+1 }</two>" > test.xq
-% galax-run test.xq
+% glx xquery test.xq
 <two>2</two>
 \end{verbatim}
 evaluates the query \verb|<two>{ 1+1 }</two>| and prints the XML
 result \verb|<two>2</two>|.
 
-\item[galax-parse] The Galax XML parser and XML Schema validator can
-  be called as a standalone tool. For instance, the following command
+\item[glx xml] The Galax XML parser and XML Schema validator can be
+  called as a standalone tool. For instance, the following command
   validates the document in \texttt{hispo.xml} against the schema in
   \texttt{hispo.xsd}:
 \begin{verbatim}
-% galax-parse -validate -xmlschema $GALAXHOME/examples/docs/hispo.xsd \
-                                   $GALAXHOME/examples/docs/hispo.xml 
+% glx xml -validate -xmlschema $GALAXHOME/examples/docs/hispo.xsd \
+                               $GALAXHOME/examples/docs/hispo.xml 
 \end{verbatim}
 
-\item[galax-mapschema] A stand-alone tool that maps XML Schema documents into the XQuery
+\item[glx xmlschema] A stand-alone tool that maps XML Schema documents into the XQuery
   type system.   This tools is useful for checking whether Galax
   recognizes all the constructs in your XML Schema.  It also eliminates a lot of the
   ``noise'' in XML Schema's XML syntax. 
@@ -172,7 +172,7 @@ result \verb|<two>2</two>|.
 For instance, this command will print out the XQuery type
 representation of the schema in \texttt{hispo.xsd}: 
 \begin{verbatim}
-% galax-mapschema $GALAXHOME/examples/docs/hispo.xsd 
+% glx xmlschema $GALAXHOME/examples/docs/hispo.xsd 
 \end{verbatim}
 \end{description}
 

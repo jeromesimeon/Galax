@@ -15,7 +15,6 @@
 # Description:
 #		The default target for this Makefile is "all"
 #########################################################################
-
 default:	all
 
 #########################################################################
@@ -45,9 +44,9 @@ test$(OPT)
 
 TESTS=runexample runtest
 
-ALL_TARGETS=$(BYTETARGETS)
+TARGETS=$(BYTETARGETS)
 ifdef OCAMLOPT
-ALL_TARGETS+=$(OPTTARGETS)
+TARGETS+=$(OPTTARGETS)
 TESTS+=runoptexample runopttest
 endif
 
@@ -56,17 +55,21 @@ endif
 # Description:
 #     This is where all of the named toplevel targets are placed.
 #
-#  all:        This target builds the ALL_TARGETS
+#  all:        This target builds the TARGETS
 #  clean::     This target cleans files created in the all section
 #########################################################################
 
-all: $(ALL_TARGETS)
+all: $(TARGETS)
+
+byte:	$(BYTETARGETS)
 
 tests:	$(TESTS)
 
 clean:
 	$(RM) $(TARGETS)
-	$(RM) *.cmx *.cmo
+	$(RM) *.cmx *.cmo *.o
+
+clobber::
 
 #########################################################################
 # Sub-Section:  Secondary targets
@@ -89,7 +92,7 @@ test$(BYTE):	test.cmo
 test$(OPT):	test.cmx
 	$(OCAMLOPT) -linkall $(OCAMLOPT_FLAGS) -o $@ $(GALAX_ALL_INCLUDES) $(GALAX_ALL_OPTLIBS) test.cmx
 
-runexample:	example$(BYTE)
+runexample: example$(BYTE)
 	$(RM) example.out
 	./example$(BYTE) > example.out
 	if [[ -z "`cmp example.out example.expect`" ]]; then echo "examples/caml_api/example$(BYTE) passed"; else $(MAKE) TEST=example$(BYTE) error; fi;

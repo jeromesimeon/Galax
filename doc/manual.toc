@@ -32,7 +32,7 @@
 \contentsline {section}{\numberline {4.3}XQuery 1.0 Formal Semantics}{25}
 \contentsline {section}{\numberline {4.4}Functions and Operators}{26}
 \contentsline {section}{\numberline {4.5}Use Cases}{26}
-\contentsline {section}{\numberline {4.6}Galax 1.0\ extensions}{26}
+\contentsline {section}{\numberline {4.6}Galax 1.0.2\ extensions}{26}
 \contentsline {subsection}{\numberline {4.6.1}Defining XQuery Types in the Query Prolog}{26}
 \contentsline {subsection}{\numberline {4.6.2}Galax specific functions}{27}
 \contentsline {chapter}{\numberline {5}Command Line Tools}{29}
@@ -49,9 +49,9 @@
 \contentsline {subsection}{\numberline {5.1.10}Miscellaneous printing options}{32}
 \contentsline {subsection}{\numberline {5.1.11}Document projection options}{32}
 \contentsline {subsection}{\numberline {5.1.12}Miscellaneous options}{32}
-\contentsline {section}{\numberline {5.2}\textbf {\texttt {galax-parse}}: XML parser and XML Schema validator}{33}
-\contentsline {section}{\numberline {5.3}\textbf {\texttt {galax-mapschema}} : XML Schema validator}{33}
-\contentsline {section}{\numberline {5.4}\textbf {\texttt {galaxd}} : The Galax network server}{34}
+\contentsline {section}{\numberline {5.2}\textbf {\texttt {glx xml}}: XML parser and XML Schema validator}{33}
+\contentsline {section}{\numberline {5.3}\textbf {\texttt {glx xmlschema}} : XML Schema validator}{33}
+\contentsline {section}{\numberline {5.4}\textbf {\texttt {glxd}} : The Galax network server}{34}
 \contentsline {subsection}{\numberline {5.4.1}Running simulations}{34}
 \contentsline {chapter}{\numberline {6}Application Programming Interfaces (APIS)}{35}
 \contentsline {section}{\numberline {6.1}Galax API Functionality}{35}
