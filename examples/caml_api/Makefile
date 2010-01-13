@@ -67,7 +67,15 @@ all: $(TARGETS)
 
 byte:	$(BYTETARGETS)
 
-tests:	$(TESTS)
+tests:
+	$(MAKE) -s run-tests
+
+run-tests:
+	@echo "";\
+        echo "Running Caml API Tests:" ;\
+	echo "=======================" ;\
+	echo "";\
+	$(MAKE) -s $(TESTS)
 
 install: $(CONF_GALAX_EXAMPLES)/caml_api
 	$(SED) -e "s:CONF_GALAX_CONFIG:$(CONF_GALAX_CONFIG):g" Makefile-inst > $(CONF_GALAX_EXAMPLES)/caml_api/Makefile
@@ -83,9 +91,10 @@ uninstall:
 	$(RM) $(CONF_GALAX_EXAMPLES)/caml_api/test.ml
 	$(RM) $(CONF_GALAX_EXAMPLES)/caml_api/test.expect
 
-clean:
+clean::
 	$(RM) $(TARGETS)
-	$(RM) *.cmx *.cmo *.o
+	$(RM) *.cmx *.cmo *.cmi *.o
+	$(RM) *.out *.cmp
 
 clobber::
 
@@ -111,24 +120,20 @@ test$(OPT):	test.cmx
 	$(OCAMLOPT) -linkall $(OCAMLOPT_FLAGS) -o $@ $(GALAX_ALL_INCLUDES) $(GALAX_ALL_OPTLIBS) test.cmx
 
 runexample: example$(BYTE)
-	$(RM) example.out
-	./example$(BYTE) > example.out
-	if [[ -z "`cmp example.out example.expect`" ]]; then echo "examples/caml_api/example$(BYTE) passed"; else $(MAKE) TEST=example$(BYTE) error; fi;
+	(./example$(BYTE) > example.out; \
+	$(MAKE) -k -s check T=$*example E=$*example; )
 
-runtest:	test$(BYTE)
-	$(RM) test.out
-	./test$(BYTE) > test.out
-	if [[ -z "`cmp test.out test.expect`" ]]; then echo "tests/caml_api/test$(BYTE) passed"; else $(MAKE) TEST=test$(BYTE) error; fi;
+runtest: test$(BYTE)
+	(./test$(BYTE) > test.out; \
+	$(MAKE) -k -s check T=$*test E=$*test; )
 
-runoptexample:	example$(OPT)
-	$(RM) optexample.out
-	./example$(OPT) > optexample.out
-	if [[ -z "`cmp optexample.out example.expect`" ]]; then echo "examples/caml_api/example$(OPT) passed"; else $(MAKE) TEST=example$(OPT) error; fi;
+runoptexample: example$(OPT)
+	(./example$(OPT) > optexample.out; \
+	$(MAKE) -k -s check T=$*optexample E=$*example; )
 
-runopttest:	test$(OPT)
-	$(RM) opttest.out
-	./test$(OPT) > opttest.out
-	if [[ -z "`cmp opttest.out test.expect`" ]]; then echo "tests/caml_api/test$(OPT) passed"; else $(MAKE) TEST=test$(OPT) error; fi;
+runopttest: test$(OPT)
+	(./test$(OPT) > opttest.out; \
+	$(MAKE) -k -s check T=$*opttest E=$*test; )
 
 #########################################################################
 # Section:  Makefile post-includes

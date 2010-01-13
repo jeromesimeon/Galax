@@ -2,14 +2,21 @@
 | Changelog |
  -----------
 
+January 13, 2010 - Jerome
+
+  o Examples: More clean up of the Caml API example.
+      - Fixed the Caml API tests to use the proper result comparison
+        target.
+      - Made sure the install / compile / run / clean works properly.
+
 January 12, 2010 - Jerome
 
   o Examples:
       - Fixed installed Makefile.galax to make sure the caml_api
-        examples compile properly. (#2898247)
+        examples compile properly. (Closes #2898247)
   o Documentation:
       - Started updating the documentation to reflect the new command
-        line tools.
+        line tools. (Related #2928716)
       - Removed unrelated JoinPlan.txt file in the documentation.
 
 January 5, 2010 - Jerome

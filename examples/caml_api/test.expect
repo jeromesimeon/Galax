@@ -140,6 +140,4 @@ Test typed_value:
 <glx:result xmlns:glx="http://www.galaxquery.org">1</glx:result>
 :atomicValue
 Raise an error intentionally:
-ERROR: Unable to open the external entity: [toplevel] = SYSTEM "file://localhost/home/mff/galax/examples/caml_api/no-such-file.xml"; reason: Other exception: Sys_error("/home/mff/galax/examples/caml_api/no-such-file.xml: No such file or directory")
-[WARNING] This is an intensional error
-
+No file found: no-such-file.xml

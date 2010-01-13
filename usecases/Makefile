@@ -103,7 +103,7 @@ clean:
 	cd xqupdate; $(MAKE) clean
 	$(RM) *_pretty.*
 	$(RM) *_pretty_core.*
-	$(RM) *.xml *.cmp
+	$(RM) *.out *.cmp
 	$(RM) *.mon
 	$(RM) buildbot.diffs
 
@@ -137,11 +137,11 @@ bootstrap-double-core:
 	$(MAKE) -s compile-double-core
 	$(MAKE) -s run-compiled-double-core
 
-%_usecase.xml: %_usecase.xq %_context.xq
-	($(BINDIR)/glx$(BINEXT) xquery -serialize wf -static-typing on -typing ${TYPE_KIND} -context $*_context.xq $*_usecase.xq >$*_usecase.xml; \
+%_usecase.out: %_usecase.xq %_context.xq
+	($(BINDIR)/glx$(BINEXT) xquery -serialize wf -static-typing on -typing ${TYPE_KIND} -context $*_context.xq $*_usecase.xq >$*_usecase.out; \
 	$(MAKE) -k -s check T=$*_usecase E=$*_usecase; )
 
-%_type.xml: %_usecase.xq %_context.xq
+%_type.out: %_usecase.xq %_context.xq
 	(echo "$*: none"; time $(BINDIR)/glx$(BINEXT) xquery -static-typing on -typing none -context $*_context.xq $*_usecase.xq -dynamic off; \
 	echo "$*: weak"; time $(BINDIR)/glx$(BINEXT) xquery -static-typing on -typing weak -context $*_context.xq $*_usecase.xq -dynamic off)
 
@@ -154,7 +154,7 @@ run-type:
 	echo "=============" ;\
 	echo "";\
 	(for t in $(USECASES) xmark; do \
-	make -k -s $${t}_type.xml ; \
+	make -k -s $${t}_type.out ; \
 	done)
 
 run-xmark-type:
@@ -173,10 +173,10 @@ run-orig:
 	echo "=================" ;\
 	echo "";\
 	(for t in $(USECASES) xmark; do \
-	make -k -s $${t}_usecase.xml ; \
+	make -k -s $${t}_usecase.out ; \
 	done)
 
-#	$(BINDIR)/glx$(BINEXT) xquery -treejoin-log twig  -serialize wf -context $${t}_context.xq $${t}_usecase.xq >$${t}_usecase.xml; \
+#	$(BINDIR)/glx$(BINEXT) xquery -treejoin-log twig  -serialize wf -context $${t}_context.xq $${t}_usecase.xq >$${t}_usecase.out; \
 
 run-compiled:
 	@echo;\
@@ -184,7 +184,7 @@ run-compiled:
 	echo "=======================" ;\
 	echo "";\
 	(for t in $(USECASES) xmark; \
-	do $(BINDIR)/glx$(BINEXT) xquery -serialize wf -optimization on $${t}_usecase_pretty.xq > $${t}_usecase_pretty.xml; \
+	do $(BINDIR)/glx$(BINEXT) xquery -serialize wf -optimization on $${t}_usecase_pretty.xq > $${t}_usecase_pretty.out; \
 	$(MAKE) -k -s check T=$${t}_usecase_pretty E=$${t}_usecase; \
 	done)
 
@@ -194,7 +194,7 @@ run-compiled-core:
 	echo "====================" ;\
 	echo "";\
 	(for t in $(USECASES) xmark; \
-	do $(BINDIR)/glx$(BINEXT) xquery -factorization off -execute normalized -serialize wf -optimization on $${t}_usecase_pretty_core.xq > $${t}_usecase_pretty_core.xml; \
+	do $(BINDIR)/glx$(BINEXT) xquery -factorization off -execute normalized -serialize wf -optimization on $${t}_usecase_pretty_core.xq > $${t}_usecase_pretty_core.out; \
 	$(MAKE) -k -s check T=$${t}_pretty_core E=$${t}_usecase; \
 	done)
 
@@ -205,7 +205,7 @@ run-logical-plan:
 	echo "";\
 	(for t in $(USECASES) xmark; \
 	do $(BINDIR)/glx$(BINEXT) xquery -dynamic off -print-plan-kind xml -output-logical-plan $${t}_plan.xml -print-logical-plan on -context $${t}_context.xq $${t}_usecase.xq; \
-	$(BINDIR)/glx$(BINEXT) xquery -execute logical $${t}_plan.xml  >$*_usecase.xml; \
+	$(BINDIR)/glx$(BINEXT) xquery -execute logical $${t}_plan.xml  >$*_usecase.out; \
 	$(MAKE) -k -s check T=$*_usecase E=$*_usecase; \
 	done)
 

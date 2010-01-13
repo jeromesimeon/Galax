@@ -219,11 +219,11 @@ GALAX_ALL_CAPI_OPTSHAREDLIBS=$(GALAX_CAPI_OPTSHAREDLIBS)
 #########################################################################
 
 check:
-	if [ -f $${T}.xml ]; then cmp $${T}.xml $${E}.expect >$${T}.cmp 2>&1; if [ -s $${T}.cmp ]; then $(MAKE) error  T=$${T};  else $(MAKE) ok T=$${T}; fi; else $(MAKE) error T=$${T}; fi; \
+	if [ -f $${T}.out ]; then cmp $${T}.out $${E}.expect >$${T}.cmp 2>&1; if [ -s $${T}.cmp ]; then $(MAKE) error  T=$${T};  else $(MAKE) ok T=$${T}; fi; else $(MAKE) error T=$${T}; fi; \
 
 error:
 	@echo "******"
-	@echo "* $${T} failed : $${T}.xml $${E}.expect differ"
+	@echo "* $${T} failed : $${T}.out $${E}.expect differ"
 	@echo "******"
 
 ok: 

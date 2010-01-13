@@ -297,8 +297,13 @@ let example1 () =
 
     (* Raise an error intentionally -- always do this last *)
       print_string("Raise an error intentionally:\n"); 
-      let _ = load_document pc (File_Input "no-such-file.xml") in
-      print_string("We shouldn't be here!\n");
+      try
+	let _ = load_document pc (File_Input "no-such-file.xml") in
+	print_string("We shouldn't be here!\n");
+      with _ ->
+	begin
+	  print_string("No file found: no-such-file.xml");
+	end
 
     with
     | exn -> 
