@@ -48,6 +48,7 @@ type option_classes =
   | Zerod_Options
   | Testing_Options
   | XQueryX_Options
+  | WSDL_Options
 
 (* Misc options *)
 
@@ -470,6 +471,7 @@ val usage_galax_daemon  : unit -> string
 val usage_galax_parse   : unit -> string
 val usage_galax_compile : unit -> string
 val usage_zerod         : unit -> string 
+val usage_wsdl          : unit -> string
 
 (* Build option operations *)
 

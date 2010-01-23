@@ -12,7 +12,7 @@
 
 (* Module: Top_xquery2xmlplan
    Description:
-     Compiles and XQuery into a logical plan in XML form.
+     Maps an XQuery into a logical plan in XML form.
  *)
 
 open Format

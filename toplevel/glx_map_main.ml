@@ -29,6 +29,14 @@ let dispatch_go ek gargs =
       Top_args.map_help_go gargs
   | MapXQuery2XML ->
       Top_xquery2xmlplan.go gargs
+  | MapXQueryX2XQuery ->
+      Top_xqueryx2xquery.go gargs
+  | MapXQuery2Plan ->
+      Top_xquery2plan.go gargs
+  | MapXMLPlan2Plan ->
+      Top_xmlplan2plan.go gargs
+  | MapWSDL2XQuery ->
+      Top_wsdl2xquery.go gargs
 
 let go() =
   (* 1. Pre-process the arguments *)

@@ -281,3 +281,17 @@ type materialize_tables_kind =
 
 val set_materialize_tables : materialize_tables_kind -> unit
 val get_materialize_tables : unit -> materialize_tables_kind
+
+(* WSDL parameters *)
+
+val service_namespace : string ref
+val client_filename : string ref
+val server_filename : string ref
+val impl_filename : string option ref
+
+val generate_client : bool ref
+val generate_server : bool ref
+val chosen_port : string option ref
+val chosen_service : string option ref
+val installdir : string ref
+

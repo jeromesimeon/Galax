@@ -348,3 +348,16 @@ let set_materialize_tables mat_kind = materialize_tables := mat_kind
 
 let get_materialize_tables() = !materialize_tables
 
+(* WSDL parameters *)
+
+let service_namespace = ref ""
+let client_filename = ref ""
+let server_filename = ref ""
+let impl_filename = ref None
+
+let generate_client = ref false
+let generate_server = ref false
+let chosen_port = ref None
+let chosen_service = ref None
+let installdir = ref "."
+

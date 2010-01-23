@@ -10,9 +10,10 @@
 
 (* $Id$ *)
 
-(* Module: Top_xquery2xmlplan
+(* Module: Top_wsdl2xquery
    Description:
-     Maps an XQuery into a logical plan in XML form.
+      Command-line for importing/exporting a wsdl description to an
+      XQuery stub.
  *)
 
 val go: Top_args.gargs -> unit

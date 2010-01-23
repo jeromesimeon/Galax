@@ -10,9 +10,9 @@
 
 (* $Id$ *)
 
-(* Module: Top_xquery2xmlplan
+(* Module: Top_xmlplan2plan
    Description:
-     Maps an XQuery into a logical plan in XML form.
+     Maps a query plan in XML into a query plan.
  *)
 
 val go: Top_args.gargs -> unit

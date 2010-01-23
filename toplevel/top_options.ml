@@ -176,38 +176,6 @@ let opt_typing = "-typing"
 let arg_typing proc_ctxt = set_typing_kind_arg proc_ctxt
 let msg_typing = "Static typing behavior [none, weak (default), or strong]"
 
-(* All of these features are set on a per-module basis. 
-   Put in the module's prolog, if you really want them.
-
-let opt_boundary_space = "-boundary-space"
-let arg_boundary_space proc_ctxt = set_boundary_space_kind_arg proc_ctxt
-let msg_boundary_space = "Set boundary-space behavior [strip or preserve]"
-
-let opt_construction = "-construction"
-let arg_construction proc_ctxt = set_construction_kind_arg proc_ctxt
-let msg_construction = "Set construction behavior [strip or preserve]"
-
-let opt_ordering = "-ordering"
-let arg_ordering proc_ctxt = set_ordering_kind_arg proc_ctxt
-let msg_ordering = " Set ordering kind [ordered or unordered]"
-
-let opt_default_order = "-default-order"
-let arg_default_order proc_ctxt = set_default_order_kind_arg proc_ctxt
-let msg_default_order = " Set the default-order kind [emptygreatest or emptyleast]"
-
-let opt_ns_preserve = "-ns-preserve"
-let arg_ns_preserve proc_ctxt = set_ns_preserve_kind_arg proc_ctxt
-let msg_ns_preserve = " Set the copy-namespace preserve kind [preserve or no-preserve]"
-
-let opt_ns_inherit = "-ns-inherit"
-let arg_ns_inherit proc_ctxt = set_ns_inherit_kind_arg proc_ctxt
-let msg_ns_inherit = " Set the copy-namespace inherit kind [inherit or no-inherit]"
-
-let opt_base_uri = "-base-uri"
-let arg_base_uri proc_ctxt = set_base_uri_arg proc_ctxt
-let msg_base_uri = "Sets the default base URI in the static context"
-*)
-
 (* Processing phases options *)
 
 let opt_normalize = "-normalize"
@@ -602,6 +570,7 @@ let arg_export proc_ctxt =
 let msg_export = "Export the document back as a stream [off]"
 
 (* Meta-options *)
+
 let opt_dm = "-dm"
 let arg_dm proc_ctxt =
   fun onoff -> 
@@ -662,6 +631,40 @@ let opt_xqueryx_batch = "-batch"
 let arg_xqueryx_batch proc_ctxt = fun () -> Conf.batch_xqueryx := true
 let msg_xqueryx_batch = "XQueryX batch processing"
 
+(* WSDL options *)
+
+let opt_wsdl_client_name = "-wsdl-client-with-name"
+let arg_wsdl_client_name proc_ctxt = fun xq -> Conf.generate_client := true; Conf.client_filename := xq
+let msg_wsdl_client_name = "Sets the name of the output .xq server stub"
+
+let opt_wsdl_client = "-wsdl-client"
+let arg_wsdl_client proc_ctxt = fun () -> Conf.generate_client := true
+let msg_wsdl_client = "Generate an .xq client file"
+
+let opt_wsdl_server_name = "-wsdl-server-with-name"
+let arg_wsdl_server_name proc_ctxt = fun xq -> Conf.generate_server := true ; Conf.server_filename := xq
+let msg_wsdl_server_name = "Sets the name of the output .xq server stub"
+
+let opt_wsdl_server = "-wsdl-server"
+let arg_wsdl_server proc_ctxt = fun () -> Conf.generate_server := true
+let msg_wsdl_server = "Generate an .xq server stub"
+
+let opt_wsdl_impl_name = "-wsdl-impl-with-name"
+let arg_wsdl_impl_name proc_ctxt = fun xq -> Conf.impl_filename := Some xq
+let msg_wsdl_impl_name = "Sets the name of the server implementation module"
+
+let opt_wsdl_namespace = "-wsdl-namespace"
+let arg_wsdl_namespace proc_ctxt = fun nms -> Conf.service_namespace := nms
+let msg_wsdl_namespace = "Sets the namespace prefix in the XQuery source to be generated"
+
+let opt_wsdl_service = "-wsdl-service"
+let arg_wsdl_service proc_ctxt = fun s -> Conf.chosen_service := Some s
+let msg_wsdl_service = "Specifies which service to choose; by default the first service in the WSDL file"
+
+let opt_wsdl_port = "-wsdl-port"
+let arg_wsdl_port proc_ctxt = fun p -> Conf.chosen_port := Some p
+let msg_wsdl_port = "Specifies which port to choose for the service; by default the first valid port for the service"
+
 
 (******************************)
 (* Titles for option clusters *)
@@ -688,6 +691,7 @@ let title_zerod_options            = "\n\n // Zerod Proxy server options\n"
 let title_xqueryx_options            = "\n\n // XQueryX options\n"
 let title_galax_parse_options        = "\n\n // Parse specific options\n"
 let title_galax_project_options        = "\n\n // Project specific options\n"
+let title_wsdl_options        = "\n\n // WSDL specific options\n"
 
 
 (*****************)
@@ -715,6 +719,9 @@ let msg_galax_compile () =
 let msg_zerod () =
   sprintf "Usage: %s [options] )" Sys.argv.(0)
 
+let msg_wsdl () =
+  sprintf "Usage: %s %s [options] input-wsdl-files" Sys.argv.(0) Sys.argv.(1)
+
 let usage_galax_run ()  	= (msg_galax_run ()) ^ title_main
 let usage_galax_project ()  	= (msg_galax_project ()) ^ title_main
 let usage_galax_schema ()	= (msg_galax_schema ()) ^ title_main
@@ -722,6 +729,7 @@ let usage_galax_daemon ()	= (msg_galax_daemon ()) ^ title_main
 let usage_galax_parse ()	= (msg_galax_parse ()) ^ title_main
 let usage_galax_compile ()      = (msg_galax_compile ()) ^ title_main ^ title_misc_options
 let usage_zerod ()	        = (msg_zerod ()) ^ title_main
+let usage_wsdl ()               = (msg_wsdl ()) ^ title_main
 
 (* Galax project options *)
 
@@ -919,6 +927,17 @@ let make_xqueryx_options bos title =
   let (bo_unit,bo_int,bo_string,bo_set,bo_clear) = bos in
     [ opt_xqueryx_batch, (bo_unit arg_xqueryx_batch), msg_xqueryx_batch ]
 
+let make_wsdl_options bos title =
+  let (bo_unit,bo_int,bo_string,bo_set,bo_clear) = bos in
+    [ opt_wsdl_client_name, (bo_string arg_wsdl_client_name), msg_wsdl_client_name;
+      opt_wsdl_client, (bo_unit arg_wsdl_client), msg_wsdl_client;
+      opt_wsdl_server_name, (bo_string arg_wsdl_server_name), msg_wsdl_server_name;
+      opt_wsdl_server, (bo_unit arg_wsdl_server), msg_wsdl_server;
+      opt_wsdl_impl_name, (bo_string arg_wsdl_impl_name), msg_wsdl_impl_name;
+      opt_wsdl_namespace, (bo_string arg_wsdl_namespace), msg_wsdl_namespace;
+      opt_wsdl_service, (bo_string arg_wsdl_service), msg_wsdl_service;
+      opt_wsdl_port, (bo_string arg_wsdl_port), msg_wsdl_port ]
+
 type option_classes =
   | GalaxProject_Options
   | GalaxParse_Options
@@ -939,6 +958,7 @@ type option_classes =
   | Zerod_Options
   | Testing_Options
   | XQueryX_Options
+  | WSDL_Options
 
 let option_table =
   [ GalaxProject_Options, (make_galax_project_options,title_galax_project_options);
@@ -959,7 +979,8 @@ let option_table =
     Daemon_Options, (make_daemon_options, title_daemon_options);
     Zerod_Options, (make_zerod_options, title_zerod_options);
     Testing_Options, (make_testing_options, title_testing_options);
-    XQueryX_Options, (make_xqueryx_options,title_xqueryx_options)]
+    XQueryX_Options, (make_xqueryx_options,title_xqueryx_options);
+    WSDL_Options, (make_wsdl_options,title_wsdl_options) ]
 
 let rec make_parse_list bos usage option_list first =
   match option_list with

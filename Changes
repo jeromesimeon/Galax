@@ -2,6 +2,23 @@
 | Changelog |
  -----------
 
+January 22, 2010 - Jerome
+
+  o Toplevel:
+      - Migrated Xquery2xquery, Wsdl2xquery, Xquery2plan, xmlplan2plan
+        command lines tools to the glx-map command line tool.
+      - Migrated options for WSDL mapping to the generic option
+        support.
+
+January 13, 2010 - Jerome
+
+  o Regression testing:
+      - Fixed the makefiles for regression testing, not using the new
+        command-line options.
+
+  o Toplevel:
+      - Removed obsolete galax-mapschema.ml file.
+
 January 13, 2010 - Jerome
 
   o Examples: More clean up of the Caml API example.

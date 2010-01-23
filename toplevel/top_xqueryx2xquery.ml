@@ -10,9 +10,9 @@
 
 (* $Id: xqueryx2xquery.ml,v 1.3 2007/08/09 20:21:22 simeon Exp $ *)
 
-(* Module: Xquery2plan
+(* Module: Top_xqueryx2xquery
    Description:
-     Compiles and XQuery into a logical plan.
+     Maps an XQueryX into an XQuery.
  *)
 
 open Format
@@ -262,7 +262,7 @@ let main proc_ctxt module_files =
 (* Let's go! *)
 (*************)
 
-let go() =
+let go gargs =
   (* 1. First get the default processing context for galax-compile *)
   let proc_ctxt = galax_compile_proc_ctxt () in
   Conf.print_prolog := true;
@@ -271,14 +271,10 @@ let go() =
   let options =
     [| Sys.argv.(0); "-optimization"; "off" |]
   in
-  override_args proc_ctxt options;
 
   (* 3. Parses the command-line arguments *)
-  let module_files = process_args proc_ctxt in
+  let module_files = override_args proc_ctxt options in
 
   (* 4. Compile the input queries *)
   exec main proc_ctxt module_files
-
-let _ =
-  low_exec go ()
 

@@ -27,6 +27,10 @@ type executable_kind =
 type map_executable_kind =
   | MapHelp
   | MapXQuery2XML
+  | MapXQueryX2XQuery
+  | MapXQuery2Plan
+  | MapXMLPlan2Plan
+  | MapWSDL2XQuery
 
 type gargs = string array
 

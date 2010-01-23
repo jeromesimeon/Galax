@@ -9,7 +9,7 @@ yoohoo-server.xqs : yoohoo-server.xq
 	$(GALAXHOME)/bin/xquery2soap -wsdl YooHoo.wsdl -nms yoohoo ./yoohoo-server.xq
 
 yoohoo-server.xq : YooHoo.wsdl
-	$(GALAXHOME)/bin/galax-mapwsdl -s yoohoo-server.xq YooHoo.wsdl -impl $(APACHEHOME)/yoohoo-impl.xq -namespace yoohoo
+	$(GALAXHOME)/bin/glx-map wsdl2xquery -s yoohoo-server.xq YooHoo.wsdl -impl $(APACHEHOME)/yoohoo-impl.xq -namespace yoohoo
 
 install: YooHoo.wsdl yoohoo-server.xqs yoohoo-impl.xq
 	cp YooHoo.wsdl yoohoo-server.xqs yoohoo-impl.xq $(APACHEHOME)

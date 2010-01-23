@@ -8,11 +8,11 @@
 (*                                                                     *)
 (***********************************************************************)
 
-(* $Id: xquery2plan.ml,v 1.1 2007/02/12 21:15:35 simeon Exp $ *)
+(* $Id: xmlplan2plan.ml,v 1.1 2007/02/12 21:15:35 simeon Exp $ *)
 
-(* Module: Xquery2plan
+(* Module: Top_xmlplan2plan
    Description:
-     Compiles and XQuery into a logical plan.
+     Maps a query plan in XML into a query plan.
  *)
 
 open Format
@@ -99,13 +99,13 @@ let main proc_ctxt module_files =
 (* Let's go! *)
 (*************)
 
-let go() =
+let go gargs =
   (* 1. First get the default processing context for galax-compile *)
   let proc_ctxt = galax_compile_proc_ctxt () in
 
   (* 2. Force proper options for that top-level *)
   let options =
-    [| Sys.argv.(0); "-optimization"; "off" |]
+    [| Sys.argv.(0); "-optimization"; "off"; "-execute"; "logical" |]
   in
   override_args proc_ctxt options;
 
@@ -114,7 +114,4 @@ let go() =
 
   (* 4. Compile the input queries *)
   exec main proc_ctxt module_files
-
-let _ =
-  low_exec go ()
 
