@@ -49,6 +49,7 @@ type option_classes =
   | Testing_Options
   | XQueryX_Options
   | WSDL_Options
+  | SOAP_Options
 
 (* Misc options *)
 
@@ -148,39 +149,6 @@ val msg_serialize : string
 val opt_typing : string
 val arg_typing : processing_context -> string -> unit
 val msg_typing : string
-
-(* All of these features are set on a per-module basis. 
-   Put in the module's prolog, if you really want them.
-
-val opt_boundary_space : string
-val arg_boundary_space : processing_context -> string -> unit
-val msg_boundary_space : string
-
-val opt_construction : string
-val arg_construction : processing_context -> string -> unit
-val msg_construction : string
-
-val opt_ordering : string
-val arg_ordering : processing_context -> string -> unit
-val msg_ordering : string
-
-val opt_default_order : string
-val arg_default_order : processing_context -> string -> unit
-val msg_default_order : string
-
-val opt_ns_preserve : string
-val arg_ns_preserve : processing_context -> string -> unit
-val msg_ns_preserve : string
-
-val opt_ns_inherit : string
-val arg_ns_inherit : processing_context -> string -> unit
-val msg_ns_inherit : string
-
-val opt_base_uri : string
-val arg_base_uri : processing_context -> string -> unit
-val msg_base_uri : string
-
-*)
 
 val opt_language : string
 val arg_language : processing_context -> string -> unit 
@@ -472,6 +440,7 @@ val usage_galax_parse   : unit -> string
 val usage_galax_compile : unit -> string
 val usage_zerod         : unit -> string 
 val usage_wsdl          : unit -> string
+val usage_soap          : unit -> string
 
 (* Build option operations *)
 

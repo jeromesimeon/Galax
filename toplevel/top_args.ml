@@ -29,6 +29,7 @@ type map_executable_kind =
   | MapXQuery2XML
   | MapXQueryX2XQuery
   | MapXQuery2Plan
+  | MapXQuery2SOAP
   | MapXMLPlan2Plan
   | MapWSDL2XQuery
 
@@ -47,6 +48,7 @@ let dispatch_map_table =
     "xquery2xml", (MapXQuery2XML, "Maps a query to XML form");
     "xqueryx2xquery", (MapXQueryX2XQuery, "Maps a query in (trivial) XQueryX form into XQuery form");
     "xquery2plan", (MapXQuery2Plan, "Maps a query into a query plan");
+    "xquery2soap", (MapXQuery2SOAP, "Maps an XQuery module into a SOAP server");
     "xmlplan2plan", (MapXMLPlan2Plan, "Maps a query plan in XML into a query plan");
     "wsdl2xquery", (MapWSDL2XQuery, "Maps a WSDL file into an XQuery module") ]
 

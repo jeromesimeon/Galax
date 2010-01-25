@@ -295,3 +295,13 @@ val chosen_port : string option ref
 val chosen_service : string option ref
 val installdir : string ref
 
+(* SOAP parameters *)
+
+val wsdl_url : string ref
+val chosen_port : string option ref
+val chosen_binding : string option ref
+val installdir : string ref
+val interfacedir : string ref
+val address_uri : string option ref
+val nms_uri : string ref
+

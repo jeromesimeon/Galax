@@ -2,6 +2,13 @@
 | Changelog |
  -----------
 
+January 25, 2010 - Jerome
+
+  o Toplevel:
+      - Migrated xquery2soap to the glx-map command line tool.
+      - Reorganized the remaining command-line executable production
+        in the main Makefile for clarity.
+
 January 22, 2010 - Jerome
 
   o Toplevel:

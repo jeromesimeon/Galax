@@ -32,8 +32,8 @@ let process_args proc_ctxt gargs =
   in
   match args with
   | [] -> failwith "Input file(s) not specified"
-  | fnames ->
-      List.rev fnames
+  | [fname] -> fname
+  | _ ->  failwith ("Too many input files")
 
 (**
   True if the string str ends with subs
@@ -109,8 +109,8 @@ let sub_main proc_ctxt wsdl_file =
 
 let main proc_ctxt gargs =
   Conf.print_prolog := true;
-  let wsdl_files = process_args proc_ctxt gargs in
-  List.iter (sub_main proc_ctxt) wsdl_files
+  let wsdl_file = process_args proc_ctxt gargs in
+  sub_main proc_ctxt wsdl_file
 
 (*************)
 (* Let's go! *)

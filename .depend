@@ -773,6 +773,7 @@
     ./namespace/namespace_symbols.cmi 
 ./subtyping/subtyping_top.cmi: ./ast/xquery_type_core_ast.cmi 
 ./tools/stemmer/stemmer.cmi: 
+./toplevel/top_xquery2soap.cmi: ./toplevel/top_args.cmi 
 ./toplevel/top_wsdl2xquery.cmi: ./toplevel/top_args.cmi 
 ./toplevel/top_project.cmi: ./toplevel/top_args.cmi 
 ./toplevel/top_parse.cmi: ./toplevel/top_args.cmi 
@@ -4952,6 +4953,16 @@ toplevel/top_xmlplan2plan.cmx: ./toplevel/top_util.cmx \
     ./monitor/monitor.cmx ./base/galax_io.cmx ./galapi/caml_api/galax.cmx \
     ./base/error.cmx ./dm/dm.cmx ./base/conf.cmx \
     toplevel/top_xmlplan2plan.cmi 
+toplevel/top_xquery2soap.cmo: ./ast/xquery_ast.cmi ./wsdl/wsdl_load.cmi \
+    ./wsdl/wsdl_apache.cmi ./toplevel/top_util.cmi ./toplevel/top_options.cmi \
+    ./streaming/streaming_parse.cmi ./procctxt/processing_context.cmi \
+    ./base/galax_url.cmi ./base/galax_io.cmi ./base/error.cmi ./base/conf.cmi \
+    toplevel/top_xquery2soap.cmi 
+toplevel/top_xquery2soap.cmx: ./ast/xquery_ast.cmi ./wsdl/wsdl_load.cmx \
+    ./wsdl/wsdl_apache.cmx ./toplevel/top_util.cmx ./toplevel/top_options.cmx \
+    ./streaming/streaming_parse.cmx ./procctxt/processing_context.cmx \
+    ./base/galax_url.cmx ./base/galax_io.cmx ./base/error.cmx ./base/conf.cmx \
+    toplevel/top_xquery2soap.cmi 
 regress/test_core.cmo: ./base/whitespace.cmi ./toplevel/top_util.cmi \
     ./streaming/streaming_util.cmi ./streaming/streaming_types.cmi \
     ./streaming/streaming_parse.cmi ./streaming/streaming_ops.cmi \
@@ -4981,13 +4992,15 @@ toplevel/glx_main.cmx: ./toplevel/top_util.cmx ./toplevel/top_schema.cmx \
     ./toplevel/top_parse.cmx ./toplevel/top_compile.cmx \
     ./toplevel/top_args.cmx 
 toplevel/glx_map_main.cmo: ./toplevel/top_xqueryx2xquery.cmi \
-    ./toplevel/top_xquery2xmlplan.cmi ./toplevel/top_xquery2plan.cmi \
-    ./toplevel/top_xmlplan2plan.cmi ./toplevel/top_wsdl2xquery.cmi \
-    ./toplevel/top_util.cmi ./toplevel/top_args.cmi 
+    ./toplevel/top_xquery2xmlplan.cmi ./toplevel/top_xquery2soap.cmi \
+    ./toplevel/top_xquery2plan.cmi ./toplevel/top_xmlplan2plan.cmi \
+    ./toplevel/top_wsdl2xquery.cmi ./toplevel/top_util.cmi \
+    ./toplevel/top_args.cmi 
 toplevel/glx_map_main.cmx: ./toplevel/top_xqueryx2xquery.cmx \
-    ./toplevel/top_xquery2xmlplan.cmx ./toplevel/top_xquery2plan.cmx \
-    ./toplevel/top_xmlplan2plan.cmx ./toplevel/top_wsdl2xquery.cmx \
-    ./toplevel/top_util.cmx ./toplevel/top_args.cmx 
+    ./toplevel/top_xquery2xmlplan.cmx ./toplevel/top_xquery2soap.cmx \
+    ./toplevel/top_xquery2plan.cmx ./toplevel/top_xmlplan2plan.cmx \
+    ./toplevel/top_wsdl2xquery.cmx ./toplevel/top_util.cmx \
+    ./toplevel/top_args.cmx 
 regress/glx_test_main.cmo: ./toplevel/top_options.cmi ./regress/test_core.cmo \
     ./streaming/streaming_util.cmi ./streaming/streaming_types.cmi \
     ./streaming/streaming_ops.cmi ./streaming/streaming_diff.cmi \
@@ -5002,24 +5015,6 @@ regress/glx_test_main.cmx: ./toplevel/top_options.cmx ./regress/test_core.cmx \
     ./base/galax_io.cmx ./galapi/caml_api/galax.cmx ./base/error.cmx \
     ./dm/atomic/dm_atomic.cmx ./dm/dm.cmx ./datatypes/datatypes.cmi \
     ./base/conf.cmx 
-toplevel/xquery2soap.cmo: ./ast/xquery_ast.cmi ./wsdl/wsdl_load.cmi \
-    ./wsdl/wsdl_apache.cmi ./toplevel/top_util.cmi \
-    ./streaming/streaming_parse.cmi ./procctxt/processing_context.cmi \
-    ./base/galax_url.cmi ./base/galax_io.cmi ./base/error.cmi 
-toplevel/xquery2soap.cmx: ./ast/xquery_ast.cmi ./wsdl/wsdl_load.cmx \
-    ./wsdl/wsdl_apache.cmx ./toplevel/top_util.cmx \
-    ./streaming/streaming_parse.cmx ./procctxt/processing_context.cmx \
-    ./base/galax_url.cmx ./base/galax_io.cmx ./base/error.cmx 
-toplevel/webgui.cmo: ./toplevel/top_util.cmi \
-    ./procctxt/processing_context.cmi ./physicaldm/physical_value.cmi \
-    ./tools/http/http.cmi ./base/gmisc.cmi ./toplevel/galax_server_util.cmi \
-    ./base/galax_io.cmi ./galapi/caml_api/galax.cmi ./base/finfo.cmi \
-    ./base/error.cmi 
-toplevel/webgui.cmx: ./toplevel/top_util.cmx \
-    ./procctxt/processing_context.cmx ./physicaldm/physical_value.cmi \
-    ./tools/http/http.cmx ./base/gmisc.cmx ./toplevel/galax_server_util.cmx \
-    ./base/galax_io.cmx ./galapi/caml_api/galax.cmx ./base/finfo.cmx \
-    ./base/error.cmx 
 toplevel/glxd_main.cmo: ./ast/xquery_algebra_ast.cmi ./toplevel/top_util.cmi \
     ./toplevel/top_options.cmi ./toplevel/top_config.cmi \
     ./procctxt/processing_context.cmi ./ast_printer/print_top.cmi \
@@ -5042,6 +5037,16 @@ toplevel/glxd_main.cmx: ./ast/xquery_algebra_ast.cmi ./toplevel/top_util.cmx \
     ./galapi/caml_api/galax.cmx ./base/error.cmx ./datatypes/decimal.cmx \
     ./base/debug.cmx ./dm/base/cursor.cmx ./base/conf.cmx \
     ./compile/compile_context.cmx ./code_selection/code_selection_context.cmx 
+toplevel/webgui.cmo: ./toplevel/top_util.cmi \
+    ./procctxt/processing_context.cmi ./physicaldm/physical_value.cmi \
+    ./tools/http/http.cmi ./base/gmisc.cmi ./toplevel/galax_server_util.cmi \
+    ./base/galax_io.cmi ./galapi/caml_api/galax.cmi ./base/finfo.cmi \
+    ./base/error.cmi 
+toplevel/webgui.cmx: ./toplevel/top_util.cmx \
+    ./procctxt/processing_context.cmx ./physicaldm/physical_value.cmi \
+    ./tools/http/http.cmx ./base/gmisc.cmx ./toplevel/galax_server_util.cmx \
+    ./base/galax_io.cmx ./galapi/caml_api/galax.cmx ./base/finfo.cmx \
+    ./base/error.cmx 
 toplevel/zerod.cmo: ./ast/xquery_algebra_ast.cmi ./toplevel/top_util.cmi \
     ./toplevel/top_options.cmi ./toplevel/top_config.cmi \
     ./streaming/streaming_parse.cmi ./streaming/streaming_ops.cmi \

@@ -665,6 +665,36 @@ let opt_wsdl_port = "-wsdl-port"
 let arg_wsdl_port proc_ctxt = fun p -> Conf.chosen_port := Some p
 let msg_wsdl_port = "Specifies which port to choose for the service; by default the first valid port for the service"
 
+(* SOAP options *)
+
+let opt_soap_wsdl = "-soap-wsdl"
+let arg_soap_wsdl proc_ctxt = fun wsdl -> Conf.wsdl_url := wsdl
+let msg_soap_wsdl = "Sets the wsdl to be used for the service"
+
+let opt_soap_port = "-soap-port"
+let arg_soap_port proc_ctxt = fun p -> Conf.chosen_port := Some p
+let msg_soap_port = "Port from the WSDL service element; by default the first port"
+
+let opt_soap_binding = "-soap-binding"
+let arg_soap_binding proc_ctxt = fun b -> Conf.chosen_binding := Some b
+let msg_soap_binding = "Binding from WSDL; it cannot be used together with -port. NOTE: not implemented"
+
+let opt_soap_installdir = "-soap-installdir"
+let arg_soap_installdir proc_ctxt = fun i -> Conf.installdir := i
+let msg_soap_installdir = "Sets installation directory for the stub"
+
+let opt_soap_interfacedir = "-soap-interfacedir"
+let arg_soap_interfacedir proc_ctxt = fun i -> Conf.interfacedir := i
+let msg_soap_interfacedir = "Generates an .xq client file"
+
+let opt_soap_address = "-soap-address"
+let arg_soap_address proc_ctxt = fun a -> Conf.address_uri := Some a
+let msg_soap_address = "Sets the soap:address of the exported service"
+
+let opt_soap_namespace = "-soap-namespace"
+let arg_soap_namespace proc_ctxt = fun s -> Conf.nms_uri := s
+let msg_soap_namespace = "The namespace of the exported module"
+
 
 (******************************)
 (* Titles for option clusters *)
@@ -686,12 +716,13 @@ let title_prototype_options          = "\n\n // Prototype options\n"
 let title_optimization_options       = "\n\n // Optimization options\n"
 let title_code_selection_options     = "\n\n // Code selection options\n"
 let title_runtime_options            = "\n\n // Runtime options\n"
-let title_daemon_options            = "\n\n // DXQ server options\n"
-let title_zerod_options            = "\n\n // Zerod Proxy server options\n"
+let title_daemon_options             = "\n\n // DXQ server options\n"
+let title_zerod_options              = "\n\n // Zerod Proxy server options\n"
 let title_xqueryx_options            = "\n\n // XQueryX options\n"
 let title_galax_parse_options        = "\n\n // Parse specific options\n"
-let title_galax_project_options        = "\n\n // Project specific options\n"
-let title_wsdl_options        = "\n\n // WSDL specific options\n"
+let title_galax_project_options      = "\n\n // Project specific options\n"
+let title_wsdl_options               = "\n\n // WSDL specific options\n"
+let title_soap_options               = "\n\n // SOAP specific options\n"
 
 
 (*****************)
@@ -722,6 +753,9 @@ let msg_zerod () =
 let msg_wsdl () =
   sprintf "Usage: %s %s [options] input-wsdl-files" Sys.argv.(0) Sys.argv.(1)
 
+let msg_soap () =
+  sprintf "Usage: %s %s XQueryModule [-wsdl WSDL] [-port WSDLPort] [-binding WSDLBinding] [-installdir Directory] [-interfacedir Directory] [-address URI] [-nms module-namespace]\n" Sys.argv.(0) Sys.argv.(1)
+
 let usage_galax_run ()  	= (msg_galax_run ()) ^ title_main
 let usage_galax_project ()  	= (msg_galax_project ()) ^ title_main
 let usage_galax_schema ()	= (msg_galax_schema ()) ^ title_main
@@ -730,6 +764,7 @@ let usage_galax_parse ()	= (msg_galax_parse ()) ^ title_main
 let usage_galax_compile ()      = (msg_galax_compile ()) ^ title_main ^ title_misc_options
 let usage_zerod ()	        = (msg_zerod ()) ^ title_main
 let usage_wsdl ()               = (msg_wsdl ()) ^ title_main
+let usage_soap ()               = (msg_soap ()) ^ title_main
 
 (* Galax project options *)
 
@@ -927,6 +962,8 @@ let make_xqueryx_options bos title =
   let (bo_unit,bo_int,bo_string,bo_set,bo_clear) = bos in
     [ opt_xqueryx_batch, (bo_unit arg_xqueryx_batch), msg_xqueryx_batch ]
 
+(* WSDL options *)
+
 let make_wsdl_options bos title =
   let (bo_unit,bo_int,bo_string,bo_set,bo_clear) = bos in
     [ opt_wsdl_client_name, (bo_string arg_wsdl_client_name), msg_wsdl_client_name;
@@ -937,6 +974,18 @@ let make_wsdl_options bos title =
       opt_wsdl_namespace, (bo_string arg_wsdl_namespace), msg_wsdl_namespace;
       opt_wsdl_service, (bo_string arg_wsdl_service), msg_wsdl_service;
       opt_wsdl_port, (bo_string arg_wsdl_port), msg_wsdl_port ]
+
+(* SOAP options *)
+
+let make_soap_options bos title =
+  let (bo_unit,bo_int,bo_string,bo_set,bo_clear) = bos in
+    [ opt_soap_wsdl, (bo_string arg_soap_wsdl), msg_soap_wsdl;
+      opt_soap_port, (bo_string arg_soap_port), msg_soap_port;
+      opt_soap_binding, (bo_string arg_soap_binding), msg_soap_binding;
+      opt_soap_installdir, (bo_string arg_soap_installdir), msg_soap_installdir;
+      opt_soap_interfacedir, (bo_string arg_soap_interfacedir), msg_soap_interfacedir;
+      opt_soap_address, (bo_string arg_soap_address), msg_soap_address;
+      opt_soap_namespace, (bo_string arg_soap_namespace), msg_soap_namespace ]
 
 type option_classes =
   | GalaxProject_Options
@@ -959,6 +1008,7 @@ type option_classes =
   | Testing_Options
   | XQueryX_Options
   | WSDL_Options
+  | SOAP_Options
 
 let option_table =
   [ GalaxProject_Options, (make_galax_project_options,title_galax_project_options);
@@ -980,7 +1030,8 @@ let option_table =
     Zerod_Options, (make_zerod_options, title_zerod_options);
     Testing_Options, (make_testing_options, title_testing_options);
     XQueryX_Options, (make_xqueryx_options,title_xqueryx_options);
-    WSDL_Options, (make_wsdl_options,title_wsdl_options) ]
+    WSDL_Options, (make_wsdl_options,title_wsdl_options);
+    SOAP_Options, (make_soap_options,title_soap_options) ]
 
 let rec make_parse_list bos usage option_list first =
   match option_list with

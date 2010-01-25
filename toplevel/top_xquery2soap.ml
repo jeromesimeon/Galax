@@ -8,54 +8,30 @@
 (*                                                                     *)
 (***********************************************************************)
 
-(** 
-  @(#)xquery2soap.ml
-  
-
-  Top level tool for deploying an XQuery module as a SOAP server.
-
-  @author: Nicola Onose
-  
-*)
+(* Module: Top_xquery2soap
+   Description:
+   Top level tool for deploying an XQuery module as a SOAP server.
+ *)
 
 open Format
 open Error
 open Xquery_ast
+open Top_options
 
 open Unix  (* -- for file copying *)
 
-let wsdl_url = ref ""
-let chosen_port = ref None
-let chosen_binding = ref None
-let installdir = ref ""
-let interfacedir = ref ""
-let address_uri = ref None
-let nms_uri = ref ""
-		    
 let usage_msg = 
   sprintf "Usage: %s XQueryModule [-wsdl WSDL] [-port WSDLPort] [-binding WSDLBinding] [-installdir Directory] [-interfacedir Directory] [-address URI] [-nms module-namespace]\n" Sys.argv.(0)
     
-let process_args () =
-  let args = ref [] in
-  Arg.parse 
-    [ "-wsdl", Arg.String (fun wsdl -> wsdl_url := wsdl), 
-      "sets the wsdl to be used for the service";
-      "-port", Arg.String (fun p -> chosen_port := Some p),
-      "chooses a port from the list contained in the WSDL service element; " ^
-      "by default the first port that can be parsed is chosen";
-      "-binding", Arg.String (fun b -> chosen_binding := Some b),
-      "chooses a binding from the WSDL; " ^
-      "it cannot be used together with -port. NOTE: not implemented";
-      "-installdir", Arg.String (fun i -> installdir := i), 
-      "sets installation directory for the stub";
-      "-interfacedir", Arg.String (fun i -> interfacedir := i), 
-      "generates an .xq client file";
-      "-address", Arg.String (fun a -> address_uri := Some a),
-      "sets the soap:address of the exported service";
-      "-nms", Arg.String (fun s -> nms_uri := s),
-      "gives the namespace of the exported module"]
-    (fun arg -> args := arg :: !args) usage_msg;    
-  match !args with
+let process_args proc_ctxt gargs =
+  let args =
+    make_options_argv
+      proc_ctxt
+      (usage_soap ())
+      [ SOAP_Options;Misc_Options ]
+      gargs
+  in
+  match args with
   | [] -> failwith ("No input XQuery file specified\n" ^ usage_msg)
   | [fname] -> fname
   | _ ->  failwith ("Too many input files\n" ^ usage_msg) 	  	  	  
@@ -91,11 +67,11 @@ let strip_extension xq_module =
     
 
 let process_xq () = 
-  if !installdir = "" then
-    installdir := ".";
-  if !wsdl_url = "" then
+  if !Conf.installdir = "" then
+    Conf.installdir := ".";
+  if !Conf.wsdl_url = "" then
     raise (Query (Toplevel_Error "No WSDL specified: module export with no WSDL interface is not currently implemented"))
-  else if !nms_uri = "" then
+  else if !Conf.nms_uri = "" then
     raise (Query (Toplevel_Error "Error in service export: no namespace specified"))
 
 let get_local_name path = 
@@ -118,8 +94,8 @@ let xqs_file_name xqfile soap_uri =
 	  end
       | None -> (get_local_name xqfile) ^ "s"
   in
-    if !installdir <> "." then
-      !installdir ^ "/" ^ localfilename
+    if !Conf.installdir <> "." then
+      !Conf.installdir ^ "/" ^ localfilename
     else
       localfilename
 
@@ -148,28 +124,28 @@ let are_the_same_file f1 f2 =
   with Unix_error _ -> false
 		 
 
-let main proc_ctxt () =
-  let xq_module = process_args () in
+let main proc_ctxt gargs =
+  let xq_module = process_args proc_ctxt gargs in
   let xq_file = set_extension xq_module in
     process_xq ();
     let (_, wsdl_stream) = 
-      Streaming_parse.open_xml_stream_from_io (Galax_io.Http_Input !wsdl_url) in
-    let server_filename = xqs_file_name xq_file !address_uri in
+      Streaming_parse.open_xml_stream_from_io (Galax_io.Http_Input !Conf.wsdl_url) in
+    let server_filename = xqs_file_name xq_file !Conf.address_uri in
     let new_xq_filename = get_local_name xq_file in
-    let new_path = !installdir ^ "/" ^ new_xq_filename in
+    let new_path = !Conf.installdir ^ "/" ^ new_xq_filename in
       if not(are_the_same_file new_path xq_file) then	
 	begin
 	  print_endline ("copying " ^ xq_file ^ "->" ^ new_path);
 	  file_copy xq_file new_path;      
 	end;
-      let wsdl_ast = Wsdl_load.xml_to_wsdl_ast proc_ctxt !wsdl_url wsdl_stream  in
+      let wsdl_ast = Wsdl_load.xml_to_wsdl_ast proc_ctxt !Conf.wsdl_url wsdl_stream  in
 	Wsdl_apache.wsdl2xq_server_source
-	  (Some new_xq_filename) server_filename !nms_uri
-	  wsdl_ast	  
-	  None !chosen_port  
+	  (Some new_xq_filename) server_filename !Conf.nms_uri
+	  wsdl_ast
+	  None !Conf.chosen_port  
 	  
 
-let _ =
+let go gargs =
   let proc_ctxt = Processing_context.default_processing_context() in
-  Top_util.exec main proc_ctxt ()
+  Top_util.exec main proc_ctxt gargs
 

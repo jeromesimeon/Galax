@@ -361,3 +361,14 @@ let chosen_port = ref None
 let chosen_service = ref None
 let installdir = ref "."
 
+(* SOAP parameters *)
+
+
+let wsdl_url = ref ""
+let chosen_port = ref None
+let chosen_binding = ref None
+let installdir = ref ""
+let interfacedir = ref ""
+let address_uri = ref None
+let nms_uri = ref ""
+

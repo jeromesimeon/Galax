@@ -33,6 +33,8 @@ let dispatch_go ek gargs =
       Top_xqueryx2xquery.go gargs
   | MapXQuery2Plan ->
       Top_xquery2plan.go gargs
+  | MapXQuery2SOAP ->
+      Top_xquery2soap.go gargs
   | MapXMLPlan2Plan ->
       Top_xmlplan2plan.go gargs
   | MapWSDL2XQuery ->
