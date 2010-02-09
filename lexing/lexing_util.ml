@@ -826,7 +826,7 @@ let rec match_curly li lh =
 	lh.buffered <- [||];
 	lh.default_token <- false;
 	None
-*)	
+*)
     | PartialMatch ->
 	(*
 	begin

@@ -23,10 +23,16 @@
 open Top_args
 open Top_util
 
-let dispatch_go ek gargs =
+let rec dispatch_go ek gargs =
   match ek with
   | MapHelp ->
-      Top_args.map_help_go gargs
+      (* Makes sure it maps glx-map help <subcommand> back to glx-map <subcommand> -help *)
+      begin
+	match Top_args.map_help_go gargs with
+	| None -> ()
+	| Some (rek,rgargs) ->
+	    dispatch_go rek rgargs 
+      end
   | MapXQuery2XML ->
       Top_xquery2xmlplan.go gargs
   | MapXQueryX2XQuery ->

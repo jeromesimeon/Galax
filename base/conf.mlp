@@ -24,7 +24,7 @@ let system = "Galax"
 
 let version = "%%RELEASE%%"
 
-let copyright = "Copyright "^system^" individual contributors 2001-2009"
+let copyright = "Copyright "^system^" contributors 2001-2010"
 
 let status = "%%STATUS%%"
 
@@ -34,7 +34,7 @@ let build =
   let year = string_of_int (local_time.Unix.tm_year + 1900) in
   let month = string_of_int (local_time.Unix.tm_mon + 1) in
   let day = string_of_int (local_time.Unix.tm_mday) in
-  "Galax[" ^ version ^ "].Caml[" ^ Sys.ocaml_version ^ "].OS[" ^ Sys.os_type ^ "]." ^ year ^ month ^ day
+  "Galax[" ^ version ^ "].Caml[" ^ Sys.ocaml_version ^ "].OS[" ^ Sys.os_type ^ "].Built.[" ^ year ^ "." ^ month ^ "." ^ day ^ "]"
 
 let motd = "Thank you for using "^system^"!\n"
 

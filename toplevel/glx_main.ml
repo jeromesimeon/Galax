@@ -23,10 +23,16 @@
 open Top_args
 open Top_util
 
-let dispatch_go ek gargs =
+let rec dispatch_go ek gargs =
   match ek with
   | ExecHelp ->
-      Top_args.exec_help_go gargs
+      (* Makes sure it maps glx help <subcommand> back to glx <subcommand> -help *)
+      begin
+	match Top_args.exec_help_go gargs with
+	| None -> ()
+	| Some (rek,rgargs) ->
+	    dispatch_go rek rgargs 
+      end
   | ExecXQuery ->
       Top_run.go gargs
   | ExecXQueryCompile ->

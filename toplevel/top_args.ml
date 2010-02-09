@@ -77,10 +77,26 @@ let do_dispatch_map_args actual_args =
   effective
 
 let dispatch_args () =
-  do_dispatch_args Sys.argv
+  let version_args =
+    try
+      match Sys.argv.(1) with
+      | "-version" -> [|Sys.argv.(0);"xquery";"-version"|]
+      | _ -> Sys.argv
+    with _ ->
+      Sys.argv
+  in
+  do_dispatch_args version_args
 
 let dispatch_map_args () =
-  do_dispatch_map_args Sys.argv
+  let version_args =
+    try
+      match Sys.argv.(1) with
+      | "-version" -> [|Sys.argv.(0);"xquery2xml";"-version"|]
+      | _ -> Sys.argv
+    with _ ->
+      Sys.argv
+  in
+  do_dispatch_map_args version_args
 
 let build_subcommands dt =
   let add_command r (cn,(_,cm)) =
@@ -95,8 +111,10 @@ let exec_help_usage =
   ^ "\n"
   ^ "Available subcommands:\n"
   ^ (build_subcommands dispatch_table)
+  ^ "\n"
   ^ "Galax is a tool for XML processing.\n"
   ^ "For additional information, see http://galax.sourceforge.net"
+  ^ "\n"
 
 let map_help_usage =
   "Galax command-line mapper, version "^Conf.version^".\n"
@@ -105,17 +123,66 @@ let map_help_usage =
   ^ "\n"
   ^ "Available subcommands:\n"
   ^ (build_subcommands dispatch_map_table)
+  ^ "\n"
   ^ "Galax is a tool for XML processing.\n"
   ^ "For additional information, see http://galax.sourceforge.net"
+  ^ "\n"
 
 let usage errmsg =
   let b = Buffer.create 200 in
   Printf.bprintf b "%s\n" errmsg;
-  Printf.eprintf "%s" (Buffer.contents b)
+  Printf.eprintf "%s" (Buffer.contents b);
+  flush stderr
+
+let process_help_args args =
+  match args with
+  | [|glx;help;kind|] -> Some kind
+  | [|glx;kind|] -> Some kind
+  | _ -> None
 
 let exec_help_go gargs =
-  usage exec_help_usage
+  begin
+    usage exec_help_usage;
+    let okind = process_help_args gargs in
+    match okind with
+    | None ->
+	None
+    | Some kind ->
+	begin
+	  try
+	    let (execkind,_) =
+	      List.assoc kind dispatch_table
+	    in
+	    begin
+	      usage exec_help_usage;
+	      Printf.eprintf "\n";
+	      Some (execkind, [|"glx";kind;"-help"|])
+	    end
+	  with _ ->
+	    None
+	end
+  end
 
 let map_help_go gargs =
-  usage map_help_usage
+  begin
+    usage map_help_usage;
+    let okind = process_help_args gargs in
+    match okind with
+    | None ->
+	None
+    | Some kind ->
+	begin
+	  try
+	    let (execkind,_) =
+	      List.assoc kind dispatch_map_table
+	    in
+	    begin
+	      usage map_help_usage;
+	      Printf.eprintf "\n";
+	      Some (execkind, [|"glx-map";kind;"-help"|])
+	    end
+	  with _ ->
+	    None
+	end
+  end
 

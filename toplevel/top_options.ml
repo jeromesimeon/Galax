@@ -730,31 +730,31 @@ let title_soap_options               = "\n\n // SOAP specific options\n"
 (*****************)
 
 let msg_galax_run () = 
-  sprintf "Usage: %s %s [options] input-queries (or '-' for stdin)" Sys.argv.(0) Sys.argv.(1)
+  sprintf "Usage: %s xquery [options] input-queries (or '-' for stdin)" Sys.argv.(0)
 
 let msg_galax_project () = 
-  sprintf "Usage: %s %s [options] input-queries (or '-' for stdin)" Sys.argv.(0) Sys.argv.(1)
+  sprintf "Usage: %s project [options] input-queries (or '-' for stdin)" Sys.argv.(0)
 
 let msg_galax_schema () = 
-  sprintf "Usage: %s %s [options] input-queries (or '-' for stdin)" Sys.argv.(0) Sys.argv.(1)
+  sprintf "Usage: %s xmlschema [options] input-queries (or '-' for stdin)" Sys.argv.(0)
 
 let msg_galax_daemon () =
   sprintf "Usage: %s [options] )" Sys.argv.(0)
 
 let msg_galax_parse () =
-  sprintf "Usage: %s %s [options] input-xml-documents (or '-' for stdin)" Sys.argv.(0) Sys.argv.(1)
+  sprintf "Usage: %s xml [options] input-xml-documents (or '-' for stdin)" Sys.argv.(0)
 
 let msg_galax_compile () =
-  sprintf "Usage: %s %s [options] input-queries (or '-' for stdin)" Sys.argv.(0) Sys.argv.(1)
+  sprintf "Usage: %s compile [options] input-queries (or '-' for stdin)" Sys.argv.(0)
 
 let msg_zerod () =
   sprintf "Usage: %s [options] )" Sys.argv.(0)
 
 let msg_wsdl () =
-  sprintf "Usage: %s %s [options] input-wsdl-files" Sys.argv.(0) Sys.argv.(1)
+  sprintf "Usage: %s wsdl2xquery [options] input-wsdl" Sys.argv.(0)
 
 let msg_soap () =
-  sprintf "Usage: %s %s XQueryModule [-wsdl WSDL] [-port WSDLPort] [-binding WSDLBinding] [-installdir Directory] [-interfacedir Directory] [-address URI] [-nms module-namespace]\n" Sys.argv.(0) Sys.argv.(1)
+  sprintf "Usage: %s xquery2soap [options] inpue-xquery-module\n" Sys.argv.(0)
 
 let usage_galax_run ()  	= (msg_galax_run ()) ^ title_main
 let usage_galax_project ()  	= (msg_galax_project ()) ^ title_main

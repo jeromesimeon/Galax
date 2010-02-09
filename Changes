@@ -2,6 +2,15 @@
 | Changelog |
  -----------
 
+February 9, 2010 - Jerome
+
+  o Toplevel:
+      - Made sure command-line help prints out details for their
+        respective sub-commands. 'glx help <subcommand>' and 'glx-map
+        help <subcommand>' now dispatch properly to 'glx <subcommand>
+        -help' and 'glx-map <subcommand> -help' respectively.
+      - Fixed 'glx -version' and 'glx-map -version'.
+
 January 25, 2010 - Jerome
 
   o Toplevel:

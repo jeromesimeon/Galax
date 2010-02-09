@@ -38,6 +38,6 @@ type gargs = string array
 val dispatch_args: unit -> executable_kind * gargs
 val dispatch_map_args: unit -> map_executable_kind * gargs
 
-val exec_help_go: gargs -> unit
-val map_help_go: gargs -> unit
+val exec_help_go: gargs -> (executable_kind * gargs) option
+val map_help_go: gargs -> (map_executable_kind * gargs) option
 
