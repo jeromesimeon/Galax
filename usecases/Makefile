@@ -45,8 +45,7 @@ include $(LOCALPREFIX)/config/Makefile.galax
 ###########################################################################
 
 BINDIR=..
-TYPE_KIND=weak
-USECASES= ns parts rel seq sgml string tree xmp
+USECASES=xquery10 update10
 
 ifdef OCAMLOPT
 BINEXT=$(OPT)
@@ -72,7 +71,17 @@ string.xml \
 users.xml \
 xmark.xml \
 xmpbib.xml \
-xmpreviews.xml
+xmpreviews.xml \
+part-list.xml\
+part-tree.xml\
+airports\
+archive.xml\
+copy1.xml\
+copy2.xml\
+employees.xml\
+grant.xml\
+log.xml\
+soap_input.xml
 
 #########################################################################
 # Section:  Main targets
@@ -87,179 +96,26 @@ xmpreviews.xml
 
 all:
 
+tests:
+	for i in $(USECASES); do (cd $${i}; $(MAKE) -s tests); done
+
 byte:
 
 install: $(CONF_GALAX_USECASES) $(CONF_GALAX_USECASES)/docs
 	$(SED) -e "s:CONF_GALAX_CONFIG:$(CONF_GALAX_CONFIG):" Makefile-inst > $(CONF_GALAX_USECASES)/Makefile
-	for i in $(USECASES) xmark; do ($(CP) $${i}_context.xq $${i}_usecase.xq $${i}_usecase.expect $(CONF_GALAX_USECASES)); done
+	for i in $(USECASES); do ($(MKDIR) $(CONF_GALAX_USECASES)/$${i}; cd $${i}; $(MAKE) install); done
 	for i in $(DOCFILES); do ($(CP) docs/$$i $(CONF_GALAX_USECASES)/docs); done
 
 uninstall:
 	$(RM) $(CONF_GALAX_USECASES)/Makefile
-	for i in $(USECASES) xmark; do ($(RM) $(CONF_GALAX_USECASES)/$${i}_context.xq $(CONF_GALAX_USECASES)/$${i}_usecase.xq $(CONF_GALAX_USECASES)/$${i}_usecase.expect); done
+	for i in $(USECASES); do ($(RM) $(CONF_GALAX_USECASES)/$${i}_context.xq $(CONF_GALAX_USECASES)/$${i}_usecase.xq $(CONF_GALAX_USECASES)/$${i}_usecase.expect); done
 	for i in $(DOCFILES); do ($(RM) $(CONF_GALAX_USECASES)/docs/$$i); done
 
 clean:
-	cd xqupdate; $(MAKE) clean
-	$(RM) *_pretty.*
-	$(RM) *_pretty_core.*
-	$(RM) *.out *.cmp
-	$(RM) *.mon
-	$(RM) buildbot.diffs
+	for i in $(USECASES); do (cd $${i}; $(MAKE) clean); done
 
 clobber::
 
-#########################################################################
-# Sub-Section:  Secondary targets
-# Description:
-#     These are the supporting targets for "all"
-#########################################################################
-
-tests:
-	$(MAKE) clean
-	$(MAKE) -s run-orig
-	$(MAKE) -s bootstrap
-
-buildbot-diff:	
-	$(MAKE) clean
-	$(MAKE) run-orig > buildbot.diffs
-	(j=`grep -l diff buildbot.diffs`; if test -n "$$j"; then exit 1; fi)
-
-bootstrap:
-	$(MAKE) -s compile
-	$(MAKE) -s run-compiled
-
-bootstrap-core:
-	$(MAKE) -s compile-core
-	$(MAKE) -s run-compiled-core
-
-bootstrap-double-core:
-	$(MAKE) -s compile-double-core
-	$(MAKE) -s run-compiled-double-core
-
-%_usecase.out: %_usecase.xq %_context.xq
-	($(BINDIR)/glx$(BINEXT) xquery -serialize wf -static-typing on -typing ${TYPE_KIND} -context $*_context.xq $*_usecase.xq >$*_usecase.out; \
-	$(MAKE) -k -s check T=$*_usecase E=$*_usecase; )
-
-%_type.out: %_usecase.xq %_context.xq
-	(echo "$*: none"; time $(BINDIR)/glx$(BINEXT) xquery -static-typing on -typing none -context $*_context.xq $*_usecase.xq -dynamic off; \
-	echo "$*: weak"; time $(BINDIR)/glx$(BINEXT) xquery -static-typing on -typing weak -context $*_context.xq $*_usecase.xq -dynamic off)
-
-#	(time $(BINDIR)/glx$(BINEXT) xquery -monitor-time on -output-monitor $*.mon -serialize wf -static-typing on -typing none -context $*_context.xq $*_usecase.xq -dynamic off; \
-#	time $(BINDIR)/glx$(BINEXT) xquery -monitor-time on -output-monitor $*.typemon -serialize wf -static-typing on -typing weak -context $*_context.xq $*_usecase.xq -dynamic off)
-
-run-type:
-	@echo "";\
-        echo "Static typing:" ;\
-	echo "=============" ;\
-	echo "";\
-	(for t in $(USECASES) xmark; do \
-	make -k -s $${t}_type.out ; \
-	done)
-
-run-xmark-type:
-	@echo "";\
-        echo "Static typing:" ;\
-	echo "=============" ;\
-	echo "";\
-	(for t in Q*.xq; do \
-	echo "$${t}: none"; time $(BINDIR)/glx$(BINEXT) xquery -static-typing on -typing none -context xmark_context.xq $${t} -dynamic off; \
-	echo "$${t}: weak"; time $(BINDIR)/glx$(BINEXT) xquery -static-typing on -typing weak -context xmark_context.xq $${t} -dynamic off; \
-	done)
-
-run-orig:
-	@echo "";\
-        echo "Original queries:" ;\
-	echo "=================" ;\
-	echo "";\
-	(for t in $(USECASES) xmark; do \
-	make -k -s $${t}_usecase.out ; \
-	done)
-
-#	$(BINDIR)/glx$(BINEXT) xquery -treejoin-log twig  -serialize wf -context $${t}_context.xq $${t}_usecase.xq >$${t}_usecase.out; \
-
-run-compiled:
-	@echo;\
-        echo "Pretty printed queries:" ;\
-	echo "=======================" ;\
-	echo "";\
-	(for t in $(USECASES) xmark; \
-	do $(BINDIR)/glx$(BINEXT) xquery -serialize wf -optimization on $${t}_usecase_pretty.xq > $${t}_usecase_pretty.out; \
-	$(MAKE) -k -s check T=$${t}_usecase_pretty E=$${t}_usecase; \
-	done)
-
-run-compiled-core:
-	@echo "";\
-        echo "Pretty printed Core:" ;\
-	echo "====================" ;\
-	echo "";\
-	(for t in $(USECASES) xmark; \
-	do $(BINDIR)/glx$(BINEXT) xquery -factorization off -execute normalized -serialize wf -optimization on $${t}_usecase_pretty_core.xq > $${t}_usecase_pretty_core.out; \
-	$(MAKE) -k -s check T=$${t}_pretty_core E=$${t}_usecase; \
-	done)
-
-run-logical-plan: 
-	@echo "";\
-        echo "Execute Logical Plans:" ;\
-	echo "=====================" ;\
-	echo "";\
-	(for t in $(USECASES) xmark; \
-	do $(BINDIR)/glx$(BINEXT) xquery -dynamic off -print-plan-kind xml -output-logical-plan $${t}_plan.xml -print-logical-plan on -context $${t}_context.xq $${t}_usecase.xq; \
-	$(BINDIR)/glx$(BINEXT) xquery -execute logical $${t}_plan.xml  >$*_usecase.out; \
-	$(MAKE) -k -s check T=$*_usecase E=$*_usecase; \
-	done)
-
-compile:
-	(for t in $(USECASES) xmark; \
-	do $(BINDIR)/glx$(BINEXT) compile -print-optimized-plan off -print-prolog on -print-expr on -context $${t}_context.xq $${t}_usecase.xq > $${t}_usecase_pretty.xq; \
-	done)
-
-compile-core:
-	(for t in $(USECASES) xmark; \
-	do $(BINDIR)/glx$(BINEXT) compile -print-optimized-plan off -print-prolog on -print-rewritten-expr on -context $${t}_context.xq $${t}_usecase.xq > $${t}_usecase_pretty_core.xq; \
-	done)
-
-compile-double-core:
-	(for t in $(USECASES) xmark; \
-	do $(BINDIR)/glx$(BINEXT) compile -execute normalized -print-optimized-plan off -print-prolog on -print-normalized-expr on $${t}_usecase_pretty_core.xq > $${t}_usecase_double_pretty_core.xq; \
-	done)
-
-gen: clean	
-	(wd=`pwd`; \
-         for t in $(USECASES); \
-         do echo $$t; \
-           /bin/rm -f $${wd}/$${t}_usecase.xq $${wd}/$${t}_context.xq $${wd}/$${t}_usecase.expect;  \
-           cp $(XQUERYUNIT)/tests/xquery-usecases-oct2004/$$t/context.xq $${wd}/$${t}_context.xq; \
-           cd $(XQUERYUNIT)/tests/xquery-usecases-oct2004/$$t/xquery/; \
-           for f in Q*.xq; \
-	     do cat $${f}  >> $${wd}/$${t}_usecase.xq ; \
-             echo "" >> $${wd}/$${t}_usecase.xq ;  \
-             echo ";" >> $${wd}/$${t}_usecase.xq ;  \
-	   done; \
-           cd $(XQUERYUNIT)/tests/xquery-usecases-oct2004/$$t/expect/; \
-           for f in Q*.xml; \
-	     do cat $${f}  >> $${wd}/$${t}_usecase.expect ; \
-	   done; \
-	   cp $(XQUERYUNIT)/tests/xquery-usecases-oct2004/$$t/xquery/docs/*.xml $${wd}/docs;  \
-         done; \
-         echo xmark; \
-         /bin/rm -f $${wd}/xmark_usecase.xq $${wd}/xmark_context.xq $${wd}/xmark_usecase.expect;  \
-         cp $(XQUERYUNIT)/tests/xmark-oct2004/context.xq $${wd}/xmark_context.xq ; \
-         cd $(XQUERYUNIT)/tests/xmark-oct2004/xquery/; \
-           for f in Q*.xq; \
-	   do cat $${f}  >> $${wd}/xmark_usecase.xq ; \
-           echo "" >> $${wd}/xmark_usecase.xq ;  \
-           echo ";" >> $${wd}/xmark_usecase.xq ;  \
-	   done; \
-           cd $(XQUERYUNIT)/tests/xmark-oct2004/expect/; \
-           for f in Q*.xml; \
-           do cat $${f}  >> $${wd}/xmark_usecase.expect ; \
-	   done; \
-	 cp $(XQUERYUNIT)/tests/xmark-oct2004/xquery/docs/*.xml $${wd}/docs;  \
-        )
-
-$(CONF_GALAX_USECASES)/docs:
-	$(MKDIR) $(CONF_GALAX_USECASES)/docs
 
 #########################################################################
 # Section:  Makefile post-includes

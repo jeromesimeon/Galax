@@ -732,6 +732,8 @@ let fserialize_xml_stream proc_ctxt ff stream =
 	fprintf ff "%a@?" (fserialize_node_content serial_context) ()
     | Processing_context.Serialize_As_XQuery ->
 	fprintf ff "%a@?" (fserialize_value_top serial_context) ()
+    | Processing_context.Serialize_As_Text ->
+	fprintf ff "%a@?" (fserialize_value_top serial_context) ()
   end
 
 (* Serialization to the standard formatter (stdout) *)
@@ -822,6 +824,9 @@ let fserialize_datamodel proc_ctxt ff dmv =
     | Processing_context.Serialize_As_Canonical ->
 	Physical_export.resolved_wrapped_xml_stream_of_datamodel dmv
     | Processing_context.Serialize_As_XQuery ->
+	let typed_xml_stream = Physical_export.typed_xml_stream_of_datamodel dmv in
+	Streaming_ops.erase_xml_stream typed_xml_stream
+    | Processing_context.Serialize_As_Text ->
 	let typed_xml_stream = Physical_export.typed_xml_stream_of_datamodel dmv in
 	Streaming_ops.erase_xml_stream typed_xml_stream
   in

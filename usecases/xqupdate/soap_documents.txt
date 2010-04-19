@@ -1,1 +1,0 @@
-docs/soap_input.xml$Input SOAP Message$msg

@@ -2,6 +2,14 @@
 | Changelog |
  -----------
 
+April 19, 2010 - Jerome
+
+  o Modules:
+      - Improved propagation of errors during module import.
+
+  o Usecases:
+      - Cleaned up use case execution and installation.
+
 February 9, 2010 - Jerome
 
   o Toplevel:

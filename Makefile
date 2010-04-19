@@ -281,7 +281,7 @@ lncommands:	commands
 clean::
 	for i in $(GALAX_ALL_LNCOMMANDS); do ($(RM) $(LOCALPREFIX)/$${i}$(EXE)); done
 
-install::	commands $(CONF_GALAX_BIN)
+install:: commands $(CONF_GALAX_BIN)
 	for i in $(GALAX_ALL_COMMANDS); do ($(CP) $$i $(CONF_GALAX_BIN)); done
 	for i in $(GALAX_ALL_LNCOMMANDS); do ($(RM) $(CONF_GALAX_BIN)/$${i}$(EXE)); (if test -f $(CONF_GALAX_BIN)/$${i}$(OPT); then $(LN) $(CONF_GALAX_BIN)/$${i}$(OPT) $(CONF_GALAX_BIN)/$${i}$(EXE); else $(LN) $(CONF_GALAX_BIN)/$${i}$(BYTE) $(CONF_GALAX_BIN)/$${i}$(EXE); fi); done
 

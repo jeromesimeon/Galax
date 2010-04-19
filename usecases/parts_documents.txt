@@ -1,1 +1,0 @@
-docs/parts.xml$Parts$partlist

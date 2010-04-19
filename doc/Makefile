@@ -103,7 +103,7 @@ clobber::
 #     These are the supporting targets for "all"
 #########################################################################
 
-manual.html:	manual.pdf 
+manual.html: manual.pdf 
 	hevea -fix -exec xxdate.exe manual.tex
 	hacha manual.html
 

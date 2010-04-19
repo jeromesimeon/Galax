@@ -160,7 +160,7 @@ let msg_xml_pic = "Preserves PI's and comments in XML documents"
 
 let opt_serialize = "-serialize"
 let arg_serialize proc_ctxt = set_serialization_kind_arg proc_ctxt
-let msg_serialize = "Set serialization kind [standard, wf, canonical or xquery]"
+let msg_serialize = "Set serialization kind [standard, wf, canonical, xquery, text]"
 
 (* Behavior options *)
 

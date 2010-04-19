@@ -1,2 +1,0 @@
-docs/string.xml$News items$input
-docs/company-data.xml$Company data$company-data

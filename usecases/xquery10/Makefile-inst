@@ -1,0 +1,189 @@
+#########################################################################
+#                                                                       #
+#                                  GALAX                                #
+#                               XQuery Engine                           #
+#                                                                       #
+#   Copyright 2001-2007.                                                #
+#   Distributed only by permission.                                     #
+#                                                                       #
+#########################################################################
+
+# $Id: Makefile-inst,v 1.3 2007/02/01 22:08:55 simeon Exp $ #
+
+#########################################################################
+# Descripton:
+#		This is the installed Makefile for the Galax usecases
+#########################################################################
+
+#########################################################################
+# Section:	Default target
+# Description:
+#		The default target for this Makefile is "all"
+#########################################################################
+
+default:	all
+
+#########################################################################
+# Section:	Makefile pre-includes
+# Description:
+#		This is where the file(s) generated during by the Configure script
+#		are included.  If config/Makefile.conf does not exist, the
+#		make will fail.
+#
+#		Makefile.galax:	Variables defined for compiling and linking Galax
+#								applications in the build environment
+#########################################################################
+include CONF_GALAX_CONFIG/Makefile.galax
+
+#########################################################################
+# Section:	Local variables
+# Description:
+#		These variables are used for targets of this Makefile
+###########################################################################
+
+TYPE_KIND=weak
+USECASES= ns parts rel seq sgml string tree xmp
+
+#########################################################################
+# Section:  Main targets
+# Description:
+#     This is where all of the named toplevel targets are placed.
+#
+#  all:        This target runs the usecases
+#  clean::     This target cleans files created in the all section
+#########################################################################
+
+all:
+	$(MAKE) -s tests
+
+tests:
+	$(MAKE) -s tests-in
+
+clean:
+	rm -f *_pretty.*
+	rm -f *_pretty_core.*
+	rm -f *.out *.cmp
+	rm -f *.mon
+
+#########################################################################
+# Sub-Section:  Secondary targets
+# Description:
+#     These are the supporting targets for "all"
+#########################################################################
+
+tests-in:
+	$(MAKE) -s clean
+	$(MAKE) -s banner
+	$(MAKE) -s run-orig
+	$(MAKE) -s bootstrap
+
+banner:
+	@echo
+	@echo "======================================" 
+	@echo " Running usecase tests for XQuery 1.0"
+	@echo "======================================"
+
+
+bootstrap:
+	$(MAKE) -s compile
+	$(MAKE) -s run-compiled
+
+bootstrap-core:
+	$(MAKE) -s compile-core
+	$(MAKE) -s run-compiled-core
+
+bootstrap-double-core:
+	$(MAKE) -s compile-double-core
+	$(MAKE) -s run-compiled-double-core
+
+%_usecase.out: %_usecase.xq %_context.xq
+	($(CONF_GALAX_BIN)/glx xquery -serialize wf -static-typing on -typing ${TYPE_KIND} -context $*_context.xq $*_usecase.xq >$*_usecase.out; \
+	$(MAKE) -k -s check T=$*_usecase E=$*_usecase; )
+
+%_type.out: %_usecase.xq %_context.xq
+	(echo "$*: none"; time $(CONF_GALAX_BIN)/glx xquery -static-typing on -typing none -context $*_context.xq $*_usecase.xq -dynamic off; \
+	echo "$*: weak"; time $(CONF_GALAX_BIN)/glx xquery -static-typing on -typing weak -context $*_context.xq $*_usecase.xq -dynamic off)
+
+#	(time $(CONF_GALAX_BIN)/glx xquery -serialize wf -static-typing on -typing none -context $*_context.xq $*_usecase.xq -dynamic off; \
+#	time $(CONF_GALAX_BIN)/glx xquery -serialize wf -static-typing on -typing weak -context $*_context.xq $*_usecase.xq -dynamic off)
+
+run-type:
+	@echo "";\
+        echo "Running with static typing:" ;\
+	echo "===========================" ;\
+	echo "";\
+	(for t in $(USECASES) xmark; do \
+	make -k -s $${t}_type.out ; \
+	done)
+
+run-xmark-type:
+	@echo "";\
+        echo "Running with static typing:" ;\
+	echo "===========================" ;\
+	echo "";\
+	(for t in Q*.xq; do \
+	echo "$${t}: none"; time $(CONF_GALAX_BIN)/glx xquery -static-typing on -typing none -context xmark_context.xq $${t} -dynamic off; \
+	echo "$${t}: weak"; time $(CONF_GALAX_BIN)/glx xquery -static-typing on -typing weak -context xmark_context.xq $${t} -dynamic off; \
+	done)
+
+run-orig:
+	@echo "";\
+        echo "Running original queries:" ;\
+	echo "=========================" ;\
+	echo "";\
+	(for t in $(USECASES) xmark; do \
+	make -k -s $${t}_usecase.out ; \
+	done)
+
+run-compiled:
+	@echo;\
+        echo "Running pretty printed queries:" ;\
+	echo "===============================" ;\
+	echo "";\
+	(for t in $(USECASES) xmark; \
+	do $(CONF_GALAX_BIN)/glx xquery -serialize wf -optimization on $${t}_usecase_pretty.xq > $${t}_usecase_pretty.out; \
+	$(MAKE) -k -s check T=$${t}_usecase_pretty E=$${t}_usecase; \
+	done)
+
+run-compiled-core:
+	@echo "";\
+        echo "Running pretty printed core:" ;\
+	echo "============================" ;\
+	echo "";\
+	(for t in $(USECASES) xmark; \
+	do $(CONF_GALAX_BIN)/glx xquery -factorization off -execute normalized -serialize wf -optimization on $${t}_usecase_pretty_core.xq > $${t}_usecase_pretty_core.out; \
+	$(MAKE) -k -s check T=$${t}_pretty_core E=$${t}_usecase; \
+	done)
+
+run-logical-plan: 
+	@echo "";\
+        echo "Running logical plans:" ;\
+	echo "======================" ;\
+	echo "";\
+	(for t in $(USECASES) xmark; \
+	do $(CONF_GALAX_BIN)/glx xquery -dynamic off -print-plan-kind xml -output-logical-plan $${t}_plan.xml -print-logical-plan on -context $${t}_context.xq $${t}_usecase.xq; \
+	$(CONF_GALAX_BIN)/glx xquery -execute logical $${t}_plan.xml  >$*_usecase.out; \
+	$(MAKE) -k -s check T=$*_usecase E=$*_usecase; \
+	done)
+
+compile:
+	(for t in $(USECASES) xmark; \
+	do $(CONF_GALAX_BIN)/glx compile -print-optimized-plan off -print-prolog on -print-expr on -context $${t}_context.xq $${t}_usecase.xq > $${t}_usecase_pretty.xq; \
+	done)
+
+compile-core:
+	(for t in $(USECASES) xmark; \
+	do $(CONF_GALAX_BIN)/glx compile -print-optimized-plan off -print-prolog on -print-normalized-expr on -context $${t}_context.xq $${t}_usecase.xq > $${t}_usecase_pretty_core.xq; \
+	done)
+
+compile-double-core:
+	(for t in $(USECASES) xmark; \
+	do $(CONF_GALAX_BIN)/glx compile -execute normalized -print-optimized-plan off -print-prolog on -print-normalized-expr on $${t}_usecase_pretty_core.xq > $${t}_usecase_double_pretty_core.xq; \
+	done)
+
+#########################################################################
+# Section:  Makefile post-includes
+# Description:
+#		There are currently no post-includes for this Makefile
+#########################################################################
+

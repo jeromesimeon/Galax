@@ -121,7 +121,8 @@ let serialization_arg =
   [ ("standard",  Serialize_As_Standard);
     ("wf",     	  Serialize_As_Well_Formed); (* Default API *)
     ("xquery", 	  Serialize_As_XQuery);      (* Default command-line *)
-    ("canonical", Serialize_As_Canonical) ]
+    ("canonical", Serialize_As_Canonical);
+    ("text",      Serialize_As_Text) ]
 
 let boundary_space_kind_arg =
   [ ("strip",     Strip);       (* Default *)

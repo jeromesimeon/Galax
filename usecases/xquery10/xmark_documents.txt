@@ -1,0 +1,2 @@
+../docs/xmark.0.xml$Auctions document (short)$auction
+../docs/xmark.xml$Auctions document$auction

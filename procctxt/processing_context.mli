@@ -51,6 +51,7 @@ type serialization_kind =
   | Serialize_As_Well_Formed
   | Serialize_As_XQuery
   | Serialize_As_Canonical
+  | Serialize_As_Text
 
 type projection_kind =
   | Projection_None

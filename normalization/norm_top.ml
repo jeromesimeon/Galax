@@ -790,25 +790,30 @@ let rec preprocess_context_decl proc_ctxt modules_visited (imported_interfaces, 
 	   implement the XQuery Test Suite.  
 	*)
 	let interface_locs = Processing_context.resolve_interface_location_hint proc_ctxt loc_hint_option uri in 
-	let try_hints (good_hint, interface) interface_loc =
+	let try_hints (good_hint, exn, interface) interface_loc =
 	  try
 	    let parse_ctxt = Parse_context.build_xquery_parse_context proc_ctxt in
 	    let (_,interface') =
 	      Parse_top.parse_interface_from_io parse_ctxt (Galax_io.Http_Input interface_loc)
 	    in
-	    (true, 
+	    (true,
+	     None,
 	     if (proc_ctxt.Processing_context.merge_module_locations) then 
 	       (Debug.print_default_debug("Merging interface at "^interface_loc);
 		Xquery_ast_util.merge_interfaces interface interface')
 	     else interface')
 	  with exn -> 
-	    (Debug.print_default_debug ("In import-module:"^(Error.bprintf_error "" exn)); (good_hint, interface))
+	    (Debug.print_default_debug ("In import-module:"^(Error.bprintf_error "" exn)); (good_hint, Some exn, interface))
         in 
-        let (good_hint, interface) = List.fold_left try_hints (false, empty_interface ncn uri) interface_locs in
+        let (good_hint, exno, interface) = List.fold_left try_hints (false, None, empty_interface ncn uri) interface_locs in
 	if good_hint then 
 	  (imported_interfaces @ [((NSInterfacePrefix "", uri), None, interface)], imported_modules)
 	else
-	  raise (Query(Module_Import("No valid location hint for interface: "^(uri))))
+	  begin
+	    match exno with
+	    | Some exn -> raise exn
+	    | None -> raise (Query(Module_Import("No valid location hint for interface: "^(uri))))
+	  end
     | EImportModuleDecl (ncn, uri, loc_hint_option) ->
 	Debug.print_default_debug ("Import module: "^uri^"\n");
 	ignore(new_namespace_binding(NSPrefix ncn, NSUri uri));
@@ -817,7 +822,7 @@ let rec preprocess_context_decl proc_ctxt modules_visited (imported_interfaces, 
 	  raise (Query(Module_Import("Circularity in import of module: "^(uri))))
 	else
 	  let mod_locs = Processing_context.resolve_module_location_hint proc_ctxt loc_hint_option uri in 
-          let try_hints (good_hint, mod_locs, nested_interfaces, nested_modules, interface, m) mod_loc =
+          let try_hints (good_hint, exn, mod_locs, nested_interfaces, nested_modules, interface, m) mod_loc =
 	    try
 	(* A module can have several location hints, which may
 	   correspond to alternative locations to try, or to multiple
@@ -833,20 +838,20 @@ let rec preprocess_context_decl proc_ctxt modules_visited (imported_interfaces, 
 	      if (proc_ctxt.Processing_context.merge_module_locations) then 
 		(Debug.print_default_debug("Merging module at "^mod_loc);
 		 (true, 
-		  mod_loc::mod_locs, 
+		  None, mod_loc::mod_locs, 
 		  nested_interfaces'@nested_interfaces, 
 		  nested_modules'@nested_modules,
 		  merge_interfaces interface interface', 
 		  Xquery_ast_util.merge_library_modules m m'))
 	      else
-		(true, [mod_loc], nested_interfaces', nested_modules', interface', m')
+		(true, None, [mod_loc], nested_interfaces', nested_modules', interface', m')
 	    with
 	      exn -> 
 		(Debug.print_default_debug ("In import-module:"^(Error.bprintf_error "" exn)); 
-		 (good_hint, mod_locs, nested_interfaces, nested_modules, interface, m))
+		 (good_hint, Some exn, mod_locs, nested_interfaces, nested_modules, interface, m))
 	  in
-	  let (good_hint, mod_locs, nested_interfaces, nested_modules, interface, m) = 
-	    List.fold_left try_hints (false, [], [], [], empty_interface ncn uri, empty_library_module ncn uri) mod_locs in
+	  let (good_hint, exno, mod_locs, nested_interfaces, nested_modules, interface, m) = 
+	    List.fold_left try_hints (false, None, [], [], [], empty_interface ncn uri, empty_library_module ncn uri) mod_locs in
 	  if good_hint then 
 	    begin
 (*	      Print_top.fprintf_interface Format.std_formatter "Generated interface\n" interface;
@@ -855,7 +860,12 @@ let rec preprocess_context_decl proc_ctxt modules_visited (imported_interfaces, 
 	       imported_modules @ nested_modules @ [m])
 	    end
 	  else
-	    raise (Query(Module_Import("No valid location hint for module: "^(uri))))
+	    begin
+	      match exno with
+	      | Some exn -> raise exn
+	      | None -> raise (Query(Module_Import("No valid location hint for interface: "^(uri))))
+	    end
+
   with
   | exn -> raise (error_with_file_location fi exn)
 

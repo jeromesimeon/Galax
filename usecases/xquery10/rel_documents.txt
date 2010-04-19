@@ -1,0 +1,3 @@
+../docs/users.xml$Users$users
+../docs/items.xml$Items$items
+../docs/bids.xml$Bids$bids
