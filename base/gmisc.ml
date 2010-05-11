@@ -337,8 +337,7 @@ let quote_quotes str =
   let str = Str.global_replace quote1 "&quot;" str in
   let str = Str.global_replace quote2 "&apos;" str in
   str
-  
- 
+
 (*********************)
 (* Parsing functions *)
 (*********************)

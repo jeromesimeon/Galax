@@ -1498,6 +1498,9 @@ start_declare_fun:
       { NonUpdating }
   | DECLAREUPDATINGFUNCTION
       { Updating }
+  /* Events */
+/*  | DECLAREEVENT NCNAME 
+      { raise (Failure "found event decl") } */
 ;
 
 

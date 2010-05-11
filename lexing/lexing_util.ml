@@ -384,7 +384,7 @@ let get_target_pi pi_target =
 (* Extracts the character encoding *)
 
 let get_xml_encoding_quotes var_s =
-  let mid = String.index var_s '"' in
+  let mid = String.index var_s '\"' in
   let sta = mid+1 in
   let len = (String.length var_s) - sta - 1 in
   String.sub var_s sta len
@@ -647,6 +647,7 @@ let default_keyword_table = [
   [|"declare";"default";"order"|],(xquery_todecl,DECLAREDEFAULTORDER);
   [|"declare";"copy-namespaces"|],(xquery_tocopy,DECLARECOPYNAMESPACES);
   [|"declare";"function"|],(xquery_todecl,DECLAREFUNCTION);
+  [|"declare";"event"|],(xquery_tonamespace,DECLAREFUNCTION);
   [|"declare";"updating";"function"|],(xquery_todecl,DECLAREUPDATINGFUNCTION);
   [|"xquery";"version"|],(xquery_todecl,XQUERYVERSION);
   [|"some";"$"|],(xquery_toop_pushvar,SOMEDOLLAR);
@@ -720,6 +721,37 @@ type keyword_match =
   | PartialMatch
   | Match of ((lexing_handler -> token -> token) * token)
 
+let hash_of_table table =
+  let ht = Hashtbl.create 379 in
+  let add_to_hash (keywords,entry) =
+    let len = Array.length keywords in
+    for i = 0 to len-1 do
+      let sub = Array.sub keywords 0 (i+1) in
+      let matres =
+	if (i = len-1)
+	then Match entry
+	else PartialMatch
+      in
+      Hashtbl.add ht sub matres
+    done;
+  in
+  begin
+    List.iter add_to_hash table;
+    ht
+  end
+
+let namespace_keyword_hash = hash_of_table namespace_keyword_table
+let default_keyword_hash   = hash_of_table default_keyword_table
+let operator_keyword_hash  = hash_of_table operator_keyword_table
+
+let match_in_hash tl sl1 =
+  try
+    Hashtbl.find tl sl1
+  with
+  | _ ->
+      NoMatch
+
+(*
 let match_keyword sl1 (sl2,m) =
   let size1 = Array.length sl1 in
   let size2 = Array.length sl2 in
@@ -732,8 +764,12 @@ let match_keyword sl1 (sl2,m) =
       if size2 > size1 then PartialMatch else Match m
     with
     | Not_found -> NoMatch
+*)
 
 let find_match_keyword tl sl1 =
+  match_in_hash tl sl1
+
+(*
   let current = ref NoMatch in
   let rec find_match_keyword_aux tl sl1 =
     match tl with
@@ -750,6 +786,7 @@ let find_match_keyword tl sl1 =
 	end
   in
   find_match_keyword_aux tl sl1
+*)
 
 let print_buffered sl =
   Printf.printf "Lexing: ";
@@ -764,12 +801,12 @@ let rec match_operator_keyword li lh s =
     then
       begin
 	(* Printf.printf "Using default table\n"; flush stdout; *)
-	default_keyword_table
+	default_keyword_hash
       end
     else
       begin
 	(* Printf.printf "Using operator table\n"; flush stdout; *)
-	operator_keyword_table
+	operator_keyword_hash
       end
   in
   match find_match_keyword actual_table sl with
@@ -818,7 +855,7 @@ let rec match_curly li lh =
   then begin pop_state lh; push_operator lh; push_default lh; Some LCURLY end
   else
     let sl = Array.append lh.buffered [|"{"|] in
-    let actual_table = default_keyword_table in
+    let actual_table = default_keyword_hash in
     match find_match_keyword actual_table sl with
     | NoMatch 
 	(* NoMatch is permissible when the "{" follows the "then" in an if-then-else *)
@@ -917,7 +954,7 @@ let rec match_paren li lh =
 
 let match_default_keyword li lh s =
   let sl = Array.append lh.buffered [|s|] in
-  match find_match_keyword default_keyword_table sl with
+  match find_match_keyword default_keyword_hash sl with
   | NoMatch
   | PartialMatch ->
       begin
@@ -934,7 +971,7 @@ let match_default_keyword li lh s =
 
 let match_namespace_keyword li lh s =
   let sl = Array.append lh.buffered [|s|] in
-  match find_match_keyword namespace_keyword_table sl with
+  match find_match_keyword namespace_keyword_hash sl with
   | NoMatch ->
       lh.default_token <- false;
       lh.buffered <- [||];

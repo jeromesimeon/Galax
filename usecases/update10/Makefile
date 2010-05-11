@@ -69,7 +69,7 @@ banner:
 	@echo "============================================="
 
 %_usecase.out: %_usecase.xq 
-	($(CONF_GALAX_BIN)/glx$(BINEXT) xquery -language xquerybang -serialize standard $*_usecase.xq >$*_usecase.out; \
+	($(BINDIR)/glx$(BINEXT) xquery -language xquerybang -serialize standard $*_usecase.xq >$*_usecase.out; \
 	$(MAKE) -k -s check T=$*_usecase E=$*_usecase; )
 
 install: $(CONF_GALAX_XQUPDATE_USECASES)
@@ -98,6 +98,6 @@ $(CONF_GALAX_XQUPDATE_USECASES):
 
 gen:
 	for t in $(USECASES); \
-		do $(CONF_GALAX_BIN)/glx$(BINEXT) xquery -language xquerybang -serialize wf $${t}_usecase.xq >$${t}_usecase.expect; \
+		do $(BINDIR)/glx$(BINEXT) xquery -language xquerybang -serialize wf $${t}_usecase.xq >$${t}_usecase.expect; \
 	done
 

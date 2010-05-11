@@ -2,6 +2,14 @@
 | Changelog |
  -----------
 
+May 11, 2010 - Jerome
+
+  o Lexing:
+      - Improved efficiency of keywords lexing.
+
+  o Usecases:
+      - Updates usecases now points to the right local executable.
+
 April 19, 2010 - Jerome
 
   o Modules:
