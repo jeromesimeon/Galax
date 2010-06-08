@@ -2,6 +2,12 @@
 | Changelog |
  -----------
 
+June 7, 2010 - Jerome
+
+  o Errors:
+      - Applied patch fixing typos in error messages. [Contributed by
+        Stephane Glondu]
+
 May 11, 2010 - Jerome
 
   o Lexing:

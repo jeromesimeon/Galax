@@ -44,7 +44,7 @@ let debug_returned_fields fields =
   if Debug.join_debug()
   then
     begin
-      Debug.print_join_debug "\t---> Independant branch returned fields:";
+      Debug.print_join_debug "\t---> Independent branch returned fields:";
       List.iter (fun x -> Debug.print_join_debug ("\t\t" ^ Namespace_names.prefixed_string_of_rqname x)) fields;
     end
 
@@ -52,7 +52,7 @@ let debug_accessed_fields fields =
   if Debug.join_debug()
   then
     begin
-      Debug.print_join_debug "\t---> Dependant branch accessed fields:";
+      Debug.print_join_debug "\t---> Dependent branch accessed fields:";
       List.iter (fun x -> Debug.print_join_debug ("\t\t" ^ Namespace_names.prefixed_string_of_rqname x)) fields;
     end
 

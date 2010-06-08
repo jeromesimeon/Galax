@@ -341,7 +341,7 @@ let resolve_axis =
     (* full axis feature -- Philippe *)
     | "following" -> Following
     | "preceding" -> Preceding
-    | s -> raise (Query (Parsing (Finfo.parsing_locinfo (),"Unkown XQuery axis " ^ s)))
+    | s -> raise (Query (Parsing (Finfo.parsing_locinfo (),"Unknown XQuery axis " ^ s)))
 
 (* The following axis are not in XQuery - Jerome
     | "namespace" -> Namespace
