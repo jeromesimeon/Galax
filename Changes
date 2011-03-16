@@ -2,6 +2,15 @@
 | Changelog |
  -----------
 
+Mar 9, 2011 - Jerome
+
+  o Build:
+      - Now builds on ocaml 3.12, with camomile 0.8
+
+  o String matching:
+     - Fixed serious bug in fn:tokenize (failing for consecutive
+        delimiters without text in between).
+
 June 7, 2010 - Jerome
 
   o Errors:

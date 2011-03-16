@@ -18,7 +18,7 @@
 # value	 2:	on by command line ("forced")
 
 version="1.0"
-ocaml_version="3.11"
+ocaml_version="3.12"
 # Function:	print_options()
 # Description:
 #		Print the current values of all options
@@ -816,7 +816,11 @@ then
 		ocaml_camomile=`$tool_ocamlfind query camomile 2>/dev/null`
 	fi
 fi
-if [ -n "$ocaml_camomile" -a -f "$ocaml_camomile/camomileLibrary.cmi" ]
+if [ -n "$ocaml_camomile" -a -f "$ocaml_camomile/camomileLibraryDefault.cmi" ]
+then
+	ocaml_camomile_version="0.8"
+	echo "found version 0.8"
+elif [ -n "$ocaml_camomile" -a -f "$ocaml_camomile/camomileLibrary.cmi" ]
 then
 	ocaml_camomile_version="0.7"
 	echo "found version 0.7"

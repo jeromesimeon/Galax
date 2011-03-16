@@ -80,22 +80,12 @@ let tokenize input pattern flags =
   let flaglist = Pcre.cflags (getflags flags 0) in
   let regex = make_regex flaglist pattern in
   let full_split = (Pcre.full_split ~rex:regex input) in
-  let nmatches = 
-    List.length (List.filter (fun sr -> match sr with Pcre.Delim _ -> true | _ -> false) full_split) in
-  let res = 
-    List.map 
-      (fun t -> match t with | Pcre.Text s -> s | _ -> "")
-      (List.filter (fun sr -> match sr with Pcre.Text s -> true | _ -> false) full_split) in
-  let nresults = List.length res in 
-  if (nmatches = nresults - 1) then res
-  else if (nmatches = nresults + 1) then 
-    "" :: (res @ [""])
-  else if (nmatches = nresults) then 
-    if (nresults > 0) then
-      match (List.hd full_split) with
-      | Pcre.Delim _ -> ("" :: res)
-      | _ -> (res @ [""])
-    else
-      []
-  else
-    raise (Query(Internal_Error("Illegal full split")))
+  let rec separate sp empty =
+    match sp with
+    | [] -> if empty then "" :: [] else []
+    | Pcre.Text s :: spr -> s :: (separate spr false)
+    | Pcre.Delim _ :: spr -> if empty then "" :: (separate spr true) else (separate spr true)
+    | _ :: spr -> (separate spr empty)
+  in
+  separate full_split true
+
