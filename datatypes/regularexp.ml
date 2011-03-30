@@ -87,5 +87,6 @@ let tokenize input pattern flags =
     | Pcre.Delim _ :: spr -> if empty then "" :: (separate spr true) else (separate spr true)
     | _ :: spr -> (separate spr empty)
   in
-  separate full_split true
+  if (full_split = []) then []
+  else separate full_split true
 

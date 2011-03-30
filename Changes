@@ -2,6 +2,12 @@
 | Changelog |
  -----------
 
+Mar 30, 2011 - Jerome
+
+  o String matching:
+     - Fixed problem with tokenization of empty sequence, introduced
+       by latest fix.
+
 Mar 9, 2011 - Jerome
 
   o Build:
