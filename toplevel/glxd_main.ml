@@ -330,7 +330,7 @@ Sys.set_signal Sys.sigterm
 ;;
 let terminate_mainpid proc_ctxt () =
   begin
-    Monitor.serialize_monitor proc_ctxt;
+    Monitor.serialize_monitor (get_external_nsenv proc_ctxt) proc_ctxt;
     Printf.eprintf "In terminate_mainpid\n%!";
     Unix.kill mainpid Sys.sigterm;
          (* Never reached *)
@@ -432,7 +432,7 @@ let rec sim_loop proc_ctxt  latencies l =
 	    Top_options.arg_output_monitor proc_ctxt ("monitor-"^vhost^".xml");
 	  let termination() =
 	    begin
-	      Monitor.serialize_monitor proc_ctxt;
+	      Monitor.serialize_monitor (get_external_nsenv proc_ctxt) proc_ctxt;
 	      Printf.eprintf "In termination: Received SIGTERM signal\n%!";
               Unix.kill (Unix.getppid()) Sys.sigterm;
               exit 1

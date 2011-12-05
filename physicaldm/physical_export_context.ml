@@ -24,7 +24,7 @@ open Physical_value
 
 type export_context =
     { mutable current_cursor : item cursor;
-      stacked_nodes : (Streaming_types.typed_annotated_sax_event * item cursor) Stack.t}
+      stacked_nodes : (Streaming_types.sax_event * item cursor) Stack.t}
 
 
 (********************************)
@@ -50,8 +50,8 @@ let get_current_cursor export_context =
 let push_node_to_export_context export_context node new_current_cursor =
   let pop_event =
     match node#node_kind() with
-    | DocumentNodeKind -> Streaming_util.fmktse_event Streaming_types.TSAX_endDocument Finfo.bogus
-    | ElementNodeKind -> Streaming_util.fmktse_event Streaming_types.TSAX_endElement Finfo.bogus
+    | DocumentNodeKind -> Streaming_util.fmkse_event Streaming_types.SAX_endDocument Finfo.bogus
+    | ElementNodeKind -> Streaming_util.fmkse_event Streaming_types.SAX_endElement Finfo.bogus
     | AttributeNodeKind
     | TextNodeKind
     | ProcessingInstructionNodeKind

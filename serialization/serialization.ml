@@ -198,7 +198,7 @@ let close_end_element serial_context =
 
 (* Prints attributes *)
 
-let fserialize_one_attribute serial_context ff (uqname, content) =
+let fserialize_one_attribute serial_context ff (uqname, content,_,_,_) =
   let attribute_name_string = string_of_uqname uqname in
   let attribute_name = serialize_markup_string serial_context attribute_name_string in
   let attribute_content = serialize_data_string serial_context content in
@@ -206,7 +206,7 @@ let fserialize_one_attribute serial_context ff (uqname, content) =
   let quote = serialize_markup_string serial_context "\"" in
   fprintf ff "%s%s%s%s%s" attribute_name equal_sign quote attribute_content quote
 
-let fserialize_attributes serial_context ff attributes =
+let fserialize_attributes serial_context ff specialattributes attributes =
   let rec fserialize_attributes_aux serial_context ff attributes =
     match attributes with
     | [] ->
@@ -217,18 +217,20 @@ let fserialize_attributes serial_context ff attributes =
 	  fprintf ff "%a%a" (fserialize_one_attribute serial_context) x (fserialize_attributes_aux serial_context) attributes
 	end
   in
-    match attributes with
-    | [] ->
-	()
-    | x :: attributes ->
-	begin
-	  pp_open_hvbox ff 0;
-	  fprintf ff " %a%a" (fserialize_one_attribute serial_context) x (fserialize_attributes_aux serial_context) attributes;
-	  pp_close_box ff ()
-	end
+(*  Namespace_context.print_special_attributes "serialization time" Format.std_formatter !specialattributes; *)
+  let specialattributes = List.map (fun (x,y) -> (x,y,ref true,ref None,ref None)) !specialattributes  in
+  let attributes = (specialattributes@attributes) in
+  match attributes with
+  | [] ->
+      ()
+  | x :: attributes ->
+      begin
+	pp_open_hvbox ff 0;
+	fprintf ff " %a%a" (fserialize_one_attribute serial_context) x (fserialize_attributes_aux serial_context) attributes;
+	pp_close_box ff ()
+      end
 
-
-let fserialize_text_attributes serial_context ff attributes =
+let fserialize_text_attributes serial_context ff specialattributes attributes =
   let rec fserialize_text_attributes_aux serial_context ff attributes =
     match attributes with
     | [] ->
@@ -236,13 +238,16 @@ let fserialize_text_attributes serial_context ff attributes =
     | x :: attributes ->
 	fprintf ff " %a%a" (fserialize_one_attribute serial_context) x (fserialize_text_attributes_aux serial_context) attributes
   in
-    match attributes with
-    | [] ->
-	()
-    | _ ->
-	fserialize_text_attributes_aux serial_context ff attributes
+(*  Namespace_context.print_special_attributes "serialization time" Format.std_formatter !specialattributes; *)
+  let specialattributes = List.map (fun (x,y) -> (x,y,ref true,ref None,ref None)) !specialattributes  in
+  let attributes = (specialattributes@attributes) in
+  match attributes with
+  | [] ->
+      ()
+  | _ ->
+      fserialize_text_attributes_aux serial_context ff attributes
 
-let fserialize_stand_alone_attribute serial_context ff (uqname, content) =
+let fserialize_stand_alone_attribute serial_context ff (uqname, content,special,_,_) =
   let attribute_name_string = string_of_uqname uqname in
   let attribute_name = serialize_markup_string serial_context attribute_name_string in
   let attribute_content = serialize_data_string serial_context content in
@@ -260,75 +265,75 @@ let fserialize_end_document serial_context ff () =
 
 (* Prints a start element event *)
 
-let fserialize_open_tag serial_context ff elem_name attributes outer_element_kind =
+let fserialize_open_tag serial_context ff elem_name specialattributes attributes outer_element_kind =
   begin
     pp_print_string ff (open_start_element serial_context);
     pp_print_string ff elem_name;
-    fserialize_attributes serial_context ff attributes;
+    fserialize_attributes serial_context ff specialattributes attributes;
     pp_print_string ff (close_start_element serial_context)
   end
 
-let fserialize_text_open_tag serial_context ff elem_name attributes outer_element_kind =
+let fserialize_text_open_tag serial_context ff elem_name specialattributes attributes outer_element_kind =
   begin
     pp_print_string ff (open_start_element serial_context);
     pp_print_string ff elem_name;
-    fserialize_text_attributes serial_context ff attributes;
+    fserialize_text_attributes serial_context ff specialattributes attributes;
     pp_print_string ff (close_start_element serial_context)
   end
 
-let fserialize_empty_tag serial_context ff elem_name attributes outer_element_kind =
+let fserialize_empty_tag serial_context ff elem_name specialattributes attributes outer_element_kind =
   begin
     pp_print_string ff (open_start_element serial_context);
     pp_print_string ff elem_name;
     pp_open_hvbox ff 0;
-    fserialize_attributes serial_context ff attributes;
+    fserialize_attributes serial_context ff specialattributes attributes;
     pp_close_box ff ();
     pp_print_string ff (close_empty_element serial_context)
   end
 
-let fserialize_text_empty_tag serial_context ff elem_name attributes outer_element_kind =
+let fserialize_text_empty_tag serial_context ff elem_name specialattributes attributes outer_element_kind =
   begin
     pp_print_string ff (open_start_element serial_context);
     pp_print_string ff elem_name;
-    fserialize_text_attributes serial_context ff attributes;
+    fserialize_text_attributes serial_context ff specialattributes attributes;
     pp_print_string ff (close_empty_element serial_context)
   end
 
-let fserialize_open_tag_top serial_context ff elem_name attributes =
+let fserialize_open_tag_top serial_context ff elem_name specialattributes attributes =
   begin
     pp_print_string ff (open_start_element serial_context);
     pp_print_string ff elem_name;
-    fserialize_attributes serial_context ff attributes;
+    fserialize_attributes serial_context ff specialattributes attributes;
     pp_print_string ff (close_start_element serial_context)
   end
 
-let fserialize_text_open_tag_top serial_context ff elem_name attributes =
+let fserialize_text_open_tag_top serial_context ff elem_name specialattributes attributes =
   begin
     pp_print_string ff (open_start_element serial_context);
     pp_print_string ff elem_name;
-    fserialize_text_attributes serial_context ff attributes;
+    fserialize_text_attributes serial_context ff specialattributes attributes;
     pp_print_string ff (close_start_element serial_context)
   end
 
-let fserialize_empty_tag_top serial_context ff elem_name attributes =
+let fserialize_empty_tag_top serial_context ff elem_name specialattributes attributes =
   begin
     pp_print_string ff (open_start_element serial_context);
     pp_print_string ff elem_name;
     pp_open_hvbox ff 0;
-    fserialize_attributes serial_context ff attributes;
+    fserialize_attributes serial_context ff specialattributes attributes;
     pp_close_box ff ();
     pp_print_string ff (close_empty_element serial_context)
   end
 
-let fserialize_text_empty_tag_top serial_context ff elem_name attributes =
+let fserialize_text_empty_tag_top serial_context ff elem_name specialattributes attributes =
   begin
     pp_print_string ff (open_start_element serial_context);
     pp_print_string ff elem_name;
-    fserialize_text_attributes serial_context ff attributes;
+    fserialize_text_attributes serial_context ff specialattributes attributes;
     pp_print_string ff (close_empty_element serial_context)
   end
 
-let fserialize_start_element serial_context ff (uqname,attributes,has_element_content) =
+let fserialize_start_element serial_context ff (uqname,attributes,has_element_content,specialattributes,_,_) =
   let element_name_string = string_of_uqname uqname in
   let outer_element_kind = get_current_element_kind serial_context in
   let current_element_kind = new_current_element_kind outer_element_kind has_element_content in
@@ -340,7 +345,7 @@ let fserialize_start_element serial_context ff (uqname,attributes,has_element_co
   match current_element_kind with
   | ElementContentInTextElement ->
       begin
-	fserialize_open_tag serial_context ff elem_name attributes outer_element_kind;
+	fserialize_open_tag serial_context ff elem_name specialattributes attributes outer_element_kind;
 	pp_force_newline ff ();
 	pp_open_hvbox ff 2
       end
@@ -350,23 +355,23 @@ let fserialize_start_element serial_context ff (uqname,attributes,has_element_co
 	then
 	  pp_print_cut ff ();
 	pp_open_hvbox ff 2;
-	fserialize_open_tag serial_context ff elem_name attributes outer_element_kind
+	fserialize_open_tag serial_context ff elem_name specialattributes attributes outer_element_kind
       end
   | TextElementInElementContent ->
       begin
 	if not(is_toplevel)
 	then
 	  pp_print_cut ff ();
-	fserialize_open_tag serial_context ff elem_name attributes outer_element_kind
+	fserialize_open_tag serial_context ff elem_name specialattributes attributes outer_element_kind
       end
   | TextElementInTextContent ->
       begin
-	fserialize_text_open_tag serial_context ff elem_name attributes outer_element_kind
+	fserialize_text_open_tag serial_context ff elem_name specialattributes attributes outer_element_kind
       end
   | TopElement ->
       raise (Query (Serialization "Should not get a TopElement descriptor during serialization"))
 
-let fserialize_empty_element serial_context ff (uqname,attributes,has_element_content) =
+let fserialize_empty_element serial_context ff (uqname,attributes,has_element_content,specialattributes,_,_) =
   let element_name_string = string_of_uqname uqname in
   let outer_element_kind = get_current_element_kind serial_context in
   let current_element_kind = new_current_element_kind outer_element_kind has_element_content in
@@ -378,7 +383,7 @@ let fserialize_empty_element serial_context ff (uqname,attributes,has_element_co
   match current_element_kind with
   | ElementContentInTextElement ->
       begin
-	fserialize_empty_tag serial_context ff elem_name attributes outer_element_kind
+	fserialize_empty_tag serial_context ff elem_name specialattributes attributes outer_element_kind
       end
   | ElementContentInContentElement ->
       begin
@@ -386,7 +391,7 @@ let fserialize_empty_element serial_context ff (uqname,attributes,has_element_co
 	then
 	  pp_print_cut ff ();
 	pp_open_hvbox ff 2;
-	fserialize_empty_tag serial_context ff elem_name attributes outer_element_kind;
+	fserialize_empty_tag serial_context ff elem_name specialattributes attributes outer_element_kind;
 	pp_close_box ff ()
       end
   | TextElementInElementContent ->
@@ -394,16 +399,16 @@ let fserialize_empty_element serial_context ff (uqname,attributes,has_element_co
 	if not(is_toplevel)
 	then
 	  pp_print_cut ff ();
-	fserialize_text_empty_tag serial_context ff elem_name attributes outer_element_kind
+	fserialize_text_empty_tag serial_context ff elem_name specialattributes attributes outer_element_kind
       end
   | TextElementInTextContent ->
       begin
-	fserialize_text_empty_tag serial_context ff elem_name attributes outer_element_kind
+	fserialize_text_empty_tag serial_context ff elem_name specialattributes attributes outer_element_kind
       end
   | TopElement ->
       raise (Query (Serialization "Should not get a TopElement descriptor during serialization"))
 
-let fserialize_empty_element_top serial_context ff (uqname,attributes,has_element_content) =
+let fserialize_empty_element_top serial_context ff (uqname,attributes,has_element_content,specialattributes,_,_) =
   let element_name_string = string_of_uqname uqname in
   let outer_element_kind = get_current_element_kind serial_context in
   let current_element_kind = new_current_element_kind outer_element_kind has_element_content in
@@ -414,14 +419,14 @@ let fserialize_empty_element_top serial_context ff (uqname,attributes,has_elemen
   push_element serial_context (uqname, current_element_kind);
   match current_element_kind with
   | ElementContentInTextElement ->
-      fserialize_empty_tag_top serial_context ff elem_name attributes
+      fserialize_empty_tag_top serial_context ff elem_name specialattributes attributes
   | ElementContentInContentElement ->
       begin
 	if not(is_toplevel)
 	then
 	  pp_print_cut ff ();
 	pp_open_hvbox ff 2;
-	fserialize_empty_tag_top serial_context ff elem_name attributes;
+	fserialize_empty_tag_top serial_context ff elem_name specialattributes attributes;
 	pp_close_box ff ()
       end
   | TextElementInElementContent ->
@@ -429,10 +434,10 @@ let fserialize_empty_element_top serial_context ff (uqname,attributes,has_elemen
 	if not(is_toplevel)
 	then
 	  pp_print_cut ff ();
-	fserialize_text_empty_tag_top serial_context ff elem_name attributes
+	fserialize_text_empty_tag_top serial_context ff elem_name specialattributes attributes
       end
   | TextElementInTextContent ->
-      fserialize_text_empty_tag_top serial_context ff elem_name attributes
+      fserialize_text_empty_tag_top serial_context ff elem_name specialattributes attributes
   | TopElement ->
       raise (Query (Serialization "Should not get a TopElement descriptor during serialization"))
 
@@ -538,10 +543,12 @@ let serialize_xml_event serial_context ff =
       fserialize_stand_alone_attribute serial_context ff sax_xml_attribute
   | SAX_atomicValue atomicvalue ->
       fserialize_atomic_value serial_context ff atomicvalue
+  | SAX_endEncl
+  | SAX_startEncl
   | SAX_hole ->
       raise (Query (Serialization "Cannot serialize a stream with holes"))
 
-let fserialize_start_element_top serial_context ff (uqname,attributes,has_element_content) =
+let fserialize_start_element_top serial_context ff (uqname,attributes,has_element_content,specialattributes,_,_) =
   let element_name_string = string_of_uqname uqname in
   let outer_element_kind = get_current_element_kind serial_context in
   let current_element_kind = new_current_element_kind outer_element_kind has_element_content in
@@ -553,7 +560,7 @@ let fserialize_start_element_top serial_context ff (uqname,attributes,has_elemen
   match current_element_kind with
   | ElementContentInTextElement ->
       begin
-	fserialize_open_tag_top serial_context ff elem_name attributes;
+	fserialize_open_tag_top serial_context ff elem_name specialattributes attributes;
 	pp_force_newline ff ();
 	pp_open_hvbox ff 2
       end
@@ -563,18 +570,18 @@ let fserialize_start_element_top serial_context ff (uqname,attributes,has_elemen
 	then
 	  pp_print_cut ff ();
 	pp_open_hvbox ff 2;
-	fserialize_open_tag_top serial_context ff elem_name attributes
+	fserialize_open_tag_top serial_context ff elem_name specialattributes attributes
       end
   | TextElementInElementContent ->
       begin
 	if not(is_toplevel)
 	then
 	  pp_print_cut ff ();
-	fserialize_open_tag_top serial_context ff elem_name attributes
+	fserialize_open_tag_top serial_context ff elem_name specialattributes attributes
       end
   | TextElementInTextContent ->
       begin
-	fserialize_text_open_tag_top serial_context ff elem_name attributes
+	fserialize_text_open_tag_top serial_context ff elem_name specialattributes attributes
       end
   | TopElement ->
       raise (Query (Serialization "Should not get a TopElement descriptor during serialization"))
@@ -628,6 +635,8 @@ let serialize_xml_event_top serial_context ff =
 	  fserialize_stand_alone_attribute serial_context ff sax_xml_attribute
       | SAX_atomicValue atomicvalue ->
 	  fserialize_atomic_value_xquery serial_context ff atomicvalue
+      | SAX_startEncl
+      | SAX_endEncl
       | SAX_hole ->
 	  raise (Query (Serialization "Cannot serialize a stream with holes"))
     end;

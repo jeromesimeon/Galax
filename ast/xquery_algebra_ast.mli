@@ -147,7 +147,7 @@ type algop_expr_name =
   | AOETextComputed
   | AOEElem of relem_symbol * Namespace_context.nsenv
   | AOEAnyElem of Namespace_context.nsenv * Namespace_context.nsenv (* static/in-scope namespaces *)
-  | AOEAttr of rattr_symbol
+  | AOEAttr of rattr_symbol * Namespace_context.nsenv
   | AOEAnyAttr of Namespace_context.nsenv
   | AOEError (* Missing from the paper *)
   | AOETreat of asequencetype

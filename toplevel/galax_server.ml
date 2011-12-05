@@ -688,7 +688,7 @@ module Server =
 	Serialization.fserialize_typed_xml_stream proc_ctxt (Format.formatter_of_buffer buff) boxed_stream;
 
 	Monitor.end_monitor_external_call proc_ctxt;
-	Monitor.serialize_monitor proc_ctxt;
+	Monitor.serialize_monitor (get_external_nsenv proc_ctxt) proc_ctxt;
 
 	Galax_server_util.log_debug (log_debug_name()) (debug_buffer);
 	let result = Buffer.contents buff in

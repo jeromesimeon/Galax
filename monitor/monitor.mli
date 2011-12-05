@@ -81,8 +81,8 @@ val end_monitor_call   	 : processing_context -> unit
 val start_monitor_external_call	 : processing_context -> string -> unit
 val end_monitor_external_call  	 : processing_context -> unit
 
-val monitor_of_last_call : processing_context -> Physical_value.item list
-val monitor_of_all_calls : processing_context -> Physical_value.item list
+val monitor_of_last_call : Namespace_context.nsenv -> processing_context -> Physical_value.item list
+val monitor_of_all_calls : Namespace_context.nsenv -> processing_context -> Physical_value.item list
 
-val serialize_monitor    : processing_context -> unit
+val serialize_monitor    : Namespace_context.nsenv -> processing_context -> unit
 

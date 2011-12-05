@@ -267,13 +267,13 @@ let build_anyelem_code code_ctxt algop nsenv1 nsenv2 =
   (coerce_nodep fn coerce_binary_item_cursor_and_sax_to_sax), code_ctxt
 
 (* CEAttr *)
-let build_default_ceattr_code code_ctxt sym = 
+let build_default_ceattr_code code_ctxt sym nsenv = 
   (fun alg_ctxt content_streams ->
     let merged_stream = Cursor.cursor_array_fold content_streams in
-    Streaming_constructors.attribute_constructor sym merged_stream)
+    Streaming_constructors.attribute_constructor sym nsenv merged_stream)
 
-let build_attr_code code_ctxt algop rattr_sym =
-  let fn = build_default_ceattr_code code_ctxt rattr_sym in
+let build_attr_code code_ctxt algop rattr_sym nsenv =
+  let fn = build_default_ceattr_code code_ctxt rattr_sym nsenv in
   let _ = access_nosub algop.pdep_sub_expression in 
   (coerce_nodep fn coerce_many_sax_to_sax), code_ctxt
 
@@ -281,7 +281,7 @@ let build_attr_code code_ctxt algop rattr_sym =
 let build_default_ceanyattr_code code_ctxt nsenv =
   (fun alg_ctxt pv1 content_stream ->
     let sym = Code_util.get_computed_node_name nsenv pv1 in
-    Streaming_constructors.attribute_constructor sym content_stream)
+    Streaming_constructors.attribute_constructor sym nsenv content_stream)
 
 let build_anyattr_code code_ctxt algop nsenv =
   let fn = build_default_ceanyattr_code code_ctxt nsenv in

@@ -36,15 +36,14 @@ let rec project_next_projection pfs project_context =
 
   (* And refill the buffer accordingly *)
 
-  match xml_event.tse_desc with
-  | TSAX_startDocument _ ->
+  match xml_event.se_desc with
+  | SAX_startDocument _ ->
       raise (Query (Projection ("Should not have a start document event")))
 
-  | TSAX_endDocument ->
+  | SAX_endDocument ->
       pop_project_context project_context [xml_event]
 
-  | TSAX_startElement (relem_sym, attributes, has_element_content, baseuri, nsenv, nilled, typesym, avs) ->
-
+  | SAX_startElement (name, attributes, has_element_content, special, relem, telem) ->
       (* Identify which kind of action is required based on the path structure *)
       let action = one_step xml_event pfs in
       begin
@@ -71,7 +70,7 @@ let rec project_next_projection pfs project_context =
 	    
 	    let projected_attributes = project_attributes attributes pfs' in
 	    
-	    let new_xml_event = fmktse_event (TSAX_startElement (relem_sym, projected_attributes, has_element_content, baseuri, nsenv, nilled, typesym, avs)) xml_event.tse_loc  in
+	    let new_xml_event = fmkse_event (SAX_startElement (name, projected_attributes, has_element_content, special, relem, telem)) xml_event.se_loc  in
 	    
 	    if (projected_attributes = []) then
 	      begin
@@ -97,7 +96,7 @@ let rec project_next_projection pfs project_context =
 	    
 	    let projected_attributes = project_attributes attributes pfs' in
 	    
-	    let new_xml_event = fmktse_event (TSAX_startElement (relem_sym, projected_attributes, has_element_content, baseuri, nsenv, nilled, typesym, avs)) xml_event.tse_loc in
+	    let new_xml_event = fmkse_event (SAX_startElement (name, projected_attributes, has_element_content, special, relem, telem)) xml_event.se_loc in
 	    
 	    begin
 	      push_project_context_keep_moving_preserve_node
@@ -114,8 +113,8 @@ let rec project_next_projection pfs project_context =
                but keep the events for the current node. - Jerome *)
 	    
 	    let refill_local_buffer = [
-	      fmktse_event (TSAX_startElement (relem_sym, attributes, has_element_content, baseuri, nsenv, nilled, typesym, avs)) xml_event.tse_loc;
-	      fmktse_event (TSAX_endElement) xml_event.tse_loc
+	      fmkse_event (SAX_startElement (name, attributes, has_element_content, special, relem, telem)) xml_event.se_loc;
+	      fmkse_event (SAX_endElement) xml_event.se_loc
 	    ]
 	    in
 	    push_project_context_preserve_node project_context refill_local_buffer
@@ -132,10 +131,10 @@ let rec project_next_projection pfs project_context =
 	    push_project_context_skip_node project_context
       end
 	
-  | TSAX_endElement ->
+  | SAX_endElement ->
       pop_project_context project_context [xml_event]
 
-  | TSAX_processingInstruction (target,content) ->
+  | SAX_processingInstruction (target,content) ->
       let action = one_step xml_event pfs in
       begin
 	match action with
@@ -148,7 +147,7 @@ let rec project_next_projection pfs project_context =
 	    project_next_projection pfs project_context
       end
 	
-  | TSAX_comment c ->
+  | SAX_comment c ->
       let action = one_step xml_event pfs in
       begin
 	match action with
@@ -161,7 +160,7 @@ let rec project_next_projection pfs project_context =
 	    project_next_projection pfs project_context
       end
 	
-  | TSAX_characters _ ->
+  | SAX_characters _ ->
       let action = one_step xml_event pfs in
       begin
 	match action with
@@ -174,7 +173,7 @@ let rec project_next_projection pfs project_context =
 	    project_next_projection pfs project_context
       end
 
-  | TSAX_attribute a ->
+  | SAX_attribute a ->
       let action = one_step xml_event pfs in
       begin
 	match action with
@@ -187,36 +186,36 @@ let rec project_next_projection pfs project_context =
 	    project_next_projection pfs project_context
       end	      
 
-  | TSAX_atomicValue _ ->
+  | SAX_atomicValue _ ->
       (* A path expression never applies to an atomic value *)
       project_next_projection pfs project_context
-  | TSAX_hole ->
+  | SAX_hole ->
       raise (Query (Projection "Should not apply projection operation on a stream with holes!"))
-  | TSAX_startEncl
-  | TSAX_endEncl ->
+  | SAX_startEncl
+  | SAX_endEncl ->
       raise (Query (Projection "Should not apply projection operation on a stream with enclosed expressions!"))
 	
 let rec project_next_get_subtree project_context =
   (* Get the next event *)
   let xml_event = get_next_xml_event project_context in
-  match xml_event.tse_desc with
-  | TSAX_startDocument _
-  | TSAX_startElement _ ->
+  match xml_event.se_desc with
+  | SAX_startDocument _
+  | SAX_startElement _ ->
       push_project_context_get_subtree project_context xml_event
-  | TSAX_endDocument
-  | TSAX_endElement ->
+  | SAX_endDocument
+  | SAX_endElement ->
       pop_project_context project_context [xml_event]
       
-  | TSAX_processingInstruction _
-  | TSAX_comment _
-  | TSAX_characters _
-  | TSAX_attribute _
-  | TSAX_atomicValue _ ->
+  | SAX_processingInstruction _
+  | SAX_comment _
+  | SAX_characters _
+  | SAX_attribute _
+  | SAX_atomicValue _ ->
       refill_local_buffer project_context [xml_event]
-  | TSAX_hole ->
+  | SAX_hole ->
       raise (Query (Projection "Should not apply projection operation on a stream with holes!"))
-  | TSAX_startEncl
-  | TSAX_endEncl ->
+  | SAX_startEncl
+  | SAX_endEncl ->
       raise (Query (Projection "Should not apply projection operation on a stream with enclosed expressions!"))
 
 let rec project_next project_context =
@@ -274,8 +273,8 @@ let project_xml_stream_from_document root_uri path_seq xml_stream =
 
   let first_event = Cursor.cursor_next xml_stream in
   begin
-    match first_event.tse_desc with
-    | TSAX_startDocument _ ->
+    match first_event.se_desc with
+    | SAX_startDocument _ ->
 	()
     | _ ->
 	raise (Query (Projection ("Was expecting a start document event")))
@@ -289,23 +288,3 @@ let project_xml_stream_from_document root_uri path_seq xml_stream =
 
   (Cursor.cursor_of_function (next_project_event project_context))
 
-(*
-let project_xml_stream_from_variable vname path_seq xml_stream =
-
-  let first_event = Cursor.cursor_next xml_stream in
-  begin
-    match first_event.tse_desc with
-    | TSAX_startDocument _ ->
-	()
-    | _ ->
-	raise (Query (Projection ("Was expecting a start document event")))
-  end;
-
-  let pfs = inside_variable first_event path_seq vname in
-
-  let project_context =
-    build_project_context xml_stream pfs [first_event]
-  in
-
-  (Cursor.cursor_of_function (next_project_event project_context))
-*)

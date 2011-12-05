@@ -34,14 +34,15 @@ let rec project_next_projection pfs project_context =
 
   (* And refill the buffer accordingly *)
 
-  match xml_event.rse_desc with
-  | RSAX_startDocument _ ->
+  match xml_event.se_desc with
+  | SAX_startDocument _ ->
       raise (Query (Projection ("Should not have a start document event")))
-
-  | RSAX_endDocument ->
+  | SAX_endEncl|SAX_startEncl ->
+      raise (Query (Projection ("Should not have a enclosed expression event")))
+  | SAX_endDocument ->
       Project_context.pop_project_context project_context [xml_event]
 
-  | RSAX_startElement (relem_sym, attributes, has_element_content, baseuri, delta_bindings) ->
+  | SAX_startElement (relem_sym, attributes, has_element_content, special, baseuri, delta_bindings) ->
 
       (* Identify which kind of action is required based on the path structure *)
       let action = Path_structutil.one_step xml_event pfs in
@@ -69,7 +70,7 @@ let rec project_next_projection pfs project_context =
 	    
 	    let projected_attributes = project_attributes attributes pfs' in
 	    
-	    let new_xml_event = fmkrse_event (RSAX_startElement (relem_sym, projected_attributes, has_element_content, baseuri, delta_bindings)) xml_event.rse_loc  in
+	    let new_xml_event = fmkse_event (SAX_startElement (relem_sym, projected_attributes, has_element_content, special, baseuri, delta_bindings)) xml_event.se_loc  in
 	    
 	    if (projected_attributes = []) then
 	      begin
@@ -95,7 +96,7 @@ let rec project_next_projection pfs project_context =
 	    
 	    let projected_attributes = project_attributes attributes pfs' in
 	    
-	    let new_xml_event = fmkrse_event (RSAX_startElement (relem_sym, projected_attributes, has_element_content, baseuri, delta_bindings)) xml_event.rse_loc in
+	    let new_xml_event = fmkse_event (SAX_startElement (relem_sym, projected_attributes, has_element_content, special, baseuri, delta_bindings)) xml_event.se_loc in
 	    
 	    begin
 	      Project_context.push_project_context_keep_moving_preserve_node
@@ -112,8 +113,8 @@ let rec project_next_projection pfs project_context =
                but keep the events for the current node. - Jerome *)
 	    
 	    let refill_local_buffer = [
-	      fmkrse_event (RSAX_startElement (relem_sym, attributes, has_element_content, baseuri, delta_bindings)) xml_event.rse_loc;
-	      fmkrse_event (RSAX_endElement) xml_event.rse_loc
+	      fmkse_event (SAX_startElement (relem_sym, attributes, has_element_content, special, baseuri, delta_bindings)) xml_event.se_loc;
+	      fmkse_event (SAX_endElement) xml_event.se_loc
 	    ]
 	    in
 	    Project_context.push_project_context_preserve_node project_context refill_local_buffer
@@ -130,10 +131,10 @@ let rec project_next_projection pfs project_context =
 	    Project_context.push_project_context_skip_node project_context
       end
 	
-  | RSAX_endElement ->
+  | SAX_endElement ->
       Project_context.pop_project_context project_context [xml_event]
 
-  | RSAX_processingInstruction (target,content) ->
+  | SAX_processingInstruction (target,content) ->
       let action = Path_structutil.one_step xml_event pfs in
       begin
 	match action with
@@ -146,7 +147,7 @@ let rec project_next_projection pfs project_context =
 	    project_next_projection pfs project_context
       end
 	
-  | RSAX_comment c ->
+  | SAX_comment c ->
       let action = Path_structutil.one_step xml_event pfs in
       begin
 	match action with
@@ -159,7 +160,7 @@ let rec project_next_projection pfs project_context =
 	    project_next_projection pfs project_context
       end
 	
-  | RSAX_characters _ ->
+  | SAX_characters _ ->
       let action = Path_structutil.one_step xml_event pfs in
       begin
 	match action with
@@ -172,7 +173,7 @@ let rec project_next_projection pfs project_context =
 	    project_next_projection pfs project_context
       end
 
-  | RSAX_attribute a ->
+  | SAX_attribute a ->
       let action = Path_structutil.one_step xml_event pfs in
       begin
 	match action with
@@ -185,31 +186,33 @@ let rec project_next_projection pfs project_context =
 	    project_next_projection pfs project_context
       end	      
 
-  | RSAX_atomicValue _ ->
+  | SAX_atomicValue _ ->
       (* A path expression never applies to an atomic value *)
       project_next_projection pfs project_context
-  | RSAX_hole ->
+  | SAX_hole ->
       raise (Query (Projection "Should not apply projection operation on a stream with holes!"))
 	
 let rec project_next_get_subtree project_context =
   (* Get the next event *)
   let xml_event = Project_context.get_next_xml_event project_context in
-  match xml_event.rse_desc with
-  | RSAX_startDocument _
-  | RSAX_startElement _ ->
+  match xml_event.se_desc with
+  | SAX_startDocument _
+  | SAX_startElement _ ->
       Project_context.push_project_context_get_subtree project_context xml_event
-  | RSAX_endDocument
-  | RSAX_endElement ->
+  | SAX_endDocument
+  | SAX_endElement ->
       Project_context.pop_project_context project_context [xml_event]
       
-  | RSAX_processingInstruction _
-  | RSAX_comment _
-  | RSAX_characters _
-  | RSAX_attribute _
-  | RSAX_atomicValue _ ->
+  | SAX_processingInstruction _
+  | SAX_comment _
+  | SAX_characters _
+  | SAX_attribute _
+  | SAX_atomicValue _ ->
       Project_context.refill_local_buffer project_context [xml_event]
-  | RSAX_hole ->
+  | SAX_hole ->
       raise (Query (Projection "Should not apply projection operation on a stream with holes!"))
+  | SAX_endEncl|SAX_startEncl ->
+      raise (Query (Projection ("Should not have a enclosed expression event")))
 
 let rec project_next project_context =
   (* Check wether stream is exhausted _before_ the context is queried
@@ -266,8 +269,8 @@ let project_xml_stream_from_document root_uri path_seq xml_stream =
 
   let first_event = Cursor.cursor_next xml_stream in
   begin
-    match first_event.rse_desc with
-    | RSAX_startDocument _ ->
+    match first_event.se_desc with
+    | SAX_startDocument _ ->
 	()
     | _ ->
 	raise (Query (Projection ("Was expecting a start document event")))
@@ -285,8 +288,8 @@ let project_xml_stream_from_variable vname path_seq xml_stream =
 
   let first_event = Cursor.cursor_next xml_stream in
   begin
-    match first_event.rse_desc with
-    | RSAX_startDocument _ ->
+    match first_event.se_desc with
+    | SAX_startDocument _ ->
 	()
     | _ ->
 	raise (Query (Projection ("Was expecting a start document event")))

@@ -148,8 +148,8 @@ let rec single_op_default_code_selection module_uri code_ctxt algop  =
 	    Code_constructors.build_elem_code code_ctxt algop (relem_sym,nsenv) 
 	| AOEAnyElem (nsenv1,nsenv2) ->
 	    Code_constructors.build_anyelem_code code_ctxt algop nsenv1 nsenv2
-	| AOEAttr rattr_sym -> 
-	    Code_constructors.build_attr_code code_ctxt algop rattr_sym
+	| AOEAttr (rattr_sym,nsenv) -> 
+	    Code_constructors.build_attr_code code_ctxt algop rattr_sym nsenv
 	| AOEAnyAttr nsenv ->
 	    Code_constructors.build_anyattr_code code_ctxt algop nsenv
 	| AOEError ->

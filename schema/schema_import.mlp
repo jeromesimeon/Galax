@@ -87,6 +87,7 @@ module XU = Xquery_ast_util
 let cur_finfo () = ref (Finfo.make_finfo_line_col "Unknown File" 0 0)
 
 let import_error loc msg = raise (error_with_file_location loc (Query(Schema_Import(msg))))
+let import_error_limited msg = raise (Query(Schema_Import(msg)))
 
 (**********************************************************************
               Stream cleansing 
@@ -98,13 +99,13 @@ let import_error loc msg = raise (error_with_file_location loc (Query(Schema_Imp
 let cleanse_rsax_stream rsax_stream =
   let loc_ref = cur_finfo () in 
   let sift_event e =
-    loc_ref := e.rse_loc ;  
-    match e.rse_desc with	
-      RSAX_attribute _ | RSAX_atomicValue _ | RSAX_hole ->
+    loc_ref := e.se_loc ;  
+    match e.se_desc with	
+      SAX_attribute _ | SAX_atomicValue _ | SAX_hole ->
         failwith
           ("BUG in Schema_import.cleanse_sax_stream: " ^
-             "unexpected RSAX event (attribute, atomicValue or hole)")
-    | RSAX_comment _ | RSAX_processingInstruction _ | RSAX_characters _ ->
+             "unexpected SAX event (attribute, atomicValue or hole)")
+    | SAX_comment _ | SAX_processingInstruction _ | SAX_characters _ ->
         None
     | _ -> Some e
   in
@@ -346,14 +347,31 @@ let xtype_of_ChildrenAndAttributes chldr attrs =
   Import utilities
 ************************************************************************)
 
+let extract_relem_sym relem_sym =
+  match !relem_sym with
+  | None -> import_error_limited ("Can't find resolved element")
+  | Some (r,_,_) -> r
+
+let extract_rattr_sym ra =
+  match !ra with
+  | None -> import_error_limited ("Can't find resolved attribute")
+  | Some a -> a
+
+let extract_nsenv relem_sym =
+  match !relem_sym with
+  | None -> import_error_limited ("Can't find resolved element")
+  | Some (_,_,nsenv) -> nsenv
+
 (* Get the value of a WXS attribute. *)
 let probe_attr atts ncname  = 
-  let needed_attr (rattr_symbol, _) = 
+  let needed_attr (_,_,special,rattr_symbol,_) = 
+    if (!special) then false else
+    let rattr_symbol = extract_rattr_sym rattr_symbol in
     let (_, uri, name) = NS.rattr_name rattr_symbol
     in (uri = NB.empty_uri) && (name = ncname)
   in
   try 
-    let (_, v) = List.find needed_attr atts
+    let (_,v,_,_,_) = List.find needed_attr atts
     in Some v
   with Not_found -> None
 
@@ -426,38 +444,41 @@ let use_attr_applicator fi atts  =
     | Some other -> 
 	import_error fi ("Invalid attribute value: use=\"" ^ other ^ "\"")
 
- 
 let check_tag relem_symbol tagname = 
+  let relem_symbol = extract_relem_sym relem_symbol in
   let (_, uri, ncname) = NS.relem_name relem_symbol in 
     (uri = NB.xs_uri) && (ncname = tagname)
 
 let open_tag ims tagname = parser
-    [< '{ rse_desc = RSAX_startElement(relem_sym, atts, _, _, nsenv) ; rse_loc = rse_loc }
+    [< '{ se_desc = SAX_startElement(_, atts, _, _, relem_sym,_) ; se_loc = se_loc }
        when check_tag relem_sym tagname >] -> 
+	 let nsenv = extract_nsenv relem_sym in
 	 let ims' = IMS.add_bindings ims nsenv 
-	 in (ims', atts, rse_loc)
+	 in (ims', atts, se_loc)
 
 let crack_tag tagname = parser 
-  | [< '{ rse_desc = RSAX_startElement(relem_sym, _,_,_,_)  ; rse_loc = rse_loc }
+  | [< '{ se_desc = SAX_startElement(_, _, _, _, relem_sym, _)  ; se_loc = se_loc }
 	 when check_tag relem_sym tagname >] -> ()
 
 
 let complain_unkn_elt parent_name = parser
-  | [< '{ rse_desc = RSAX_startElement(relem_sym, _,_,_,_); rse_loc = rse_loc } >] -> 
+  | [< '{ se_desc = SAX_startElement(_, _, _, _, relem_sym, _); se_loc = se_loc } >] -> 
+      let relem_sym = extract_relem_sym relem_sym in
       let (_, uri, _) = NS.relem_name relem_sym in
       let parent_tag = "<xs:" ^ parent_name ^ ">" in
       if not (uri = NB.xs_uri) 
-      then import_error rse_loc ("A child of " ^ parent_tag ^ 
+      then import_error se_loc ("A child of " ^ parent_tag ^ 
 			" is from a non-Schema namespace: " ^
 			"<" ^ (NS.relem_prefix_string relem_sym) ^ "> = " ^
 			"<" ^ (NS.relem_string relem_sym) ^ ">")
-      else import_error rse_loc ("Unexpected child of " ^ parent_tag ^ ": " ^
+      else import_error se_loc ("Unexpected child of " ^ parent_tag ^ ": " ^
 			"<" ^ (NS.relem_prefix_string relem_sym) ^ ">")
  
 let complain_unkn_tail context_descr = parser
-  |  [< '{ rse_desc = RSAX_startElement(relem_sym, _,_,_,_); rse_loc = rse_loc  }>] -> 
+  |  [< '{ se_desc = SAX_startElement(_, _, _, _, relem_sym, _); se_loc = se_loc  }>] -> 
+      let relem_sym = extract_relem_sym relem_sym in
       let (_, _, _) = NS.relem_name relem_sym in
-	import_error rse_loc (context_descr ^ ": After some expected items, " ^
+	import_error se_loc (context_descr ^ ": After some expected items, " ^
 		      "the items starting with " ^ 
 		      "<" ^ (NS.relem_prefix_string relem_sym) ^ ">" ^
 		     " are not expected in this context according to " ^ 
@@ -495,15 +516,15 @@ let rec skip_wf_content = parser
 	 >] -> ()
   | [< >] -> ()
 and skip_element = parser
-  | [< '{ rse_desc = RSAX_startElement _; rse_loc = rse_loc } ; 
+  | [< '{ se_desc = SAX_startElement _; se_loc = se_loc } ; 
        _ = skip_wf_content ?? "skip_element: skip_wf_content expected"; 
-       '{ rse_desc = RSAX_endElement; rse_loc = rse_loc } ?? "skip_element: RSAX_endElement expected"
+       '{ se_desc = SAX_endElement; se_loc = se_loc } ?? "skip_element: SAX_endElement expected"
     >] -> ()
 
 let skip_element_named name = parser
   | [< _ = crack_tag name; 
        _ = skip_wf_content; 
-       '{ rse_desc = RSAX_endElement; rse_loc = rse_loc } >] -> ()
+       '{ se_desc = SAX_endElement; se_loc = se_loc } >] -> ()
 
 let skip_facet = parser 
   | [< _ = skip_element_named "minExclusive" >] -> ()
@@ -545,7 +566,7 @@ let rec  local_simpleType ims = parser  (* result: stype_specifier *)
        _ = skip_annotation;
        inside = inside_simpleType fi ims 
 	 ?? "local_simpleType!inside";
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+       '{ se_desc = SAX_endElement ; se_loc = se_loc }
 	 ?? "Unexpected trailing extra content iside local <simpleType>"
     >] -> bmkstype_spec(SAnonymous inside)
 
@@ -561,7 +582,7 @@ and local_simpleType_restriction ims = parser (* : stype_derivation *)
       _ = skip_annotation;
       inside = inside_simpleType_restriction ims 
 	?? "local_simpleType_restriction!inside" ; 
-      '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+      '{ se_desc = SAX_endElement ; se_loc = se_loc }
 	?? "local_simpleType_restriction!endElem"
     >] -> 
 	  begin
@@ -590,7 +611,7 @@ and local_simpleType_list ims = parser
   | [< (ims,atts,fi) = open_tag ims "list"; 
       _ = skip_annotation; 
       inside = inside_simpleType_list ims; 
-      '{ rse_desc = RSAX_endElement; rse_loc = rse_loc } >] -> 
+      '{ se_desc = SAX_endElement; se_loc = se_loc } >] -> 
 	begin
 	  try
 	    let itemtype = match (probe_attr atts "itemType", inside) with 
@@ -616,7 +637,7 @@ and local_simpleType_union ims = parser
   | [< (ims,atts,fi) = open_tag ims "union"; 
       _ = skip_annotation; 
       inside = inside_simpleType_union ims;
-      '{ rse_desc = RSAX_endElement; rse_loc = rse_loc } >] -> 
+      '{ se_desc = SAX_endElement; se_loc = se_loc } >] -> 
 	begin
 	  try
 	    let members = 
@@ -643,11 +664,11 @@ let rec local_attribute ims = parser
   | [< (ims,atts,fi) = open_tag ims "attribute";
       _ = skip_annotation ; 
       inside = inside_attribute ims;
-      '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+      '{ se_desc = SAX_endElement ; se_loc = se_loc }
 	>] -> 
 	  begin
 	    try
-	      let apply_use_attr = use_attr_applicator rse_loc atts in
+	      let apply_use_attr = use_attr_applicator se_loc atts in
 	      match (probe_attr atts "type", probe_attr atts "ref", inside) with 
 
 	(* Attribute with type reference *)
@@ -699,7 +720,7 @@ and local_element ims = parser                  (* result: xtype *)
   | [< (ims,atts,fi) = open_tag ims "element";
        _ = skip_annotation; 
        inside = inside_element ims;
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+       '{ se_desc = SAX_endElement ; se_loc = se_loc }
     >] -> 
       begin
 	try
@@ -771,7 +792,7 @@ and local_complexType ims = parser   (* result: ctype_specifier *)
   | [< (ims,atts,fi) = open_tag ims "complexType";
        _ = skip_annotation; 
        (deriv, (acont,ccont)) = inside_complexType ims ; 
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+       '{ se_desc = SAX_endElement ; se_loc = se_loc }>] -> 
 	 begin
 	   try
 	     let mixed = obtain_mixed_attr fi atts in
@@ -811,7 +832,7 @@ and local_simpleContent ims = parser   (* result: deriv opt * (xtype*xtype)  *)
   | [< (ims,atts,fi) = open_tag ims "simpleContent";
        _ = skip_annotation; 
        res =  inside_simpleContent ims; 
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc } >] -> res
+       '{ se_desc = SAX_endElement ; se_loc = se_loc } >] -> res
 
 and inside_simpleContent ims = parser   (* result: deriv opt * (xtype*xtype)  *)
   | [< x = local_simpleContent_restriction ims ;
@@ -825,7 +846,7 @@ and local_simpleContent_restriction ims = parser (*res: deriv opt * (xtype*xtype
   | [< (ims,atts,fi) = open_tag ims "restriction";
        _ = skip_annotation; 
        cont = inside_simpleContent_restriction ims; 
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+       '{ se_desc = SAX_endElement ; se_loc = se_loc }>] -> 
 	 begin
 	   try
 	     let base = demand_attr fi atts "base" "<restriction> inside <simpleContent>" in
@@ -852,7 +873,7 @@ and local_simpleContent_extension ims = parser (*res: deriv opt * (xtype*xtype) 
   | [< (ims,atts,fi) = open_tag ims "extension";
        _ = skip_annotation; 
        cont = inside_simpleContent_extension ims ;
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+       '{ se_desc = SAX_endElement ; se_loc = se_loc }>] -> 
 	 begin
 	   try
 	     let base = demand_attr fi atts "base" "<extension> inside <simpleContent>" in
@@ -879,7 +900,7 @@ and local_complexContent ims = parser   (* : deriv opt * xtype  *)
   | [< (ims,atts,fi) = open_tag ims "complexContent";
        _ = skip_annotation; 
        res = inside_complexContent ims; 
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> res
+       '{ se_desc = SAX_endElement ; se_loc = se_loc }>] -> res
 
 and inside_complexContent ims = parser       (* : deriv opt * xtype  *)
   | [< x = local_complexContent_restriction ims ; 
@@ -892,7 +913,7 @@ and local_complexContent_restriction ims = parser (* : deriv opt * xtype  *)
   | [< (ims,atts,fi) = open_tag ims "restriction";
        _ = skip_annotation; 
        cont = inside_complexContent_restrictionORextension ims  ; 
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+       '{ se_desc = SAX_endElement ; se_loc = se_loc }>] -> 
 	 begin
 	   try
 	     let base = demand_attr fi atts "base" 
@@ -907,7 +928,7 @@ and local_complexContent_extension ims = parser (* : deriv opt * xtype  *)
   | [< (ims,atts,fi) = open_tag ims "extension";
        _ = skip_annotation; 
        cont = inside_complexContent_restrictionORextension ims  ; 
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+       '{ se_desc = SAX_endElement ; se_loc = se_loc }>] -> 
 	 begin
 	   try
 	     let base = demand_attr fi atts "base" 
@@ -960,7 +981,7 @@ and content_AttributeSpec ims = parser
 and local_attributeGroup ims = parser
   | [< (ims,atts,fi) = open_tag ims "attributeGroup" ;
        _ = skip_annotation; 
-       '{ rse_desc = RSAX_endElement; rse_loc = rse_loc } ?? "A local <attributeGroup> should have no children."
+       '{ se_desc = SAX_endElement; se_loc = se_loc } ?? "A local <attributeGroup> should have no children."
     >] -> 
       begin
 	try
@@ -975,7 +996,7 @@ and local_attributeGroup ims = parser
 
 and local_group ims = parser 
   | [< (ims,atts,fi) = open_tag ims "group" ; 
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+       '{ se_desc = SAX_endElement ; se_loc = se_loc }>] -> 
 	 begin
 	   try
 	     let refn = demand_attr fi atts "ref" "local <group>" in 
@@ -990,10 +1011,10 @@ and local_all ims = parser
   | [< (ims,atts,fi) = open_tag ims "all"; 
        _ = skip_annotation; 
        elts = multiparse(local_element ims); 
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+       '{ se_desc = SAX_endElement ; se_loc = se_loc }>] -> 
 	 begin
 	   try
-	     let (min,max) = obtain_occurs_attrs rse_loc atts  in
+	     let (min,max) = obtain_occurs_attrs se_loc atts  in
 	(*--VG!! <all> group has constraint max<=1. 
 	   Checking this is intentionally left for normalization.  *)
 	     let cont = grouping_interleave elts in
@@ -1006,7 +1027,7 @@ and local_choice ims = parser
   | [< (ims,atts,fi) = open_tag ims "choice" ; 
        _ = skip_annotation; 
        comps = multiparse(content_GroupComponent ims); 
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+       '{ se_desc = SAX_endElement ; se_loc = se_loc }>] -> 
 	 begin
 	   try
 	     let cont = grouping_choice comps in 
@@ -1019,7 +1040,7 @@ and local_sequence ims = parser
   | [< (ims,atts,fi) = open_tag ims "sequence" ; 
        _ = skip_annotation; 
        comps = multiparse(content_GroupComponent ims); 
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+       '{ se_desc = SAX_endElement ; se_loc = se_loc }>] -> 
 	 begin
 	   try
 	     let cont = grouping_sequence comps in 
@@ -1043,14 +1064,14 @@ and local_any ims = parser
   | [< (_,_,_) = open_tag ims "any" ; 
        _ = skip_annotation; 
        _ = skip_wf_content ; 
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+       '{ se_desc = SAX_endElement ; se_loc = se_loc }>] -> 
       failwith "NotYet: <any> element wildcard"    (*--VG## *)
 
 and local_anyAttribute ims = parser 
   | [< (_,_,_) = open_tag ims "anyAttribute" ; 
        _ = skip_annotation; 
        _ = skip_wf_content ; 
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+       '{ se_desc = SAX_endElement ; se_loc = se_loc }>] -> 
       failwith "NotYet: <anyAttribute>  wildcard"    (*--VG## *)
 
 
@@ -1063,7 +1084,7 @@ let global_simpleType ims = parser
       _ = skip_annotation; 
       inside = inside_simpleType fi ims 
 	?? "global_simpleType!inside";
-      '{ rse_desc = RSAX_endElement ; rse_loc = _} ?? "global_simpleType!endElem" 
+      '{ se_desc = SAX_endElement ; se_loc = _} ?? "global_simpleType!endElem" 
 	>] -> 
 	  begin
 	    try
@@ -1081,7 +1102,7 @@ let global_attribute ims = parser
   | [< (ims,atts,fi) = open_tag ims "attribute";
       _ = skip_annotation; 
       inside = inside_attribute ims;
-      '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+      '{ se_desc = SAX_endElement ; se_loc = se_loc }
 	>] -> 
 	  begin
 	    try
@@ -1100,7 +1121,7 @@ let global_attribute ims = parser
 		  let aname = IMS.qualify_newattr ims Global None name in
 		  bmkxtype_decl(TAttributeDecl(aname, sspec))
 
-	      | _ -> import_error rse_loc
+	      | _ -> import_error se_loc
 		    "Wrong combination of constituents in a global <attribute>." 
 	    with
 	      exn -> raise (error_with_file_location fi exn)
@@ -1110,7 +1131,7 @@ let global_element ims = parser              (* result xtype_declaration *)
   | [< (ims,atts,fi) = open_tag ims "element";
       _ = skip_annotation; 
       inside = inside_element ims;
-      '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+      '{ se_desc = SAX_endElement ; se_loc = se_loc }
 	>] -> 
 	  begin
 	    try
@@ -1145,7 +1166,7 @@ let global_complexType ims = parser   (* result: xtype_declaration *)
     | [< (ims,atts,fi) = open_tag ims "complexType";
 	_ = skip_annotation; 
 	(deriv, (acont,ccont)) = inside_complexType ims ; 
-	'{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+	'{ se_desc = SAX_endElement ; se_loc = se_loc }>] -> 
 	  begin
 	    try 
 	      let mixed = obtain_mixed_attr fi atts in
@@ -1159,7 +1180,7 @@ let rec global_group ims = parser   (* result: xtype_declaration *)
   | [< (ims,atts,fi) = open_tag ims "group" ; 
       _ = skip_annotation; 
       xtyp = inside_group ims ; 
-      '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+      '{ se_desc = SAX_endElement ; se_loc = se_loc }
 	>] -> 
 	  begin
 	    try
@@ -1185,7 +1206,7 @@ let rec global_attributeGroup ims = parser   (* result: xtype_declaration *)
   | [< (ims,atts,fi) = open_tag ims "attributeGroup" ; 
       _ = skip_annotation; 
       xtyp = inside_attributeGroup ims ; 
-      '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+      '{ se_desc = SAX_endElement ; se_loc = se_loc }
 	>] -> 
 	  begin
 	    try	let name = demand_attr fi atts "name" "global <attributeGroup>" in
@@ -1218,9 +1239,10 @@ let rec import_components ims = parser
        comps = optmultiparse(content_Component ims) >] -> (ims,comps)
 
 let open_tag_schema targpref_opt = parser 
-  | [< '{ rse_desc = RSAX_startElement(rsymb, atts, _, _, document_nsenv); rse_loc = rse_loc }
+  | [< '{ se_desc = SAX_startElement(_, atts, _, _, rsymb, _); se_loc = se_loc }
       when check_tag rsymb "schema" >] -> 
 	begin
+	  let document_nsenv = extract_nsenv rsymb in
 	  try
 	    let targns_opt = 
 	      match probe_attr atts "targetNamespace" with 
@@ -1232,33 +1254,33 @@ let open_tag_schema targpref_opt = parser
 		targpref_opt
 		targns_opt
 		(opt_or_default 
-		   (probe_form_attr rse_loc atts "elementFormDefault") Unqualified)
+		   (probe_form_attr se_loc atts "elementFormDefault") Unqualified)
 		(opt_or_default 
-		   (probe_form_attr rse_loc atts "attributeFormDefault") Unqualified)
+		   (probe_form_attr se_loc atts "attributeFormDefault") Unqualified)
 		document_nsenv
-	    in (ims, atts, rse_loc)
+	    in (ims, atts, se_loc)
 
 	  with
-	    exn -> raise (error_with_file_location rse_loc exn)
+	    exn -> raise (error_with_file_location se_loc exn)
 	end
 
 let import_schema_new targpref_opt = parser
   | [< (ims,atts,fi) = open_tag_schema targpref_opt;
        (pm,comps) = import_components ims
        ?? "Schema components were expected";
-       '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> (pm,comps)
+       '{ se_desc = SAX_endElement ; se_loc = se_loc }>] -> (pm,comps)
   | [< _ = complain_unkn_elt "parent context OR document node" >] 
         -> assert false
   | [<>] -> import_error Finfo.bogus "Did not find <schema> at the start of input"
 
 
 let import_doc_new proc_ctxt targpref_opt = parser 
-  | [< '{ rse_desc = RSAX_startDocument(xml_decl, dtd_decl, base_uri);  rse_loc = rse_loc };   
+  | [< '{ se_desc = SAX_startDocument(xml_decl, dtd_decl, base_uri);  se_loc = se_loc };   
        (* ignore <?xml ?> decl and the in-lined DTD *)
        (*--VG?? What is base_uri? Should it affect the import? *)
        (pm,comps) = import_schema_new targpref_opt
 		      ?? "Schema root was expected" ;
-       '{ rse_desc = RSAX_endDocument ; rse_loc = rse_loc }
+       '{ se_desc = SAX_endDocument ; se_loc = se_loc }
 	 ?? "End of document was expected " 
     >] -> (pm,comps)
 
@@ -1294,7 +1316,7 @@ let rec import_schema proc_ctxt prefix_option schema_uri loc_hint_option =
 and import_nested_schema proc_ctxt ims  = parser
   | [< (ims, atts,fi) = open_tag ims "import"; 
       _ =  skip_annotation; 
-      '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }
+      '{ se_desc = SAX_endElement ; se_loc = se_loc }
     >] ->
 	  begin
 	    try
@@ -1316,15 +1338,15 @@ import_components proc_ctxt ims = parser
 and import_schema_new proc_ctxt targpref_opt = parser
   | [< (ims, _, _) = (open_tag_schema targpref_opt); 
      (imported_schemas, pm, comps) = import_components proc_ctxt ims ?? ("Schema components were expected");
-     '{ rse_desc = RSAX_endElement ; rse_loc = rse_loc }>] -> 
+     '{ se_desc = SAX_endElement ; se_loc = se_loc }>] -> 
      (imported_schemas, pm, comps)
   | [< _ = complain_unkn_elt "parent context OR document node" >] -> assert false
   | [< >] -> import_error Finfo.bogus "Did not find <schema> at the start of input"
 
 and import_doc_new proc_ctxt targpref_opt = parser
- | [< '{ rse_desc = (RSAX_startDocument (xml_decl, dtd_decl, base_uri)); rse_loc = rse_loc };
+ | [< '{ se_desc = (SAX_startDocument (xml_decl, dtd_decl, base_uri)); se_loc = se_loc };
       (imported_schemas, pm, comps) = import_schema_new proc_ctxt targpref_opt ?? ("Schema root was expected"); 
-      '{ rse_desc = RSAX_endDocument; rse_loc = rse_loc } ?? "End of document was expected " 
+      '{ se_desc = SAX_endDocument; se_loc = se_loc } ?? "End of document was expected " 
     >] 
       -> (imported_schemas, pm, comps)
 

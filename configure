@@ -18,7 +18,7 @@
 # value	 2:	on by command line ("forced")
 
 version="1.0"
-ocaml_version="3.12"
+ocaml_version="3.12.1+rc1"
 # Function:	print_options()
 # Description:
 #		Print the current values of all options

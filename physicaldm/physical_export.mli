@@ -23,7 +23,7 @@ val typed_xml_stream_of_datamodel : Physical_value.item Cursor.cursor -> Streami
    wrapped into an element node to make it a well-formed XML if
    necessary. *)
 
-val resolved_xml_stream_of_datamodel : Physical_value.item Cursor.cursor -> Streaming_types.resolved_xml_stream
+val resolved_xml_stream_of_datamodel : Physical_value.item Cursor.cursor -> Streaming_types.xml_stream
 
-val resolved_wrapped_xml_stream_of_datamodel : Physical_value.item Cursor.cursor -> Streaming_types.resolved_xml_stream
+val resolved_wrapped_xml_stream_of_datamodel : Physical_value.item Cursor.cursor -> Streaming_types.xml_stream
 

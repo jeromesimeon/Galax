@@ -43,17 +43,17 @@ let rec untyped_value_of_xml_stream input_stream =
 and untyped_value_of_xml_stream_aux input_stream =
   match Cursor.cursor_peek input_stream with
   | None -> []
-  | Some { tse_desc = TSAX_atomicValue av; tse_annot = _; tse_loc = _ } -> 
+  | Some { se_desc = SAX_atomicValue av; se_annot = _; se_loc = _ } -> 
       begin
 	Cursor.cursor_junk input_stream;
 	(av#string_value()) :: 
 	((match Cursor.cursor_peek input_stream with 
-	| Some ({ tse_desc = TSAX_atomicValue _; tse_annot = _; tse_loc = _ }) -> " "
+	| Some ({ se_desc = SAX_atomicValue _; se_annot = _; se_loc = _ }) -> " "
 	| _ -> "") :: 
 	 (untyped_value_of_xml_stream_aux input_stream))
       end
-  | Some { tse_desc = TSAX_startEncl ; tse_annot = _; tse_loc = _ } 
-  | Some { tse_desc = TSAX_endEncl ; tse_annot = _; tse_loc = _ } ->
+  | Some { se_desc = SAX_startEncl ; se_annot = _; se_loc = _ } 
+  | Some { se_desc = SAX_endEncl ; se_annot = _; se_loc = _ } ->
       Cursor.cursor_junk input_stream;
       (untyped_value_of_xml_stream_aux input_stream)
   | _ ->
@@ -63,7 +63,8 @@ and untyped_value_of_xml_stream_aux input_stream =
 
    The second step should do implicit validation if necessary.
 *)
-let attribute_constructor sym input_stream =
+let attribute_constructor sym nsenv input_stream =
+  let uqname = Namespace_symbols.rattr_uname nsenv sym in
   let resolved_stream =
     begin
       match sym with
@@ -83,7 +84,7 @@ let attribute_constructor sym input_stream =
       else
 	text
     in
-    Cursor.cursor_of_list [fmkrse_event(RSAX_attribute(sym,text)) Finfo.bogus]
+    Cursor.cursor_of_list [fmkse_event(SAX_attribute (uqname,text,ref false,(ref (Some sym)),ref None)) Finfo.bogus]
   in
   Streaming_ops.typed_of_resolved_xml_stream resolved_stream
 
@@ -91,7 +92,7 @@ let attribute_constructor sym input_stream =
 let comment_constructor input_stream =
   let comment = (untyped_value_of_xml_stream input_stream) in
   let _ = Streaming_ops.check_valid_comment comment in
-  Cursor.cursor_of_list [fmktse_event (TSAX_comment comment) Finfo.bogus]
+  Cursor.cursor_of_list [fmkse_event (SAX_comment comment) Finfo.bogus]
 
 (* Processing instruction constructor *)
 let pi_constructor leading target input_stream =
@@ -100,7 +101,7 @@ let pi_constructor leading target input_stream =
     if leading then Whitespace.remove_leading_whitespace content else content
   in
   let (target', content') = Streaming_ops.check_valid_processing_instruction target content in
-  Cursor.cursor_of_list [fmktse_event (TSAX_processingInstruction (target',content')) Finfo.bogus]
+  Cursor.cursor_of_list [fmkse_event (SAX_processingInstruction (target',content')) Finfo.bogus]
 
 (* XQuery 3.7.3.4 Text Node Constructors
 
@@ -131,22 +132,22 @@ let text_constructor input_stream =
   | None -> Cursor.cursor_of_list []
   | _ -> 
       let text = (untyped_value_of_xml_stream input_stream) in 
-      Cursor.cursor_of_list [fmktse_event (TSAX_characters text) Finfo.bogus]
+      Cursor.cursor_of_list [fmkse_event (SAX_characters text) Finfo.bogus]
 	
 let charref_constructor i =
   let text = Galax_camomile.utf8_string_of_code_point i in
-  Cursor.cursor_of_list [fmktse_event (TSAX_characters text) Finfo.bogus]
+  Cursor.cursor_of_list [fmkse_event (SAX_characters text) Finfo.bogus]
 
 (* Element constructor *)
 let element_content_stream xml_stream =
    let rec next_element_content_event xml_stream () =
     try
       let event = (Cursor.cursor_next xml_stream) in
-      match event.rse_desc with
-      | RSAX_startDocument _
-      | RSAX_endDocument ->
+      match event.se_desc with
+      | SAX_startDocument _
+      | SAX_endDocument ->
 	  next_element_content_event xml_stream ()
-      | RSAX_attribute a ->
+      | SAX_attribute a ->
 	  raise (Query (Stream_Error "Content of the constructor contains attributes not at the beginning"))
       | _ ->
 	  Some event
@@ -156,25 +157,32 @@ let element_content_stream xml_stream =
   in
   Cursor.cursor_of_function (next_element_content_event xml_stream)
 
-let prefix_attribute nsenv (rsym,content) (prev_atts,prev_bindings,required_bindings) =
+let prefix_attribute nsenv (uqname,content,special,orsym,rtype) (prev_atts,prev_bindings,required_bindings) =
+  if (!special)
+  then
+    (prev_atts,prev_bindings,required_bindings)
+  else
+  let rsym =
+    match !orsym with
+    | Some rsym -> rsym
+    | None ->raise (Query (Datamodel ("Attribute hasn't been resolved")))
+  in
   let (uqname,opt_binding,required_binding) = rattr_name_with_binding nsenv rsym in
   match opt_binding with
   | None ->
       let ns_attributes = prev_bindings in
-      ((uqname,content) :: prev_atts, ns_attributes,required_binding :: required_bindings)
+      ((uqname,content,rsym) :: prev_atts, ns_attributes,required_binding :: required_bindings)
   | Some new_binding ->
       let ns_attributes =  new_binding :: prev_bindings in
-      ((uqname,content) :: prev_atts, ns_attributes,required_bindings)
-
-let one_prefix_attribute nsenv (rsym,content) =
-  let (uqname,opt_binding,required_binding) = rattr_name_with_binding nsenv rsym in
-  ((uqname,content), opt_binding,required_binding)
+      ((uqname,content,rsym) :: prev_atts, ns_attributes,required_bindings)
 
 let prefix_attributes nsenv resolved_attributes =
   List.fold_right (prefix_attribute nsenv) resolved_attributes ([],[],[])
 
 let fix_in_scope_namespaces nsenv rsym atts =
   let (uqname,opt_binding,required_binding) = relem_name_with_binding nsenv rsym in
+  (* Printf.printf "UQNAME:%s\n" (Namespace_names.string_of_uqname uqname);
+  flush stdout; *)
   let (_,new_bindings,required_attribute_prefixes) = prefix_attributes nsenv atts in
   let required_bindings =
     match opt_binding with
@@ -185,15 +193,18 @@ let fix_in_scope_namespaces nsenv rsym atts =
 	let rb = created_binding :: new_bindings in
 	cleanup_out_bindings rb []
   in
-  Namespace_context.patch_bindings nsenv required_bindings
+  (* Namespace_context.print_binding_table "" Format.std_formatter required_bindings; *)
+  (required_bindings,Namespace_context.patch_bindings nsenv required_bindings)
 
-let element_constructor_of_resolved base_uri sym nsenv resolved_input_stream =
+let element_constructor_of_resolved base_uri rsym nsenv resolved_input_stream =
+  let sym = Namespace_symbols.relem_name rsym in
+(*  let rsym = Namespace_symbols.relem_symbol sym in *)
   (* 2. Get the leading attributes in the resolved stream *)
   let leading_attributes =
     Streaming_ops.consume_leading_attribute_events resolved_input_stream
   in
   (* 2.b. Check that attributes are not duplicated *)
-  let leading_attributes =
+  let _ =
     Streaming_util.check_duplicate_attributes leading_attributes
   in
   (* 3. Make sure that the rest of the stream contains proper nodes
@@ -203,31 +214,33 @@ let element_constructor_of_resolved base_uri sym nsenv resolved_input_stream =
   in
   (* 4. Compute the in-scope namespaces (see XQuery Section 3.7.4
   In-scope Namespaces of a Constructed Element) *)
-  let in_scope_nsenv = fix_in_scope_namespaces nsenv sym leading_attributes in
+  let (bindings,in_scope_nsenv) = fix_in_scope_namespaces nsenv rsym leading_attributes in
+(*  Namespace_context.print_binding_table "" Format.std_formatter bindings;
+  Namespace_context.print_binding_table "" Format.std_formatter (Namespace_context.flatten_bindings in_scope_nsenv); *)
   (* 5. Builds a small stream to construct the element *)
-  let small_expr = SElem(sym,in_scope_nsenv,leading_attributes,base_uri,[SHole]) in
+  let small_expr = SElem(sym,Some bindings,in_scope_nsenv,leading_attributes,base_uri,[SHole],ref (Some rsym)) in
   let small_stream = Small_stream_context.resolved_xml_stream_of_sexpr small_expr in
   (* 6. Compose the small stream with the resolved input stream *)
   let new_xml_stream =
-    Streaming_ops.compose_resolved_xml_streams small_stream [resolved_element_content_stream]
+    Streaming_ops.compose_xml_streams small_stream [resolved_element_content_stream]
   in new_xml_stream
 
 let element_constructor base_uri sym nsenv input_stream =
-try
-  (* 0. Clean up the labels, possibly buffering subtrees with nested labels *)
-  let input_stream =
-    Streaming_conv.typed_of_typed_labeled_xml_stream input_stream
-    (* input_stream *)
-  in
-  (* 1. Do the erasure *)
-  let resolved_input_stream = Streaming_ops.erase_xml_stream_section_3_7_1 input_stream in
-  let new_xml_stream = element_constructor_of_resolved base_uri sym nsenv resolved_input_stream 
-  in
-  (* 7. Add type annotations *)
-  (* 7.a NOTE THAT THIS MERGES TEXT NODES NOW - Philippe and Jerome *)
-  Streaming_ops.typed_of_resolved_xml_stream new_xml_stream
-with
-| Query(Cursor_Error(msg)) -> raise(Query(Constructor_Error("In element_constructor "^msg)))
+  try
+    (* 0. Clean up the labels, possibly buffering subtrees with nested labels *)
+    let input_stream =
+      Streaming_conv.typed_of_typed_labeled_xml_stream input_stream
+	(* input_stream *)
+    in
+    (* 1. Do the erasure *)
+    let resolved_input_stream = Streaming_ops.erase_xml_stream_section_3_7_1 input_stream in
+    let new_xml_stream = element_constructor_of_resolved base_uri sym nsenv resolved_input_stream 
+    in
+    (* 7. Add type annotations *)
+    (* 7.a NOTE THAT THIS MERGES TEXT NODES NOW - Philippe and Jerome *)
+    Streaming_ops.typed_of_resolved_xml_stream new_xml_stream
+  with
+  | Query(Cursor_Error(msg)) -> raise(Query(Constructor_Error("In element_constructor "^msg)))
 
 (* Document constructor *)
 
@@ -267,7 +280,7 @@ try
   let small_stream = Small_stream_context.resolved_xml_stream_of_sexpr small_expr in
   (* 3. Compose the small stream with the resolved input stream *)
   let new_xml_stream =
-    Streaming_ops.compose_resolved_xml_streams small_stream [resolved_document_content_stream]
+    Streaming_ops.compose_xml_streams small_stream [resolved_document_content_stream]
   in
   (* 4. Add type annotations *)
   Streaming_ops.typed_of_resolved_xml_stream new_xml_stream
@@ -300,11 +313,11 @@ let flatten_document_nodes input_stream =
     match Cursor.cursor_peek input_stream with
     | Some event ->
 	begin
-	  match event.tse_desc with
-	  | TSAX_startDocument _ ->
+	  match event.se_desc with
+	  | SAX_startDocument _ ->
 	      Cursor.cursor_junk input_stream;
 	      Some (Cursor.cursor_next input_stream)
-	  | TSAX_endDocument ->
+	  | SAX_endDocument ->
 	      Cursor.cursor_junk input_stream;
 	      Some (Cursor.cursor_next input_stream)
 	  | _ -> Some (Cursor.cursor_next input_stream)

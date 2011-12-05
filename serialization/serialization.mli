@@ -26,9 +26,9 @@ val bserialize_xml_stream 	   : Processing_context.processing_context -> Streami
 
 (* Serialization from a resolved stream *)
 
-val fserialize_resolved_xml_stream : Processing_context.processing_context -> Format.formatter -> Streaming_types.resolved_xml_stream -> unit
-val serialize_resolved_xml_stream  : Processing_context.processing_context -> Streaming_types.resolved_xml_stream -> unit
-val bserialize_resolved_xml_stream : Processing_context.processing_context -> Streaming_types.resolved_xml_stream -> string
+val fserialize_resolved_xml_stream : Processing_context.processing_context -> Format.formatter -> Streaming_types.xml_stream -> unit
+val serialize_resolved_xml_stream  : Processing_context.processing_context -> Streaming_types.xml_stream -> unit
+val bserialize_resolved_xml_stream : Processing_context.processing_context -> Streaming_types.xml_stream -> string
 
 (* Serialization from a typed stream *)
 

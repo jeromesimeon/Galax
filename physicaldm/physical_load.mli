@@ -24,9 +24,9 @@ open Nodeid_context
 open Physical_value
 
 type document_id_generator = unit -> docid
-type load_xml_value_function = ordered_typed_xml_stream -> item list
-type load_node_sequence_function = ordered_typed_xml_stream -> Dm.node list
-type load_xml_document_function = ordered_typed_xml_stream -> item list
+type load_xml_value_function = ordered_xml_stream -> item list
+type load_node_sequence_function = ordered_xml_stream -> Dm.node list
+type load_xml_document_function = ordered_xml_stream -> item list
 
 val register_load_functions :
     document_id_generator -> load_xml_value_function -> load_node_sequence_function -> load_xml_document_function -> unit

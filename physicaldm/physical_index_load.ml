@@ -27,9 +27,9 @@ open Physical_name_index
 open Physical_value
 
 type load_function0 = unit -> docid
-type load_function1 = name_indices_handler -> ordered_typed_xml_stream -> item list
-type load_function2 = name_indices_handler -> ordered_typed_xml_stream -> node list
-type load_function3 = name_indices_handler -> ordered_typed_xml_stream -> item list
+type load_function1 = name_indices_handler -> ordered_xml_stream -> item list
+type load_function2 = name_indices_handler -> ordered_xml_stream -> node list
+type load_function3 = name_indices_handler -> ordered_xml_stream -> item list
 
 let new_docid =
   (fun () -> (raise (Query (Internal_Error "No main-memory data model support compiled!!"))))

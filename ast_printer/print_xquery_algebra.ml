@@ -665,7 +665,7 @@ let print_algop_main idname physical p print_algop ff algop  =
 	      (print_algop idname 0) e1
 	      (print_algop idname 0) e2
       end
-  | AOEAttr l ->
+  | AOEAttr (l,nsenv) ->
       let el = access_manysub algop.psub_expression in
       begin
 	match (Array.length el) with 

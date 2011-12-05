@@ -79,8 +79,8 @@ let apply_parser_skip_document parser comp_ctxt the_stream =
   match Stream.peek st with
   | Some event ->
       begin
-	match event.rse_desc with 
-	  (RSAX_startDocument _ ) ->
+	match event.se_desc with 
+	  (SAX_startDocument _ ) ->
 	    Stream.junk st;
 	    parser comp_ctxt st
 	| _ -> 
@@ -370,7 +370,7 @@ let box_algop_name algop =
     | AOEAnyElem (nsenv1,nsenv2) ->
 	[], []
 
-    | AOEAttr(rname) -> 
+    | AOEAttr(rname,nsenv) -> 
 	let elems = box_rattr_symbol rname in
 	[], elems :: []
 
@@ -641,9 +641,17 @@ let rec box_subexpr box_algop se =
 
 (* Wrappers for the two kinds of subexpressions *)
 
+and recast_attributes attributes =
+  let recast_attribute attribute =
+    match attribute with
+    | (a,s) -> (Namespace_names.uqname_of_rqname a, s, ref false, ref (Some (Namespace_symbols.rattr_symbol a)), ref None)
+  in
+  List.map recast_attribute attributes
+
 (* Pre code selection *)
 and undecorated_box_algop algop =
-  let name, attributes, (sub_elem: rsexpr list) = box_algop_name algop in
+  let name, attributes, (sub_elem: sexpr list) = box_algop_name algop in
+  let attributes = recast_attributes attributes in
   let attributes = 
     (dep_subexpr_attrs algop.pdep_sub_expression) @
     (indep_subexpr_attrs algop.psub_expression) @
@@ -653,7 +661,7 @@ and undecorated_box_algop algop =
   let independent_exprs   = box_subexpr undecorated_box_algop algop.psub_expression in
 
   let child_elements      =  sub_elem @ dependent_exprs @ independent_exprs in
-    construct_element name attributes child_elements
+    construct_element_top name attributes child_elements
       
 (* Statement handler *)
 let box_statement box_algop s =
@@ -683,7 +691,7 @@ let serialize_algebra_statement_helper box_algop proc_ctxt output stmt =
     try
       begin	
 	let whole_plan = box_statement box_algop stmt in
-	let algop_module_doc = Small_stream_context.sexpr_of_rsexpr nsenv' (RSDocument( Dm_atomic_util.default_no_uri_dm, [whole_plan])) in 
+	let algop_module_doc = Small_stream_context.sexpr_of_rsexpr nsenv' (SDocument( Dm_atomic_util.default_no_uri_dm, [whole_plan])) in 
 	let rxmlstr = Small_stream_context.resolved_xml_stream_of_sexpr algop_module_doc in	  
 	let fmt = Parse_io.formatter_of_galax_output gout in
 	  (Serialization.fserialize_resolved_xml_stream proc_ctxt fmt rxmlstr;
@@ -705,38 +713,47 @@ let serialize_logical_algebra_statement proc_ctxt output stmt =
 let occurrence_sym = rattr_symbol occurrence_attr_name 
 let unbox_occurrence_option attrs =
   match attrs with 
-    | [] -> None
-    |[(n,str)] when n = occurrence_sym ->        
-       begin
-	 match str with
-	   | "None" -> None
-	   | "*" -> Some (UP_INT 0, UNBOUNDED) 
-	   | "+" -> Some (UP_INT 1, UNBOUNDED)
-	   | "?" -> Some (UP_INT 0, UP_INT 1)
-	   | _   -> raise (Query (Algebra_Parsing_Error ("Unknown Occurence Marker")))
-       end
-    | _ -> raise (Query (Algebra_Parsing_Error ("Unknown Occurence Marker")))
+  | [] -> None
+  | [(_,str,s,ao,_)] ->
+      let n =
+	  match !ao with
+	  | None -> raise (Query (Algebra_Parsing_Error ("Looking for attribute")))
+	  | Some rat -> rat
+      in
+      if n = occurrence_sym
+      then
+	begin
+	  match str with
+	  | "None" -> None
+	  | "*" -> Some (UP_INT 0, UNBOUNDED) 
+	  | "+" -> Some (UP_INT 1, UNBOUNDED)
+	  | "?" -> Some (UP_INT 0, UP_INT 1)
+	  | _   -> raise (Query (Algebra_Parsing_Error ("Unknown Occurence Marker")))
+	end
+      else
+	raise (Query (Algebra_Parsing_Error ("Missing Occurence Marker")))
+  | _ -> raise (Query (Algebra_Parsing_Error ("Missing Occurence Marker")))
 
 (* Relem symbol *)
 let unbox_relem_symbol attrs st =
-  let prefix = get_attr_from_attr_list attrs xml_prefix_of_string prefix_attr_name in
-  let (_,uri,ncname)   = get_attr_from_attr_list attrs parse_rqname_string rqname_attr_name in
+  let prefix = get_attr_from_attr_list attrs xml_prefix_of_string (Namespace_symbols.rattr_symbol prefix_attr_name) in
+  let (_,uri,ncname)   = get_attr_from_attr_list attrs parse_rqname_string (Namespace_symbols.rattr_symbol rqname_attr_name) in
     relem_symbol (prefix, uri, ncname)
 
 let relem_symbol_parser st =
   element_parser relem_elem_name (unbox_relem_symbol) "relem_symbol" st 
 
 let unbox_rattr_symbol attrs st =
-  let prefix = get_attr_from_attr_list attrs xml_prefix_of_string prefix_attr_name in
-  let (_,uri,ncname)   = get_attr_from_attr_list attrs parse_rqname_string rqname_attr_name in
+  let prefix = get_attr_from_attr_list attrs xml_prefix_of_string (Namespace_symbols.rattr_symbol prefix_attr_name) in
+  let (_,uri,ncname)   = get_attr_from_attr_list attrs parse_rqname_string (Namespace_symbols.rattr_symbol rqname_attr_name) in
     rattr_symbol (prefix, uri, ncname)
 
 let rattr_symbol_parser st =
   element_parser rattr_elem_name (unbox_rattr_symbol) "rattr_symbol" st
 
 let unbox_rtype_symbol attrs st = 
-  let prefix = get_attr_from_attr_list attrs xml_prefix_of_string prefix_attr_name in
-  let (_,uri,ncname)   = get_attr_from_attr_list attrs parse_rqname_string rqname_attr_name in
+  let prefix = get_attr_from_attr_list attrs xml_prefix_of_string (Namespace_symbols.rattr_symbol prefix_attr_name) in
+  let (_,uri,ncname)   = get_attr_from_attr_list attrs parse_rqname_string (Namespace_symbols.rattr_symbol rqname_attr_name) in
     rtype_symbol (prefix, uri, ncname)
 
 let rtype_symbol_parser st =
@@ -795,7 +812,7 @@ let ait_typeref_parser st =
 
 (* Processing Instruction *)
 let unbox_ait_processing_intruction attrs st =
-  let pi = get_opt_attr_from_attr_list attrs string_id pi_arg_attr_name in
+  let pi = get_opt_attr_from_attr_list attrs string_id (Namespace_symbols.rattr_symbol pi_arg_attr_name) in
   APIKind pi
 
 let ait_processing_instruction_parser st =
@@ -929,10 +946,10 @@ let unbox_optasequencetype st =
     None
 
 (* Functions for parsing the Datamodel signatures *)
-let parse_input_sig (st: resolved_sax_event Stream.t) = 
+let parse_input_sig (st: sax_event Stream.t) = 
   let attrs = start_element (alg_elem input_datamodel_elem_name) st in
-  let index = get_attr_from_attr_list attrs int_of_string index_attr_name in
-  let datamodel = get_attr_from_attr_list attrs physical_type_of_string datamodel_attr_name in
+  let index = get_attr_from_attr_list attrs int_of_string (Namespace_symbols.rattr_symbol index_attr_name) in
+  let datamodel = get_attr_from_attr_list attrs physical_type_of_string (Namespace_symbols.rattr_symbol datamodel_attr_name) in
   let _ = consume_end_element st in
     datamodel, index
 
@@ -955,24 +972,24 @@ let unbox_input_signature in_sigs str =
 let parse_output_sig st = 
   let attrs = start_element (alg_elem output_datamodel_elem_name) st in
   let _ = consume_end_element st in
-    get_attr_from_attr_list attrs physical_type_of_string datamodel_attr_name
+    get_attr_from_attr_list attrs physical_type_of_string (Namespace_symbols.rattr_symbol datamodel_attr_name)
 
 
 let parse_element_of_expr_eval_sig st =
   let attrs = start_element (alg_elem datamodel_signature) st in
-  let cardinality = get_attr_from_attr_list attrs get_cardinality arg_count_attr_name in 
+  let cardinality = get_attr_from_attr_list attrs get_cardinality (Namespace_symbols.rattr_symbol arg_count_attr_name) in 
     (* This implicitly checks the cardinality of the inputs *)
   let input_sigs = get_multiple cardinality parse_input_sig st in 
   let output_sig = parse_output_sig st in
   let _ = consume_end_element st in
 
-  let inputs = get_attr_from_attr_list attrs (unbox_input_signature input_sigs) arg_count_attr_name in
+  let inputs = get_attr_from_attr_list attrs (unbox_input_signature input_sigs) (Namespace_symbols.rattr_symbol arg_count_attr_name) in
     inputs, output_sig 
 
 
 (* Function Type Signature *)
 let unbox_input_signature attrs st =
-  let _ = get_attr_from_attr_list attrs int_of_string index_attr_name in
+  let _ = get_attr_from_attr_list attrs int_of_string (Namespace_symbols.rattr_symbol index_attr_name) in
     unbox_optasequencetype st    
 
 let input_signature_parser st =
@@ -988,9 +1005,9 @@ let output_signature_parser st =
 
 (* Function Singature parser *)
 let unbox_function_signature attrs st =
-  let arity = get_attr_from_attr_list attrs int_of_string arity_attr_name in
-  let fname  = get_attr_from_attr_list attrs parse_function_rqname_string fn_name_attr_name in
-  let upd = match get_attr_from_attr_list attrs (fun x -> x) updating_attr_name with 
+  let arity = get_attr_from_attr_list attrs int_of_string (Namespace_symbols.rattr_symbol arity_attr_name) in
+  let fname  = get_attr_from_attr_list attrs parse_function_rqname_string (Namespace_symbols.rattr_symbol fn_name_attr_name) in
+  let upd = match get_attr_from_attr_list attrs (fun x -> x) (Namespace_symbols.rattr_symbol updating_attr_name) with 
     | "yes" -> Updating
     | _ -> NonUpdating
   in     
@@ -1004,8 +1021,8 @@ let function_signature_parser st =
 (* Tuple Name parsing *)
 
 let unbox_tuple_slot attrs st =
-  let tindex = get_attr_from_attr_list attrs int_of_string index_attr_name in
-  let tname  = get_attr_from_attr_list attrs parse_rqname_string var_attr_name in
+  let tindex = get_attr_from_attr_list attrs int_of_string (Namespace_symbols.rattr_symbol index_attr_name) in
+  let tname  = get_attr_from_attr_list attrs parse_rqname_string (Namespace_symbols.rattr_symbol var_attr_name) in
   let odt    = unbox_optasequencetype st in
     (tindex, (odt,tname))
 
@@ -1022,7 +1039,7 @@ let unbox_tuple_names  arity st =
 (* Node Test Parsing *)
   
 let unbox_name_test attrs st = 
-  let qn = get_attr_from_attr_list attrs parse_rqname_string name_test_attr_name in
+  let qn = get_attr_from_attr_list attrs parse_rqname_string (Namespace_symbols.rattr_symbol name_test_attr_name) in
     APNameTest (relem_symbol qn)
 
 let name_test_parser st =
@@ -1032,7 +1049,7 @@ let unbox_pi_kind_test attrs st =
   if attrs = [] then
     None
   else
-    Some (get_attr_from_attr_list attrs string_id pi_kind_attr_name)
+    Some (get_attr_from_attr_list attrs string_id (Namespace_symbols.rattr_symbol pi_kind_attr_name))
 
 let pi_kind_parser st =
   element_parser pi_kind_test_elem_name unbox_pi_kind_test "pi_kind" st
@@ -1066,8 +1083,8 @@ let opt_node_test_parser st =
 
 
 let twig_index_ctor attrs st =
-  let ix = get_attr_from_attr_list attrs int_of_string index_attr_name in
-  let ax = get_attr_from_attr_list attrs axis_of_string axis_attr_name in
+  let ix = get_attr_from_attr_list attrs int_of_string (Namespace_symbols.rattr_symbol index_attr_name) in
+  let ax = get_attr_from_attr_list attrs axis_of_string (Namespace_symbols.rattr_symbol axis_attr_name) in
   ax, ix
 
 
@@ -1090,8 +1107,8 @@ let unbox_twig_node attrs st =
   let child_index = child_twig_parser st in
   let pred_index_list = pred_twig_parser st in
   let out_field = 
-    get_opt_attr_from_attr_list attrs parse_rqname_string out_field_attr_name in
-  let restore =  get_attr_from_attr_list attrs bool_of_string restore_attr_name in
+    get_opt_attr_from_attr_list attrs parse_rqname_string (Namespace_symbols.rattr_symbol out_field_attr_name) in
+  let restore =  get_attr_from_attr_list attrs bool_of_string (Namespace_symbols.rattr_symbol restore_attr_name) in
   {
     node_test = nt;
     out = out_field;
@@ -1111,7 +1128,7 @@ let rec tree_pattern_parser st =
 (* Typeswitch parsing *)
 
 let unbox_typeswitch_case attrs st =
-  let variable = get_opt_attr_from_attr_list attrs parse_rqname_string var_attr_name in
+  let variable = get_opt_attr_from_attr_list attrs parse_rqname_string (Namespace_symbols.rattr_symbol var_attr_name) in
   let vtype    = asequencetype_parser st in
   let apattern = { papattern_desc = ACase vtype;
 		   papattern_loc  = Finfo.bogus} in
@@ -1119,7 +1136,7 @@ let unbox_typeswitch_case attrs st =
     apattern, variable
 
 let unbox_typeswitch_default attrs st =
-  let variable = get_opt_attr_from_attr_list attrs parse_rqname_string var_attr_name in
+  let variable = get_opt_attr_from_attr_list attrs parse_rqname_string (Namespace_symbols.rattr_symbol var_attr_name) in
   let apattern = { papattern_desc = ADefault;
 		   papattern_loc  = Finfo.bogus} in
     apattern, variable
@@ -1140,7 +1157,7 @@ let unbox_typeswitch_branches arity st =
 
 (* Projection Parsing *)
 let unbox_project_name attrs st =
-  get_attr_from_attr_list attrs parse_rqname_string project_name_attr_name
+  get_attr_from_attr_list attrs parse_rqname_string (Namespace_symbols.rattr_symbol project_name_attr_name)
 
 let project_name_parser st = 
   element_parser project_elem_name unbox_project_name "project_name_parser" st
@@ -1154,8 +1171,8 @@ let rec unbox_project attrs st =
 
 (* OrderBy parsing *)
 let unbox_sort_spec attrs st =
-  let sk  = get_attr_from_attr_list attrs sortkind_of_string sort_kind_attr_name in
-  let esk = get_attr_from_attr_list attrs emptysortkind_of_string empty_sort_kind_attr_name in
+  let sk  = get_attr_from_attr_list attrs sortkind_of_string (Namespace_symbols.rattr_symbol sort_kind_attr_name) in
+  let esk = get_attr_from_attr_list attrs emptysortkind_of_string (Namespace_symbols.rattr_symbol empty_sort_kind_attr_name) in
     (sk, esk)
 
 let sort_spec_parser st =
@@ -1165,7 +1182,7 @@ let sort_spec_parser st =
 (* Grouping Operation *)
 (**********************)
 let unbox_variable_name attrs st =
-  get_attr_from_attr_list attrs parse_rqname_string vname_attr_name
+  get_attr_from_attr_list attrs parse_rqname_string (Namespace_symbols.rattr_symbol vname_attr_name)
 
 let named_variable_name_parser name st =
   element_parser name unbox_variable_name "named variable name" st
@@ -1174,7 +1191,7 @@ let variable_name_parser st =
   named_variable_name_parser vname_elem_name st 
 
 let unbox_variable_list attrs st =
-  let arity = get_attr_from_attr_list attrs int_of_string arity_attr_name in 
+  let arity = get_attr_from_attr_list attrs int_of_string (Namespace_symbols.rattr_symbol arity_attr_name) in 
     get_multiple arity variable_name_parser st
 
 let variable_list_parser name st =
@@ -1200,8 +1217,8 @@ let stable_of_string str =
 (* Predicates *)
 (**************)
 let rec unbox_simple_conjunct attrs st =  
-  let s = get_attr_from_attr_list attrs int_of_string simple_conjunct_start_attr_name in 
-  let e = get_attr_from_attr_list attrs int_of_string simple_conjunct_end_attr_name   in 
+  let s = get_attr_from_attr_list attrs int_of_string (Namespace_symbols.rattr_symbol simple_conjunct_start_attr_name) in 
+  let e = get_attr_from_attr_list attrs int_of_string (Namespace_symbols.rattr_symbol simple_conjunct_end_attr_name)   in 
   let _ = consume_end_element st in
     SimpleConjunct(s,e)
 
@@ -1232,7 +1249,7 @@ and box_pred_desc st =
 let parse_algop_header comp_ctxt st =
   let norm_ctxt = Compile_context.norm_context_from_compile_context comp_ctxt in
   let element_name, attrs = start_element_get_name st in
-  let parse_attrs x = get_attr_from_attr_list attrs x in
+  let parse_attrs x y = get_attr_from_attr_list attrs x (Namespace_symbols.rattr_symbol y) in
   let algop_name, indep_kind, dep_kind = 
     match (get_moniker_of_algop element_name) with 
       (* Algop Name, Indep Kind, Dep kind *)
@@ -1297,8 +1314,10 @@ let parse_algop_header comp_ctxt st =
 	AOEAnyElem (nsenv1,nsenv2), TwoSub_n, NoSub_n
 	  
     | AOEAttr_n -> 
+	(* Statically known namespaces *)
+	let nsenv = empty_nsenv in
 	let a_name = rattr_symbol_parser st in
-	AOEAttr a_name, ManySub_n, NoSub_n
+	AOEAttr (a_name,nsenv), ManySub_n, NoSub_n
 	  
     | AOEAnyAttr_n ->
 	let nsenv = empty_nsenv in
@@ -1621,14 +1640,14 @@ let header_of_prolog_decl op =
   | AOEVarDeclImported (ocdt, vn)
   | AOEVarDeclExternal (ocdt, vn) ->	  
       let e = box_optasequencetype ocdt in
-      let a_vn = variable_name_attr_name, (serializable_string_of_rqname vn) in
+      let a_vn = (Namespace_names.uqname_of_rqname variable_name_attr_name, (serializable_string_of_rqname vn), ref false, ref (Some (Namespace_symbols.rattr_symbol variable_name_attr_name)), ref None) in
       prolog_var_decl_external_name, a_vn :: [], e
   | AOEVarDecl( ocdt, vn ) ->
       let e = box_optasequencetype ocdt in
-      let a_vn = variable_name_attr_name, (serializable_string_of_rqname vn) in
+      let a_vn = (Namespace_names.uqname_of_rqname variable_name_attr_name, (serializable_string_of_rqname vn), ref false, ref (Some (Namespace_symbols.rattr_symbol variable_name_attr_name)), ref None) in
       prolog_var_decl_name, a_vn :: [], e
   | AOEValueIndexDecl kn ->
-      let attrs = (kname_attr_name, kn) :: [] in
+      let attrs = (Namespace_names.uqname_of_rqname kname_attr_name, kn, ref false, ref (Some (Namespace_symbols.rattr_symbol kname_attr_name)), ref None) :: [] in
       prolog_value_index_decl_name, attrs, []
   | AOENameIndexDecl rname ->
       let elems = box_relem_symbol rname in
@@ -1645,19 +1664,19 @@ let box_prolog_decl box_algop prolog_decl =
     attributes
   in
   let child_elements = sub_elem @ dep_exprs @ indep_exprs in
-    construct_element elem_name attributes child_elements
+    construct_element_top elem_name attributes child_elements
 
 let box_vars box_algop var_list =
   let all_vars = List.map (box_prolog_decl box_algop) var_list in
-  let attrs = [prolog_var_count_attr_name, (string_of_int (List.length all_vars))] in
-    construct_element prolog_vars_elem_name attrs all_vars
+  let attrs = [Namespace_names.uqname_of_rqname prolog_var_count_attr_name, (string_of_int (List.length all_vars)), ref false, ref (Some (Namespace_symbols.rattr_symbol prolog_var_count_attr_name)), ref None] in
+    construct_element_top prolog_vars_elem_name attrs all_vars
  
 let box_indices box_algop index_list =  
   let all_indices = List.map (box_prolog_decl box_algop) index_list in
   let attrs =
-    [prolog_index_count_attr_name, (string_of_int (List.length all_indices))]
+    [Namespace_names.uqname_of_rqname prolog_index_count_attr_name, (string_of_int (List.length all_indices)),ref false,  ref (Some (Namespace_symbols.rattr_symbol prolog_index_count_attr_name)), ref None]
   in
-  construct_element prolog_indices_elem_name attrs all_indices
+  construct_element_top prolog_indices_elem_name attrs all_indices
 
 let box_prolog box_algop prolog =
   let fns     = box_fns  box_algop prolog.palgop_prolog_functions in
@@ -1678,14 +1697,14 @@ let unbox_prolog_decl_header st =
    match (get_prolog_algop_moniker prolog_decl_name) with
    | AOEVarDeclExternal_n ->
        let odt = unbox_optasequencetype st in
-       let vn  = parse_attrs parse_rqname_string variable_name_attr_name in
+       let vn  = parse_attrs parse_rqname_string (Namespace_symbols.rattr_symbol variable_name_attr_name) in
        AOEVarDeclExternal (odt, vn), NoSub_n, NoSub_n, attrs
    | AOEVarDecl_n ->
        let odt = unbox_optasequencetype st in
-       let vn  = parse_attrs parse_rqname_string variable_name_attr_name in
+       let vn  = parse_attrs parse_rqname_string (Namespace_symbols.rattr_symbol variable_name_attr_name) in
        AOEVarDecl (odt, vn), OneSub_n, NoSub_n, attrs
    | AOEValueIndexDecl_n ->
-       let kn = parse_attrs (fun x -> x) kname_attr_name in
+       let kn = parse_attrs (fun x -> x) (Namespace_symbols.rattr_symbol kname_attr_name) in
        AOEValueIndexDecl kn, OneSub_n, OneSub_n, attrs
    | AOENameIndexDecl_n ->
        let e_name = relem_symbol_parser st in
@@ -1703,7 +1722,7 @@ let unbox_prolog_decl parse_algop st =
 (* Vars *)
 
 let unbox_module_var parse_algop attrs st = 
-  let n_vars = get_attr_from_attr_list attrs int_of_string prolog_var_count_attr_name in
+  let n_vars = get_attr_from_attr_list attrs int_of_string (Namespace_symbols.rattr_symbol prolog_var_count_attr_name) in
     get_multiple n_vars (unbox_prolog_decl parse_algop) st 
 
 let module_var_parser parse_algop st = 
@@ -1712,7 +1731,7 @@ let module_var_parser parse_algop st =
 (* Keys *)
 
 let unbox_module_index_definitions parse_algop attrs st = 
-  let count = get_attr_from_attr_list attrs int_of_string prolog_index_count_attr_name in
+  let count = get_attr_from_attr_list attrs int_of_string (Namespace_symbols.rattr_symbol prolog_index_count_attr_name) in
     get_multiple count (unbox_prolog_decl parse_algop) st 
     
 
@@ -1722,7 +1741,7 @@ let module_index_definitions_parser parse_algop st =
 (* Functions *)
 
 let unbox_function_body name parse_algop attrs st =
-  let aname, terms = List.split attrs in
+  let terms = List.map (fun (_,x,_,_,_) -> x) attrs in
   let body = 
     if (name = (alg_elem function_body_elem_name)) then 
       AOEFunctionUser(parse_algop st)
@@ -1743,7 +1762,7 @@ let function_body_parser parse_algop st =
 (*  element_parser function_body_elem_name (unbox_function_body parse_algop) "fn_body" st *)
 
 let unbox_function_decl parse_algop attrs st =
-  let name  = get_attr_from_attr_list attrs parse_function_rqname_string fn_name_attr_name in
+  let name  = get_attr_from_attr_list attrs parse_function_rqname_string (Namespace_symbols.rattr_symbol fn_name_attr_name) in
   let fname,arity,input_types, output_type, upd = function_signature_parser st in
   let input_types' = List.fold_left (fun cur_types opt ->
 				       match opt with 
@@ -1760,7 +1779,7 @@ let function_decl_parser parse_algop st =
   element_parser function_decl_elem_name (unbox_function_decl parse_algop) "function_decls" st
 
 let unbox_module_function parse_algop attrs st = 
-  let n_functions = get_attr_from_attr_list attrs int_of_string fn_count_attr_name in
+  let n_functions = get_attr_from_attr_list attrs int_of_string (Namespace_symbols.rattr_symbol fn_count_attr_name) in
     get_multiple n_functions (function_decl_parser parse_algop) st
 
 let module_function_parser parse_algop st =
@@ -1797,7 +1816,7 @@ let box_logical_algebra_module nsenv xmod =
 (*------------*)
 
 let unbox_module_statements parse_algop attrs st =
-  let n_statements = get_attr_from_attr_list attrs int_of_string number_of_statements_attr_name in
+  let n_statements = get_attr_from_attr_list attrs int_of_string (Namespace_symbols.rattr_symbol number_of_statements_attr_name) in
     get_multiple n_statements (expression_parser parse_algop) st
   
 let module_statements_parser parse_algop st =
@@ -1848,9 +1867,9 @@ let parse_logical_algebra_module proc_ctxt (comp_ctxt:Compile_context.logical_co
 *)
 let box_closure_environment nsenv var_value_pairs tuple_field_pairs =
   let cardinality = (List.length var_value_pairs) in 
-  let cardinality_attr = attribute_constructor (rtype_symbol arg_count_attr_name) 
+  let cardinality_attr = attribute_constructor (rtype_symbol arg_count_attr_name) nsenv
       (Cursor.cursor_of_singleton 
-	 (Streaming_util.fmktse_event (TSAX_atomicValue (new atomicInteger (Decimal._integer_of_int cardinality))) Finfo.bogus))
+	 (Streaming_util.fmkse_event (SAX_atomicValue (new atomicInteger (Decimal._integer_of_int cardinality))) Finfo.bogus))
   in
   let var_value_stream = 
     element_constructor Dm_atomic_util.default_no_uri_dm closure_var_sym nsenv
@@ -1858,9 +1877,9 @@ let box_closure_environment nsenv var_value_pairs tuple_field_pairs =
 	(Cursor.cursor_list_fold (List.map (Planio_physical_value.box_var_value nsenv) var_value_pairs))) 
   in
   let cardinality = (List.length tuple_field_pairs) in 
-  let cardinality_attr = attribute_constructor (rtype_symbol arg_count_attr_name) 
+  let cardinality_attr = attribute_constructor (rtype_symbol arg_count_attr_name) nsenv
       (Cursor.cursor_of_singleton 
-	 (Streaming_util.fmktse_event (TSAX_atomicValue (new atomicInteger (Decimal._integer_of_int cardinality))) Finfo.bogus))
+	 (Streaming_util.fmkse_event (SAX_atomicValue (new atomicInteger (Decimal._integer_of_int cardinality))) Finfo.bogus))
   in
   let tuple_field_stream = 
     element_constructor Dm_atomic_util.default_no_uri_dm closure_tuple_sym nsenv
@@ -1890,13 +1909,13 @@ let unbox_closure_env comp_ctxt st =
   print_dxq_debug ("Saw <Env>\n");
 
   let attrs = start_element (closure_var_sym) st in
-  let cardinality = get_attr_from_attr_list attrs (int_of_string) arg_count_attr_name in 
+  let cardinality = get_attr_from_attr_list attrs (int_of_string) (Namespace_symbols.rattr_symbol arg_count_attr_name) in 
   print_dxq_debug ("Var Cardinality "^(string_of_int cardinality)^"\n");
   let var_value_pairs = get_multiple cardinality (Planio_physical_value.unbox_var_value) st in 
   let _ = consume_end_element st in 
 
   let attrs = start_element (closure_tuple_sym) st in
-  let cardinality = get_attr_from_attr_list attrs (int_of_string) arg_count_attr_name in 
+  let cardinality = get_attr_from_attr_list attrs (int_of_string) (Namespace_symbols.rattr_symbol arg_count_attr_name) in 
   print_dxq_debug ("Tuple Cardinality "^(string_of_int cardinality)^"\n");
   let tuple_value_pairs = get_multiple cardinality (Planio_physical_value.unbox_var_value) st in 
   let _ = consume_end_element st in 
@@ -1921,6 +1940,16 @@ let parse_closure proc_ctxt (comp_ctxt:Compile_context.logical_compile_context) 
   let (dtdopt, the_stream) = Streaming_parse.open_xml_stream_from_io input in   
   let (env, plan)          = apply_parser_skip_document closure_parser comp_ctxt the_stream in
   let _                    = annotate_algebraic_expression plan in
-  (env, plan)
+  let env' =
+    let e1,e2 = env in
+    let e1' =
+      List.map (fun (x,y) -> Namespace_symbols.rattr_name x,y) e1
+    in
+    let e2' = 
+      List.map (fun (x,y) -> Namespace_symbols.rattr_name x,y) e2
+    in
+    (e1',e2')
+  in
+  (env', plan)
 
 

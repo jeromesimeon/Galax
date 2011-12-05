@@ -475,12 +475,12 @@ let rec compile_cexpr compile_ctxt cexpr =
 	  let dep = NoSub in
 	  let op_name = AOEAnyElem (nsenv1, nsenv2) in
 	  logical_aalgop_mkop op_name indep dep None eh fi    
-      | CEAttr (caname,cexpr_list) ->
+      | CEAttr (caname,nsenv,cexpr_list) ->
 	  let ao_list = List.map (compile_cexpr compile_ctxt) cexpr_list in
 	  let indep = ManySub (Array.of_list ao_list) in
 	  let dep = NoSub in
 	  let rattr_sym = Namespace_symbols.rattr_symbol caname in
-	  let op_name = AOEAttr rattr_sym in
+	  let op_name = AOEAttr (rattr_sym,nsenv) in
 	  logical_aalgop_mkop op_name indep dep None eh fi    
       | CEAnyAttr (cexpr1,nsenv,cexpr2) ->
 	  let ao1 = compile_cexpr compile_ctxt cexpr1 in

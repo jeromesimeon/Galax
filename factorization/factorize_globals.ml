@@ -294,9 +294,9 @@ let rec factor_globals_walker (genv:global_passed_env) cexpr =
       let fce2, renv2 = factor_globals_walker genv ce2 in 
       let renv        = combine_global_envs renv1 renv2 in 
       (build_unmodified_return (CEAnyElem (fce1, ns1, ns2, fce2))), renv
-  | CEAttr (name, cexprs) ->
+  | CEAttr (name, nsenv, cexprs) ->
       let fces,renv = factor_globals_walker_map genv cexprs in
-      (build_unmodified_return (CEAttr (name,fces))),renv
+      (build_unmodified_return (CEAttr (name,nsenv, fces))),renv
   | CEAnyAttr (ce1, nsenv, ce2) ->
       let fce1, renv1 = factor_globals_walker genv ce1 in
       let fce2, renv2 = factor_globals_walker genv ce2 in 

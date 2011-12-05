@@ -419,3 +419,36 @@ let rec flatten_bindings nsenv =
 
 let same_nsenv nsenv1 nsenv2 = (nsenv1 == nsenv2)
 
+(* Print a binding table *)
+
+
+open Format
+
+let print_bd i ff (prefix,uri) =
+  fprintf ff "%i: {%s}{%s}" i (string_of_prefix prefix) (string_of_uri uri)
+
+let rec print_bds i ff bds  =
+  match bds with
+  | [] -> ()
+  | [e] -> fprintf ff "%a" (print_bd i) e
+  | e :: es' ->
+      fprintf ff "%a@ %a" (print_bd i) e (print_bds (i+1)) es'
+
+let print_binding_table s ff bds =
+  fprintf ff "%s@\n" s;
+  fprintf ff "@[<hv 2>bindings {@,%a@;<0 -2>}@]@." (print_bds 0) bds
+
+let print_sa i ff (uqname,content) =
+  fprintf ff "%i: {%s}{%s}" i (string_of_uqname uqname) content
+
+let rec print_sas i ff sas  =
+  match sas with
+  | [] -> ()
+  | [e] -> fprintf ff "%a" (print_sa i) e
+  | e :: es' ->
+      fprintf ff "%a@ %a" (print_sa i) e (print_sas (i+1)) es'
+
+let print_special_attributes s ff sas =
+  fprintf ff "%s@\n" s;
+  fprintf ff "@[<hv 2>special {@,%a@;<0 -2>}@]@." (print_sas 0) sas
+

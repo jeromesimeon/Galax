@@ -39,15 +39,15 @@ open Physical_export_context
      XML stream.
    - Jerome *)
 
-let typed_sax_attribute_of_attribute_node attribute =
+let typed_sax_attribute_of_attribute_node nsenv attribute =
   let attr_name    = attribute#attrName() in
   let attr_content = attribute#string_value() in
   let attr_value   = attribute#export_typed_value() in
   let attr_type_annotation = attribute#node_type() in
-  (attr_name,attr_content,attr_type_annotation,attr_value)
+  (rattr_uname nsenv attr_name,attr_content,ref false,ref (Some attr_name), ref (Some (attr_type_annotation,attr_value)))
 
-let typed_sax_attributes_of_attribute_nodes attributes =
-  List.map typed_sax_attribute_of_attribute_node attributes
+let typed_sax_attributes_of_attribute_nodes nsenv attributes =
+  List.map (typed_sax_attribute_of_attribute_node nsenv) attributes
 
 let next_datamodel_event export_context =
   let current_cursor = get_current_cursor export_context in
@@ -76,7 +76,7 @@ let next_datamodel_event export_context =
 		    cursor_map (fun x -> Item_Node x) doc_children
 		  in
                   push_node_to_export_context export_context node sax_doc_children;
-		  Some (Streaming_util.mktse_event(Streaming_types.TSAX_startDocument (None,None, doc_base_uri)))
+		  Some (Streaming_util.mktse_event(Streaming_types.SAX_startDocument (None,None, doc_base_uri)))
 		end
 	    | ElementNodeKind ->
 		let enode = node#getElementNode() in
@@ -112,39 +112,40 @@ let next_datamodel_event export_context =
 		  in
 
 		  let elem_attributes = list_of_cursor "Dm_export.elem_attributes" (enode#attributes None) in
-		  let sax_elem_attributes =
-		    typed_sax_attributes_of_attribute_nodes elem_attributes
-		  in
 		  let nsenv = enode#namespace_environment() in
+		  let sax_elem_attributes =
+		    typed_sax_attributes_of_attribute_nodes nsenv elem_attributes
+		  in
 		  let has_element_content = enode#has_element_content() in
 		  let nilled_flag = enode#nilled() in
 		  let sax_elem =
-		    (elem_name,sax_elem_attributes,has_element_content,elem_base_uri,nsenv,nilled_flag,elem_type_annotation,elem_value)
+		    (relem_uname nsenv elem_name,sax_elem_attributes,ref has_element_content, ref [], ref (Some (elem_name,elem_base_uri,nsenv)),ref (Some (nilled_flag,elem_type_annotation,elem_value)))
 		  in
 		  push_node_to_export_context export_context node sax_elem_children;
-		  Some (Streaming_util.mktse_event (Streaming_types.TSAX_startElement sax_elem))
+		  Some (Streaming_util.mktse_event (Streaming_types.SAX_startElement sax_elem))
 		end
 	    | AttributeNodeKind ->
 		let anode = node#getAttributeNode() in
-		let sax_attribute = typed_sax_attribute_of_attribute_node anode in
-		Some (Streaming_util.mktse_event(Streaming_types.TSAX_attribute sax_attribute))
+		let nsenv = Namespace_context.default_xml_out_nsenv() in
+		let sax_attribute = typed_sax_attribute_of_attribute_node nsenv anode in
+		Some (Streaming_util.mktse_event(Streaming_types.SAX_attribute sax_attribute))
 	    | TextNodeKind ->
 		let tnode = node#getTextNode() in
 		let sax_text = tnode#string_value() in
-		Some (Streaming_util.mktse_event(Streaming_types.TSAX_characters sax_text))
+		Some (Streaming_util.mktse_event(Streaming_types.SAX_characters sax_text))
 	    | ProcessingInstructionNodeKind ->
 		let pinode = node#getProcessingInstructionNode() in
 		let pi_target = (pinode#target())#getAtomicString() in
 		let pi_value  = (pinode#content())#getAtomicString() in
-		Some (Streaming_util.mktse_event(Streaming_types.TSAX_processingInstruction (pi_target,pi_value)))
+		Some (Streaming_util.mktse_event(Streaming_types.SAX_processingInstruction (pi_target,pi_value)))
 	    | CommentNodeKind ->
 		let cnode = node#getCommentNode() in
 		let comment_value = cnode#string_value() in
-		Some (Streaming_util.mktse_event(Streaming_types.TSAX_comment comment_value))
+		Some (Streaming_util.mktse_event(Streaming_types.SAX_comment comment_value))
 	  end
       | AtomicValueKind ->
 	  let atomic = getAtomicValue item in
-	  Some (Streaming_util.mktse_event(Streaming_types.TSAX_atomicValue atomic))
+	  Some (Streaming_util.mktse_event(Streaming_types.SAX_atomicValue atomic))
     end
 
 let next_event export_context n =

@@ -26,9 +26,9 @@ open Namespace_symbols
 open Error
 
 
-type typed_labeled_sax_event = typed_annotated_sax_event
+type typed_labeled_sax_event = sax_event
 
-type typed_labeled_xml_stream = typed_xml_stream
+type typed_labeled_xml_stream = xml_stream
 
 type depth_counter = int ref
 
@@ -63,13 +63,13 @@ type typed_of_labeled_typed_context = {
 (*****************)
 
 let get_flag labeled_event =
-  Sax_annot.get_stream_label_annot labeled_event.tse_annot
+  Sax_annot.get_stream_label_annot labeled_event.se_annot
 
 let set_flag labeled_event =
-  Sax_annot.set_stream_label_annot labeled_event.tse_annot true
+  Sax_annot.set_stream_label_annot labeled_event.se_annot true
 
 let unset_flag labeled_event =
-  Sax_annot.set_stream_label_annot labeled_event.tse_annot false
+  Sax_annot.set_stream_label_annot labeled_event.se_annot false
 
 
 (************************)
@@ -80,7 +80,7 @@ let default_typed_labeled_of_typed_context () =
   ref 0
 
 let default_typed_of_typed_labeled_context chunks csize inc =
-  let init = Streaming_util.fmktse_event TSAX_hole Finfo.bogus in
+  let init = Streaming_util.fmkse_event SAX_hole Finfo.bogus in
   unset_flag init; 
   (* num_chunks, chunk_size, increment *)
   (* 20 500 5 *)
@@ -134,9 +134,9 @@ let typed_labeled_of_typed_xml_stream_internal typed_xml_stream tlt_context =
   let next_event input_stream () =
     try
       let event = Cursor.cursor_next input_stream in
-	match event.tse_desc with
-	  | TSAX_startDocument _
-	  | TSAX_startElement _ ->
+	match event.se_desc with
+	  | SAX_startDocument _
+	  | SAX_startElement _ ->
 	      begin
 		increase_depth_counter tlt_context;
 		if is_depth_one tlt_context
@@ -147,8 +147,8 @@ let typed_labeled_of_typed_xml_stream_internal typed_xml_stream tlt_context =
 		  (unset_flag event;
 		   Some event)
 	      end
-	  | TSAX_endDocument
-	  | TSAX_endElement ->
+	  | SAX_endDocument
+	  | SAX_endElement ->
 	      begin
 		decrease_depth_counter tlt_context;
 		if is_depth_zero tlt_context
@@ -181,13 +181,13 @@ let next_buffered_event_track_depth ttl_context =
   let depth_counter = ttl_context.buffer_output_depth_counter in
   let labeled_event = Dynamic_buffer.next buffer in
     begin
-      match labeled_event.tse_desc with
-	| TSAX_startElement _ ->
+      match labeled_event.se_desc with
+	| SAX_startElement _ ->
 	    increase_depth_counter depth_counter
-	| TSAX_endElement ->
+	| SAX_endElement ->
 	    decrease_depth_counter depth_counter
-	| TSAX_startDocument _
-	| TSAX_endDocument ->
+	| SAX_startDocument _
+	| SAX_endDocument ->
 	    raise (Query (Streaming_XPath "Should not have document events in the buffer."))
 	| _ -> ()
     end;
@@ -226,8 +226,8 @@ let buffer labeled_event ttl_context =
    is to be buffered; records the buffer position iff a start event's flag is set *)
 let consider_buffering labeled_event ttl_context =
   let depth_counter = ttl_context.buffer_input_depth_counter in
-    match labeled_event.tse_desc with
-      | TSAX_startElement _ ->
+    match labeled_event.se_desc with
+      | SAX_startElement _ ->
 	  let is_flag_set = get_flag labeled_event in
 	    if is_depth_zero depth_counter
 	    then
@@ -249,7 +249,7 @@ let consider_buffering labeled_event ttl_context =
 		buffer labeled_event ttl_context
 	      end
 
-      | TSAX_endElement ->
+      | SAX_endElement ->
 	  if is_depth_greater_zero depth_counter
 	  then
 	    begin
@@ -257,8 +257,8 @@ let consider_buffering labeled_event ttl_context =
 	      buffer labeled_event ttl_context
 	    end
 
-      | TSAX_startDocument _
-      | TSAX_endDocument ->
+      | SAX_startDocument _
+      | SAX_endDocument ->
 	  raise (Query (Streaming_XPath "Should never consider buffering document events."))
 
       | _ ->
@@ -287,9 +287,9 @@ let next_event_track_toplevel input_stream ttl_context =
   try
     let labeled_event = Cursor.cursor_next input_stream in
     let depth_counter = ttl_context.toplevel_depth_counter in
-      match labeled_event.tse_desc with
-	| TSAX_startDocument _
-	| TSAX_startElement _ ->
+      match labeled_event.se_desc with
+	| SAX_startDocument _
+	| SAX_startElement _ ->
 	    increase_depth_counter depth_counter;
 	    if is_depth_greater_one depth_counter
 	    then
@@ -299,8 +299,8 @@ let next_event_track_toplevel input_stream ttl_context =
 		unset_flag labeled_event
 	      end;
 	    Some labeled_event
-	| TSAX_endDocument
-	| TSAX_endElement ->
+	| SAX_endDocument
+	| SAX_endElement ->
 	    decrease_depth_counter depth_counter;
 	    if is_depth_greater_zero depth_counter
 	    then
@@ -402,14 +402,14 @@ let slice_typed_xml_stream typed_labeled_xml_stream =
 	    else
 	      let next_event = Cursor.cursor_next typed_xml_stream in
 		begin
-		  match next_event.tse_desc with
-		    | TSAX_startDocument _
-		    | TSAX_startElement _
-		    | TSAX_startEncl ->
+		  match next_event.se_desc with
+		    | SAX_startDocument _
+		    | SAX_startElement _
+		    | SAX_startEncl ->
 			depth := !depth + 1
-		    | TSAX_endDocument
-		    | TSAX_endElement
-		    | TSAX_endEncl ->
+		    | SAX_endDocument
+		    | SAX_endElement
+		    | SAX_endEncl ->
 			depth := !depth - 1;
 		    | _ -> ()
 		end;
@@ -472,17 +472,17 @@ let first_item_typed_labeled_xml_stream typed_labeled_xml_stream =
 	    else
 	      begin
 		begin
-		  match event.tse_desc with
-		    | TSAX_startDocument _
-		    | TSAX_startElement _
-		    | TSAX_startEncl ->
+		  match event.se_desc with
+		    | SAX_startDocument _
+		    | SAX_startElement _
+		    | SAX_startEncl ->
 			begin
 			  if !depth > 0 then unset_flag event;
 			  depth := !depth + 1
 			end
-		    | TSAX_endDocument
-		    | TSAX_endElement
-		    | TSAX_endEncl ->
+		    | SAX_endDocument
+		    | SAX_endElement
+		    | SAX_endEncl ->
 			begin
 			  depth := !depth - 1;
 			  if !depth > 0 then unset_flag event

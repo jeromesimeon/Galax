@@ -31,11 +31,11 @@ open Xquery_type_core_ast_util
 (**************************)
 
 type validation_context =
-    { input_stream            : Streaming_types.resolved_xml_stream;      (* The input stream *)
-      validation_schema       : cxschema;        	  	    (* The schema itself *)
+    { input_stream            : Streaming_types.xml_stream;        (* The input stream *)
+      validation_schema       : cxschema;        	  	   (* The schema itself *)
       previous_content_models : (mixed * bool * cxtype) Stack.t;   (* Stack of remainding content models *)
-      validation_nsenv        : Namespace_context.nsenv Stack.t;    (* Stack of namespace environments *)
-      mutable buffered_events : Streaming_types.resolved_sax_event list } (* Buffered events *)
+      validation_nsenv        : Namespace_context.nsenv Stack.t;   (* Stack of namespace environments *)
+      mutable buffered_events : Streaming_types.sax_event list }  (* Buffered events *)
 
 (* Events *)
 

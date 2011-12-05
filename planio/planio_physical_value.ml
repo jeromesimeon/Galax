@@ -57,23 +57,23 @@ let rec aux_box_item_sequence_stream nsenv level st =
       begin
 	cursor_junk st; 
 	let (level', typed_events') = 
-	  match typed_event.tse_desc with
-	  | TSAX_atomicValue av ->
+	  match typed_event.se_desc with
+	  | SAX_atomicValue av ->
 	      (level, 
 	       if (level = 1) then 
 		 let type_sym = elem_sym_of_atomic_type (av#getAtomicValueKind()) in
 		 element_constructor Dm_atomic_util.default_no_uri_dm type_sym nsenv (Cursor.cursor_of_singleton typed_event)
 	       else
 		 cursor_of_singleton typed_event)
-	  | TSAX_attribute _ ->
+	  | SAX_attribute _ ->
 	      (level, 
 	       if (level = 1) then 
 		 element_constructor Dm_atomic_util.default_no_uri_dm closure_attribute_sym nsenv 
 		   (Cursor.cursor_of_singleton typed_event)
 	       else
 		 cursor_of_singleton typed_event)
-	  | TSAX_startElement _ -> (level+1, cursor_of_singleton typed_event)
-	  | TSAX_endElement -> (level-1, cursor_of_singleton typed_event)
+	  | SAX_startElement _ -> (level+1, cursor_of_singleton typed_event)
+	  | SAX_endElement -> (level-1, cursor_of_singleton typed_event)
 	  | _ -> (level, cursor_of_singleton typed_event)
 	in
 	cursor_append typed_events' (aux_box_item_sequence_stream nsenv level' st)
@@ -91,23 +91,28 @@ let rec aux_unbox_item_sequence_stream level match_level st =
       begin
 	cursor_junk st; 
 	let (level', typed_event') = 
-	  match typed_event.tse_desc with
-	  | TSAX_startElement (rsym,typed_sax_xml_attributes,has_element_content,base_uri,nsenv,_,_,_) -> 
+	  match typed_event.se_desc with
+	  | SAX_startElement (_,typed_sax_xml_attributes,has_element_content,_,eo,_) -> 
+	      let (rsym,nsenv) =
+		match !eo with
+		| None -> raise (Query(Internal_Error("Expected resolved XML event")))
+		| Some (rsym,_,nsenv) -> (rsym,nsenv)
+	      in
 	      begin
 		Debug.print_dxq_debug(Format.sprintf "Unbox %s at level %d\n" (symbol_prefix_string rsym) level);
 		if (level = match_level) then 
 		  try 
 		    (* Unbox an atomic-value *)
 		    let (rtype_sym, at) = atomic_type_of_elem_sym rsym in 
-		    match (cursor_next st).tse_desc with
-		    | TSAX_characters text_desc ->
+		    match (cursor_next st).se_desc with
+		    | SAX_characters text_desc ->
 			begin
 		    (* Instead of unboxing by hand, we should use schema validation...*)
 			  consume_typed_end_element st;
 			  Debug.print_dxq_debug("Cast "^text_desc^"\n");
 			  let bv = new atomicUntyped text_desc in
 			  let av = bv#cast_to nsenv rtype_sym at in 
-			  (level, Streaming_util.fmktse_event (TSAX_atomicValue av) typed_event.tse_loc)
+			  (level, Streaming_util.fmkse_event (SAX_atomicValue av) typed_event.se_loc)
 			end
 		    | _ -> raise (Query(Internal_Error("Expected character data in boxed XML event")))
 		  with
@@ -116,7 +121,7 @@ let rec aux_unbox_item_sequence_stream level match_level st =
 		    (* Unbox an attribute *)
 			if (Namespace_symbols.symbol_equal rsym closure_attribute_sym) then 
 			  let typed_event' = 
-			    (Streaming_util.fmktse_event (TSAX_attribute(List.hd typed_sax_xml_attributes)) Finfo.bogus) in
+			    (Streaming_util.fmkse_event (SAX_attribute(List.hd typed_sax_xml_attributes)) Finfo.bogus) in
 			  consume_typed_end_element st;
 			  (level, typed_event') 
 			else
@@ -125,7 +130,7 @@ let rec aux_unbox_item_sequence_stream level match_level st =
 		else 
 		  (level+1, typed_event)
 	      end
-	  | TSAX_endElement -> (level-1, typed_event)
+	  | SAX_endElement -> (level-1, typed_event)
 	  | _ -> (level, typed_event)
 	in
 	cursor_cons typed_event' (aux_unbox_item_sequence_stream level' match_level st)
@@ -205,9 +210,9 @@ let box_var_value nsenv (var, xml_value) =
   let items = Physical_xml_value.item_cursor_of_xml_value xml_value in 
   let typed_stream = Physical_export.typed_xml_stream_of_datamodel items in 
   let boxed_stream = aux_box_item_sequence_stream nsenv 1 typed_stream in
-  let var_name_attr = attribute_constructor closure_var_sym 
+  let var_name_attr = attribute_constructor closure_var_sym nsenv 
       (Cursor.cursor_of_singleton 
-	 (Streaming_util.fmktse_event (TSAX_atomicValue (new atomicString (serializable_string_of_rqname var))) Finfo.bogus))
+	 (Streaming_util.fmkse_event (SAX_atomicValue (new atomicString (serializable_string_of_rqname var))) Finfo.bogus))
   in
   (element_constructor Dm_atomic_util.default_no_uri_dm 
        closure_bind_sym nsenv (Cursor.cursor_append var_name_attr boxed_stream)) 
@@ -215,7 +220,7 @@ let box_var_value nsenv (var, xml_value) =
 let unbox_var_value st = 
   let attrs = start_element (closure_bind_sym) st in
 print_dxq_debug ("Saw <Bind>\n");
-  let var = get_attr_from_attr_list attrs (parse_rqname_string) closure_var_elem_name in 
+  let var = get_attr_from_attr_list attrs (fun x -> Namespace_symbols.rattr_symbol (parse_rqname_string x)) (Namespace_symbols.rattr_symbol closure_var_elem_name) in 
   let value_stream = parse_nested_substream 0 st in 
   (* Do we do validation of value stream here? *)
   let _ = consume_end_element st in 
@@ -251,18 +256,18 @@ let box_table_result field_types tv =
   let nsenv = Namespace_context.add_all_ns Namespace_context.empty_nsenv [(algebra_prefix, algebra_uri)]  in 
   let fields = List.map fst field_types in 
   let arity = (List.length field_types) in 
-  let arity_attr = attribute_constructor (rtype_symbol arity_attr_name) 
+  let arity_attr = attribute_constructor (rtype_symbol arity_attr_name) nsenv
       (Cursor.cursor_of_singleton 
-	 (Streaming_util.fmktse_event 
-	    (TSAX_atomicValue (new atomicInteger (Decimal._integer_of_int arity))) Finfo.bogus))
+	 (Streaming_util.fmkse_event 
+	    (SAX_atomicValue (new atomicInteger (Decimal._integer_of_int arity))) Finfo.bogus))
   in
 
   let tuple_list = Cursor.list_of_cursor "box_physical_table_value" tv in 
   let cardinality = (List.length tuple_list) in 
-  let cardinality_attr = attribute_constructor (rtype_symbol arg_count_attr_name) 
+  let cardinality_attr = attribute_constructor (rtype_symbol arg_count_attr_name) nsenv
       (Cursor.cursor_of_singleton 
-	 (Streaming_util.fmktse_event 
-	    (TSAX_atomicValue (new atomicInteger (Decimal._integer_of_int cardinality))) Finfo.bogus))
+	 (Streaming_util.fmkse_event 
+	    (SAX_atomicValue (new atomicInteger (Decimal._integer_of_int cardinality))) Finfo.bogus))
   in 
   let table_stream = 
     Cursor.cursor_list_fold
@@ -304,8 +309,8 @@ print_dxq_debug ("In tuple_parser\n");
 
 let parse_serialized_table st = 
   let attrs = start_element closure_table_sym st in 
-  let arity = get_attr_from_attr_list attrs (int_of_string) arity_attr_name in 
-  let cardinality = get_attr_from_attr_list attrs (int_of_string) arg_count_attr_name in 
+  let arity = get_attr_from_attr_list attrs (int_of_string) (Namespace_symbols.rattr_symbol arity_attr_name) in 
+  let cardinality = get_attr_from_attr_list attrs (int_of_string) (Namespace_symbols.rattr_symbol arg_count_attr_name) in 
   let tuple_cursor = get_multiple_cursor cardinality (tuple_parser arity) st in
   consume_end_element st;
   tuple_cursor 

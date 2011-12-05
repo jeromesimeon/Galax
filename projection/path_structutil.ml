@@ -82,72 +82,88 @@ let merge_actions a1 a2 =
 (* Navigation functions *)
 
 let node_sym_of_sax_event sax_event =
-  match sax_event.rse_desc with
-  | RSAX_startDocument (sax_xml_decl,_,_) ->
+  match sax_event.se_desc with
+  | SAX_startDocument (sax_xml_decl,_,_) ->
       None
-  | RSAX_endDocument ->
+  | SAX_endDocument ->
       None
-  | RSAX_startElement (relem_sym,_,_,_,_) ->
+  | SAX_startElement (_,_,_,_,reo,_) ->
+      let relem_sym =
+	match !reo with
+	| None -> raise (Query (Projection "Should not apply projection operation on an unresolved element!"))
+	| Some (relem_sym,_,_) -> relem_sym
+      in
       Some (RUnitElemSymbol relem_sym)
-  | RSAX_endElement ->
+  | SAX_endElement ->
       None
-  | RSAX_processingInstruction pi_desc ->
+  | SAX_processingInstruction pi_desc ->
       None
-  | RSAX_comment comment_desc ->
+  | SAX_comment comment_desc ->
       None
-  | RSAX_characters text_desc ->
+  | SAX_characters text_desc ->
       None
-  | RSAX_attribute (rattr_sym,_) ->
+  | SAX_attribute (_,_,s,rao,_) ->
+      let rattr_sym =
+	match !rao with
+	| None -> raise (Query (Projection "Should not apply projection operation on an unresolved attribute!"))
+	| Some rattr_sym -> rattr_sym
+      in
       Some (RUnitAttrSymbol rattr_sym)
-  | RSAX_atomicValue _ ->
+  | SAX_atomicValue _ ->
       raise (Query (Projection "Should not apply projection operation on an atomic value!"))
-  | RSAX_hole ->
+  | SAX_endEncl|SAX_startEncl ->
+      raise (Query (Projection "Should not apply projection operation on a stream with enclosed expr!"))
+  | SAX_hole ->
       raise (Query (Projection "Should not apply projection operation on a stream with holes!"))
 
 let pi_sym_of_sax_event sax_event =
-  match sax_event.rse_desc with
-  | RSAX_startDocument _ ->
+  match sax_event.se_desc with
+  | SAX_startDocument _ ->
       None
-  | RSAX_endDocument ->
+  | SAX_endDocument ->
       None
-  | RSAX_startElement _ ->
+  | SAX_startElement _ ->
       None
-  | RSAX_endElement ->
+  | SAX_endElement ->
       None
-  | RSAX_processingInstruction (pi_name,_) ->
+  | SAX_processingInstruction (pi_name,_) ->
       Some pi_name
-  | RSAX_comment _ ->
+  | SAX_comment _ ->
       None
-  | RSAX_characters _ ->
+  | SAX_characters _ ->
       None
-  | RSAX_attribute _ ->
+  | SAX_attribute _ ->
       None
-  | RSAX_atomicValue _ ->
+  | SAX_atomicValue _ ->
       raise (Query (Projection "Should not apply projection operation on an atomic value!"))
-  | RSAX_hole ->
+  | SAX_endEncl|SAX_startEncl ->
+      raise (Query (Projection "Should not apply projection operation on a stream with enclosed expr!"))
+  | SAX_hole ->
       raise (Query (Projection "Should not apply projection operation on a stream with holes!"))
 
 let node_kind_of_sax_event sax_event =
-  match sax_event.rse_desc with
-  | RSAX_startDocument _ ->
+  match sax_event.se_desc with
+  | SAX_startDocument _ ->
       DocumentNodeKind
-  | RSAX_endDocument ->
+  | SAX_endDocument ->
       DocumentNodeKind
-  | RSAX_startElement _ ->
+  | SAX_startElement _ ->
       ElementNodeKind
-  | RSAX_endElement ->
+  | SAX_endElement ->
       ElementNodeKind
-  | RSAX_processingInstruction _ ->
+  | SAX_processingInstruction _ ->
       ProcessingInstructionNodeKind
-  | RSAX_comment _ ->
+  | SAX_comment _ ->
       CommentNodeKind
-  | RSAX_characters _ ->
+  | SAX_characters _ ->
       TextNodeKind
-  | RSAX_attribute _ ->
+  | SAX_attribute _ ->
       AttributeNodeKind
-  | RSAX_atomicValue _ ->
+  | SAX_atomicValue _ ->
       raise (Query (Projection "Should not apply projection operation on an atomic value!"))
-  | RSAX_hole ->
+  | SAX_endEncl|SAX_startEncl ->
+      raise (Query (Projection "Should not apply projection operation on a stream with enclosed expr!"))
+  | SAX_hole ->
       raise (Query (Projection "Should not apply projection operation on a stream with holes!"))
 
 (* Whether a node test holds on a given sax event under a particular axis or not *)
@@ -517,8 +533,13 @@ let one_step_attribute_check rsym (path, subtree) =
 	    false
       end
 
-let one_step_attribute pfl (rsym,_) =
-  List.exists (one_step_attribute_check rsym) pfl
+let one_step_attribute pfl (_,_,s,rao,_) =
+  let rattr_sym =
+    match !rao with
+    | None -> raise (Query (Projection "Should not apply projection operation on an unresolved attribute!"))
+    | Some rattr_sym -> rattr_sym
+  in
+  List.exists (one_step_attribute_check rattr_sym) pfl
     
 
 (* -----------------------------------------------------------------------------

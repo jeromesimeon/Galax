@@ -47,15 +47,15 @@ let rec parse_nested_substream level st =
       else raise (Query (Algebra_Parsing_Error ("In parse_nested_substream. Stream is empty")))
   | Some event->
       begin
-	match event.rse_desc  with
-	| RSAX_endDocument ->
+	match event.se_desc  with
+	| SAX_endDocument ->
 	    if (level = 0) then (cursor_empty())
 	    else raise (Query (Algebra_Parsing_Error ("In parse_nested_substream. Premature end-document.")))
-	| RSAX_endElement  -> 
+	| SAX_endElement  -> 
 	    if (level = 0) then (cursor_empty())
 	    else
 	      (Stream.junk st; cursor_cons event (parse_nested_substream (level-1) st))
-   	| RSAX_startElement _ -> 
+   	| SAX_startElement _ -> 
 	     (Stream.junk st; cursor_cons event (parse_nested_substream (level+1) st))
 	| _ -> 
 	    (Stream.junk st; cursor_cons event (parse_nested_substream (level) st))
@@ -87,15 +87,20 @@ let rec start_typed_element_get_name_no_consume (st : Streaming_types.typed_xml_
   match v with
   | Some event ->
       begin
-	match event.tse_desc with 
-	  ((TSAX_startElement (e, attrs, has, baseuri, env, nilled, rtype, avl))) ->
+	match event.se_desc with 
+	  ((SAX_startElement (e, attrs, has, _, eo, et))) ->
+	    let e =
+	      match !eo with
+	      | None -> raise (Query (Algebra_Parsing_Error ("Element hasn't been resolved")))
+	      | Some (rel,_,_) -> rel
+	    in
 	    e, attrs
     (* Comments and characters are ignored *)
-	| (TSAX_comment _) 
-	| (TSAX_characters _) ->
+	| (SAX_comment _) 
+	| (SAX_characters _) ->
 	    Cursor.cursor_junk st;
 	    start_typed_element_get_name_no_consume st
-	| (TSAX_endElement ) ->
+	| (SAX_endElement ) ->
 	    raise (Query (Algebra_Parsing_Error ("Expecting Element start but found end element"))	)
 	| _ -> 
 	    raise (Query (Algebra_Parsing_Error ("Expecting Element start but did not find it")))
@@ -108,15 +113,20 @@ let rec start_element_get_name_no_consume st =
   match v with
   | Some event ->
       begin
-	match event.rse_desc with 
-	  ((RSAX_startElement (e, attrs, has, baseuri, env))) ->
+	match event.se_desc with 
+	  ((SAX_startElement (_, attrs, has, _, eo, _))) ->
+	    let e =
+	      match !eo with
+	      | None -> raise (Query (Algebra_Parsing_Error ("Element hasn't been resolved")))
+	      | Some (rel,_,_) -> rel
+	    in
 	    e, attrs
     (* Comments and characters are ignored *)
-	| (RSAX_comment _) 
-	| (RSAX_characters _) ->
+	| (SAX_comment _) 
+	| (SAX_characters _) ->
 	    Stream.junk st;
 	    start_element_get_name_no_consume st
-	| (RSAX_endElement ) ->
+	| (SAX_endElement ) ->
 	    raise (Query (Algebra_Parsing_Error ("Expecting Element start but found end element"))	)
 	| _ -> 
 	    raise (Query (Algebra_Parsing_Error ("Expecting Element start but did not find it")))
@@ -160,10 +170,10 @@ let rec is_element_end st =
     match v with
     | Some event ->
 	begin
-	  match event.rse_desc with 
-	  | RSAX_endElement -> true
-	  | (RSAX_comment _) 
-	  | (RSAX_characters _) ->
+	  match event.se_desc with 
+	  | SAX_endElement -> true
+	  | (SAX_comment _) 
+	  | (SAX_characters _) ->
 	      Stream.junk st;
 	      is_element_end st
 	  | _ -> false
@@ -171,15 +181,15 @@ let rec is_element_end st =
     | _ -> false
 
 (* Assert there is an endtag and consume it *)
-let rec consume_end_element (st:resolved_sax_event Stream.t) =
+let rec consume_end_element (st:sax_event Stream.t) =
   let v = Stream.peek st in
     match v with
     | Some event ->
 	begin
-	  match event.rse_desc with 
-	  | (RSAX_endElement) -> Stream.junk st
-	  | (RSAX_comment _) 
-	  | (RSAX_characters _) ->
+	  match event.se_desc with 
+	  | (SAX_endElement) -> Stream.junk st
+	  | (SAX_comment _) 
+	  | (SAX_characters _) ->
 	      Stream.junk st;
 	      consume_end_element st 
 	  | rse -> raise (Query (Algebra_Parsing_Error ("In consume_end_element: Expecting end tag but found "^(Streaming_util.string_of_resolved_sax_event_desc rse))))
@@ -192,10 +202,10 @@ let rec consume_typed_end_element st =
     match v with
     | Some event ->
 	begin
-	  match event.tse_desc with 
-	  | (TSAX_endElement) -> Cursor.cursor_junk st
-	  | (TSAX_comment _) 
-	  | (TSAX_characters _) ->
+	  match event.se_desc with 
+	  | (SAX_endElement) -> Cursor.cursor_junk st
+	  | (SAX_comment _) 
+	  | (SAX_characters _) ->
 	      Cursor.cursor_junk st;
 	      consume_typed_end_element st 
 	  | _ -> raise (Query (Algebra_Parsing_Error ("1. Expecting end tag - did not find it")))
@@ -211,12 +221,17 @@ let rec check_opt_element elem st =
     match v with
     | Some event ->
 	begin
-	  match event.rse_desc with 
-	  | (RSAX_comment _) 
-	  | (RSAX_characters _) ->
+	  match event.se_desc with 
+	  | (SAX_comment _) 
+	  | (SAX_characters _) ->
 	      Stream.junk st;
 	      check_opt_element elem st
-	  | ((RSAX_startElement (e, attrs, has, baseuri, env))) ->	
+	  | ((SAX_startElement (_, attrs, has, _, eo, _))) ->
+	      let e =
+		match !eo with
+		| None -> raise (Query (Algebra_Parsing_Error ("Element hasn't been resolved")))
+		| Some (rel,_,_) -> rel
+	      in
 	      e = relem
 	  | _ -> false
 	end
@@ -238,47 +253,77 @@ let element_parser elem_name fn error_msg st  =
 
 (* Attribute Parsing functions *)
 (* coerce_fun: string -> 'a, empty_fn: unit -> 'a *)
-let rec parse_attr_helper coerce_fn attr_name empty_fn attr_list =
+let rec parse_attr_helper coerce_fn (attr_name:Namespace_symbols.rattr_symbol) empty_fn attr_list =
+  let error_fn  () = 
+     raise (Query (Algebra_Parsing_Error ("Looking for attribute")))
+  in
   match attr_list with
       [] -> empty_fn ()
-    | (aname, value) :: rest when attr_name = aname -> 
-	coerce_fn value
-    | _ :: rest -> parse_attr_helper coerce_fn attr_name empty_fn rest 
+    | (_, value, special, ao, _) :: rest -> 
+	if !special
+	then parse_attr_helper coerce_fn attr_name empty_fn rest 
+	else
+	let aname =
+	  match !ao with
+	  | None -> error_fn ()
+	  | Some rat -> rat
+	in
+	if (attr_name = aname)
+	then coerce_fn value
+	else parse_attr_helper coerce_fn attr_name empty_fn rest 
 
 (* coerce_fun: string -> 'a *)
-let get_attr_from_attr_list attr_list coerce_fn a_name =
+let get_attr_from_attr_list attr_list coerce_fn (a_name:Namespace_symbols.rattr_symbol) =
   let error_fn  () = 
-     raise (Query (Algebra_Parsing_Error ("Looking for " ^ (prefixed_string_of_rqname a_name))))
+     raise (Query (Algebra_Parsing_Error ("Looking for attribute")))
   in
-  let attr_name = rattr_symbol a_name in
-  parse_attr_helper coerce_fn attr_name error_fn attr_list
+  parse_attr_helper coerce_fn a_name error_fn attr_list
  
 (* coerce_fun: string -> 'a *)
-let parse_get_typed_attr_from_attr_list (attr_list:Streaming_types.typed_sax_xml_attribute_forest) coerce_fn a_name =
-  let error_fn  () = 
-     raise (Query (Algebra_Parsing_Error ("Looking for " ^ (prefixed_string_of_rqname a_name))))
+let parse_get_typed_attr_from_attr_list (attr_list:Streaming_types.sax_xml_attribute_forest) coerce_fn (attr_name:Namespace_symbols.rattr_symbol) =
+  let error_fn () = 
+     raise (Query (Algebra_Parsing_Error ("Looking for attribute")))
   in
-  let attr_name = rattr_symbol a_name in
   let rec parse_attr_helper coerce_fn attr_name empty_fn attr_list =
     match attr_list with
       [] -> empty_fn ()
-    | (aname, value, _, _) :: rest when attr_name = aname -> 
-	coerce_fn value
-    | _ :: rest -> parse_attr_helper coerce_fn attr_name empty_fn rest 
+    | (_, value, s, ao, _) :: rest -> 
+	if !s
+	then parse_attr_helper coerce_fn attr_name empty_fn rest 
+	else
+	  let aname =
+	    match !ao with
+	    | None -> error_fn ()
+	    | Some rat -> rat
+	  in
+	  if (attr_name = aname)
+	  then coerce_fn value
+	  else parse_attr_helper coerce_fn attr_name empty_fn rest 
   in parse_attr_helper coerce_fn attr_name error_fn attr_list
 
-let get_opt_attr_from_attr_list attr_list coerce_fn a_name =
-  let attr_name = rattr_symbol a_name in
-  parse_attr_helper (fun x -> Some (coerce_fn x)) attr_name (fun () -> None) attr_list
+let get_opt_attr_from_attr_list attr_list coerce_fn (a_name:Namespace_symbols.rattr_symbol) =
+  parse_attr_helper (fun x -> Some (coerce_fn x)) a_name (fun () -> None) attr_list
+
+let construct_element_top name attrs sub_elements =
+  SElem(name, Some [], Namespace_context.empty_nsenv, attrs, Dm_atomic_util.default_no_uri_dm, sub_elements, ref None)
+
+let construct_attribute_top attr_name str = (attr_name, str)
+
+let construct_attribute attr_name str =
+  let uq = Namespace_names.uqname_of_rqname attr_name in
+  (uq,str,ref false,ref None, ref None)
 
 let construct_element name attrs sub_elements =
-  RSElem(name, [], attrs, Dm_atomic_util.default_no_uri_dm, sub_elements)
-
-let construct_attribute attr_name str = (attr_name, str)
+  let attr_fun (an,ac) =
+    let uq = Namespace_names.uqname_of_rqname an in
+    (uq,ac,ref false,ref None, ref None)
+  in
+  let attrs = List.map attr_fun attrs in
+  construct_element_top name attrs sub_elements
 
 (* This code is to check when materializations occur in the decorated plan and
    generate a comment appropriately *)
-let construct_comment msg x = [RSComment(msg ^ x)];;
+let construct_comment msg x = [SComment(msg ^ x)];;
 
 (****************************)
 (* Serialization Utilities  *)
@@ -301,15 +346,15 @@ let string_of_occurrence occ =
 	    raise (Query (Malformed_Type("Cannot have complex minOccurs and maxOccurs in a Datatype")))
       end
 
-let attribute_of_occurrence occ = occurrence_attr_name, (string_of_occurrence occ)
+let attribute_of_occurrence occ =
+  construct_attribute occurrence_attr_name (string_of_occurrence occ)
 
 (* Symbol (reelem/rattr) parsing functions *)
 let box_rtype_symbol rtype = 
   let prefix = prefix_attr_name, (xml_string_of_prefix (rtype_prefix rtype)) in
   let name   = rqname_attr_name, (serializable_string_of_rqname (rtype_name rtype)) in
   let attrs = prefix :: name :: [] in
-    
-    construct_element rtype_elem_name attrs [] 
+  construct_element rtype_elem_name attrs [] 
 
 let box_relem_symbol rname = 
   let prefix = prefix_attr_name, (xml_string_of_prefix (relem_prefix rname)) in
@@ -411,7 +456,7 @@ let box_asequencetype cdt =
   let cdtk,occ = cdt.pasequencetype_desc in
   let attrs = [attribute_of_occurrence occ] in
   let elems = [box_aitemtype cdtk] in
-    construct_element  asequencetype_elem_name attrs elems
+  construct_element_top asequencetype_elem_name attrs elems
 
 let box_optasequencetype ocdt = 
   match ocdt with 
@@ -427,10 +472,10 @@ let get_arity_attr attrs arity_attr_name algop_kind =
 
 let subexpr_attrs attr_name arity_attr_name sub =
   match sub with
-      NoSub     -> [(attr_name, "No")] 
-    | OneSub _  -> [(attr_name, "One")]
-    | TwoSub _  -> [(attr_name, "Two")] 
-    | ManySub x -> [(attr_name, "Many");(arity_attr_name, string_of_int (Array.length x))] 
+      NoSub     -> [(Namespace_names.uqname_of_rqname attr_name, "No", ref false, ref (Some (Namespace_symbols.rattr_symbol attr_name)), ref None)] 
+    | OneSub _  -> [(Namespace_names.uqname_of_rqname attr_name, "One", ref false, ref (Some (Namespace_symbols.rattr_symbol attr_name)), ref None)]
+    | TwoSub _  -> [(Namespace_names.uqname_of_rqname attr_name, "Two", ref false, ref (Some (Namespace_symbols.rattr_symbol attr_name)), ref None)] 
+    | ManySub x -> [(Namespace_names.uqname_of_rqname attr_name, "Many", ref false, ref (Some (Namespace_symbols.rattr_symbol attr_name)), ref None);(Namespace_names.uqname_of_rqname arity_attr_name, string_of_int (Array.length x), ref false, ref (Some (Namespace_symbols.rattr_symbol arity_attr_name)), ref None)] 
 
 let dep_subexpr_attrs sub =
   subexpr_attrs dep_attr_name dep_arity_attr_name sub
@@ -439,15 +484,8 @@ let indep_subexpr_attrs sub =
   subexpr_attrs indep_attr_name indep_arity_attr_name sub
 
 let get_dep_subexpr_kind_arity attrs k =
-(*  let k = get_attr_from_attr_list attrs string_id dep_attr_name in *)
-  let a = get_arity_attr attrs dep_arity_attr_name k in
-  (a)
+  get_arity_attr attrs (Namespace_symbols.rattr_symbol dep_arity_attr_name) k
 
 let get_indep_subexpr_kind_arity attrs k =
-(*  let k = get_attr_from_attr_list attrs string_id indep_attr_name in *)
-  let a = get_arity_attr attrs indep_arity_attr_name k in
-  (a)
-
-
-
+  get_arity_attr attrs (Namespace_symbols.rattr_symbol indep_arity_attr_name) k
 

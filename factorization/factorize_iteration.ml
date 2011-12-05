@@ -339,9 +339,9 @@ let rec factor_expression fenv ce =
 	      let fce2, renv2 = factor_expression fenv ce2 in
 	      let renv = combine_renvironments renv1 renv2 in
 	      (CEAnyElem (fce1, nsenv1, nsenv2, fce2)), renv
-	  | CEAttr (can, cexpr_l) -> 
+	  | CEAttr (can, nsenv, cexpr_l) -> 
 	      let fces, renv = factor_expression_list fenv cexpr_l in
-	      CEAttr (can, fces), renv
+	      CEAttr (can, nsenv, fces), renv
 	  | CEAnyAttr(ce1, nsenv, ce2) -> 	  
 	      let fce1, renv1 = factor_expression fenv ce1 in
 	      let fce2, renv2 = factor_expression fenv ce2 in

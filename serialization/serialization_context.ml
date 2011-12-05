@@ -72,7 +72,7 @@ let new_current_element_kind ek hec =
   match ek with
   | ElementContentInTextElement
   | ElementContentInContentElement ->
-      if hec then ElementContentInContentElement else TextElementInElementContent
+      if !hec then ElementContentInContentElement else TextElementInElementContent
   | TextElementInElementContent
   | TextElementInTextContent ->
       TextElementInTextContent

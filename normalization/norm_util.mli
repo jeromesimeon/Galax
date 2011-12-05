@@ -46,7 +46,7 @@ val build_core_every :
 
 (* Build a core attribute constructor *)
 val build_core_attribute_constructor :
-    norm_context -> caname -> acexpr list -> expr_handle -> Finfo.finfo -> acexpr
+    norm_context -> caname -> Namespace_context.nsenv -> acexpr list -> expr_handle -> Finfo.finfo -> acexpr
 
 (* Build a core element constructor *)
 val build_core_element_constructor :

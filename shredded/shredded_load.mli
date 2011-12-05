@@ -25,7 +25,7 @@ module type Shredded_Load_Functor_Sig =
 sig
 
   val load_shredded_store_from_resolved_stream : 
-    Nodeid_context.nodeid_context -> Streaming_types.resolved_xml_stream -> 
+    Nodeid_context.nodeid_context -> Streaming_types.xml_stream -> 
     string -> string -> int -> Shredded_store.shredded_store
     (** [load_shred_store_from_resolved_stream xml_stream dir
 	name] builds a new Shred store in directory [dir], with
@@ -34,12 +34,12 @@ sig
 
 
   val load_an_update_from_resolved_stream : 
-    Shredded_store.shredded_store -> Streaming_types.resolved_xml_stream -> Nodeid.nodeid -> Nodeid.nodeid Cursor.cursor (* cursor? *)
+    Shredded_store.shredded_store -> Streaming_types.xml_stream -> Nodeid.nodeid -> Nodeid.nodeid Cursor.cursor (* cursor? *)
 
 
   val close_shredded_store : Shredded_store.shredded_store -> unit
 
-  val load_shredded_store_from_ordered_typed_stream : Nodeid_context.nodeid_context -> Streaming_types.ordered_typed_xml_stream -> 
+  val load_shredded_store_from_ordered_typed_stream : Nodeid_context.nodeid_context -> Streaming_types.ordered_xml_stream -> 
     string -> string -> int -> Shredded_store.shredded_store  
 
 end

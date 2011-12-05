@@ -153,8 +153,8 @@ let rec unique_rename env cexpr =
 	CEElem (name,nsenv, (List.map (unique_rename env) cexpr_list))
     | CEAnyElem(ce1,nsenv1, nsenv2, ce2) -> 
 	CEAnyElem ((unique_rename env ce1), nsenv1, nsenv2, (unique_rename env ce2))
-    | CEAttr (ca, cexpr_list) ->
-	CEAttr (ca, (List.map (unique_rename env) cexpr_list))
+    | CEAttr (ca, nsenv, cexpr_list) ->
+	CEAttr (ca, nsenv, (List.map (unique_rename env) cexpr_list))
     | CEAnyAttr(ce1, nsenv, ce2) ->
 	CEAnyAttr ((unique_rename env ce1), nsenv, (unique_rename env ce2))
     | CEError cexpr_list -> CEError (List.map (unique_rename env) cexpr_list)

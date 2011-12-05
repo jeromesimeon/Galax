@@ -40,7 +40,7 @@ val print_path_sequence :
 (* step inside a document *)
 
 val inside_document :
-    Streaming_types.typed_annotated_sax_event -> rooted_path_sequence -> string -> path_fragment_sequence
+    Streaming_types.sax_event -> rooted_path_sequence -> string -> path_fragment_sequence
 
 (* step inside an external variable *)
 
@@ -52,12 +52,12 @@ val inside_variable :
 (* step inside an element *)
 
 val one_step :
-    Streaming_types.typed_annotated_sax_event -> path_fragment_sequence -> action
+    Streaming_types.sax_event -> path_fragment_sequence -> action
 
 (* step inside attributes *)
 
 val one_step_attribute :
-    path_fragment_sequence -> Streaming_types.typed_sax_xml_attribute -> bool
+    path_fragment_sequence -> Streaming_types.sax_xml_attribute -> bool
 
 val paths_from_path_annotation : string -> path_annotation -> paths
 

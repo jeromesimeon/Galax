@@ -19,34 +19,34 @@
 val box_tree_result :
     Xquery_physical_type_ast.physical_xml_type -> 
       Physical_value.xml_value -> 
-	Streaming_types.typed_xml_stream
+	Streaming_types.xml_stream
 
 val unbox_tree_result :
     Processing_context.processing_context ->
-      Streaming_types.resolved_xml_stream ->
+      Streaming_types.xml_stream ->
 	Physical_value.xml_value
 
 val box_table_result :
     Xquery_physical_type_ast.physical_tuple_type -> 
       Physical_value.tuple Cursor.cursor -> 
-	Streaming_types.typed_xml_stream
+	Streaming_types.xml_stream
 
 val unbox_table_result :
     Processing_context.processing_context ->
       Xquery_physical_type_ast.physical_tuple_type -> 
-	Streaming_types.resolved_xml_stream ->
+	Streaming_types.xml_stream ->
 	  Physical_value.tuple Cursor.cursor
 
 val unbox_and_load_item_sequence :  
-    Streaming_types.typed_xml_stream ->  
+    Streaming_types.xml_stream ->  
       Physical_value.item list
 
 val box_var_value :  
     Namespace_context.nsenv ->
       Namespace_names.rqname * Physical_value.xml_value ->
-	Streaming_types.typed_xml_stream
+	Streaming_types.xml_stream
 
 val unbox_var_value : 
-    Streaming_types.resolved_sax_event Stream.t ->
-      Namespace_names.rqname * Streaming_types.resolved_xml_stream
+    Streaming_types.sax_event Stream.t ->
+      Namespace_symbols.rattr_symbol * Streaming_types.xml_stream
 

@@ -29,11 +29,11 @@ val  import_schema : Processing_context.processing_context ->
       location hint, or if that fails, the location hints in the
       processing context. *)
 
-val  import_schema_document : Processing_context.processing_context -> Namespace_names.prefix option -> Streaming_types.resolved_xml_stream -> Xquery_type_ast.xschema
+val  import_schema_document : Processing_context.processing_context -> Namespace_names.prefix option -> Streaming_types.xml_stream -> Xquery_type_ast.xschema
   (** The stream corresponds to an opened document, i.e. the document
     root node is still present.  The root element must be <schema>. *)
 
-val  import_schema_element :  Processing_context.processing_context -> Namespace_names.prefix option -> Streaming_types.resolved_xml_stream -> Xquery_type_ast.xschema
+val  import_schema_element :  Processing_context.processing_context -> Namespace_names.prefix option -> Streaming_types.xml_stream -> Xquery_type_ast.xschema
   (** The stream is supposed to start with <schema> element, 
     i.e. the document root or parent elements have already been removed. 
     This is intended for importing embedded schemas. *)

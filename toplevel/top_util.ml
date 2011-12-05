@@ -62,11 +62,11 @@ let exec func proc_ctxt arg =
       with
       | Fn_error.Xquery_error msg -> Fn_error.downgrade_error proc_ctxt msg
     end; 
-    Monitor.serialize_monitor proc_ctxt;
+    Monitor.serialize_monitor (get_external_nsenv proc_ctxt) proc_ctxt;
   with
   | e ->
       begin
-	Monitor.serialize_monitor proc_ctxt;
+	Monitor.serialize_monitor (get_external_nsenv proc_ctxt) proc_ctxt;
 	eprintf_error "  " e;
 	fprintf (!Conf.glx_err_formatter) "@.";
 	exit 1;

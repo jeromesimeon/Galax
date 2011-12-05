@@ -78,7 +78,7 @@ let rec compute_free_vars cexpr =
 	List.concat (List.map compute_free_vars cexpr_list)
     | CEAnyElem(ce1,_, _, ce2) -> 
 	(compute_free_vars ce1) @ (compute_free_vars ce2)
-    | CEAttr (_, cexpr_list) ->
+    | CEAttr (_, _, cexpr_list) ->
 	List.concat (List.map compute_free_vars cexpr_list)
     | CEAnyAttr(ce1, nsenv, ce2) ->
 	(compute_free_vars ce1) @ (compute_free_vars ce2)

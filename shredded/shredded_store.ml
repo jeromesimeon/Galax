@@ -192,14 +192,14 @@ sig
   (*********************)
     
   val load_shredded_store_from_resolved_stream : 
-    Nodeid_context.nodeid_context -> Streaming_types.resolved_xml_stream -> 
+    Nodeid_context.nodeid_context -> Streaming_types.xml_stream -> 
     string -> string -> int -> shredded_store
     (** [load_shredded_store_from_resolved_stream xml_stream dir
 	name] builds a new Shred store in directory [dir], with
 	logical name [name], populated from the stream
 	[xml_stream] *)
 
-  val load_shredded_store_from_ordered_typed_stream : Nodeid_context.nodeid_context -> Streaming_types.ordered_typed_xml_stream -> 
+  val load_shredded_store_from_ordered_typed_stream : Nodeid_context.nodeid_context -> Streaming_types.ordered_xml_stream -> 
     string -> string -> int -> shredded_store  
 
   (*****************************************************************)
@@ -1914,7 +1914,7 @@ module Shredded_Store_Functor
 
       (* 3. Get the leading attributes in the resolved stream *)
       let _ =
-	List.map (fun (n,t) -> (n, Basetypes.text_of_xs_untyped t))
+	List.map (fun (n,t,s,c,d) -> (n, Basetypes.text_of_xs_untyped t,c,d))
 	  (Streaming_ops.consume_leading_attribute_events resolved_input_stream)
       in
 	

@@ -27,9 +27,9 @@ open Physical_value
 open Physical_name_index
 
 type document_id_generator = unit -> docid
-type load_xml_value_function = ordered_typed_xml_stream -> item list
-type load_node_sequence_function = ordered_typed_xml_stream -> Dm.node list
-type load_xml_document_function = ordered_typed_xml_stream -> item list
+type load_xml_value_function = ordered_xml_stream -> item list
+type load_node_sequence_function = ordered_xml_stream -> Dm.node list
+type load_xml_document_function = ordered_xml_stream -> item list
 
 let new_docid =
   (fun () -> (raise (Query (Internal_Error "No main-memory data model support compiled!!"))))

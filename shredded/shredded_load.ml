@@ -31,7 +31,7 @@ module type Shredded_Load_Functor_Sig =
 sig
   
   val load_shredded_store_from_resolved_stream : 
-    Nodeid_context.nodeid_context -> Streaming_types.resolved_xml_stream -> 
+    Nodeid_context.nodeid_context -> Streaming_types.xml_stream -> 
     string -> string -> int -> Shredded_store.shredded_store
     (** [load_shredded_store_from_resolved_stream xml_stream dir
 	name] builds a new Shred store in directory [dir], with
@@ -41,12 +41,12 @@ sig
 
   (* Returns a cursor but materializes inside *)
   val load_an_update_from_resolved_stream : 
-    Shredded_store.shredded_store -> Streaming_types.resolved_xml_stream -> Nodeid.nodeid -> Nodeid.nodeid Cursor.cursor
+    Shredded_store.shredded_store -> Streaming_types.xml_stream -> Nodeid.nodeid -> Nodeid.nodeid Cursor.cursor
 
   val close_shredded_store : Shredded_store.shredded_store -> unit
 
 
-  val load_shredded_store_from_ordered_typed_stream : Nodeid_context.nodeid_context -> Streaming_types.ordered_typed_xml_stream -> 
+  val load_shredded_store_from_ordered_typed_stream : Nodeid_context.nodeid_context -> Streaming_types.ordered_xml_stream -> 
     string -> string -> int -> Shredded_store.shredded_store  
 
 end
@@ -59,8 +59,8 @@ module Shredded_Load_Functor
     let rec next_event doc_stream =
       try
 	let e = Cursor.cursor_next doc_stream in
-	  match e.rse_desc with
-	    | RSAX_characters "" ->
+	  match e.se_desc with
+	    | SAX_characters "" ->
 		next_event doc_stream
 	    | _ -> e
       with
@@ -78,25 +78,25 @@ module Shredded_Load_Functor
 	match (Cursor.cursor_peek doc_stream) with
 	  | Some event ->
 	      begin
-		match event.rse_desc with
-		  | (RSAX_characters s) ->
+		match event.se_desc with
+		  | (SAX_characters s) ->
 		      begin
 			ignore(Cursor.cursor_next doc_stream);
 			next_event_discard_aux (previous ^ s) fi
 		      end
 		  | _ ->
-		      Some (fmkrse_event (RSAX_characters previous) fi)
+		      Some (fmkse_event (SAX_characters previous) fi)
 	      end
 	  | _ ->
-	      Some (fmkrse_event (RSAX_characters previous) fi)
+	      Some (fmkse_event (SAX_characters previous) fi)
       in
 	try
 	  let e = Cursor.cursor_next doc_stream in
-	    match e.rse_desc with
-	      | RSAX_characters "" ->
+	    match e.se_desc with
+	      | SAX_characters "" ->
 		  next_event_discard doc_stream
-	      | RSAX_characters s ->
-		  next_event_discard_aux s e.rse_loc
+	      | SAX_characters s ->
+		  next_event_discard_aux s e.se_loc
 	      | _ -> Some e
 	with
 	  | Stream.Failure ->
@@ -110,7 +110,12 @@ module Shredded_Load_Functor
     (* Builds an attribute node *)
     (****************************)
 
-    let load_sax_xml_attribute_in_shredded_store shredded_load_context parent (rattr_sym, attribute_content) =
+    let load_sax_xml_attribute_in_shredded_store shredded_load_context parent (_,attribute_content,special,att_opt,_) =
+      let rattr_sym =
+	match !att_opt with
+	| None -> raise (Query (Stream_Error "Stream is not well-formed in Loading"))
+	| Some att -> att
+      in
       let shredded_store = Shredded_Load_Context.get_shredded_store shredded_load_context in 
       let pre_order      = Shredded_Load_Context.new_preorder shredded_load_context in 
 	Shredded_store.store_attribute_node shredded_store pre_order parent rattr_sym attribute_content None
@@ -121,21 +126,28 @@ module Shredded_Load_Functor
 
     let load_one_event shredded_load_context xml_event =
       let shredded_store = Shredded_Load_Context.get_shredded_store shredded_load_context in 
-	match xml_event.rse_desc with
-	  | RSAX_startDocument (xml_decl,_,base_uri) ->	    
+	match xml_event.se_desc with
+	  | SAX_startDocument (xml_decl,_,base_uri) ->	    
 	      (* Base uri not stored *)
 	      let pre_order      = Shredded_Load_Context.new_preorder shredded_load_context in
 	      let doc_node       = Shredded_store.store_document_node shredded_store pre_order in
 		Shredded_Load_Context.update_current_parent_with_child shredded_load_context doc_node;
 		Shredded_Load_Context.become_next_parent shredded_load_context doc_node
 		  
-	  | RSAX_endDocument ->
+	  | SAX_endDocument ->
 	      let current_node   = Shredded_Load_Context.get_current_parent shredded_load_context in 
 	      let children       = Shredded_Load_Context.get_current_children shredded_load_context in 
 		Shredded_store.store_children shredded_store current_node (Cursor.cursor_of_list children);
 		Shredded_Load_Context.no_longer_parent shredded_load_context
 
-	  | RSAX_startElement (relem_sym, attributes, has_element_content, baseuri, delta_bindings) -> 
+	  | SAX_startElement (_, attributes, has_element_content, _, relem_sym_opt, _) -> 
+	      let relem_sym,baseuri,delta_bindings =
+		match !relem_sym_opt with
+		| None ->
+		    raise (Query (Stream_Error "Stream is not well-formed in Loading"))
+		| Some (relem_sym,base_uri,delta) -> 
+		    (relem_sym,base_uri,delta)
+	      in
 	      let pre_order      = Shredded_Load_Context.new_preorder shredded_load_context in 
 	      let parent         = Shredded_Load_Context.get_current_parent shredded_load_context in 
 		(********************************************************************)
@@ -165,6 +177,7 @@ module Shredded_Load_Functor
 				     shredded_store pre_order parent relem_sym None new_nsid	
 		in
 		  (* Store its attributes *)
+		let attributes = List.filter (fun (_,_,special,_,_) -> not !special) attributes in
 		let attr_nodeids = 
 		  List.map (load_sax_xml_attribute_in_shredded_store shredded_load_context (element_node,new_nsid)) attributes
 		in
@@ -175,40 +188,43 @@ module Shredded_Load_Functor
 		  (* We need to 'become the parent' to store them for now *)
 		  Shredded_Load_Context.update_attributes shredded_load_context attr_nodeids
 		    
-	  | RSAX_endElement ->
+	  | SAX_endElement ->
 	      let current_node = Shredded_Load_Context.get_current_parent shredded_load_context in 
 	      let children     = Shredded_Load_Context.get_current_children shredded_load_context in 
 		Shredded_store.store_children shredded_store current_node (Cursor.cursor_of_list children);
 		Shredded_Load_Context.remove_namespace_env shredded_load_context;
 		Shredded_Load_Context.no_longer_parent shredded_load_context 
 
-	  | RSAX_processingInstruction (target,content) -> 
+	  | SAX_processingInstruction (target,content) -> 
 	      let pre_order = Shredded_Load_Context.new_preorder shredded_load_context in 
 	      let parent    = Shredded_Load_Context.get_current_parent shredded_load_context in 
 	      let current   = Shredded_store.store_processing_instruction shredded_store pre_order parent (target,content) in
 		Shredded_Load_Context.update_current_parent_with_child shredded_load_context current
 		  
-	  | RSAX_comment c -> 
+	  | SAX_comment c -> 
 	      let pre_order  = Shredded_Load_Context.new_preorder shredded_load_context in 
 	      let parent     = Shredded_Load_Context.get_current_parent shredded_load_context in 
 	      let current    = Shredded_store.store_comment shredded_store pre_order parent c  in
 		Shredded_Load_Context.update_current_parent_with_child shredded_load_context current
 
-	  | RSAX_characters s ->
+	  | SAX_characters s ->
 	      let pre_order  = Shredded_Load_Context.new_preorder shredded_load_context in 
 	      let parent     = Shredded_Load_Context.get_current_parent shredded_load_context in 
 	      let current    = Shredded_store.store_text_node shredded_store pre_order parent s in 
 		Shredded_Load_Context.update_current_parent_with_child shredded_load_context current
 		  
-	  | RSAX_attribute a -> 
+	  | SAX_attribute a -> 
 	      (* This should never occur *)
 	      raise (Query (Shredded_Error "Does not support loading of streams containing attributes"))
 
-	  | RSAX_atomicValue av ->
+	  | SAX_atomicValue av ->
 	      (* Does not support this yet *)
 	      raise (Query (Shredded_Error "Does not support data model loading of non-node streams"))
 
-	  | RSAX_hole ->
+	  | SAX_endEncl|SAX_startEncl ->
+	      raise (Query (Shredded_Error "Cannot materialize an XML stream with enclosed expressions"))
+
+	  | SAX_hole ->
 	      raise (Query (Shredded_Error "Cannot materialize an XML stream with holes"))
 	      
   
@@ -224,8 +240,8 @@ module Shredded_Load_Functor
     let load_document_node_in_shredded_store_from_sax shredded_load_context doc_stream =
       (* Process the next event *)
       let xml_event = Cursor.cursor_next doc_stream in
-	match xml_event.rse_desc with
-	  | RSAX_startDocument (xml_decl,_,base_uri) ->
+	match xml_event.se_desc with
+	  | SAX_startDocument (xml_decl,_,base_uri) ->
 	      let shredded_store = Shredded_Load_Context.get_shredded_store shredded_load_context in 
 	      let pre_order      = Shredded_Load_Context.new_preorder shredded_load_context in 
 		Shredded_Load_Context.add_namespace_env shredded_load_context 
@@ -239,16 +255,18 @@ module Shredded_Load_Functor
 		  (* Return the shredded_store_handle. *)		  
 		  shredded_store
 		    
-	  | RSAX_endDocument
-	  | RSAX_startElement _
-	  | RSAX_endElement
-	  | RSAX_processingInstruction _
-	  | RSAX_comment _
-	  | RSAX_characters _
-	  | RSAX_attribute _
-	  | RSAX_atomicValue _ ->
+	  | SAX_endDocument
+	  | SAX_startElement _
+	  | SAX_endElement
+	  | SAX_processingInstruction _
+	  | SAX_comment _
+	  | SAX_characters _
+	  | SAX_attribute _
+	  | SAX_atomicValue _ ->
 	      raise (Query (Shredded_Error "Not a well-formed XML document"))
-	  | RSAX_hole ->
+	  | SAX_endEncl|SAX_startEncl ->
+	      raise (Query (Shredded_Error "Cannot materialize an XML stream with enclosed expressions"))
+	  | SAX_hole ->
 	      raise (Query (Shredded_Error "Cannot materialize an XML stream with holes"))
       
 
@@ -327,7 +345,17 @@ module Shredded_Load_Functor
       next_ordered_typed_event_discard doc_stream
 
     let load_ordered_typed_sax_xml_attribute_in_shredded_store shredded_load_context parent 
-      ((rattr_sym, attribute_content, type_annotation, atomicValue),(docid,pre_order,post)) =
+      ((_ , attribute_content, special, att_opt, atttype_opt),(docid,pre_order,post)) =
+      let rattr_sym =
+	match !att_opt with
+	| None -> raise (Query (Stream_Error "Stream is not well-formed in Loading"))
+	| Some att -> att
+      in
+      let type_annotation, atomicValue =
+	match !atttype_opt with
+	| None -> raise (Query (Stream_Error "Stream is not well-formed in Loading"))
+	| Some (rt,av) -> rt,av
+      in
       let pre_order = Shredded_renumber.Cell_As_Int64.of_int pre_order in
       let shredded_store = Shredded_Load_Context.get_shredded_store shredded_load_context in 
 	Shredded_store.store_attribute_node 
@@ -351,8 +379,21 @@ module Shredded_Load_Functor
 		Shredded_store.store_children shredded_store current_node (Cursor.cursor_of_list children);
 		Shredded_Load_Context.no_longer_parent shredded_load_context
 
-	  | OTSAX_startElement ((relem_sym, attributes, has_element_content, baseuri, delta_bindings, nilled, type_annotation, atomicValues), 
+	  | OTSAX_startElement ((_, attributes, has_element_content, _, relem_sym_opt, relem_typed_opt), 
 				(docid, pre_order)) ->
+	      let relem_sym,baseuri,delta_bindings =
+		match !relem_sym_opt with
+		| None ->
+		    raise (Query (Stream_Error "Stream is not well-formed in Loading"))
+		| Some (relem_sym,base_uri,delta) -> 
+		    (relem_sym,base_uri,delta)
+	      in
+	      let nilled, type_annotation, atomicValues =
+		match !relem_typed_opt with
+		| None ->
+		    raise (Query (Stream_Error "Stream is not well-formed in Loading"))
+		| Some (n,rts,al) -> n,rts,al 
+	      in
 	      let parent         = Shredded_Load_Context.get_current_parent shredded_load_context in 
 		(********************************************************************)
 		(* Store the namespace env for this node, this a little complicated *) 
@@ -381,6 +422,7 @@ module Shredded_Load_Functor
 		  parent relem_sym (Some (type_annotation,nilled,atomicValues)) new_nsid 
 		in
 		  (* Store its attributes *)
+		let attributes = List.filter (fun ((_,_,special,_,_),_) -> not !special) attributes in
 		let attr_nodeids = 
 		  List.map (load_ordered_typed_sax_xml_attribute_in_shredded_store shredded_load_context (element_node,new_nsid)) 
 		    attributes

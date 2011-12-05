@@ -2,6 +2,21 @@
 | Changelog |
  -----------
 
+Dec 5, 2011 - Jerome
+
+  o Build:
+      - Now builds on ocaml 3.12.1+rc1
+      - Upgraded all the major libraries:
+      	   - findlib 1.2.7
+           - pcre-ocaml 6.2.3
+           - pxp 1.2.2
+           - camomile 0.8.3
+
+  o Data model:
+      - Major revision of the streams support, now relying on a single
+        stream type, in an attempt to reduce the number of events
+        being copied.
+
 Mar 30, 2011 - Jerome
 
   o String matching:

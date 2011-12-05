@@ -94,8 +94,9 @@ let attributeNode(q, s, _) = (* Type is ignored !! - Jerome *)
   (* This name business is a mess -- element & attribute should take atomicQNames as arguments *)
   let atname = (q#getAtomicQName()) in
   let pv = Physical_value_util.physical_value_of_item_cursor (Physical_util._atomic_value (s :> atomicValue)) in
+  let init_nsenv = Namespace_context.default_xml_nsenv in
   let typed_xml_stream 	    = Physical_value_util.sax_value_of_physical_value pv in
-  let attr_typed_xml_stream = Streaming_constructors.attribute_constructor atname typed_xml_stream in
+  let attr_typed_xml_stream = Streaming_constructors.attribute_constructor atname init_nsenv typed_xml_stream in
   let new_galax_node =
     Physical_load.load_xml_value_from_typed_stream (load_context ()) attr_typed_xml_stream
   in

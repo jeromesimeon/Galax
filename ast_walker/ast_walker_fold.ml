@@ -98,7 +98,7 @@ let rec fold_over_cexpr loc agg val1 ce =
     (* Nary expressions *)
     | CEError cexprlist
     | CEElem (_, _, cexprlist)
-    | CEAttr (_, cexprlist)
+    | CEAttr (_, _, cexprlist)
     | CECall (_, cexprlist, _, _, _)
     | CEOverloadedCall (_, cexprlist, _) ->
 	List.fold_left (fold_over_cexpr loc agg) val1 cexprlist

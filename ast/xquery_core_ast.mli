@@ -142,7 +142,7 @@ and acexpr_desc =
        input expression *)
   | CEElem of cename * Namespace_context.nsenv * (acexpr list)
   | CEAnyElem of acexpr * Namespace_context.nsenv * Namespace_context.nsenv * acexpr (* static/in-scope namespaces *)
-  | CEAttr of caname * (acexpr list)
+  | CEAttr of caname * Namespace_context.nsenv * (acexpr list)
   | CEAnyAttr of acexpr * Namespace_context.nsenv * acexpr
   | CEError of acexpr list
   | CETreat of acexpr * (csequencetype * cxtype)

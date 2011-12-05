@@ -18,27 +18,17 @@
 
 (* Describes small fragments of XML with holes in them *)
 
-type rsattribute = Namespace_names.rqname * Datatypes.xs_untyped
-
-type rsattribute_forest = rsattribute list
-
-type rsexpr =
-  | RSDocument of (Dm_atomic.atomicAnyURI option ref * rsexpr list)
-  | RSElem of Namespace_names.rqname * Namespace_context.binding_table * rsattribute_forest * Dm_atomic.atomicAnyURI option ref * rsexpr list
-  | RSText of Datatypes.xs_untyped
-  | RSPI of (Namespace_names.ncname * Datatypes.xs_untyped)
-  | RSComment of Datatypes.xs_untyped
-  | RSHole
-
-(* The same after namespace resolution *)
-
-type sattribute = Namespace_symbols.rattr_symbol * Datatypes.xs_untyped
-
+(*
+type sattribute = Namespace_names.rqname * Datatypes.xs_untyped * Namespace_symbols.rattr_symbol option ref
 type sattribute_forest = sattribute list
+*)
+
+type sattribute_forest = Streaming_types.sax_xml_attribute_forest
+type sattribute = Streaming_types.sax_xml_attribute
 
 type sexpr =
   | SDocument of (Dm_atomic.atomicAnyURI option ref * sexpr list)
-  | SElem of Namespace_symbols.relem_symbol * Namespace_context.nsenv * sattribute_forest * Dm_atomic.atomicAnyURI option ref * sexpr list
+  | SElem of Namespace_names.rqname * (Namespace_context.binding_table option) * Namespace_context.nsenv * sattribute_forest * Dm_atomic.atomicAnyURI option ref * sexpr list * Namespace_symbols.relem_symbol option ref
   | SText of Datatypes.xs_untyped
   | SPI of (Namespace_names.ncname * Datatypes.xs_untyped)
   | SComment of Datatypes.xs_untyped

@@ -133,7 +133,7 @@ let rec annotate_cexpr (annotate_ctxt : 'a annotation_context) (ce : acexpr) =
 	  annotate_cexpr annotate_ctxt cexpr1 ;
 	  annotate_cexpr annotate_ctxt cexpr2 
 	end
-    | CEAttr (rattr_symbol, cexprlist)->
+    | CEAttr (rattr_symbol, nsenv, cexprlist)->
 	List.iter (annotate_cexpr annotate_ctxt) cexprlist 
     | CEAnyAttr (cexpr1, nsenv, cexpr2) ->
 	begin

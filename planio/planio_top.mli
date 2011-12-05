@@ -27,7 +27,7 @@ open Xquery_algebra_ast
 val box_logical_algebra_statement  : 
     Namespace_context.nsenv -> 
       Algebra_type.algop_expr ->
-	Streaming_types.resolved_xml_stream
+	Streaming_types.xml_stream
 
 val serialize_logical_algebra_statement : 
     Processing_context.processing_context -> 
@@ -48,7 +48,7 @@ val parse_logical_algebra_statement :
 val box_logical_algebra_module : 
     Namespace_context.nsenv -> 
       ('a,'b, 'c) Xquery_algebra_ast.aalgop_xmodule -> 
-	Streaming_types.resolved_xml_stream
+	Streaming_types.xml_stream
 
 val parse_logical_algebra_module :
     Processing_context.processing_context -> 
@@ -64,23 +64,22 @@ val box_closure_environment :
   Namespace_context.nsenv ->
     (Xquery_common_ast.cvname * Physical_value.xml_value) list ->
       (Xquery_common_ast.cvname * Physical_value.xml_value) list ->
-	Streaming_types.resolved_xml_stream
+	Streaming_types.xml_stream
 
 val box_closure : 
     Namespace_context.nsenv ->
     (* environment stream *)              
-      Streaming_types.resolved_xml_stream -> 
+      Streaming_types.xml_stream -> 
       (* plan stream *) 
-	Streaming_types.resolved_xml_stream ->       
+	Streaming_types.xml_stream ->       
         (* closure stream *)
-	  Streaming_types.resolved_xml_stream
+	  Streaming_types.xml_stream
 
 val parse_closure:
     Processing_context.processing_context -> 
       Compile_context.logical_compile_context -> 
 	Galax_io.input_spec ->
-    (* ((Variable, Value) list * (Tuple-field Value) list) * Algebraic plan *)
-	  ((Namespace_names.rqname * Streaming_types.resolved_xml_stream) list * 
-	     (Namespace_names.rqname * Streaming_types.resolved_xml_stream) list) *
+	  ((Namespace_names.rqname * Streaming_types.xml_stream) list * 
+	     (Namespace_names.rqname * Streaming_types.xml_stream) list) *
 	    Ast_logical_algebra_types.logical_algop_expr
 

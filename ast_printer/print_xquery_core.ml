@@ -249,7 +249,7 @@ let print_cexpr ff e print_annot =
 	  | _ ->
 	      fprintf ff "@[<hv 2>element {@,%a@;<0 -2>} {@,%a@;<0 -2>}@]" print_single_enclosed_cexpr e1 print_single_enclosed_cexpr e2
 	end
-    | CEAttr(l,el) ->
+    | CEAttr(l,nsenv,el) ->
 	begin
 	  match el with
 	  | [] ->

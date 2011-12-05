@@ -41,6 +41,6 @@ val build_export_context : Physical_value.item Cursor.cursor -> export_context
 
 val get_current_cursor           : export_context -> Physical_value.item Cursor.cursor
 val push_node_to_export_context  : export_context -> Dm.node -> Physical_value.item Cursor.cursor -> unit
-val pop_node_from_export_context : export_context -> Streaming_types.typed_annotated_sax_event option
+val pop_node_from_export_context : export_context -> Streaming_types.sax_event option
 
 

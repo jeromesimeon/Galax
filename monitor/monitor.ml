@@ -398,106 +398,111 @@ let string_of_memory memory =
   Format.sprintf "%.3fK" kilo_bytes
 
 let elem_name name = (Namespace_builtin.glx_prefix, Namespace_builtin.glx_uri, name)
-let attr_name name = (Namespace_builtin.glx_prefix, Namespace_builtin.glx_uri, name)
+let attr_name name content =
+  let uqname = (Namespace_builtin.glx_prefix, name) in
+  let rsym = Namespace_symbols.rattr_symbol
+      (Namespace_builtin.glx_prefix, Namespace_builtin.glx_uri, name)
+  in
+  (uqname,content,ref false,ref (Some rsym), ref None)
 
 let sum_document_stats key point1 stats_item = sum_relative_points point1.relative_stats stats_item
 
-let elements_of_stats_item stats_item = 
-  [ RSElem (elem_name "allocated_memory", [], [], Dm_atomic_util.default_no_uri_dm, [RSText (string_of_memory stats_item.glx_total_memory)]) ]
+let elements_of_stats_item nsenv stats_item = 
+  [ SElem (elem_name "allocated_memory", Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, [SText (string_of_memory stats_item.glx_total_memory)], ref None) ]
   @
-  [ RSElem (elem_name "live_memory", [], [], Dm_atomic_util.default_no_uri_dm, [RSText (string_of_memory stats_item.glx_live_memory)]) ]
+  [ SElem (elem_name "live_memory", Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, [SText (string_of_memory stats_item.glx_live_memory)], ref None) ]
   @
-  [ RSElem (elem_name "elapsed_time", [], [], Dm_atomic_util.default_no_uri_dm, [RSText (string_of_time stats_item.glx_time)])] 
+  [ SElem (elem_name "elapsed_time", Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, [SText (string_of_time stats_item.glx_time)], ref None)] 
   @
-  [ RSElem (elem_name "nodes_created",[], [], Dm_atomic_util.default_no_uri_dm, [RSText (string_of_int stats_item.glx_node_count)]) ]
+  [ SElem (elem_name "nodes_created", Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, [SText (string_of_int stats_item.glx_node_count)], ref None) ]
 
-(*    RSElem (elem_name "live_memory",  [], [], [RSText (string_of_memory stats_item.glx_live_memory)]) ;  *)
+(*    SElem (elem_name "live_memory",  Some [], [], [SText (string_of_memory stats_item.glx_live_memory)]) ;  *)
 
-let element_of_document_phase elemname key point doc_elems = 
-  (RSElem(elem_name elemname, [], [(attr_name "name", key)], Dm_atomic_util.default_no_uri_dm, elements_of_stats_item point.relative_stats)) :: doc_elems
+let element_of_document_phase nsenv elemname key point doc_elems = 
+  (SElem(elem_name elemname, Some [], nsenv, [(attr_name "name" key)], Dm_atomic_util.default_no_uri_dm, elements_of_stats_item nsenv point.relative_stats, ref None)) :: doc_elems
 
-let create_call_content call = 
-  (let elems = elements_of_stats_item call.query_parsing_phase.relative_stats in
+let create_call_content nsenv call = 
+  (let elems = elements_of_stats_item nsenv call.query_parsing_phase.relative_stats in
   if not(elems = []) then 
-    [RSElem(elem_name (string_of_phase (PQuery Parsing_Phase)), [], [],  Dm_atomic_util.default_no_uri_dm, elems)]
+    [SElem(elem_name (string_of_phase (PQuery Parsing_Phase)), Some [], nsenv, [],  Dm_atomic_util.default_no_uri_dm, elems, ref None)]
   else [])
   @
-    (let elems = elements_of_stats_item call.query_normalization_phase.relative_stats in
+    (let elems = elements_of_stats_item nsenv call.query_normalization_phase.relative_stats in
     if not(elems = []) then 
-      [RSElem(elem_name (string_of_phase (PQuery Normalization_Phase)), [], [],  Dm_atomic_util.default_no_uri_dm, elems)]
+      [SElem(elem_name (string_of_phase (PQuery Normalization_Phase)), Some [], nsenv, [],  Dm_atomic_util.default_no_uri_dm, elems, ref None)]
     else [])
   @
-    (let elems = elements_of_stats_item call.query_rewriting_phase.relative_stats in
+    (let elems = elements_of_stats_item nsenv call.query_rewriting_phase.relative_stats in
     if not(elems = []) then 
-      [RSElem(elem_name (string_of_phase (PQuery Rewriting_Phase)), [], [], Dm_atomic_util.default_no_uri_dm, elems)]
+      [SElem(elem_name (string_of_phase (PQuery Rewriting_Phase)), Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, elems, ref None)]
     else [])
   @
-    (let elems = elements_of_stats_item call.query_factorization_phase.relative_stats in
+    (let elems = elements_of_stats_item nsenv call.query_factorization_phase.relative_stats in
     if not(elems = []) then 
-      [RSElem(elem_name (string_of_phase (PQuery Factorization_Phase)), [], [], Dm_atomic_util.default_no_uri_dm, elems)]
+      [SElem(elem_name (string_of_phase (PQuery Factorization_Phase)), Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, elems, ref None)]
     else [])
   @
-    (let elems = elements_of_stats_item call.query_compile_phase.relative_stats in
+    (let elems = elements_of_stats_item nsenv call.query_compile_phase.relative_stats in
     if not(elems = []) then 
-      [RSElem(elem_name (string_of_phase (PQuery Compile_Phase)), [], [], Dm_atomic_util.default_no_uri_dm, elems)]
+      [SElem(elem_name (string_of_phase (PQuery Compile_Phase)), Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, elems, ref None)]
     else [])
   @
-    (let elems = elements_of_stats_item call.query_optimization_phase.relative_stats in
+    (let elems = elements_of_stats_item nsenv call.query_optimization_phase.relative_stats in
     if not(elems = []) then 
-      [RSElem(elem_name (string_of_phase (PQuery Optimization_Phase)), [], [], Dm_atomic_util.default_no_uri_dm, elems)]
+      [SElem(elem_name (string_of_phase (PQuery Optimization_Phase)), Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, elems, ref None)]
     else [])
   @
-    (let elems = elements_of_stats_item call.query_selection_phase.relative_stats in
+    (let elems = elements_of_stats_item nsenv call.query_selection_phase.relative_stats in
     if not(elems = []) then 
-      [RSElem(elem_name (string_of_phase (PQuery Selection_Phase)), [], [], Dm_atomic_util.default_no_uri_dm, elems)]
+      [SElem(elem_name (string_of_phase (PQuery Selection_Phase)), Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, elems, ref None)]
     else [])
   @
 (*
     (let doc_stats = Hashtbl.fold sum_document_stats call.document_parsingloading_phase empty_stats_item in
-     let elems = elements_of_stats_item doc_stats in
+     let elems = elements_of_stats_item nsenv doc_stats in
      let docelems = 
      if not(elems = []) then 
-       [RSElem(elem_name (string_of_phase (Document_ParsingLoading_Phase "dummy")), [], [], elems)]
+       [SElem(elem_name (string_of_phase (Document_ParsingLoading_Phase "dummy")), [], [], elems)]
      else [])
 *)
-     let docload_elems = Hashtbl.fold (element_of_document_phase (string_of_phase (Document_ParsingLoading_Phase "dummy"))) call.document_parsingloading_phase [] in  
-     (let elems = elements_of_stats_item call.query_evaluation_phase.relative_stats in
+     let docload_elems = Hashtbl.fold (element_of_document_phase nsenv (string_of_phase (Document_ParsingLoading_Phase "dummy"))) call.document_parsingloading_phase [] in  
+     (let elems = elements_of_stats_item nsenv call.query_evaluation_phase.relative_stats in
      if not(elems = []) then 
-       [RSElem(elem_name (string_of_phase (PQuery Evaluation_Phase)), [], [], Dm_atomic_util.default_no_uri_dm, elems @ docload_elems)]
+       [SElem(elem_name (string_of_phase (PQuery Evaluation_Phase)), Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, elems @ docload_elems, ref None)]
      else [])
   @
-    Hashtbl.fold (element_of_document_phase (string_of_phase (Document_Toplevel_ParsingLoading_Phase "dummy"))) call.document_toplevel_parsingloading_phase [] 
+    Hashtbl.fold (element_of_document_phase nsenv (string_of_phase (Document_Toplevel_ParsingLoading_Phase "dummy"))) call.document_toplevel_parsingloading_phase [] 
 (*
    (let doc_stats = Hashtbl.fold sum_document_stats call.document_toplevel_parsingloading_phase empty_stats_item in
-   let elems = elements_of_stats_item doc_stats in
+   let elems = elements_of_stats_item nsenv doc_stats in
    if not(elems = []) then 
-   [RSElem(elem_name (string_of_phase (Document_Toplevel_ParsingLoading_Phase "dummy")), [], [], Dm_atomic_util.default_no_uri_dm, elems)]
+   [SElem(elem_name (string_of_phase (Document_Toplevel_ParsingLoading_Phase "dummy")), [], [], Dm_atomic_util.default_no_uri_dm, elems)]
    else [])
  *)
   @
-    (let elems = elements_of_stats_item call.query_serialization_phase.relative_stats in
+    (let elems = elements_of_stats_item nsenv call.query_serialization_phase.relative_stats in
     if not(elems = []) then 
-      [RSElem(elem_name (string_of_phase Document_Serialization_Phase), [], [], Dm_atomic_util.default_no_uri_dm, elems)]
+      [SElem(elem_name (string_of_phase Document_Serialization_Phase), Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, elems, ref None)]
     else [])
   @
-    (let elems = elements_of_stats_item call.external_phase.relative_stats in
+    (let elems = elements_of_stats_item nsenv call.external_phase.relative_stats in
     if not(elems = []) then 
-      [RSElem(elem_name (string_of_phase External_Phase), [], [], Dm_atomic_util.default_no_uri_dm, elems)]
+      [SElem(elem_name (string_of_phase External_Phase), Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, elems, ref None)]
     else [])
 
-let element_of_call call =
+let element_of_call nsenv call =
   let attrs =
-    [(attr_name "name", call.call_name); (attr_name "kind", string_of_call_kind call.call_kind) ]
+    [(attr_name "name" call.call_name); (attr_name "kind" (string_of_call_kind call.call_kind)) ]
   in
-  RSElem(elem_name "call", [], attrs, Dm_atomic_util.default_no_uri_dm, create_call_content call)
+  SElem(elem_name "call", Some [], nsenv, attrs, Dm_atomic_util.default_no_uri_dm, create_call_content nsenv call, ref None)
 
-let top_element_of_call call =
+let top_element_of_call nsenv call =
   let attrs =
-    [(attr_name "name", call.call_name); (attr_name "kind", string_of_call_kind call.call_kind) ]
+    [(attr_name "name" call.call_name); (attr_name "kind" (string_of_call_kind call.call_kind)) ]
   in
-  (RSDocument(Dm_atomic_util.default_no_uri_dm, [RSElem(elem_name "call", [(Namespace_builtin.glx_prefix,Namespace_builtin.glx_uri)], attrs, Dm_atomic_util.default_no_uri_dm, create_call_content call)]))
+  (SDocument(Dm_atomic_util.default_no_uri_dm, [SElem(elem_name "call", Some [(Namespace_builtin.glx_prefix,Namespace_builtin.glx_uri)], nsenv, attrs, Dm_atomic_util.default_no_uri_dm, create_call_content nsenv call, ref None)]))
 
-let monitor_of_last_call proc_ctxt  = 
+let monitor_of_last_call nsenv proc_ctxt  = 
   let mc = proc_ctxt.monitor_context in
   if get_monitor_mem mc || get_monitor_time mc
   then
@@ -511,7 +516,7 @@ let monitor_of_last_call proc_ctxt  =
       in
       let nodeid_context = Nodeid_context.default_nodeid_context () in
       let init_nsenv = Namespace_context.default_xml_nsenv in
-      let rsexpr = top_element_of_call call in
+      let rsexpr = top_element_of_call nsenv call in
       let sexpr = Small_stream_context.sexpr_of_rsexpr init_nsenv rsexpr in
       Physical_load.load_xml_value_from_typed_stream nodeid_context 
 	(Streaming_ops.typed_of_resolved_xml_stream (
@@ -571,7 +576,7 @@ let sum_phase_stats call stats =
       call.query_serialization_phase.relative_stats.glx_node_count +
       call.external_phase.relative_stats.glx_node_count }
 
-let aux_monitor_of_all_calls proc_ctxt = 
+let aux_monitor_of_all_calls nsenv proc_ctxt = 
   let mc = proc_ctxt.monitor_context in
   let sum_call_stats (prolog_stats, stmt_stats, serialization_stats) call  = 
     match call.call_kind with
@@ -580,40 +585,40 @@ let aux_monitor_of_all_calls proc_ctxt =
     | Serialization -> (prolog_stats, stmt_stats, sum_phase_stats call serialization_stats)
   in
   let call_stack = (get_all_calls mc) in
-  let call_elements = List.map element_of_call (List.rev call_stack) in
+  let call_elements = List.map (element_of_call nsenv) (List.rev call_stack) in
   let (prolog_stats, stmts_stats, serialization_stats) = List.fold_left sum_call_stats (empty_stats_item, empty_stats_item, empty_stats_item) call_stack  in
-  let prolog_element = RSElem(elem_name "prolog", [], [], Dm_atomic_util.default_no_uri_dm, elements_of_stats_item prolog_stats) in
-  let stmt_element = RSElem(elem_name "statements", [], [], Dm_atomic_util.default_no_uri_dm, elements_of_stats_item stmts_stats) in
-  let serialization_element = RSElem(elem_name "serialization", [], [], Dm_atomic_util.default_no_uri_dm, elements_of_stats_item serialization_stats) in
+  let prolog_element = SElem(elem_name "prolog", Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, elements_of_stats_item nsenv prolog_stats, ref None) in
+  let stmt_element = SElem(elem_name "statements", Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, elements_of_stats_item nsenv stmts_stats, ref None) in
+  let serialization_element = SElem(elem_name "serialization", Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, elements_of_stats_item nsenv serialization_stats, ref None) in
   let summary_stats = sum_relative_points(sum_relative_points prolog_stats stmts_stats) serialization_stats in 
-  let summary_element = RSElem(elem_name "summary", [], [], Dm_atomic_util.default_no_uri_dm, (elements_of_stats_item summary_stats) @ [prolog_element ; stmt_element; serialization_element ]) in
-  let monitor_element = RSElem(elem_name "monitor", [(Namespace_builtin.glx_prefix,Namespace_builtin.glx_uri)], [], Dm_atomic_util.default_no_uri_dm, summary_element :: call_elements) in
-  let rmonitor_doc = RSDocument(Dm_atomic_util.default_no_uri_dm, [monitor_element]) in
+  let summary_element = SElem(elem_name "summary", Some [], nsenv, [], Dm_atomic_util.default_no_uri_dm, (elements_of_stats_item nsenv summary_stats) @ [prolog_element ; stmt_element; serialization_element ], ref None) in
+  let monitor_element = SElem(elem_name "monitor", Some [(Namespace_builtin.glx_prefix,Namespace_builtin.glx_uri)], nsenv, [], Dm_atomic_util.default_no_uri_dm, summary_element :: call_elements, ref None) in
+  let rmonitor_doc = SDocument(Dm_atomic_util.default_no_uri_dm, [monitor_element]) in
   let init_nsenv = Namespace_context.default_xml_nsenv in
   let monitor_doc = Small_stream_context.sexpr_of_rsexpr init_nsenv rmonitor_doc in
   Small_stream_context.resolved_xml_stream_of_sexpr monitor_doc
 
-let monitor_of_all_calls proc_ctxt = 
+let monitor_of_all_calls nsenv proc_ctxt = 
   let mc = proc_ctxt.monitor_context in
   if get_monitor_mem mc || get_monitor_time mc then
     begin
       (* Cleanly end last call in case it raised an exception and never called end_monitor_call *)
       let _ = end_monitor_call proc_ctxt in
-      let rxmlstr = aux_monitor_of_all_calls proc_ctxt in 
+      let rxmlstr = aux_monitor_of_all_calls nsenv proc_ctxt in 
       let nodeid_context = Nodeid_context.default_nodeid_context () in
       Physical_load.load_xml_value_from_typed_stream nodeid_context
 	(Streaming_ops.typed_of_resolved_xml_stream rxmlstr)
     end
   else []
 
-let serialize_monitor proc_ctxt = 
+let serialize_monitor nsenv proc_ctxt = 
   let mc = proc_ctxt.monitor_context in
   if get_monitor_mem mc || get_monitor_time mc then
         (* Note that a galax_output must be closed, as below *)
     let gout = Parse_io.galax_output_from_output_spec (get_monitor_output proc_ctxt.monitor_context) in
     try
       begin
-	let rxmlstr = aux_monitor_of_all_calls proc_ctxt in
+	let rxmlstr = aux_monitor_of_all_calls nsenv proc_ctxt in
 	let fmt = Parse_io.formatter_of_galax_output gout in
 	(Serialization.fserialize_resolved_xml_stream proc_ctxt fmt rxmlstr;
 	 Format.pp_print_newline fmt ();

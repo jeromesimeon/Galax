@@ -242,12 +242,12 @@ let rec generic_cexpr (rewrite_ctxt : 'a rewrite_context) (ce : acexpr) =
       let (cexpr2', changed2) = generic_cexpr rewrite_ctxt cexpr2 in
       (fmkacexpr (CEAnyElem (cexpr1', nsenv1, nsenv2, cexpr2')) ma eh loc, changed1 || changed2)
 
-  | CEAttr (rattr_symbol, cexprlist)->
+  | CEAttr (rattr_symbol, nsenv, cexprlist)->
       let (cexprlist', changed') = 
 	List.fold_right (fun cexpr (cel, changed) -> 
 	let (cexpr',changed') = generic_cexpr rewrite_ctxt cexpr in
 	(cexpr' :: cel, changed || changed')) cexprlist ([], false) in
-      (fmkacexpr (CEAttr (rattr_symbol, cexprlist')) ma eh loc, changed')
+      (fmkacexpr (CEAttr (rattr_symbol, nsenv, cexprlist')) ma eh loc, changed')
 
   | CEAnyAttr (cexpr1, nsenv, cexpr2) ->
       let (cexpr1',changed1) = generic_cexpr rewrite_ctxt cexpr1 in
@@ -547,13 +547,13 @@ let children_cexpr rewrite_ctxt ce =
 	  let (cexpr2', changed2) = generic_cexpr rewrite_ctxt cexpr2 in
 	  (fmkacexpr (CEAnyElem (cexpr1', nsenv1, nsenv2, cexpr2')) ma eh loc, changed1 || changed2)
 
-      | CEAttr (rattr_symbol, cexprlist)->
+      | CEAttr (rattr_symbol, nsenv, cexprlist)->
 	  let (cexprlist', changed') = 
 	    List.fold_right (fun cexpr (cel, changed) ->
 	      let (cexpr',changed') = generic_cexpr rewrite_ctxt cexpr in
 	      (cexpr' :: cel, changed || changed')) cexprlist ([], false)
 	  in
-	  (fmkacexpr (CEAttr (rattr_symbol, cexprlist')) ma eh loc, changed')
+	  (fmkacexpr (CEAttr (rattr_symbol, nsenv, cexprlist')) ma eh loc, changed')
 
       | CEAnyAttr (cexpr1, nsenv, cexpr2) ->
 	  let (cexpr1',changed1) = generic_cexpr rewrite_ctxt cexpr1 in
@@ -853,7 +853,7 @@ let rec free_var_aux bound_vars ce =
     | CEElem (relem_symbol, nsenv, cexprlist) ->
 	List.concat (List.map (free_var_aux bound_vars) cexprlist)
 	  
-    | CEAttr (rattr_symbol, cexprlist) ->
+    | CEAttr (rattr_symbol, nsenv, cexprlist) ->
 	List.concat (List.map (free_var_aux bound_vars) cexprlist)
 
 	  (* Binary expressions *)
@@ -1133,13 +1133,13 @@ let substitute_var ce1 vname fv ce2 =
 	let (cexpr2', changed2) = substitute_var_aux ce1 cexpr2 in
 	(fmkacexpr (CEAnyElem (cexpr1', nsenv1, nsenv2, cexpr2')) ann eh loc, changed1 || changed2)
 
-    | CEAttr (rattr_symbol, cexprlist)->
+    | CEAttr (rattr_symbol, nsenv, cexprlist)->
 	let (cexprlist', changed') = List.fold_right
 	    (fun cexpr (cexprlist, changed) -> 
 	      let (cexpr', changed') = substitute_var_aux ce1 cexpr in
 	      (cexpr' :: cexprlist, changed || changed')) cexprlist ([], false) 
 	in
-	(fmkacexpr (CEAttr (rattr_symbol, cexprlist')) ann eh loc, changed')
+	(fmkacexpr (CEAttr (rattr_symbol, nsenv, cexprlist')) ann eh loc, changed')
 
     | CEAnyAttr (cexpr1, nsenv, cexpr2) ->
 	let (cexpr1', changed1) = substitute_var_aux ce1 cexpr1 in

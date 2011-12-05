@@ -294,9 +294,9 @@ let rec put_in_normal_form (env: env) (ce: acexpr) =
       let cexpr2' = put_in_normal_form env cexpr2 in
       fmkacexpr (CEAnyElem (cexpr1', nsenv1, nsenv2, cexpr2')) ma eh loc
 	
-  | CEAttr (rattr_symbol, cexprlist)->
+  | CEAttr (rattr_symbol, nsenv, cexprlist)->
       let cexprlist' = List.map (put_in_normal_form env) cexprlist in	  
-      fmkacexpr (CEAttr (rattr_symbol, cexprlist')) ma eh loc
+      fmkacexpr (CEAttr (rattr_symbol, nsenv, cexprlist')) ma eh loc
 	
   | CEAnyAttr (cexpr1, nsenv, cexpr2) ->
       let cexpr1' = put_in_normal_form env cexpr1 in

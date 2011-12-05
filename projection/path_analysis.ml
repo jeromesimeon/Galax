@@ -232,7 +232,7 @@ let rec cexpr_path_analysis analysis_context cexpr =
       in
       ([], path_seq1' @ used_path_seq1)
 
-  | CEAttr (symbol, cexprlist) ->
+  | CEAttr (symbol, nsenv, cexprlist) ->
       let (path_seq1', used_path_seq1) = 
 	List.fold_right 
 	  (fun cexpr (path_seqs, used_paths) -> 
@@ -512,7 +512,7 @@ let rec cexpr_path_analysis_optim analysis_context cexpr =
       in
       ([], path_seq1' @ used_path_seq1, empty_optimvars)
 
-  | CEAttr (symbol, cexprlist) ->
+  | CEAttr (symbol, nsenv, cexprlist) ->
       let (path_seq1', used_path_seq1) = 
 	List.fold_right (fun cexpr1 (path_seqs, used_paths) -> 
 	  let (path_seq1, used_path_seq1, optim_var1) = cexpr_path_analysis_optim analysis_context cexpr1 in

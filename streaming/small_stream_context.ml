@@ -35,7 +35,7 @@ open Streaming_types
 type ss_context =
     { mutable current_sexpr_list   : sexpr list;
       mutable remaining_sexpr_list : sexpr list;
-      stacked_sexpr_list           : (resolved_sax_event * sexpr list) Stack.t}
+      stacked_sexpr_list           : (sax_event * sexpr list) Stack.t}
 
 
 (**************************************)
@@ -69,39 +69,43 @@ let replace_current_sexpr_list ss_context new_sexpr_list =
 
 (* Push a context (getting inside of an element/document node) *)
 
-let convert_sattribute (rattr_sym,content) =
-  (rattr_sym,content)
-
-let convert_sattributes sattrs =
-  (List.map convert_sattribute sattrs)
-
 let push_elem_to_ss_context ss_context se remaining_list =
   match se with
   | SDocument (base_uri,nse) ->
       begin
-	Stack.push (Streaming_util.fmkrse_event RSAX_endDocument Finfo.bogus, remaining_list) ss_context.stacked_sexpr_list;
-	(Streaming_util.fmkrse_event (RSAX_startDocument (None,None, base_uri)) Finfo.bogus, nse)
+	Stack.push (Streaming_util.fmkse_event SAX_endDocument Finfo.bogus, remaining_list) ss_context.stacked_sexpr_list;
+	(Streaming_util.fmkse_event (SAX_startDocument (None,None, base_uri)) Finfo.bogus, nse)
       end
-  | SElem (rsym, nsenv, sattributes, base_uri, nse) ->
+  | SElem (rqname, _, nsenv, sattributes, base_uri, nse, qname) ->
       begin
-	let attributes = convert_sattributes sattributes in
+	(* Should we do something with attributes? *)
+	let attributes = sattributes in
 	(* Has element content is tricky here, as part of the content may be computed.
 	   So, we are a bit conservative here and only return true if there is no
 	   text content and no holes in the content. - Jerome *)
 	let has_element_content =
 	  List.for_all (fun x -> match x with | SHole | SText _ -> false | _ -> true) nse
 	in
-	Stack.push (Streaming_util.fmkrse_event RSAX_endElement Finfo.bogus, remaining_list) ss_context.stacked_sexpr_list;
-	(Streaming_util.fmkrse_event (RSAX_startElement (rsym,attributes,has_element_content,base_uri,nsenv)) Finfo.bogus, nse)
+	let rsym =
+	  match !qname with
+	  | None -> raise (Query (Internal_Error "Missing element symbol in Small Stream"))
+	  | Some rsym -> rsym
+	in
+	Stack.push (Streaming_util.fmkse_event SAX_endElement Finfo.bogus, remaining_list) ss_context.stacked_sexpr_list;
+	(Streaming_util.fmkse_event
+	   (SAX_startElement (uqname_of_rqname rqname,attributes,ref has_element_content, ref [],
+			      ref (Some (rsym, base_uri, nsenv)), ref None)) Finfo.bogus, nse)
       end
+  | SElem (rqname, Some bt, nsenv, sattributes, base_uri, nse, qname) ->
+      raise (Query (Internal_Error "Binding table shouldn't appear during small stream processing"))
   | SText content ->
-      (Streaming_util.fmkrse_event (RSAX_characters content) Finfo.bogus, remaining_list)
+      (Streaming_util.fmkse_event (SAX_characters content) Finfo.bogus, remaining_list)
   | SPI (target,content) ->
-      (Streaming_util.fmkrse_event (RSAX_processingInstruction (target,content)) Finfo.bogus, remaining_list)
+      (Streaming_util.fmkse_event (SAX_processingInstruction (target,content)) Finfo.bogus, remaining_list)
   | SComment content ->
-      (Streaming_util.fmkrse_event (RSAX_comment content) Finfo.bogus, remaining_list)
+      (Streaming_util.fmkse_event (SAX_comment content) Finfo.bogus, remaining_list)
   | SHole ->
-      (Streaming_util.fmkrse_event RSAX_hole Finfo.bogus, remaining_list)
+      (Streaming_util.fmkse_event SAX_hole Finfo.bogus, remaining_list)
       
 
 (* Pop a context (getting outside of an element/document node) *)
@@ -151,27 +155,25 @@ let resolved_xml_stream_of_sexpr sexpr =
 
 (* Builds a sexpr out of an unresolved sexpr *)
 
-let sattribute_of_rsattribute nsenv (rqname,content) =
+let sattribute_of_rsattribute nsenv (uqname,content,special,rqname_opt,typed_opt) =
+  raise (Failure "temp")
+(*
   let rattr_sym = rattr_symbol rqname in
-  (rattr_sym,content)
+  (rqname,content,ref (Some rattr_sym)) *)
 
 let rec sexpr_of_rsexpr nsenv rsexpr =
   match rsexpr with
-  | Small_stream_ast.RSDocument (base_uri_option, rsexpr_list) ->
+  | SDocument (base_uri_option, rsexpr_list) ->
       let sexpr_list = List.map (sexpr_of_rsexpr nsenv) rsexpr_list in
-      Small_stream_ast.SDocument (base_uri_option, sexpr_list)
-  | Small_stream_ast.RSElem (rqname,binding_table,rsattribute_forest,base_uri,rsexpr_list) ->
+      SDocument (base_uri_option, sexpr_list)
+  | SElem (rqname,Some binding_table,_,rsattribute_forest,base_uri,rsexpr_list,_) ->
       let new_nsenv = add_all_ns nsenv binding_table in 
       let relem_sym = relem_symbol rqname in
       let sattribute_forest = List.map (sattribute_of_rsattribute new_nsenv) rsattribute_forest in
       let sexpr_list = List.map (sexpr_of_rsexpr new_nsenv) rsexpr_list in
-      Small_stream_ast.SElem (relem_sym,new_nsenv,sattribute_forest,base_uri,sexpr_list)
-  | Small_stream_ast.RSText text ->
-      Small_stream_ast.SText text
-  | Small_stream_ast.RSPI (target,content) ->
-      Small_stream_ast.SPI (target,content)
-  | Small_stream_ast.RSComment comment ->
-      Small_stream_ast.SComment comment
-  | Small_stream_ast.RSHole ->
-      Small_stream_ast.SHole
+      SElem (rqname,None,new_nsenv,sattribute_forest,base_uri,sexpr_list,ref (Some relem_sym))
+  | SElem (rqname,None,_,rsattribute_forest,base_uri,rsexpr_list,_) ->
+      raise (Query (Internal_Error "Missing Binding Table during small stream processing"))
+  | SText _ | SPI _ | SComment _ | SHole ->
+      rsexpr
 

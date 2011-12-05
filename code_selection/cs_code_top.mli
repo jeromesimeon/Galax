@@ -52,11 +52,11 @@ val build_default_twig_index_decl_code :
 
 val extend_var_context :
     code_selection_context * Execution_context.algebra_context ->
-      Xquery_common_ast.cvname * Streaming_types.resolved_xml_stream ->
+      Xquery_common_ast.cvname * Streaming_types.xml_stream ->
 	code_selection_context * Execution_context.algebra_context
 
 val extend_tuple_context :
     code_selection_context ->
-      Xquery_common_ast.crname * Streaming_types.resolved_xml_stream ->
+      Xquery_common_ast.crname * Streaming_types.xml_stream ->
 	Xquery_common_ast.crname * Xquery_physical_type_ast.physical_xml_type
 

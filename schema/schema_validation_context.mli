@@ -24,7 +24,7 @@ open Xquery_type_core_ast
 
 type validation_context
 
-val build_validation_context  : Namespace_context.nsenv -> cxschema -> Streaming_types.resolved_xml_stream -> validation_context
+val build_validation_context  : Namespace_context.nsenv -> cxschema -> Streaming_types.xml_stream -> validation_context
 
 (* Namespace environment handling *)
 
@@ -38,7 +38,7 @@ val has_been_nilled           : validation_context -> bool
 
 (* Events *)
 
-val next_validation_event     : validation_context -> Streaming_types.resolved_sax_event
+val next_validation_event     : validation_context -> Streaming_types.sax_event
 
 (* Document events *)
 
@@ -49,7 +49,7 @@ val pop_document_event  : validation_context -> unit
 
 (* Validation context should also include name of current element *)
 val push_complex_element_event : validation_context -> cxtype -> mixed -> bool -> cxtype -> unit
-val push_simple_element_event  : validation_context -> cxtype -> Streaming_types.resolved_sax_event list -> unit
+val push_simple_element_event  : validation_context -> cxtype -> Streaming_types.sax_event list -> unit
 
 val pop_element_event          : validation_context -> unit
 

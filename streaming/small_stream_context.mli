@@ -44,18 +44,18 @@ val get_remaining_sexpr_list : ss_context -> Small_stream_ast.sexpr list
 val replace_current_sexpr_list : ss_context -> Small_stream_ast.sexpr list -> unit
 
 val push_elem_to_ss_context :
-    ss_context -> Small_stream_ast.sexpr -> Small_stream_ast.sexpr list -> Streaming_types.resolved_sax_event * Small_stream_ast.sexpr list
+    ss_context -> Small_stream_ast.sexpr -> Small_stream_ast.sexpr list -> Streaming_types.sax_event * Small_stream_ast.sexpr list
 
 val pop_elem_from_ss_context :
-    ss_context -> (Streaming_types.resolved_sax_event * Small_stream_ast.sexpr list) option
+    ss_context -> (Streaming_types.sax_event * Small_stream_ast.sexpr list) option
 
 (******************************)
 (* Simple stream constructors *)
 (******************************)
 
-val resolved_xml_stream_of_sexpr : Small_stream_ast.sexpr -> Streaming_types.resolved_xml_stream
+
+val resolved_xml_stream_of_sexpr : Small_stream_ast.sexpr -> Streaming_types.xml_stream
     (* Builds an XML stream with holes out of a fragment of AST which
        contains element construction operations. *)
 
-val sexpr_of_rsexpr : Namespace_context.nsenv -> Small_stream_ast.rsexpr -> Small_stream_ast.sexpr
-
+val sexpr_of_rsexpr : Namespace_context.nsenv -> Small_stream_ast.sexpr -> Small_stream_ast.sexpr

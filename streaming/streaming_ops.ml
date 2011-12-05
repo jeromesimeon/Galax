@@ -31,7 +31,6 @@ open Streaming_util
 (********************)
 
 let empty_xml_stream          () = Cursor.cursor_of_list []
-let empty_resolved_xml_stream () = Cursor.cursor_of_list [] 
 let empty_typed_xml_stream    () = Cursor.cursor_of_list []
 
 (***************************************)
@@ -97,18 +96,18 @@ let merge_xml_text_nodes_in_typed_stream typed_stream =
     (* function for merging adjacent text nodes *)
     let rec next_event_discard previous tsa fi =
       match (Cursor.cursor_peek typed_stream) with
-      | Some {tse_desc = (TSAX_characters (s))} ->
+      | Some {se_desc = (SAX_characters (s))} ->
 	  begin
 	    ignore(Cursor.cursor_next typed_stream);
 	    next_event_discard (previous ^ s) tsa fi
 	  end
       | _ ->
-	  Some (fmkatse_event (TSAX_characters previous) tsa fi)
+	  Some (fmkatse_event (SAX_characters previous) tsa fi)
     in
     try
       let e = Cursor.cursor_next typed_stream in
-      match e.tse_desc with
-      | TSAX_characters s  -> next_event_discard s e.tse_annot e.tse_loc
+      match e.se_desc with
+      | SAX_characters s  -> next_event_discard s e.se_annot e.se_loc
       | _ -> Some e
     with
     | Stream.Failure ->
@@ -125,68 +124,75 @@ let merge_xml_text_nodes_in_typed_stream typed_stream =
 
 let resolve_attribute ts_context attribute =
   let (nsenv,in_scope_nsenv) = Resolve_stream_context.get_nsenv ts_context in
-  match attribute with
-  | (attr_uqname, attr_content) ->
-      let rattr_sym =
-	Resolve_stream_context.resolve_attribute_name ts_context nsenv attr_uqname
-      in
-      (rattr_sym,attr_content)
+  begin
+    match attribute with
+    | (attr_uqname, attr_content, special, attr_sym_ref, attr_type_ref) ->
+	if (!special) then ()
+	else
+	  begin
+	    match !attr_sym_ref with
+	    | Some _ -> ()
+	    | None ->
+		let rattr_sym =
+		  Resolve_stream_context.resolve_attribute_name ts_context nsenv attr_uqname
+		in
+		attr_sym_ref := Some rattr_sym
+	  end
+  end
 
 let resolve_attributes ts_context attributes =
-  List.map (resolve_attribute ts_context) attributes
+  begin
+    List.iter (resolve_attribute ts_context) attributes;
+    attributes
+  end
+
+let updated_resolved_element_content resolved_element_content esym base_uri nsenv =
+  match !resolved_element_content with
+  | Some _ -> ()
+  | None ->
+      resolved_element_content := Some (esym,base_uri,nsenv)
 
 let resolved_of_well_formed_event ts_context event =
-  match event.se_desc with
-  | SAX_startDocument (xmldecl,dtddecl,base_uri) ->
-      fmkrse_event (RSAX_startDocument (xmldecl,dtddecl,base_uri)) event.se_loc
-  | SAX_endDocument ->
-      fmkrse_event RSAX_endDocument event.se_loc
-  | SAX_startElement (elem_uqname,sax_attributes,has_element_content) ->
-      (* Extract the namespace attributes and update the namespace environment *)
-      let (ws_mode, new_nss, base_uri, other_sax_attributes) =
-	Streaming_util.extract_special_attributes sax_attributes
-      in
-      let (nsenv,in_scope_nsenv) =
-	begin
-	  Resolve_stream_context.push_ns_bindings ts_context new_nss;
-	  Resolve_stream_context.get_nsenv ts_context
-	end
-      in
-      (* Resolve the element QName wrt namespaces *)
-      let relem_sym,default =
-	Resolve_stream_context.resolve_element_name ts_context nsenv elem_uqname
-      in
-      let in_scope_nsenv =
-	if default then patch_bindings in_scope_nsenv Namespace_builtin.default_built_in_namespaces else in_scope_nsenv
-      in
-      let resolved_sax_xml_attributes =
-	resolve_attributes ts_context other_sax_attributes
-      in
-      (* Checking for attribute duplicates here! *)
-      let resolved_sax_xml_attributes =
-	Streaming_util.check_duplicate_attributes resolved_sax_xml_attributes
-      in
-      fmkrse_event (RSAX_startElement (relem_sym,resolved_sax_xml_attributes,has_element_content,ref base_uri,in_scope_nsenv)) event.se_loc
-  | SAX_endElement ->
-      begin
-	let _ = Resolve_stream_context.pop_nsenv ts_context in
-	fmkrse_event RSAX_endElement event.se_loc
-      end
-  | SAX_processingInstruction pi_desc ->
-      fmkrse_event (RSAX_processingInstruction pi_desc) event.se_loc
-  | SAX_comment comment_desc ->
-      fmkrse_event (RSAX_comment comment_desc) event.se_loc
-  | SAX_characters text_desc ->
-      fmkrse_event (RSAX_characters text_desc) event.se_loc
-  | SAX_attribute sax_xml_attribute ->
-      let typed_sax_xml_attribute =
+  begin
+    match event.se_desc with
+    | SAX_startElement (elem_uqname,sax_attributes,has_element_content,special,relem_desc,rtype) ->
+	(* First, extract the namespace attributes *)
+	let (ws_mode, new_nss, base_uri, _) =
+	  Streaming_util.extract_special_attributes sax_attributes
+	in
+	(* Second, update the namespace environment *)
+	let (nsenv,in_scope_nsenv) =
+	  begin
+	    Resolve_stream_context.push_ns_bindings ts_context new_nss;
+	    Resolve_stream_context.get_nsenv ts_context
+	  end
+	in
+	(* Third, resolve the element QName using that new environment *)
+	let relem_sym,default =
+	  Resolve_stream_context.resolve_element_name ts_context nsenv elem_uqname
+	in
+	let in_scope_nsenv =
+	  if default then patch_bindings in_scope_nsenv Namespace_builtin.default_built_in_namespaces else in_scope_nsenv
+	in
+	let resolved_sax_xml_attributes = resolve_attributes ts_context sax_attributes in
+	(* Checking for attribute duplicates here! *)
+	Streaming_util.check_duplicate_attributes resolved_sax_xml_attributes;
+	updated_resolved_element_content relem_desc relem_sym (ref base_uri) in_scope_nsenv
+    | SAX_endElement ->
+	Resolve_stream_context.pop_nsenv ts_context
+    | SAX_attribute sax_xml_attribute ->
 	resolve_attribute ts_context sax_xml_attribute
-      in
-      fmkrse_event (RSAX_attribute typed_sax_xml_attribute) event.se_loc
-  | SAX_atomicValue av ->
-      fmkrse_event (RSAX_atomicValue av) event.se_loc
-  | SAX_hole ->
-      fmkrse_event RSAX_hole event.se_loc
+    | SAX_processingInstruction _
+    | SAX_comment _
+    | SAX_characters _
+    | SAX_startDocument _
+    | SAX_endDocument
+    | SAX_atomicValue _
+    | SAX_hole
+    | SAX_startEncl
+    | SAX_endEncl -> ()
+  end;
+  event
 
 let resolve_event_wrap ts_context xml_stream =
   try
@@ -230,49 +236,63 @@ let recreate_ns_bindings delta_bindings =
   end
 
 let prefix_event prefix_context resolved_event =
-  match resolved_event.rse_desc with
-  | RSAX_startDocument (xmldecl,dtddecl,base_uri) ->
-      Some (fmkse_event (SAX_startDocument (xmldecl,dtddecl,base_uri)) resolved_event.rse_loc)
-  | RSAX_endDocument ->
-      Some (fmkse_event SAX_endDocument resolved_event.rse_loc)
-  | RSAX_startElement (rsym,resolved_sax_xml_attributes,has_element_content,base_uri,nsenv) ->
-      let ns_bindings = Prefix_context.push_nsenv_in_prefix_context prefix_context nsenv in
-      let uqname = relem_uname nsenv rsym in
-      let sax_xml_attributes = prefix_attributes nsenv resolved_sax_xml_attributes in
-      let ns_attributes = recreate_ns_bindings ns_bindings in
-      Some (fmkse_event (SAX_startElement (uqname,ns_attributes @ sax_xml_attributes,has_element_content))  resolved_event.rse_loc)
-  | RSAX_endElement ->
-      Prefix_context.pop_nsenv_from_prefix_context prefix_context;
-      Some (fmkse_event SAX_endElement resolved_event.rse_loc)
-  | RSAX_processingInstruction pi_desc ->
-      Some (fmkse_event (SAX_processingInstruction pi_desc) resolved_event.rse_loc)
-  | RSAX_comment comment_desc ->
-      Some (fmkse_event (SAX_comment comment_desc) resolved_event.rse_loc)
-  | RSAX_characters text_desc ->
-      Some (fmkse_event (SAX_characters text_desc) resolved_event.rse_loc)
-  | RSAX_attribute resolved_sax_xml_attribute ->
+  match resolved_event.se_desc with
+  | SAX_startDocument _
+  | SAX_endDocument -> ()
+  | SAX_startElement (_,resolved_sax_xml_attributes,_,special,resolved_element_content,_) ->
+      begin
+	let nsenv =
+	  match !resolved_element_content with
+	  | None -> raise (Query(Stream_Error("Trying to unresolve an unresolved stream")))
+	  | Some (_,_,nsenv) -> nsenv
+	in
+	let ns_bindings = Prefix_context.push_nsenv_in_prefix_context prefix_context nsenv in
+	(* popped bindings *)
+(* 	Namespace_context.print_binding_table "popped bindings" Format.std_formatter ns_bindings; *)
+	let ns_attributes = recreate_ns_bindings ns_bindings in
+	special := ns_attributes;
+	(* Just resets the resolved part *)
+	resolved_element_content := None
+      end
+  | SAX_endElement ->
+      begin
+	Prefix_context.pop_nsenv_from_prefix_context prefix_context
+      end
+  | SAX_processingInstruction _
+  | SAX_comment _
+  | SAX_characters _ ->
+      ()
+  | SAX_attribute (_,_,special,resolved_attribute_content, _) ->
+(* Prior code when we used to rebuild the event. -JS *)
+(*
       (* At the top-level, assume an empty namespace environment *)
       let nsenv = empty_nsenv in
       let sax_xml_attribute =
 	prefix_attribute nsenv resolved_sax_xml_attribute
       in
       Some (fmkse_event (SAX_attribute sax_xml_attribute) resolved_event.rse_loc)
-  | RSAX_atomicValue av ->
-      Some (fmkse_event (SAX_atomicValue av) resolved_event.rse_loc)
-  | RSAX_hole ->
-      Some (fmkse_event SAX_hole resolved_event.rse_loc)
+*)
+      begin
+	(* Just resets the resolved part *)
+	special := false;
+	resolved_attribute_content := None
+      end
+  | SAX_atomicValue _
+  | SAX_hole
+  | SAX_endEncl
+  | SAX_startEncl ->
+      ()
 
-let rec prefix_xml_stream_next_event prefix_context  resolved_xml_stream =
-   try
-     let next_event = Cursor.cursor_next resolved_xml_stream in
-     match prefix_event prefix_context next_event with
-     | None ->
-	 prefix_xml_stream_next_event prefix_context resolved_xml_stream
-     | Some event ->
-	 Some event
-   with
-   | Stream.Failure ->
-       None
+let prefix_xml_stream_next_event prefix_context resolved_xml_stream =
+  try
+    let next_event = Cursor.cursor_next resolved_xml_stream in
+    begin
+      prefix_event prefix_context next_event;
+      Some next_event
+    end
+  with
+  | Stream.Failure ->
+      None
 
 let next_event_for_prefix_xml_stream prefix_context resolved_xml_stream n =
   prefix_xml_stream_next_event prefix_context resolved_xml_stream
@@ -295,45 +315,56 @@ let prefix_xml_stream resolved_xml_stream =
 
 let type_attribute attribute =
   match attribute with
-  | (rattr_sym, attr_content) ->
-      (rattr_sym,attr_content,untypedAtomicsym,[])
+  | (rattr_qname,attr_content,special,attr_sym,attr_type) ->
+      if (!special) then ()
+      else
+	begin
+	  match !attr_sym with
+	  | None -> raise (Query(Stream_Error("Trying to type an unresolved stream [attribute error]" ^ (Namespace_names.string_of_uqname rattr_qname))))
+	  | Some rattr_sym ->
+	      attr_type := Some (untypedAtomicsym,[])
+	end
 
 let type_attributes attributes =
-  List.map type_attribute attributes
+  List.iter type_attribute attributes
 
 let typed_of_resolved_event event =
-  match event.rse_desc with
-  | RSAX_startDocument (xmldecl,dtddecl,base_uri) ->
-      fmktse_event (TSAX_startDocument (xmldecl,dtddecl,base_uri)) event.rse_loc
-  | RSAX_endDocument ->
-      fmktse_event TSAX_endDocument event.rse_loc
-  | RSAX_startElement (relem_sym,sax_attributes,has_element_content,base_uri,nsenv) ->
-      let typed_sax_xml_attributes =
-	type_attributes sax_attributes
-      in
-      fmktse_event (TSAX_startElement (relem_sym,typed_sax_xml_attributes,has_element_content,base_uri,nsenv,false,untypedsym,[])) event.rse_loc
-  | RSAX_endElement ->
-      fmktse_event TSAX_endElement event.rse_loc
-  | RSAX_processingInstruction pi_desc ->
-      fmktse_event (TSAX_processingInstruction pi_desc) event.rse_loc
-  | RSAX_comment comment_desc ->
-      fmktse_event (TSAX_comment comment_desc) event.rse_loc
-  | RSAX_characters text_desc ->
-      fmktse_event (TSAX_characters text_desc) event.rse_loc
-  | RSAX_attribute sax_xml_attribute ->
-      let typed_sax_xml_attribute =
-	type_attribute sax_xml_attribute
-      in
-      fmktse_event (TSAX_attribute typed_sax_xml_attribute) event.rse_loc
-  | RSAX_atomicValue av ->
-      fmktse_event (TSAX_atomicValue av) event.rse_loc
-  | RSAX_hole ->
-      fmktse_event TSAX_hole event.rse_loc
+  match event.se_desc with
+  | SAX_startDocument _
+  | SAX_endDocument
+  | SAX_startEncl
+  | SAX_endEncl -> ()
+  | SAX_startElement (elem_uqname,sax_attributes,has_element_content,special,relem_content,relem_type) ->
+      begin
+	match !relem_content with
+	| None -> raise (Query(Stream_Error("Trying to type an unresolved stream")))
+	| Some (relem_sym,base_uri,nsenv) ->
+	    begin
+	      (* Add type to the element's attributes *)
+	      type_attributes sax_attributes;
+	      (* Add type to the element *)
+	      relem_type := Some (false,untypedsym,[])
+	    end
+      end
+  | SAX_endElement
+  | SAX_processingInstruction _
+  | SAX_comment _
+  | SAX_characters _ -> ()
+  | SAX_attribute sax_xml_attribute ->
+      type_attribute sax_xml_attribute
+  | SAX_atomicValue _
+  | SAX_hole ->
+      ()
 
 let typed_event_wrap xml_stream =
   try
     let next_event = Cursor.cursor_next xml_stream in
-    Some (typed_of_resolved_event next_event)
+    begin
+      (* Type the event *)
+      typed_of_resolved_event next_event;
+      (* Return it *)
+      Some next_event
+    end
   with
   | Stream.Failure ->
       None
@@ -349,52 +380,38 @@ let typed_of_resolved_xml_stream xml_stream =
 
  (* Turns a typed XML stream into a resolved, untyped one *)
 
-let erase_attribute (rsym,content,_,_) =
-  (rsym,content)
-
-let erase_attributes typed_attributes =
-  List.map erase_attribute typed_attributes
+let erase_attribute (_,_,_,_,ratt_type) = ratt_type := None
+let erase_attributes typed_attributes = List.iter erase_attribute typed_attributes
 
 let erase_event typed_event =
-  match typed_event.tse_desc with
-  | TSAX_startDocument (xmldecl,dtddecl,base_uri) ->
-      Some (fmkrse_event (RSAX_startDocument (xmldecl,dtddecl,base_uri)) typed_event.tse_loc)
-  | TSAX_endDocument ->
-      Some (fmkrse_event (RSAX_endDocument) typed_event.tse_loc)
-  | TSAX_startElement (rsym,typed_sax_xml_attributes,has_element_content,base_uri,nsenv,_,_,_) ->
-      let sax_xml_attributes =
-	erase_attributes typed_sax_xml_attributes
-      in
-      Some (fmkrse_event (RSAX_startElement (rsym,sax_xml_attributes,has_element_content,base_uri,nsenv)) typed_event.tse_loc)
-  | TSAX_endElement ->
-      Some (fmkrse_event (RSAX_endElement) typed_event.tse_loc)
-  | TSAX_processingInstruction pi_desc ->
-      Some (fmkrse_event (RSAX_processingInstruction pi_desc) typed_event.tse_loc)
-  | TSAX_comment comment_desc ->
-      Some (fmkrse_event (RSAX_comment comment_desc) typed_event.tse_loc)
-  | TSAX_characters text_desc ->
-      Some (fmkrse_event (RSAX_characters text_desc) typed_event.tse_loc)
-  | TSAX_attribute typed_sax_xml_attribute ->
-      let sax_xml_attribute =
-	erase_attribute typed_sax_xml_attribute
-      in
-      Some (fmkrse_event (RSAX_attribute sax_xml_attribute) typed_event.tse_loc)
-  | TSAX_atomicValue av ->
-      Some (fmkrse_event (RSAX_atomicValue av) typed_event.tse_loc)
-  | TSAX_hole ->
-      Some (fmkrse_event (RSAX_hole) typed_event.tse_loc)
-  | TSAX_startEncl 
-  | TSAX_endEncl ->
-      None
+  match typed_event.se_desc with
+  | SAX_startDocument _
+  | SAX_endDocument -> ()
+  | SAX_startElement (_,typed_sax_xml_attributes,_,_,_,relem_type) ->
+      begin
+	erase_attributes typed_sax_xml_attributes;
+	relem_type := None
+      end
+  | SAX_endElement
+  | SAX_processingInstruction _
+  | SAX_comment _
+  | SAX_characters _ ->
+      ()
+  | SAX_attribute typed_sax_xml_attribute ->
+      erase_attribute typed_sax_xml_attribute
+  | SAX_atomicValue _
+  | SAX_hole
+  | SAX_startEncl 
+  | SAX_endEncl ->
+      ()
 
 let rec erase_xml_stream_next_event typed_xml_stream =
   try
     let next_event = Cursor.cursor_next typed_xml_stream in
-    match erase_event next_event with
-    | None ->
-	erase_xml_stream_next_event typed_xml_stream
-    | Some event ->
-	Some event
+    begin
+      erase_event next_event;
+      Some next_event
+    end
   with
   | Stream.Failure ->
       None
@@ -417,8 +434,8 @@ let erase_atomic_event_section_3_7_1 typed_xml_stream av0 =
     match typed_event with
       Some annot_tse ->
 	begin
-	  match annot_tse.tse_desc with
-	    (TSAX_atomicValue av1) ->
+	  match annot_tse.se_desc with
+	    (SAX_atomicValue av1) ->
 	      begin
 		ignore(Cursor.cursor_next typed_xml_stream);
 		let avl = erase_atomic_event_section_3_7_1_aux typed_xml_stream in
@@ -426,9 +443,9 @@ let erase_atomic_event_section_3_7_1 typed_xml_stream av0 =
 	      end
 		(* Start/end enclosed expr are sentinels to end concatenation
 		   of atomic values.  They are always consumed. *)
-	  | (TSAX_startEncl) ->
+	  | (SAX_startEncl) ->
 	      raise (Query(Stream_Error("Start enclosed event cannot follow atomic value event\n")))
-	  | (TSAX_endEncl) ->
+	  | (SAX_endEncl) ->
 	      ignore(Cursor.cursor_next typed_xml_stream);
 	      []
 	  | _ ->
@@ -438,23 +455,21 @@ let erase_atomic_event_section_3_7_1 typed_xml_stream av0 =
 	[]
   in
   let avl = erase_atomic_event_section_3_7_1_aux typed_xml_stream in
-  fmkrse_event (RSAX_characters (Dm_atomic_util.erase_simple_value (av0 :: avl))) Finfo.bogus
+  fmkse_event (SAX_characters (Dm_atomic_util.erase_simple_value (av0 :: avl))) Finfo.bogus
 
 let rec erase_event_section_3_7_1 typed_xml_stream typed_event =
-  match typed_event.tse_desc with
-  | TSAX_startDocument (xmldecl,dtddecl,base_uri) ->
-      fmkrse_event (RSAX_startDocument (xmldecl,dtddecl,base_uri)) typed_event.tse_loc
-  | TSAX_endDocument ->
-      fmkrse_event (RSAX_endDocument) typed_event.tse_loc
-  | TSAX_startElement (rsym,typed_sax_xml_attributes,has_element_content,base_uri,nsenv,_,_,_) ->
-      let sax_xml_attributes = erase_attributes typed_sax_xml_attributes in
-      fmkrse_event (RSAX_startElement (rsym,sax_xml_attributes,has_element_content,base_uri,nsenv)) typed_event.tse_loc
-  | TSAX_endElement ->
-      fmkrse_event (RSAX_endElement) typed_event.tse_loc
-  | TSAX_processingInstruction pi_desc ->
-      fmkrse_event (RSAX_processingInstruction pi_desc) typed_event.tse_loc
-  | TSAX_comment comment_desc ->
-      fmkrse_event (RSAX_comment comment_desc) typed_event.tse_loc
+  match typed_event.se_desc with
+  | SAX_startDocument _
+  | SAX_endDocument -> typed_event
+  | SAX_startElement (_,typed_sax_xml_attributes,_,_,_,relem_type) ->
+      begin
+	erase_attributes typed_sax_xml_attributes;
+	relem_type := None;
+	typed_event
+      end
+  | SAX_endElement
+  | SAX_processingInstruction _
+  | SAX_comment _ -> typed_event
 	(* From 3.7.1
 	   Adjacent text nodes in the content sequence are merged into a
 	   single text node by concatenating their contents, with no
@@ -462,23 +477,25 @@ let rec erase_event_section_3_7_1 typed_xml_stream typed_event =
 	   content is a zero-length string is deleted from the content
 	   sequence.
 	 *)
-  | TSAX_characters text_desc ->
+  | SAX_characters text_desc ->
       if (text_desc = "") then 
 	let next_event = Cursor.cursor_next typed_xml_stream in
 	(erase_event_section_3_7_1 typed_xml_stream next_event)
       else
-	fmkrse_event (RSAX_characters text_desc) typed_event.tse_loc
-  | TSAX_attribute typed_sax_xml_attribute ->
-      let sax_xml_attribute = erase_attribute typed_sax_xml_attribute in
-      fmkrse_event (RSAX_attribute sax_xml_attribute) typed_event.tse_loc
-  | TSAX_atomicValue av ->
+	typed_event
+  | SAX_attribute typed_sax_xml_attribute ->
+      begin
+	erase_attribute typed_sax_xml_attribute;
+	typed_event
+      end
+  | SAX_atomicValue av ->
       erase_atomic_event_section_3_7_1 typed_xml_stream av 
-  | TSAX_hole ->
-      fmkrse_event (RSAX_hole) typed_event.tse_loc
-  | TSAX_startEncl ->
+  | SAX_hole ->
+      typed_event
+  | SAX_startEncl ->
       let next_event = Cursor.cursor_next typed_xml_stream in
       (erase_event_section_3_7_1 typed_xml_stream next_event)
-  | TSAX_endEncl ->
+  | SAX_endEncl ->
       let next_event = Cursor.cursor_next typed_xml_stream in
       (erase_event_section_3_7_1 typed_xml_stream next_event)
 
@@ -501,90 +518,86 @@ let erase_xml_stream_section_3_7_1 typed_xml_stream =
 (* Conversion between typed and ordered typed *)
 (**********************************************)
 
-let order_attribute streaming_ordered_context typed_sax_xml_attribute =
+let order_attribute streaming_ordered_context sax_xml_attribute =
   let attributeid =
     Streaming_ordered_context.new_leaf_docorder streaming_ordered_context
   in
-  (typed_sax_xml_attribute, attributeid)
+  (sax_xml_attribute, attributeid)
 
-let order_start_element streaming_ordered_context typed_element_desc : ordered_typed_element_desc =
-  match typed_element_desc with
-  | (relem_symbol,
-     typed_sax_xml_attribute_forest,
+let order_start_element streaming_ordered_context element_desc : ordered_element_desc =
+  match element_desc with
+  | (uqname,
+     sax_xml_attribute_forest,
      has_element_content,
-     base_uri,
-     nsenv,
-     nilled_flag,
-     type_annotation,
-     simple_type_value) ->
-       let typed_ordered_sax_xml_attribute_forest =
-	 List.map (order_attribute streaming_ordered_context) typed_sax_xml_attribute_forest
+     special,
+     res_elem,
+     typed_elem) ->
+       let ordered_sax_xml_attribute_forest =
+	 List.map (order_attribute streaming_ordered_context) sax_xml_attribute_forest
        in
-       (relem_symbol,
-	typed_ordered_sax_xml_attribute_forest,
+       (uqname,
+	ordered_sax_xml_attribute_forest,
 	has_element_content,
-	base_uri,
-	nsenv,
-	nilled_flag,
-	type_annotation,
-	simple_type_value)
+	special,
+	res_elem,
+	typed_elem)
 
 let ordered_event_of_typed_event streaming_ordered_context next_event =
   let next_ordered_event_desc =
-    match next_event.tse_desc with
-    | TSAX_startDocument document_desc ->
+    match next_event.se_desc with
+    | SAX_startDocument document_desc ->
 	let startdocid =
 	  Streaming_ordered_context.new_preorderid streaming_ordered_context
 	in
 	OTSAX_startDocument (document_desc,startdocid)
-    | TSAX_endDocument ->
+    | SAX_endDocument ->
 	let enddocid =
 	  Streaming_ordered_context.new_postorderid streaming_ordered_context
 	in
 	OTSAX_endDocument enddocid 
-    | TSAX_startElement typed_element_desc ->
+    | SAX_startElement element_desc ->
 	let startelementid =
 	  Streaming_ordered_context.new_preorderid streaming_ordered_context
 	in
-	let typed_ordered_element_desc =
-	  order_start_element streaming_ordered_context typed_element_desc
+	let ordered_element_desc =
+	  order_start_element streaming_ordered_context element_desc
 	in
-	OTSAX_startElement (typed_ordered_element_desc, startelementid)
-    | TSAX_endElement ->
+	OTSAX_startElement (ordered_element_desc, startelementid)
+    | SAX_endElement ->
 	let endelementid =
 	  Streaming_ordered_context.new_postorderid streaming_ordered_context
 	in
 	OTSAX_endElement endelementid
-    | TSAX_processingInstruction pi_desc ->
+    | SAX_processingInstruction pi_desc ->
 	let piid =
 	  Streaming_ordered_context.new_leaf_docorder streaming_ordered_context
 	in
 	OTSAX_processingInstruction (pi_desc,piid)
-    | TSAX_comment comment_desc ->
+    | SAX_comment comment_desc ->
 	let commentid =
 	  Streaming_ordered_context.new_leaf_docorder streaming_ordered_context
 	in
 	OTSAX_comment (comment_desc,commentid)
-    | TSAX_characters text_desc ->
+    | SAX_characters text_desc ->
 	let textid =
 	  Streaming_ordered_context.new_leaf_docorder streaming_ordered_context
 	in
 	OTSAX_characters (text_desc,textid)
 	  (* Additions to the standard SAX events: *)
-    | TSAX_attribute typed_sax_xml_attribute ->
+    | SAX_attribute sax_xml_attribute ->
 	let tsxa =
-	  order_attribute streaming_ordered_context typed_sax_xml_attribute
+	  order_attribute streaming_ordered_context sax_xml_attribute
 	in
 	OTSAX_attribute tsxa
-    | TSAX_atomicValue av ->
+    | SAX_atomicValue av ->
 	OTSAX_atomicValue av
-    | TSAX_hole ->
+    | SAX_hole ->
 	raise (Query (Stream_Error "Cannot create node identifier in a stream with a [hole]")) 
-    | TSAX_startEncl
-    | TSAX_endEncl ->
+    | SAX_startEncl
+    | SAX_endEncl ->
 	raise (Query (Stream_Error "1: Cannot create a node identified in an XML stream with start/end enclosed expression"))
   in
-  fmkotse_event next_ordered_event_desc next_event.tse_annot next_event.tse_loc
+  fmkotse_event next_ordered_event_desc next_event.se_annot next_event.se_loc
 
 let next_ordered_typed_event streaming_ordered_context typed_xml_stream =
   try
@@ -664,7 +677,6 @@ let compose_xml_streams s0 sl =
   let additional_streams = ref sl in
   Cursor.cursor_of_function (next_event_of_compose_xml_streams_aux s0 current_top additional_streams)
 
-
 (* Composes a resolved stream with holes with a list of resolved streams *)
 
 let rec next_event_of_compose_resolved_xml_streams s0 current_top additional_streams =
@@ -673,8 +685,8 @@ let rec next_event_of_compose_resolved_xml_streams s0 current_top additional_str
       begin
 	try
 	  let event = (Cursor.cursor_next s0) in
-	  match event.rse_desc with
-	  | RSAX_hole ->
+	  match event.se_desc with
+	  | SAX_hole ->
 	      begin
 		match !additional_streams with
 		| [] ->
@@ -725,8 +737,8 @@ let rec next_event_of_compose_typed_xml_streams s0 current_top additional_stream
       begin
 	try
 	  let event = (Cursor.cursor_next s0) in
-	  match event.tse_desc with
-	  | TSAX_hole ->
+	  match event.se_desc with
+	  | SAX_hole ->
 	      begin
 		match !additional_streams with
 		| [] ->
@@ -777,17 +789,17 @@ let rec next_event_of_compose_typed_xml_streams s0 current_top additional_stream
  and simple_value_of_xml_stream_aux input_stream =
    match Cursor.cursor_peek input_stream with
    | None -> []
-   | Some { tse_desc = TSAX_atomicValue av; tse_annot = _; tse_loc = _ } -> 
+   | Some { se_desc = SAX_atomicValue av; se_annot = _; se_loc = _ } -> 
        begin
 	 Cursor.cursor_junk input_stream;
 	 (av#string_value()) :: 
 	 ((match Cursor.cursor_peek input_stream with 
-	 | Some ({ tse_desc = TSAX_atomicValue _; tse_annot = _; tse_loc = _ }) -> " "
+	 | Some ({ se_desc = SAX_atomicValue _; se_annot = _; se_loc = _ }) -> " "
 	 | _ -> "") :: 
 	  (simple_value_of_xml_stream_aux input_stream))
        end
-   | Some { tse_desc = TSAX_startEncl ; tse_annot = _; tse_loc = _ } 
-   | Some { tse_desc = TSAX_endEncl ; tse_annot = _; tse_loc = _ } ->
+   | Some { se_desc = SAX_startEncl ; se_annot = _; se_loc = _ } 
+   | Some { se_desc = SAX_endEncl ; se_annot = _; se_loc = _ } ->
        Cursor.cursor_junk input_stream;
        (simple_value_of_xml_stream_aux input_stream)
    | _ ->
@@ -798,8 +810,10 @@ let rec next_event_of_compose_typed_xml_streams s0 current_top additional_stream
     stream of atomic values, adding one character whitespace between
     each atomic value. *)
 
+(*
  let resolved_xml_stream_of_attribute sym text =
-   Cursor.cursor_of_list [fmkrse_event(RSAX_attribute(sym,text)) Finfo.bogus]
+   Cursor.cursor_of_list [fmkse_event(SAX_attribute(sym,text)) Finfo.bogus]
+*)
 
 (***************************)
 (* Simple stream accessors *)
@@ -833,7 +847,7 @@ let is_empty_typed_xml_stream xml_stream =
 
 let rec consume_leading_attribute_events resolved_xml_stream =
   match (Cursor.cursor_peek resolved_xml_stream) with
-  | Some { rse_desc = RSAX_attribute attribute_desc; rse_loc = _; } ->
+  | Some { se_desc = SAX_attribute attribute_desc; se_loc = _; } ->
       begin
 	ignore(Cursor.cursor_next resolved_xml_stream);
 	let next_attributes = consume_leading_attribute_events resolved_xml_stream in

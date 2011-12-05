@@ -21,10 +21,10 @@
 val project_xml_stream_from_document :
     Datatypes.xs_anyURI ->
 	Path_struct.rooted_path_sequence ->
-	  Streaming_types.resolved_xml_stream -> Streaming_types.resolved_xml_stream
+	  Streaming_types.xml_stream -> Streaming_types.xml_stream
 
 val project_xml_stream_from_variable :
     Xquery_common_ast.cvname ->
 	Path_struct.rooted_path_sequence ->
-	  Streaming_types.resolved_xml_stream -> Streaming_types.resolved_xml_stream
+	  Streaming_types.xml_stream -> Streaming_types.xml_stream
 

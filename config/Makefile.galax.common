@@ -203,7 +203,7 @@ str.cma \
 bigarray.cma \
 pcre.cma 
 ifeq ($(CONF_WITH_NETSYS), true)
-OCAML_LIBS+=netsys.cma 
+OCAML_LIBS+=netsys_oothr.cma netsys.cma
 endif
 OCAML_LIBS+=\
 netstring.cma \
@@ -237,7 +237,7 @@ str.cmxa \
 bigarray.cmxa \
 pcre.cmxa 
 ifeq ($(CONF_WITH_NETSYS), true)
-OCAML_OPTLIBS+=netsys.cmxa 
+OCAML_OPTLIBS+=netsys_oothr.cmxa netsys.cmxa
 endif
 OCAML_OPTLIBS+=\
 netstring.cmxa \

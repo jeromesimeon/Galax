@@ -34,8 +34,8 @@ let rec peek_no_whitespace s =
   match e with
   | Some ed ->
       begin
-	match ed.tse_desc with
-	| (TSAX_characters c) ->
+	match ed.se_desc with
+	| (SAX_characters c) ->
 	  if Whitespace.whitespace_only c
 	  then
 	    begin
@@ -60,17 +60,46 @@ let compare_attribute_names_aux rsym1 rsym2 =
   let (_,uri2,ncname2) = Namespace_symbols.rattr_name rsym2 in
   compare (uri1,ncname1) (uri2,ncname2)
 
-let compare_attribute_names (rsym1,_,_,_) (rsym2,_,_,_) =
+let compare_attribute_names (_,_,s1,rattr1,_) (_,_,s2,rattr2,_) =
+  if (!s1 || !s2) then 0 else
+  let rsym1 =
+    match !rattr1 with
+    | Some rsym1 -> rsym1
+    | None -> raise (Query(Stream_Error("Trying to type an unresolved stream [compare_attribute_names error]")))
+  in
+  let rsym2 =
+    match !rattr2 with
+    | Some rsym2 -> rsym2
+    | None -> raise (Query(Stream_Error("Trying to type an unresolved stream [compare_attribute_names error]")))
+  in
   compare_attribute_names_aux rsym1 rsym2
 
 let compare_characters c1 c2 =
   c1 = c2
 
-let compare_attributes (rsym1,c1,_,_) (rsym2,c2,_,_) =
+let compare_attributes (_,c1,s1,rattr1,_) (_,c2,s2,rattr2,_) =
+  if (!s1 || !s2) then true else
+  let rsym1 =
+    match !rattr1 with
+    | Some rsym1 -> rsym1
+    | None -> raise (Query(Stream_Error("Trying to type an unresolved stream [compare_attribute_names error]")))
+  in
+  let rsym2 =
+    match !rattr2 with
+    | Some rsym2 -> rsym2
+    | None -> raise (Query(Stream_Error("Trying to type an unresolved stream [compare_attribute_names error]")))
+  in
+  if not((compare_attribute_names_aux rsym1 rsym2) = 0)
+  then
+    begin
+      Printf.printf ("Attributes %s and %s differ") (Namespace_names.prefixed_string_of_rqname (Namespace_symbols.rattr_name rsym1)) (Namespace_names.prefixed_string_of_rqname (Namespace_symbols.rattr_name rsym2));flush stdout
+    end;
   ((compare_attribute_names_aux rsym1 rsym2) = 0) &&
   (compare_characters c1 c2)
 
 let rec compare_attributes_lists satts1 satts2 =
+  let satts1 = List.filter (fun (_,_,s,_,_) -> not !s) satts1 in
+  let satts2 = List.filter (fun (_,_,s,_,_) -> not !s) satts2 in
   match (satts1,satts2) with
   | [],[] -> true
   | att1 :: satts1', att2 :: satts2' ->
@@ -81,7 +110,22 @@ let rec compare_attributes_lists satts1 satts2 =
 	false
   | _ -> false
 
-let compare_start_elems (rsym1,atts1,_,_,_,_,_,_) (rsym2,atts2,_,_,_,_,_,_) =
+let compare_start_elems (_,atts1,_,_,relem1,_) (_,atts2,_,_,relem2,_) =
+  let rsym1 =
+    match !relem1 with
+    | Some (rsym1,_,_) -> rsym1
+    | None -> raise (Query(Stream_Error("Trying to type an unresolved stream [compare_start_elems error]")))
+  in
+  let rsym2 =
+    match !relem2 with
+    | Some (rsym2,_,_) -> rsym2
+    | None -> raise (Query(Stream_Error("Trying to type an unresolved stream [compare_start_elems error]")))
+  in
+  if not(Namespace_symbols.relem_equal rsym1 rsym2)
+  then
+    begin
+      Printf.printf ("Elements %s and %s differ") (Namespace_names.prefixed_string_of_rqname (Namespace_symbols.relem_name rsym1)) (Namespace_names.prefixed_string_of_rqname (Namespace_symbols.relem_name rsym2));flush stdout
+    end;
   (Namespace_symbols.relem_equal rsym1 rsym2) &&
   let satts1 = List.sort compare_attribute_names atts1 in
   let satts2 = List.sort compare_attribute_names atts2 in
@@ -105,30 +149,30 @@ let next_diff_event s1 s2 () =
 	true
     | (Some ed1,Some ed2) ->
 	begin
-	  match ed1.tse_desc,ed2.tse_desc with
-	  | (TSAX_startDocument d1,TSAX_startDocument d2) ->
+	  match ed1.se_desc,ed2.se_desc with
+	  | (SAX_startDocument d1,SAX_startDocument d2) ->
 	      compare_start_docs d1 d2
-	  | (TSAX_endDocument,TSAX_endDocument) ->
+	  | (SAX_endDocument,SAX_endDocument) ->
 	      true
-	  | (TSAX_startElement e1, TSAX_startElement e2) ->
+	  | (SAX_startElement e1, SAX_startElement e2) ->
 	      compare_start_elems e1 e2
-	  | (TSAX_endElement,TSAX_endElement) ->
+	  | (SAX_endElement,SAX_endElement) ->
 	      true
-	  | (TSAX_processingInstruction pi1, TSAX_processingInstruction pi2) ->
+	  | (SAX_processingInstruction pi1, SAX_processingInstruction pi2) ->
 	      compare_pis pi1 pi2
-	  | (TSAX_comment c1, TSAX_comment c2) ->
+	  | (SAX_comment c1, SAX_comment c2) ->
 	      compare_comments c1 c2
-	  | (TSAX_characters c1, TSAX_characters c2) ->
+	  | (SAX_characters c1, SAX_characters c2) ->
 	      compare_characters c1 c2
-	  | (TSAX_attribute a1, TSAX_attribute a2) ->
+	  | (SAX_attribute a1, SAX_attribute a2) ->
 	      compare_attributes a1 a2
-	  | (TSAX_atomicValue a1, TSAX_atomicValue a2) ->
+	  | (SAX_atomicValue a1, SAX_atomicValue a2) ->
 	      compare_atomic_values a1 a2
-	  | (TSAX_hole, TSAX_hole) ->
+	  | (SAX_hole, SAX_hole) ->
 	      true
-	  | (TSAX_startEncl, TSAX_startEncl) ->
+	  | (SAX_startEncl, SAX_startEncl) ->
 	      true
-	  | (TSAX_endEncl, TSAX_endEncl) ->
+	  | (SAX_endEncl, SAX_endEncl) ->
 	      true
 	  | _ ->
 	      false

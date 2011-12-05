@@ -426,7 +426,8 @@
     ./parsing/parse_xquery.cmi ./namespace/namespace_names.cmi \
     ./base/finfo.cmi
 ./monitor/monitor.cmi: ./procctxt/processing_context.cmi \
-    ./physicaldm/physical_value.cmi ./procctxt/monitoring_context.cmi
+    ./physicaldm/physical_value.cmi ./namespace/namespace_context.cmi \
+    ./procctxt/monitoring_context.cmi
 ./namespace/namespace_generate.cmi: ./namespace/namespace_names.cmi
 ./namespace/namespace_builtin.cmi: ./namespace/namespace_names.cmi
 ./namespace/namespace_context.cmi: ./namespace/namespace_names.cmi
@@ -573,8 +574,9 @@
     ./datatypes/datatypes.cmi ./dm/base/cursor.cmi
 ./planio/planio_physical_value.cmi: ./ast/xquery_physical_type_ast.cmi \
     ./streaming/streaming_types.cmi ./procctxt/processing_context.cmi \
-    ./physicaldm/physical_value.cmi ./namespace/namespace_names.cmi \
-    ./namespace/namespace_context.cmi ./dm/base/cursor.cmi
+    ./physicaldm/physical_value.cmi ./namespace/namespace_symbols.cmi \
+    ./namespace/namespace_names.cmi ./namespace/namespace_context.cmi \
+    ./dm/base/cursor.cmi
 ./planio/planio_top.cmi: ./ast/xquery_common_ast.cmi \
     ./ast/xquery_algebra_ast.cmi ./streaming/streaming_types.cmi \
     ./procctxt/processing_context.cmi ./physicaldm/physical_value.cmi \
@@ -724,9 +726,10 @@
 ./streaming/resolve_stream_context.cmi: ./namespace/namespace_symbols.cmi \
     ./namespace/namespace_names.cmi ./namespace/namespace_context.cmi
 ./streaming/sax_annot.cmi:
-./streaming/small_stream_ast.cmi: ./namespace/namespace_symbols.cmi \
-    ./namespace/namespace_names.cmi ./namespace/namespace_context.cmi \
-    ./dm/atomic/dm_atomic.cmi ./datatypes/datatypes.cmi
+./streaming/small_stream_ast.cmi: ./streaming/streaming_types.cmi \
+    ./namespace/namespace_symbols.cmi ./namespace/namespace_names.cmi \
+    ./namespace/namespace_context.cmi ./dm/atomic/dm_atomic.cmi \
+    ./datatypes/datatypes.cmi
 ./streaming/small_stream_context.cmi: ./streaming/streaming_types.cmi \
     ./streaming/small_stream_ast.cmi ./namespace/namespace_context.cmi \
     ./base/error.cmi
@@ -1099,12 +1102,12 @@ streaming/streaming_ops.cmx: ./streaming/streaming_util.cmx \
     ./dm/base/cursor.cmx streaming/streaming_ops.cmi
 streaming/streaming_diff.cmo: ./base/whitespace.cmi \
     ./streaming/streaming_types.cmi ./streaming/streaming_ops.cmi \
-    ./namespace/namespace_symbols.cmi ./base/error.cmi ./dm/base/cursor.cmi \
-    streaming/streaming_diff.cmi
+    ./namespace/namespace_symbols.cmi ./namespace/namespace_names.cmi \
+    ./base/error.cmi ./dm/base/cursor.cmi streaming/streaming_diff.cmi
 streaming/streaming_diff.cmx: ./base/whitespace.cmx \
     ./streaming/streaming_types.cmi ./streaming/streaming_ops.cmx \
-    ./namespace/namespace_symbols.cmx ./base/error.cmx ./dm/base/cursor.cmx \
-    streaming/streaming_diff.cmi
+    ./namespace/namespace_symbols.cmx ./namespace/namespace_names.cmx \
+    ./base/error.cmx ./dm/base/cursor.cmx streaming/streaming_diff.cmi
 streaming/streaming_conv.cmo: ./streaming/streaming_util.cmi \
     ./streaming/streaming_types.cmi ./streaming/streaming_ops.cmi \
     ./streaming/sax_annot.cmi ./namespace/namespace_symbols.cmi \
@@ -1505,8 +1508,9 @@ schema/schema_validation.cmo: ./ast/xquery_type_core_ast.cmi \
     ./schema/schema_validation_context.cmi ./schema/schema_util.cmi \
     ./schema/schema_judge.cmi ./schema/schema_builtin.cmi \
     ./namespace/namespace_symbols_builtin.cmi \
-    ./namespace/namespace_symbols.cmi ./namespace/namespace_context.cmi \
-    ./base/error.cmi ./dm/atomic/dm_atomic.cmi ./datatypes/datatypes_util.cmi \
+    ./namespace/namespace_symbols.cmi ./namespace/namespace_names.cmi \
+    ./namespace/namespace_context.cmi ./base/error.cmi \
+    ./dm/atomic/dm_atomic.cmi ./datatypes/datatypes_util.cmi \
     ./dm/base/cursor.cmi schema/schema_validation.cmi
 schema/schema_validation.cmx: ./ast/xquery_type_core_ast.cmi \
     ./ast/xquery_common_ast.cmx ./base/whitespace.cmx \
@@ -1514,8 +1518,9 @@ schema/schema_validation.cmx: ./ast/xquery_type_core_ast.cmi \
     ./schema/schema_validation_context.cmx ./schema/schema_util.cmx \
     ./schema/schema_judge.cmx ./schema/schema_builtin.cmx \
     ./namespace/namespace_symbols_builtin.cmx \
-    ./namespace/namespace_symbols.cmx ./namespace/namespace_context.cmx \
-    ./base/error.cmx ./dm/atomic/dm_atomic.cmx ./datatypes/datatypes_util.cmx \
+    ./namespace/namespace_symbols.cmx ./namespace/namespace_names.cmx \
+    ./namespace/namespace_context.cmx ./base/error.cmx \
+    ./dm/atomic/dm_atomic.cmx ./datatypes/datatypes_util.cmx \
     ./dm/base/cursor.cmx schema/schema_validation.cmi
 schema/schema_dtd_import.cmo: ./ast/xquery_type_ast_util.cmi \
     ./ast/xquery_type_ast.cmi ./ast/xquery_common_ast.cmi \
@@ -2163,16 +2168,18 @@ physicaldm/physical_export.cmo: ./streaming/streaming_util.cmi \
     ./streaming/streaming_types.cmi ./streaming/streaming_ops.cmi \
     ./streaming/streaming_constructors.cmi ./physicaldm/physical_value.cmi \
     ./physicaldm/physical_item.cmi ./physicaldm/physical_export_context.cmi \
-    ./namespace/namespace_symbols.cmi ./base/error.cmi ./dm/base/dm_types.cmi \
-    ./dm/atomic/dm_atomic.cmi ./dm/dm.cmi ./dm/base/cursor.cmi \
-    ./base/conf.cmi physicaldm/physical_export.cmi
+    ./namespace/namespace_symbols.cmi ./namespace/namespace_context.cmi \
+    ./base/error.cmi ./dm/base/dm_types.cmi ./dm/atomic/dm_atomic.cmi \
+    ./dm/dm.cmi ./dm/base/cursor.cmi ./base/conf.cmi \
+    physicaldm/physical_export.cmi
 physicaldm/physical_export.cmx: ./streaming/streaming_util.cmx \
     ./streaming/streaming_types.cmi ./streaming/streaming_ops.cmx \
     ./streaming/streaming_constructors.cmx ./physicaldm/physical_value.cmi \
     ./physicaldm/physical_item.cmx ./physicaldm/physical_export_context.cmx \
-    ./namespace/namespace_symbols.cmx ./base/error.cmx ./dm/base/dm_types.cmx \
-    ./dm/atomic/dm_atomic.cmx ./dm/dm.cmx ./dm/base/cursor.cmx \
-    ./base/conf.cmx physicaldm/physical_export.cmi
+    ./namespace/namespace_symbols.cmx ./namespace/namespace_context.cmx \
+    ./base/error.cmx ./dm/base/dm_types.cmx ./dm/atomic/dm_atomic.cmx \
+    ./dm/dm.cmx ./dm/base/cursor.cmx ./base/conf.cmx \
+    physicaldm/physical_export.cmi
 physicaldm/physical_load.cmo: ./streaming/streaming_types.cmi \
     ./streaming/streaming_ops.cmi ./physicaldm/physical_value.cmi \
     ./physicaldm/physical_name_index.cmi ./dm/base/nodeid_context.cmi \
@@ -2335,16 +2342,18 @@ monitor/monitor.cmo: ./streaming/streaming_ops.cmi \
     ./streaming/small_stream_context.cmi ./streaming/small_stream_ast.cmi \
     ./serialization/serialization.cmi ./procctxt/processing_context.cmi \
     ./physicaldm/physical_load.cmi ./parsing/parse_io.cmi \
-    ./dm/base/nodeid_context.cmi ./namespace/namespace_context.cmi \
-    ./namespace/namespace_builtin.cmi ./procctxt/monitoring_context.cmi \
-    ./base/error.cmi ./dm/atomic/dm_atomic_util.cmi monitor/monitor.cmi
+    ./dm/base/nodeid_context.cmi ./namespace/namespace_symbols.cmi \
+    ./namespace/namespace_context.cmi ./namespace/namespace_builtin.cmi \
+    ./procctxt/monitoring_context.cmi ./base/error.cmi \
+    ./dm/atomic/dm_atomic_util.cmi monitor/monitor.cmi
 monitor/monitor.cmx: ./streaming/streaming_ops.cmx \
     ./streaming/small_stream_context.cmx ./streaming/small_stream_ast.cmi \
     ./serialization/serialization.cmx ./procctxt/processing_context.cmx \
     ./physicaldm/physical_load.cmx ./parsing/parse_io.cmx \
-    ./dm/base/nodeid_context.cmx ./namespace/namespace_context.cmx \
-    ./namespace/namespace_builtin.cmx ./procctxt/monitoring_context.cmx \
-    ./base/error.cmx ./dm/atomic/dm_atomic_util.cmx monitor/monitor.cmi
+    ./dm/base/nodeid_context.cmx ./namespace/namespace_symbols.cmx \
+    ./namespace/namespace_context.cmx ./namespace/namespace_builtin.cmx \
+    ./procctxt/monitoring_context.cmx ./base/error.cmx \
+    ./dm/atomic/dm_atomic_util.cmx monitor/monitor.cmi
 stdlib/fn_doc.cmo: ./streaming/streaming_parse.cmi \
     ./streaming/streaming_ops.cmi ./procctxt/processing_context.cmi \
     ./physicaldm/physical_value.cmi ./physicaldm/physical_name_index.cmi \

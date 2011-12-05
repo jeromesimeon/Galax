@@ -20,9 +20,9 @@
 open Streaming_types
 
 
-type typed_labeled_sax_event = typed_annotated_sax_event
+type typed_labeled_sax_event = sax_event
 
-type typed_labeled_xml_stream = typed_xml_stream
+type typed_labeled_xml_stream = xml_stream
 
 
 (*****************)

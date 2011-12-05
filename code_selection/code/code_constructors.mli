@@ -107,7 +107,8 @@ val build_attr_code :
     code_selection_context -> 
       Algebra_type.algop_expr -> 
 	rattr_symbol ->
-	(Algebra_type.alg_eval_code_dep  * Code_selection_context.code_selection_context)
+	  Namespace_context.nsenv ->
+	    (Algebra_type.alg_eval_code_dep  * Code_selection_context.code_selection_context)
 
 val build_anyattr_code :
     code_selection_context -> 

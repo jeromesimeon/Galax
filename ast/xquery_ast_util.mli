@@ -75,7 +75,7 @@ val fmkblock_decl_expr: block_decl_desc -> Finfo.finfo -> block_decl_expr
 
 (* Processes NS attributes of an element *)
 
-val get_ns_attributes               : expr list -> ((Namespace_names.prefix * Namespace_names.uri) list * expr list)
+val get_ns_attributes : expr list -> ((Namespace_names.prefix * Namespace_names.uri) list * expr list)
 
 
 (*****************************)

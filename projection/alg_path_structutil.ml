@@ -133,60 +133,90 @@ let print_path_sequence ff ps =
 let raise_unexpected_event_error () = raise (Query (Projection "Unexpected event type encountered."))
 
 let relem_symbol_of_sax_event sax_event =
-  match sax_event.tse_desc with
-  | TSAX_startElement (relem_sym,_,_,_,_,_,_,_) ->
+  match sax_event.se_desc with
+  | SAX_startElement (_,_,_,_,eo,_) ->
+      let relem_sym =
+	match !eo with
+	| None -> raise_unexpected_event_error ()
+	| Some (rel,_,_) -> rel
+      in
       relem_sym
   | _ ->
       raise_unexpected_event_error ()
 
 let relem_symbol_of_sax_event_and_type sax_event =
-  match sax_event.tse_desc with
-  | TSAX_startElement (relem_sym,_,_,_,_,_,type_annot,_) ->
+  match sax_event.se_desc with
+  | SAX_startElement (_,_,_,_,eo,et) ->
+      let relem_sym =
+	match !eo with
+	| None -> raise_unexpected_event_error ()
+	| Some (rel,_,_) -> rel
+      in
+      let type_annot =
+	match !et with
+	| None -> raise_unexpected_event_error ()
+	| Some (_,t,_) -> t
+      in
       (relem_sym,type_annot)
   | _ ->
       raise_unexpected_event_error ()
 
 let rattr_symbol_of_sax_event sax_event =
-  match sax_event.tse_desc with
-  | TSAX_attribute (rattr_sym,_,_,_) ->
+  match sax_event.se_desc with
+  | SAX_attribute (_,_,s,ao,_) ->
+      let rattr_sym =
+	match !ao with
+	| None -> raise_unexpected_event_error ()
+	| Some rat -> rat
+      in
       rattr_sym
   | _ ->
       raise_unexpected_event_error ()
 
 let rattr_symbol_of_sax_event_and_type sax_event =
-  match sax_event.tse_desc with
-  | TSAX_attribute (rattr_sym,_,type_annotation,_) ->
+  match sax_event.se_desc with
+  | SAX_attribute (_,_,s,ao,at) ->
+      let rattr_sym =
+	match !ao with
+	| None -> raise_unexpected_event_error ()
+	| Some rat -> rat
+      in
+      let type_annotation =
+	match !at with
+	| None -> raise_unexpected_event_error ()
+	| Some (t,_) -> t
+      in
       (rattr_sym,type_annotation)
   | _ ->
       raise_unexpected_event_error ()
 
 let pi_ncname_of_sax_event sax_event =
-  match sax_event.tse_desc with
-  | TSAX_processingInstruction (pi_name,_) ->
+  match sax_event.se_desc with
+  | SAX_processingInstruction (pi_name,_) ->
       pi_name
   | _ ->
       raise_unexpected_event_error ()
 
 let node_kind_of_sax_event sax_event =
-  match sax_event.tse_desc with
-  | TSAX_startDocument _
-  | TSAX_endDocument ->
+  match sax_event.se_desc with
+  | SAX_startDocument _
+  | SAX_endDocument ->
       DocumentNodeKind
-  | TSAX_startElement _
-  | TSAX_endElement ->
+  | SAX_startElement _
+  | SAX_endElement ->
       ElementNodeKind
-  | TSAX_processingInstruction _ ->
+  | SAX_processingInstruction _ ->
       ProcessingInstructionNodeKind
-  | TSAX_comment _ ->
+  | SAX_comment _ ->
       CommentNodeKind
-  | TSAX_characters _ ->
+  | SAX_characters _ ->
       TextNodeKind
-  | TSAX_attribute _ ->
+  | SAX_attribute _ ->
       AttributeNodeKind
-  | TSAX_atomicValue _
-  | TSAX_startEncl
-  | TSAX_endEncl
-  | TSAX_hole ->
+  | SAX_atomicValue _
+  | SAX_startEncl
+  | SAX_endEncl
+  | SAX_hole ->
       raise_unexpected_event_error ()
 
 open Code_util_matching
@@ -557,7 +587,12 @@ let one_step_attribute_check rsym (path, subtree) =
 	    false
       end
 
-let one_step_attribute pfl (rsym,_,_,_) =
+let one_step_attribute pfl (_,_,s,ao,_) =
+  let rsym =
+    match !ao with
+    | None -> raise_unexpected_event_error ()
+    | Some rat -> rat
+  in
   List.exists (one_step_attribute_check rsym) pfl
 
 

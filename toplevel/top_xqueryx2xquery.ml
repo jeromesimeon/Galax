@@ -88,8 +88,9 @@ let rec conv_atts atts =
 let check_elem s =
   let nsenv = Namespace_context.default_xml_nsenv in
   match (Cursor.cursor_next s).se_desc with
-  | SAX_startElement (name,atts,_) ->
+  | SAX_startElement (name,atts,_,_,_,_) ->
       begin
+	let atts = List.map (fun (x,y,_,_,_) -> (x,y)) atts in
 	let (new_nss, other_atts) = Xquery_ast_util.get_ns_attributes (conv_atts atts) in
 	let nsenv' = Namespace_context.add_all_ns nsenv new_nss in
 	let cename = Namespace_resolve.resolve_element_qname nsenv' name in

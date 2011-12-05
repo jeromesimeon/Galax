@@ -83,3 +83,9 @@ val cleanup_actual_out_bindings : binding_table -> binding_table -> binding_tabl
 
 val same_nsenv : nsenv -> nsenv -> bool
 
+(* Print a binding table *)
+
+val print_binding_table : string -> Format.formatter -> binding_table -> unit
+
+val print_special_attributes : string -> Format.formatter -> (uqname * string) list -> unit
+

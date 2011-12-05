@@ -180,8 +180,8 @@ let normalize_ident_expr norm_context e =
     else
       normalize_ident_function_app norm_context rfname celist (Some e) fi
 
-  and normalize_ident_eattfixed norm_ctxt caname celist eh fi = 
-    build_core_attribute_constructor norm_ctxt caname celist eh fi
+  and normalize_ident_eattfixed norm_ctxt caname nsenv celist eh fi = 
+    build_core_attribute_constructor norm_ctxt caname nsenv celist eh fi
 
   and normalize_ident_eelemfixed norm_context cename nsenv cattlist cchildlist eh fi =
   (* 1. The namespace environment must be passed to the element constructor *)
@@ -264,7 +264,9 @@ let normalize_ident_expr norm_context e =
 	  | EAttrFixed (aname, elist) ->
 	      let caname = resolve_attribute_qname nsenv aname in
 	      let celist = normalize_ident_expr_list norm_context elist in
-	      normalize_ident_eattfixed norm_context caname celist (Some e) fi
+	      (* There is no way to change the namespace environment for
+		 an computed attribute constructor - Jerome *)
+	      normalize_ident_eattfixed norm_context caname nsenv celist (Some e) fi
 	  | EAttrComputed (elist1, elist2) ->
 	      let celist1 = normalize_ident_expr_list norm_context elist1 in
 	      let ce1 = map_to_sequence (Some e) fi celist1 in

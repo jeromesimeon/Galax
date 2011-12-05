@@ -127,7 +127,7 @@ let get_free_vars cx =
     | CECall (_,es,_,_,_) 
     | CEOverloadedCall(_,es,_)  
     | CEElem (_,_,es) 
-    | CEAttr(_,es) 
+    | CEAttr(_,_,es) 
     |   CEError es  ->  List.fold_left (fun fv x -> get_free_rec x fv bound) free es                   
     | CESeq (x',x'') 
     | CEImperativeSeq (x',x'') ->       
@@ -325,8 +325,9 @@ let normalize_expr norm_context e =
     let normalize_eattcontent ce =
       normalize_atomize norm_ctxt ce eh fi
     in
+    let nsenv = nsenv_from_norm_context norm_ctxt in 
     let celist' = List.map normalize_eattcontent celist in
-    build_core_attribute_constructor norm_ctxt caname celist' eh fi
+    build_core_attribute_constructor norm_ctxt caname nsenv celist' eh fi
 
 (* 
    [attribute { Expr1 } { Expr2 }]Expr

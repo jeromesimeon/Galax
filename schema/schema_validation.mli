@@ -29,5 +29,5 @@
  *)
 
 val validate :
-    Xquery_type_core_ast.cxschema -> Streaming_types.resolved_xml_stream -> Streaming_types.typed_xml_stream
+    Xquery_type_core_ast.cxschema -> Streaming_types.xml_stream -> Streaming_types.xml_stream
 

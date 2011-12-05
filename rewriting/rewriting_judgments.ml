@@ -158,7 +158,7 @@ let rec used_count variablename ce =
 	cexprlist
   | CEAnyElem (cexpr1, nsenv1, nsenv2, cexpr2) ->  
       (used_count variablename cexpr1) + (used_count variablename cexpr2)
-  | CEAttr (rattr_symbol, cexprlist) ->
+  | CEAttr (rattr_symbol, nsenv, cexprlist) ->
       List.fold_left
 	(fun ct cexpr -> ct + (used_count variablename cexpr))
 	zero
@@ -383,7 +383,7 @@ let can_fail proc_ctxt ce =
 	   the name returns something else than a QName of a string.
 	   For instance : element { 1 } { "Hello" } *)
 
-    | CEAttr (rattr_symbol, cexprlist) -> 
+    | CEAttr (rattr_symbol, nsenv, cexprlist) -> 
 	List.fold_left (fun b cexpr -> b || can_fail_aux cexpr) false cexprlist
       (* According to the new semantics, attribute constructors never fail *)
 

@@ -148,7 +148,7 @@ let rec df_analysis_of_cexpr_internal dfa_ctxt cexpr =
       | CEOverloadedCall (_, cexprs, _)
       | CECall (_, cexprs, _, _, _)
 	  
-      | CEAttr (_, cexprs)
+      | CEAttr (_, _, cexprs)
       | CEElem (_, _, cexprs) ->
 	  let i = ref 0 in
 	    
@@ -499,7 +499,7 @@ let print_dot_nodelabel ff dfnode_kind dfnode_id ac_handle  =
 		      | CETextComputed _ -> "\\\"...\\\"", plaintext_str
 		      | CECommentComputed _ -> "<!-- ... -->", plaintext_str
 		      | CEPIComputed _ -> "<?...?>", plaintext_str
-		      | CEAttr (caname, _) -> "@" ^ (Namespace_names.prefixed_string_of_rqname caname), plaintext_str
+		      | CEAttr (caname, _, _) -> "@" ^ (Namespace_names.prefixed_string_of_rqname caname), plaintext_str
 		      | CEElem (cename, _, _) -> "<" ^ (Namespace_names.prefixed_string_of_rqname cename) ^ ">", plaintext_str
 		      | CEAnyElem _ -> "<.../>", plaintext_str
 		      | CEAnyAttr _ -> "@...", plaintext_str

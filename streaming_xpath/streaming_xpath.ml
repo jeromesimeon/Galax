@@ -41,60 +41,96 @@ open Error
 let raise_unexpected_event_error () = raise (Query (Streaming_XPath "Unexpected event type encountered."))
 
 let relem_symbol_of_sax_event sax_event =
-  match sax_event.tse_desc with
-  | TSAX_startElement (relem_sym,_,_,_,_,_,_,_) ->
-      relem_sym
+  match sax_event.se_desc with
+  | SAX_startElement (_, _, _, _, reo, _) ->
+      begin
+	match !reo with
+	| None -> raise_unexpected_event_error ()
+	| Some (relem_sym,_,_) -> relem_sym
+      end
   | _ ->
       raise_unexpected_event_error ()
 
 let relem_symbol_of_sax_event_and_type sax_event =
-  match sax_event.tse_desc with
-  | TSAX_startElement (relem_sym,_,_,_,_,_,type_annot,_) ->
+  match sax_event.se_desc with
+  | SAX_startElement (_, _, _, _, reo, ret) ->
+      let relem_sym =
+	begin
+	  match !reo with
+	  | None -> raise_unexpected_event_error ()
+	  | Some (relem_sym,_,_) -> relem_sym
+	end
+      in
+      let type_annot =
+	begin
+	  match !ret with
+	  | None -> raise_unexpected_event_error ()
+	  | Some (_,ta,_) -> ta
+	end
+      in
       (relem_sym,type_annot)
   | _ ->
       raise_unexpected_event_error ()
 
 let rattr_symbol_of_sax_event sax_event =
-  match sax_event.tse_desc with
-  | TSAX_attribute (rattr_sym,_,_,_) ->
-      rattr_sym
+  match sax_event.se_desc with
+  | SAX_attribute (_,_,s,rao,_) ->
+      begin
+	match !rao with
+	| None -> raise_unexpected_event_error ()
+	| Some rattr_sym -> rattr_sym
+      end
   | _ ->
       raise_unexpected_event_error ()
 
 let rattr_symbol_of_sax_event_and_type sax_event =
-  match sax_event.tse_desc with
-  | TSAX_attribute (rattr_sym,_,type_annotation,_) ->
+  match sax_event.se_desc with
+  | SAX_attribute (_ ,_, s, rao, rat) ->
+      let rattr_sym =
+	begin
+	  match !rao with
+	  | None -> raise_unexpected_event_error ()
+	  | Some rattr_sym -> rattr_sym
+	end
+      in
+      let type_annotation =
+	begin
+	  match !rat with
+	  | None -> raise_unexpected_event_error ()
+	  | Some (ta,_) -> ta
+	end
+      in
       (rattr_sym,type_annotation)
   | _ ->
       raise_unexpected_event_error ()
 
 let pi_ncname_of_sax_event sax_event =
-  match sax_event.tse_desc with
-  | TSAX_processingInstruction (pi_name,_) ->
+  match sax_event.se_desc with
+  | SAX_processingInstruction (pi_name,_) ->
       pi_name
   | _ ->
       raise_unexpected_event_error ()
 
 let node_kind_of_sax_event sax_event =
-  match sax_event.tse_desc with
-  | TSAX_startDocument _
-  | TSAX_endDocument ->
+  match sax_event.se_desc with
+  | SAX_startDocument _
+  | SAX_endDocument ->
       DocumentNodeKind
-  | TSAX_startElement _
-  | TSAX_endElement ->
+  | SAX_startElement _
+  | SAX_endElement ->
       ElementNodeKind
-  | TSAX_processingInstruction _ ->
+  | SAX_processingInstruction _ ->
       ProcessingInstructionNodeKind
-  | TSAX_comment _ ->
+  | SAX_comment _ ->
       CommentNodeKind
-  | TSAX_characters _ ->
+  | SAX_characters _ ->
       TextNodeKind
-  | TSAX_attribute _ ->
+  | SAX_attribute _ ->
       AttributeNodeKind
-  | TSAX_atomicValue _
-  | TSAX_startEncl
-  | TSAX_endEncl
-  | TSAX_hole ->
+  | SAX_atomicValue _
+  | SAX_startEncl
+  | SAX_endEncl
+  | SAX_hole ->
       raise_unexpected_event_error ()
 
 open Code_util_matching
@@ -182,34 +218,34 @@ let rec next_event input_stream node_test dispatch_action_fun sxp_context () =
 
     let labeled_event = Cursor.cursor_next input_stream in
       
-      match labeled_event.tse_desc with
-	| TSAX_startDocument _
-	| TSAX_startElement _ ->
+      match labeled_event.se_desc with
+	| SAX_startDocument _
+	| SAX_startElement _ ->
 	    begin
 	      let action = dispatch_action_fun labeled_event node_test sxp_context in
 	      let _ = record_action action sxp_context in
 		execute_action_start_event input_stream labeled_event node_test action dispatch_action_fun sxp_context
 	    end
 	      
-	| TSAX_endDocument
-	| TSAX_endElement ->
+	| SAX_endDocument
+	| SAX_endElement ->
 	    let action = get_recorded_action sxp_context in
 	      execute_action_end_event input_stream labeled_event node_test action dispatch_action_fun sxp_context
 		
-	| TSAX_processingInstruction _
-	| TSAX_comment _
-	| TSAX_characters _
-	| TSAX_attribute _ ->
+	| SAX_processingInstruction _
+	| SAX_comment _
+	| SAX_characters _
+	| SAX_attribute _ ->
 	    let action = dispatch_action_fun labeled_event node_test sxp_context in
 	      execute_action_leaf input_stream labeled_event node_test action dispatch_action_fun sxp_context
 		
-	| TSAX_atomicValue _ ->
+	| SAX_atomicValue _ ->
 	    (* Is that the right kind of exception? *)
 	    raise (Query (Streaming_XPath "Cannot apply a tree join on an atomic value."))
 	      
-	| TSAX_hole
-	| TSAX_startEncl
-	| TSAX_endEncl ->
+	| SAX_hole
+	| SAX_startEncl
+	| SAX_endEncl ->
 	    raise_unexpected_event_error ()
 (*	      
   with
@@ -290,14 +326,14 @@ and execute_action_end_event input_stream labeled_event node_test action dispatc
 let rec next_event_attribute input_stream node_test stat_ctxt sxp_context () =
     let labeled_event = Cursor.cursor_next input_stream in
       
-      match labeled_event.tse_desc with
-	| TSAX_startElement (_, attributes, _, _, _, _, _, _) 
+      match labeled_event.se_desc with
+	| SAX_startElement (_, attributes, _, _, _, _) 
 	  when get_flag labeled_event ->
 	    begin
 	      let f a = node_test_matches stat_ctxt Attribute node_test a in
 	      let mk a = 
 		let labeled_event =
-		  Streaming_util.fmktse_event (TSAX_attribute a) Finfo.bogus in
+		  Streaming_util.fmkse_event (SAX_attribute a) Finfo.bogus in
 		let _ = set_flag labeled_event in
 		labeled_event
 	      in
@@ -307,23 +343,23 @@ let rec next_event_attribute input_stream node_test stat_ctxt sxp_context () =
 		  | hd :: tl -> Some hd
 		  | [] -> next_event_attribute input_stream node_test stat_ctxt sxp_context ()
 	    end
-	| TSAX_startElement _
-	| TSAX_startDocument _
-	| TSAX_endDocument
-	| TSAX_endElement
-	| TSAX_processingInstruction _
-	| TSAX_comment _
-	| TSAX_characters _
-	| TSAX_attribute _ ->
+	| SAX_startElement _
+	| SAX_startDocument _
+	| SAX_endDocument
+	| SAX_endElement
+	| SAX_processingInstruction _
+	| SAX_comment _
+	| SAX_characters _
+	| SAX_attribute _ ->
 	    next_event_attribute input_stream node_test stat_ctxt sxp_context ()
 		
-	| TSAX_atomicValue _ ->
+	| SAX_atomicValue _ ->
 	    (* Is that the right kind of exception? *)
 	    raise (Query (Streaming_XPath "Cannot apply a tree join on an atomic value."))
 	      
-	| TSAX_hole
-	| TSAX_startEncl
-	| TSAX_endEncl ->
+	| SAX_hole
+	| SAX_startEncl
+	| SAX_endEncl ->
 	    raise_unexpected_event_error ()
   
 

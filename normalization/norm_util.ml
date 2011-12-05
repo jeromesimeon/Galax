@@ -128,8 +128,8 @@ let build_core_while norm_ctxt cond e1 eh fi =
 
 (* Build a core attribute constructor *)
 
-let build_core_attribute_constructor norm_context caname celist eh fi =
-  fmkcexpr (CEAttr (caname, celist)) eh fi
+let build_core_attribute_constructor norm_context caname nsenv celist eh fi =
+  fmkcexpr (CEAttr (caname, nsenv, celist)) eh fi
 
 (* Build a core element constructor *)
 
@@ -1258,7 +1258,7 @@ let rec expr_may_generate_updates expr =
       | CECharRef _ -> false
       | CETextComputed exp -> expr_may_generate_updates exp
       | CEElem(_,_,exp_list) 
-      | CEAttr(_, exp_list) -> expr_list_may_generate_updates  exp_list
+      | CEAttr(_, _, exp_list) -> expr_list_may_generate_updates  exp_list
       | CEAnyElem(x',_,_,x'') 
       | CEAnyAttr(x',_,x'') -> expr_may_generate_updates x' || expr_may_generate_updates x'' 
       | CEError(exp_list) -> expr_list_may_generate_updates  exp_list 

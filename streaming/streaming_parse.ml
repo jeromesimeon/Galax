@@ -92,12 +92,12 @@ let make_att c (name,content) =
   let qname = uqname_element_of_string name in
 (*  let fixed_content = glx_expand_attvalue c content in *)
   let fixed_content = content in
-  (qname,fixed_content)
+  (qname,fixed_content, ref false, ref None, ref None)
 
 let make_element_desc c name attlist scope_opt entid =
   let qname = uqname_element_of_string name in
   let sax_xml_attribute_forest = List.rev (List.map (make_att c) attlist) in
-  (qname,sax_xml_attribute_forest,false)
+  (qname,sax_xml_attribute_forest,ref false,ref [], ref None, ref None)
 
 let make_text_desc data =
   data

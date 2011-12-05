@@ -172,7 +172,7 @@ let rec compute_type_expr typing_ctxt cexpr =
     (* [FS 4.7.3.2] Attribute Constructors 
        See type_attribute_constructor
     *)
-    | CEAttr (qname,ce_list) ->
+    | CEAttr (qname,nsenv,ce_list) ->
 	type_attribute_constructor typing_ctxt qname ce_list fi 
     (* In case the attribute name is computed, the name expression
         must be of type xs:QName, xs:string, or xs:untypedAtomic. *)

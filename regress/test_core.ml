@@ -79,12 +79,12 @@ let typed_stream_of_io gio =
   typed_of_resolved_xml_stream rs
 
 let cleaned_event event =
-  match event.tse_desc with
-  | TSAX_characters s ->
+  match event.se_desc with
+  | SAX_characters s ->
       let newchars =
 	Whitespace.remove_newlines s
       in
-      fmktse_event (TSAX_characters newchars) event.tse_loc
+      fmkse_event (SAX_characters newchars) event.se_loc
   | _ -> event
 
 let cleaned_stream s =

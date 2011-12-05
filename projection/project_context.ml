@@ -19,9 +19,9 @@
 
 type project_context =
     { project_pfs                  : (Path_struct.path_fragment_sequence option) Stack.t;
-      mutable project_local_buffer : Streaming_types.resolved_sax_event list;
-      mutable project_temp_buffer  : Streaming_types.resolved_sax_event list;
-      project_stream               : Streaming_types.resolved_xml_stream}
+      mutable project_local_buffer : Streaming_types.sax_event list;
+      mutable project_temp_buffer  : Streaming_types.sax_event list;
+      project_stream               : Streaming_types.xml_stream}
 
 (* Builds a new projection context *)
 
@@ -125,12 +125,12 @@ let push_project_context_keep_moving_skip_node project_context sax_event pfs =
 
 let push_project_context_preserve_node project_context refill_buffer =
   begin
-    Streaming_ops.discard_resolved_xml_stream project_context.project_stream;
+    Streaming_ops.discard_xml_stream project_context.project_stream;
     refill_local_buffer project_context refill_buffer
   end
 
 let push_project_context_skip_node project_context =
-  Streaming_ops.discard_resolved_xml_stream project_context.project_stream
+  Streaming_ops.discard_xml_stream project_context.project_stream
 
 let pop_project_context project_context refill_buffer =
   (* Note: This is called whenever a close element is encountered,
