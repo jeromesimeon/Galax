@@ -51,7 +51,7 @@ type sax_special_xml_attribute_forest = sax_special_xml_attribute list
 
 type resolved_element_desc =
     Namespace_symbols.relem_symbol                   (* QNames are resolved *)
-      * sax_base_uri                                 (* A base URI is available *)
+      * sax_base_uri                                 (* Base URI *)
       * Namespace_context.nsenv                      (* A Namespace environment is available *)
 
 type typed_element_desc =

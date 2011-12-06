@@ -59,10 +59,15 @@ let pop_nsenv ts_context =
 (*********************************************)
 
 let push_ns_bindings ts_context bindings =
-  let (nsenv,in_scope_nsenv) = get_nsenv ts_context in
-  let nsenv' = Namespace_context.add_all_ns_test nsenv bindings in
-  let in_scope_nsenv' = Namespace_context.add_all_ns_test in_scope_nsenv bindings in
-  Stack.push (nsenv',in_scope_nsenv') ts_context.ts_nsenv
+  match bindings with
+  | [] ->
+      let (nsenv,in_scope_nsenv) = get_nsenv ts_context in
+      Stack.push (nsenv,in_scope_nsenv) ts_context.ts_nsenv
+  | _ ->
+      let (nsenv,in_scope_nsenv) = get_nsenv ts_context in
+      let nsenv' = Namespace_context.add_all_ns_test nsenv bindings in
+      let in_scope_nsenv' = Namespace_context.add_all_ns_test in_scope_nsenv bindings in
+      Stack.push (nsenv',in_scope_nsenv') ts_context.ts_nsenv
 
 let resolve_element_name ts_context nsenv uqname =
   try

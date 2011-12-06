@@ -94,7 +94,7 @@ let push_elem_to_ss_context ss_context se remaining_list =
 	Stack.push (Streaming_util.fmkse_event SAX_endElement Finfo.bogus, remaining_list) ss_context.stacked_sexpr_list;
 	(Streaming_util.fmkse_event
 	   (SAX_startElement (uqname_of_rqname rqname,attributes,ref has_element_content, ref [],
-			      ref (Some (rsym, base_uri, nsenv)), ref None)) Finfo.bogus, nse)
+			      ref (Some (rsym,base_uri,nsenv)), ref None)) Finfo.bogus, nse)
       end
   | SElem (rqname, Some bt, nsenv, sattributes, base_uri, nse, qname) ->
       raise (Query (Internal_Error "Binding table shouldn't appear during small stream processing"))

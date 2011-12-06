@@ -146,11 +146,8 @@ let resolve_attributes ts_context attributes =
     attributes
   end
 
-let updated_resolved_element_content resolved_element_content esym base_uri nsenv =
-  match !resolved_element_content with
-  | Some _ -> ()
-  | None ->
-      resolved_element_content := Some (esym,base_uri,nsenv)
+let update_resolved_element_content resolved_element_content esym base_uri nsenv =
+  resolved_element_content := Some (esym,base_uri,nsenv)
 
 let resolved_of_well_formed_event ts_context event =
   begin
@@ -169,6 +166,7 @@ let resolved_of_well_formed_event ts_context event =
 	in
 	(* Third, resolve the element QName using that new environment *)
 	let relem_sym,default =
+	  (* Resolve_stream_context.resolve_element_name ts_context in_scope_nsenv elem_uqname *)
 	  Resolve_stream_context.resolve_element_name ts_context nsenv elem_uqname
 	in
 	let in_scope_nsenv =
@@ -177,7 +175,7 @@ let resolved_of_well_formed_event ts_context event =
 	let resolved_sax_xml_attributes = resolve_attributes ts_context sax_attributes in
 	(* Checking for attribute duplicates here! *)
 	Streaming_util.check_duplicate_attributes resolved_sax_xml_attributes;
-	updated_resolved_element_content relem_desc relem_sym (ref base_uri) in_scope_nsenv
+	update_resolved_element_content relem_desc relem_sym (ref base_uri) in_scope_nsenv
     | SAX_endElement ->
 	Resolve_stream_context.pop_nsenv ts_context
     | SAX_attribute sax_xml_attribute ->
@@ -191,13 +189,13 @@ let resolved_of_well_formed_event ts_context event =
     | SAX_hole
     | SAX_startEncl
     | SAX_endEncl -> ()
-  end;
-  event
+  end
 
 let resolve_event_wrap ts_context xml_stream =
   try
     let next_event = Cursor.cursor_next xml_stream in
-    Some (resolved_of_well_formed_event ts_context next_event)
+    resolved_of_well_formed_event ts_context next_event;
+    Some next_event
   with
   | Stream.Failure ->
       None
@@ -247,8 +245,6 @@ let prefix_event prefix_context resolved_event =
 	  | Some (_,_,nsenv) -> nsenv
 	in
 	let ns_bindings = Prefix_context.push_nsenv_in_prefix_context prefix_context nsenv in
-	(* popped bindings *)
-(* 	Namespace_context.print_binding_table "popped bindings" Format.std_formatter ns_bindings; *)
 	let ns_attributes = recreate_ns_bindings ns_bindings in
 	special := ns_attributes;
 	(* Just resets the resolved part *)
