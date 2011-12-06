@@ -4,6 +4,13 @@
 
 Dec 6, 2011 - Jerome
 
+  o GIT:
+     - Removed some files that shouldn't be tracked.
+  o Streaming:
+     - Slightly neater attribute resolution code.
+
+Dec 6, 2011 - Jerome
+
   o Streaming:
      - Cleaned up some of the handling of namespace attributes.
 

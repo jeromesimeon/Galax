@@ -123,20 +123,19 @@ let merge_xml_text_nodes_in_typed_stream typed_stream =
  (* Turns a well-formed XML stream into an resolved one *)
 
 let resolve_attribute ts_context attribute =
-  let (nsenv,in_scope_nsenv) = Resolve_stream_context.get_nsenv ts_context in
-  begin
-    match attribute with
-    | (attr_uqname, attr_content, attr_sym_ref, attr_type_ref) ->
-	begin
-	  match !attr_sym_ref with
-	  | Some _ -> ()
-	  | None ->
-	      let rattr_sym =
-		Resolve_stream_context.resolve_attribute_name ts_context nsenv attr_uqname
-	      in
-	      attr_sym_ref := Some rattr_sym
-	end
-  end
+  match attribute with
+  | (attr_uqname, _, attr_sym_ref, _) ->
+      begin
+	match !attr_sym_ref with
+        (* It's already been resolved, do nothing *)
+	| Some _ -> ()
+	(* Awaiting resolution *)
+	| None ->
+	    (* Look up current namespace environment *)
+	    let (nsenv,in_scope_nsenv) = Resolve_stream_context.get_nsenv ts_context in
+	    let rattr_sym = Resolve_stream_context.resolve_attribute_name ts_context nsenv attr_uqname in
+	    attr_sym_ref := Some rattr_sym
+      end
 
 let resolve_attributes ts_context attributes =
   begin
