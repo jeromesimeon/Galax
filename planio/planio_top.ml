@@ -644,7 +644,7 @@ let rec box_subexpr box_algop se =
 and recast_attributes attributes =
   let recast_attribute attribute =
     match attribute with
-    | (a,s) -> (Namespace_names.uqname_of_rqname a, s, ref false, ref (Some (Namespace_symbols.rattr_symbol a)), ref None)
+    | (a,s) -> (Namespace_names.uqname_of_rqname a, s, ref (Some (Namespace_symbols.rattr_symbol a)), ref None)
   in
   List.map recast_attribute attributes
 
@@ -714,7 +714,7 @@ let occurrence_sym = rattr_symbol occurrence_attr_name
 let unbox_occurrence_option attrs =
   match attrs with 
   | [] -> None
-  | [(_,str,s,ao,_)] ->
+  | [(_,str,ao,_)] ->
       let n =
 	  match !ao with
 	  | None -> raise (Query (Algebra_Parsing_Error ("Looking for attribute")))
@@ -1640,14 +1640,14 @@ let header_of_prolog_decl op =
   | AOEVarDeclImported (ocdt, vn)
   | AOEVarDeclExternal (ocdt, vn) ->	  
       let e = box_optasequencetype ocdt in
-      let a_vn = (Namespace_names.uqname_of_rqname variable_name_attr_name, (serializable_string_of_rqname vn), ref false, ref (Some (Namespace_symbols.rattr_symbol variable_name_attr_name)), ref None) in
+      let a_vn = (Namespace_names.uqname_of_rqname variable_name_attr_name, (serializable_string_of_rqname vn), ref (Some (Namespace_symbols.rattr_symbol variable_name_attr_name)), ref None) in
       prolog_var_decl_external_name, a_vn :: [], e
   | AOEVarDecl( ocdt, vn ) ->
       let e = box_optasequencetype ocdt in
-      let a_vn = (Namespace_names.uqname_of_rqname variable_name_attr_name, (serializable_string_of_rqname vn), ref false, ref (Some (Namespace_symbols.rattr_symbol variable_name_attr_name)), ref None) in
+      let a_vn = (Namespace_names.uqname_of_rqname variable_name_attr_name, (serializable_string_of_rqname vn), ref (Some (Namespace_symbols.rattr_symbol variable_name_attr_name)), ref None) in
       prolog_var_decl_name, a_vn :: [], e
   | AOEValueIndexDecl kn ->
-      let attrs = (Namespace_names.uqname_of_rqname kname_attr_name, kn, ref false, ref (Some (Namespace_symbols.rattr_symbol kname_attr_name)), ref None) :: [] in
+      let attrs = (Namespace_names.uqname_of_rqname kname_attr_name, kn, ref (Some (Namespace_symbols.rattr_symbol kname_attr_name)), ref None) :: [] in
       prolog_value_index_decl_name, attrs, []
   | AOENameIndexDecl rname ->
       let elems = box_relem_symbol rname in
@@ -1668,13 +1668,13 @@ let box_prolog_decl box_algop prolog_decl =
 
 let box_vars box_algop var_list =
   let all_vars = List.map (box_prolog_decl box_algop) var_list in
-  let attrs = [Namespace_names.uqname_of_rqname prolog_var_count_attr_name, (string_of_int (List.length all_vars)), ref false, ref (Some (Namespace_symbols.rattr_symbol prolog_var_count_attr_name)), ref None] in
+  let attrs = [Namespace_names.uqname_of_rqname prolog_var_count_attr_name, (string_of_int (List.length all_vars)), ref (Some (Namespace_symbols.rattr_symbol prolog_var_count_attr_name)), ref None] in
     construct_element_top prolog_vars_elem_name attrs all_vars
  
 let box_indices box_algop index_list =  
   let all_indices = List.map (box_prolog_decl box_algop) index_list in
   let attrs =
-    [Namespace_names.uqname_of_rqname prolog_index_count_attr_name, (string_of_int (List.length all_indices)),ref false,  ref (Some (Namespace_symbols.rattr_symbol prolog_index_count_attr_name)), ref None]
+    [Namespace_names.uqname_of_rqname prolog_index_count_attr_name, (string_of_int (List.length all_indices)),ref (Some (Namespace_symbols.rattr_symbol prolog_index_count_attr_name)), ref None]
   in
   construct_element_top prolog_indices_elem_name attrs all_indices
 
@@ -1741,7 +1741,7 @@ let module_index_definitions_parser parse_algop st =
 (* Functions *)
 
 let unbox_function_body name parse_algop attrs st =
-  let terms = List.map (fun (_,x,_,_,_) -> x) attrs in
+  let terms = List.map (fun (_,x,_,_) -> x) attrs in
   let body = 
     if (name = (alg_elem function_body_elem_name)) then 
       AOEFunctionUser(parse_algop st)

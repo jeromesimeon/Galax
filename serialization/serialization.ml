@@ -198,7 +198,7 @@ let close_end_element serial_context =
 
 (* Prints attributes *)
 
-let fserialize_one_attribute serial_context ff (uqname, content,_,_,_) =
+let fserialize_one_attribute serial_context ff (uqname, content,_,_) =
   let attribute_name_string = string_of_uqname uqname in
   let attribute_name = serialize_markup_string serial_context attribute_name_string in
   let attribute_content = serialize_data_string serial_context content in
@@ -218,7 +218,7 @@ let fserialize_attributes serial_context ff specialattributes attributes =
 	end
   in
 (*  Namespace_context.print_special_attributes "serialization time" Format.std_formatter !specialattributes; *)
-  let specialattributes = List.map (fun (x,y) -> (x,y,ref true,ref None,ref None)) !specialattributes  in
+  let specialattributes = List.map (fun (x,y) -> (x,y,ref None,ref None)) !specialattributes  in
   let attributes = (specialattributes@attributes) in
   match attributes with
   | [] ->
@@ -239,7 +239,7 @@ let fserialize_text_attributes serial_context ff specialattributes attributes =
 	fprintf ff " %a%a" (fserialize_one_attribute serial_context) x (fserialize_text_attributes_aux serial_context) attributes
   in
 (*  Namespace_context.print_special_attributes "serialization time" Format.std_formatter !specialattributes; *)
-  let specialattributes = List.map (fun (x,y) -> (x,y,ref true,ref None,ref None)) !specialattributes  in
+  let specialattributes = List.map (fun (x,y) -> (x,y,ref None,ref None)) !specialattributes  in
   let attributes = (specialattributes@attributes) in
   match attributes with
   | [] ->
@@ -247,7 +247,7 @@ let fserialize_text_attributes serial_context ff specialattributes attributes =
   | _ ->
       fserialize_text_attributes_aux serial_context ff attributes
 
-let fserialize_stand_alone_attribute serial_context ff (uqname, content,special,_,_) =
+let fserialize_stand_alone_attribute serial_context ff (uqname, content,_,_) =
   let attribute_name_string = string_of_uqname uqname in
   let attribute_name = serialize_markup_string serial_context attribute_name_string in
   let attribute_content = serialize_data_string serial_context content in
@@ -333,7 +333,7 @@ let fserialize_text_empty_tag_top serial_context ff elem_name specialattributes 
     pp_print_string ff (close_empty_element serial_context)
   end
 
-let fserialize_start_element serial_context ff (uqname,attributes,has_element_content,specialattributes,_,_) =
+let fserialize_start_element serial_context ff (uqname,attributes,has_element_content,specialattributes,_,_,_) =
   let element_name_string = string_of_uqname uqname in
   let outer_element_kind = get_current_element_kind serial_context in
   let current_element_kind = new_current_element_kind outer_element_kind has_element_content in
@@ -371,7 +371,7 @@ let fserialize_start_element serial_context ff (uqname,attributes,has_element_co
   | TopElement ->
       raise (Query (Serialization "Should not get a TopElement descriptor during serialization"))
 
-let fserialize_empty_element serial_context ff (uqname,attributes,has_element_content,specialattributes,_,_) =
+let fserialize_empty_element serial_context ff (uqname,attributes,has_element_content,specialattributes,_,_,_) =
   let element_name_string = string_of_uqname uqname in
   let outer_element_kind = get_current_element_kind serial_context in
   let current_element_kind = new_current_element_kind outer_element_kind has_element_content in
@@ -408,7 +408,7 @@ let fserialize_empty_element serial_context ff (uqname,attributes,has_element_co
   | TopElement ->
       raise (Query (Serialization "Should not get a TopElement descriptor during serialization"))
 
-let fserialize_empty_element_top serial_context ff (uqname,attributes,has_element_content,specialattributes,_,_) =
+let fserialize_empty_element_top serial_context ff (uqname,attributes,has_element_content,specialattributes,_,_,_) =
   let element_name_string = string_of_uqname uqname in
   let outer_element_kind = get_current_element_kind serial_context in
   let current_element_kind = new_current_element_kind outer_element_kind has_element_content in
@@ -548,7 +548,7 @@ let serialize_xml_event serial_context ff =
   | SAX_hole ->
       raise (Query (Serialization "Cannot serialize a stream with holes"))
 
-let fserialize_start_element_top serial_context ff (uqname,attributes,has_element_content,specialattributes,_,_) =
+let fserialize_start_element_top serial_context ff (uqname,attributes,has_element_content,specialattributes,_,_,_) =
   let element_name_string = string_of_uqname uqname in
   let outer_element_kind = get_current_element_kind serial_context in
   let current_element_kind = new_current_element_kind outer_element_kind has_element_content in

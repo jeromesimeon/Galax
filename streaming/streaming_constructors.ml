@@ -84,7 +84,7 @@ let attribute_constructor sym nsenv input_stream =
       else
 	text
     in
-    Cursor.cursor_of_list [fmkse_event(SAX_attribute (uqname,text,ref false,(ref (Some sym)),ref None)) Finfo.bogus]
+    Cursor.cursor_of_list [fmkse_event(SAX_attribute (uqname,text,(ref (Some sym)),ref None)) Finfo.bogus]
   in
   Streaming_ops.typed_of_resolved_xml_stream resolved_stream
 
@@ -157,11 +157,7 @@ let element_content_stream xml_stream =
   in
   Cursor.cursor_of_function (next_element_content_event xml_stream)
 
-let prefix_attribute nsenv (uqname,content,special,orsym,rtype) (prev_atts,prev_bindings,required_bindings) =
-  if (!special)
-  then
-    (prev_atts,prev_bindings,required_bindings)
-  else
+let prefix_attribute nsenv (uqname,content,orsym,rtype) (prev_atts,prev_bindings,required_bindings) =
   let rsym =
     match !orsym with
     | Some rsym -> rsym

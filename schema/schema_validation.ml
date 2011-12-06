@@ -138,10 +138,7 @@ let rec find_attribute caname sax_attributes =
   match sax_attributes with
   | [] ->
       None
-  | (rqname,content,special,rattr_sym,_) :: sax_attributes' ->
-      if (!special)
-      then find_attribute caname sax_attributes'
-      else
+  | (rqname,content,rattr_sym,_) :: sax_attributes' ->
       let rattr_sym =
 	match !rattr_sym with
 	| None -> raise (Query (Validation "Attribute has not been resolved"))
@@ -183,11 +180,7 @@ let rec validate_attributes valid_ctxt cxtype sax_attributes =
 	[]
       else
 	raise (Query (Validation "Missing attributes in element"))
-  | (rqname,content,special,rattr_sym,rattr_typed) :: sax_attributes' ->
-      if !special
-      then
-	validate_attributes valid_ctxt cxtype sax_attributes'
-      else
+  | (rqname,content,rattr_sym,rattr_typed) :: sax_attributes' ->
       let rattr_sym =
 	match !rattr_sym with
 	| None -> raise (Query (Validation "Attribute has not been resolved"))
@@ -245,11 +238,11 @@ let rec validate_event valid_ctxt event =
 	  pop_document_event valid_ctxt;
 	  Some event
 	end
-    | SAX_startElement (rqname,sax_attributes,has_element_content,special, relem_desc,relem_type) ->
-	let relem_sym,baseuri,nsenv =
+    | SAX_startElement (rqname,sax_attributes,has_element_content,special,baseuri,relem_desc,relem_type) ->
+	let relem_sym,nsenv =
 	  match !relem_desc with
 	  | None -> raise (Query (Validation "Element has not been resolved"))
-	  | Some (r,b,n) -> (r,b,n)
+	  | Some (r,n) -> (r,n)
 	in
 	let _ = push_nsenv valid_ctxt nsenv in
 	let cxschema = get_cxschema valid_ctxt in
@@ -309,7 +302,7 @@ let rec validate_event valid_ctxt event =
 	    else
 	      raise (Query (Validation "Text appeared in an element which does not have mixed content"))
     | SAX_attribute sax_xml_attribute ->
-	let (rattr, _, _, _, _) = sax_xml_attribute in 
+	let (rattr, _, _, _) = sax_xml_attribute in 
 	raise (Query (Schema ("Cannot validate a stand-alone attribute: "^(Namespace_names.string_of_uqname rattr))))
     | SAX_hole
     | SAX_startEncl

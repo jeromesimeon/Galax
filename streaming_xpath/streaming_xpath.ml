@@ -42,23 +42,23 @@ let raise_unexpected_event_error () = raise (Query (Streaming_XPath "Unexpected 
 
 let relem_symbol_of_sax_event sax_event =
   match sax_event.se_desc with
-  | SAX_startElement (_, _, _, _, reo, _) ->
+  | SAX_startElement (_, _, _, _, _, reo, _) ->
       begin
 	match !reo with
 	| None -> raise_unexpected_event_error ()
-	| Some (relem_sym,_,_) -> relem_sym
+	| Some (relem_sym,_) -> relem_sym
       end
   | _ ->
       raise_unexpected_event_error ()
 
 let relem_symbol_of_sax_event_and_type sax_event =
   match sax_event.se_desc with
-  | SAX_startElement (_, _, _, _, reo, ret) ->
+  | SAX_startElement (_, _, _, _, _, reo, ret) ->
       let relem_sym =
 	begin
 	  match !reo with
 	  | None -> raise_unexpected_event_error ()
-	  | Some (relem_sym,_,_) -> relem_sym
+	  | Some (relem_sym,_) -> relem_sym
 	end
       in
       let type_annot =
@@ -74,7 +74,7 @@ let relem_symbol_of_sax_event_and_type sax_event =
 
 let rattr_symbol_of_sax_event sax_event =
   match sax_event.se_desc with
-  | SAX_attribute (_,_,s,rao,_) ->
+  | SAX_attribute (_,_,rao,_) ->
       begin
 	match !rao with
 	| None -> raise_unexpected_event_error ()
@@ -85,7 +85,7 @@ let rattr_symbol_of_sax_event sax_event =
 
 let rattr_symbol_of_sax_event_and_type sax_event =
   match sax_event.se_desc with
-  | SAX_attribute (_ ,_, s, rao, rat) ->
+  | SAX_attribute (_ ,_, rao, rat) ->
       let rattr_sym =
 	begin
 	  match !rao with
@@ -327,7 +327,7 @@ let rec next_event_attribute input_stream node_test stat_ctxt sxp_context () =
     let labeled_event = Cursor.cursor_next input_stream in
       
       match labeled_event.se_desc with
-	| SAX_startElement (_, attributes, _, _, _, _) 
+	| SAX_startElement (_, attributes, _, _, _, _, _) 
 	  when get_flag labeled_event ->
 	    begin
 	      let f a = node_test_matches stat_ctxt Attribute node_test a in

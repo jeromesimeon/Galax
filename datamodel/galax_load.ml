@@ -99,7 +99,7 @@ let set_parents self kids =
 
 let load_sax_xml_attribute load_context a =
   match a with
-  | ((uqname, attribute_content, special,rel1, rel2),new_nodeid) ->
+  | ((uqname, attribute_content, rel1, rel2),new_nodeid) ->
       let rattr_sym =
 	match !rel1 with
 	| None -> raise (Query (Load_Error "Attribute event has not been resolved"))
@@ -172,13 +172,13 @@ let rec load_xml_node_content_from_stream load_context doc_stream =
       []    (* Terminates recursion for the children of an element.
 	       This gives the hand back to the calling element node creation. *)
 
-  | OTSAX_startElement ((uqname, attributes, has_element_content,_,rel1,rel2),preorder) ->
+  | OTSAX_startElement ((uqname, attributes, has_element_content,_,baseuri,rel1,rel2),preorder) ->
       (* Compute children and attributes *)
 
-      let (relem_sym,baseuri,nsenv) =
+      let (relem_sym,nsenv) =
 	match !rel1 with
 	| None -> raise (Query (Load_Error "Element event has not been resolved"))
-	| Some (r,b,n) -> (r,b,n)
+	| Some (r,n) -> (r,n)
       in
       let (nilled_flag,type_annotation,simple_value) =
 	match !rel2 with
@@ -202,7 +202,6 @@ let rec load_xml_node_content_from_stream load_context doc_stream =
       let _ = add_pre_order_to_name_index load_context relem_sym pre in
 
       (* 2. process the attributes *)
-      let attributes = List.filter (fun ((_,_,special,_,_),_) -> not !special) attributes in
       let attr_children = List.map (load_sax_xml_attribute load_context) attributes in
       let attr_children_node = List.map (fun x -> (x :> attribute)) attr_children in
       (* 3. process the children *)
@@ -336,14 +335,14 @@ let rec load_xml_item_forest_from_sax load_context doc_stream =
 	    []    (* Terminates recursion for the children of an element.
 		     This gives the hand back to the calling element node creation. *)
 	      
-	| OTSAX_startElement ((uqname, attributes, has_element_content,_,rel1,rel2),preorder) ->
+	| OTSAX_startElement ((uqname, attributes, has_element_content,_,baseuri,rel1,rel2),preorder) ->
 	    
       (* Compute children and attributes *)
 	    
-      let (relem_sym,baseuri,nsenv) =
+      let (relem_sym,nsenv) =
 	match !rel1 with
 	| None -> raise (Query (Load_Error "Element event has not been resolved"))
-	| Some (r,b,n) -> (r,b,n)
+	| Some (r,n) -> (r,n)
       in
       let (nilled_flag,type_annotation,simple_value) =
 	match !rel2 with
@@ -474,14 +473,14 @@ let rec load_xml_node_forest_from_sax load_context doc_stream =
 	    []    (* Terminates recursion for the children of an element.
 		     This gives the hand back to the calling element node creation. *)
 	      
-	| OTSAX_startElement ((uqname, attributes, has_element_content,_,rel1,rel2),preorder) ->
+	| OTSAX_startElement ((uqname, attributes, has_element_content,_,baseuri,rel1,rel2),preorder) ->
 
       (* Compute children and attributes *)
 	    
-      let (relem_sym,baseuri,nsenv) =
+      let (relem_sym,nsenv) =
 	match !rel1 with
 	| None -> raise (Query (Load_Error "Element event has not been resolved"))
-	| Some (r,b,n) -> (r,b,n)
+	| Some (r,n) -> (r,n)
       in
       let (nilled_flag,type_annotation,simple_value) =
 	match !rel2 with

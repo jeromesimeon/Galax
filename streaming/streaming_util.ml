@@ -85,59 +85,47 @@ let build_prefix_uri_pair att prefix_thing content_thing =
 
 (* This function extracts special attributes after parsing *)
 
+let binding_of_special_attribute att =
+  match att with
+  | ((NSPrefix "xmlns",ncname),content) ->
+      build_prefix_uri_pair (NSPrefix "xmlns", ncname) (Some ncname) content
+  | ((NSDefaultElementPrefix, "xmlns"), content) ->
+      build_prefix_uri_pair (NSDefaultElementPrefix, "xmlns") None content
+  | _ -> raise (Query (Mapping_Failure "Not a special attribute when making namespace binding"))
+
+let bindings_of_special_attributes atts =
+  List.map binding_of_special_attribute atts
+
 let rec extract_special_attributes attributes =
   match attributes with
   | [] ->
     (Whitespace.Default, [], None, [])
   | att1 :: attributes' ->
       begin
-	let (whitespace_mode, namespace_decls, base_uri, other_attributes') =
-	  extract_special_attributes attributes'
-	in
+	let (whitespace_mode, special_attributes, base_uri, other_attributes') = extract_special_attributes attributes' in
 	match att1 with
 	  (* Note: in the case of xmlns attributes, those do not get
 	     preserved in the final Infoset.
 	     - Jerome *)
-	| ((NSPrefix "xmlns", ncname), att_content, special, _,_) ->
-	    let new_namespace_decl =
-	      build_prefix_uri_pair (NSPrefix "xmlns", ncname) (Some ncname) att_content
-	    in
-	    begin
-	      special := true;
-	      (whitespace_mode, new_namespace_decl :: namespace_decls, base_uri, other_attributes')
-	    end
-	| ((NSDefaultElementPrefix, "xmlns"), att_content, special, _,_) ->
-	    let new_namespace_decl =
-	      build_prefix_uri_pair (NSDefaultElementPrefix, "xmlns") None att_content
-	    in
-	    begin
-	      special := true;
-	      (whitespace_mode, new_namespace_decl :: namespace_decls, base_uri, other_attributes')
-	    end
-	      (* Note:
-		 Other special attributes are preserved in the XML
-		 Infoset.
-		 - Jerome *)
-	| ((NSPrefix "xml", "space"), "preserve", special, _,_) ->
-	    begin
-	      special := true;
-	      (Whitespace.Preserve, namespace_decls, base_uri, att1 :: other_attributes')
-	    end
-	| ((NSPrefix "xml", "space"), "default", special, _,_) ->
-	    begin
-	      special := true;
-	      (Whitespace.Default, namespace_decls, base_uri, att1 :: other_attributes')
-	    end
-	| ((NSPrefix "xml", "base"), att_content, special, _,_) ->
+	| ((NSPrefix "xmlns", ncname), content, _,_) ->
+	    (whitespace_mode, ((NSPrefix "xmlns", ncname), content) :: special_attributes, base_uri, other_attributes')
+	| ((NSDefaultElementPrefix, "xmlns"), content,_,_) ->
+	    (whitespace_mode, ((NSDefaultElementPrefix, "xmlns"), content) :: special_attributes, base_uri, other_attributes')
+  (* Note:
+     Other special attributes are preserved in the XML
+     Infoset.
+     - Jerome *)
+	| ((NSPrefix "xml", "space"), "preserve", _,_) ->
+	    (Whitespace.Preserve, special_attributes, base_uri, att1 :: other_attributes')
+	| ((NSPrefix "xml", "space"), "default", _,_) ->
+	    (Whitespace.Default, special_attributes, base_uri, att1 :: other_attributes')
+	| ((NSPrefix "xml", "base"), att_content, _,_) ->
 	    let base_uri = AnyURI._kinda_uri_of_string att_content in
 	    let base_uri_dm = new Dm_atomic.atomicAnyURI base_uri in
-	    begin
-	      special := true;
-	      (whitespace_mode, namespace_decls, Some base_uri_dm, other_attributes')
-	    end
+	    (whitespace_mode, special_attributes, Some base_uri_dm, other_attributes')
 	      (* For normal attributes, just add them to the final list of attributes *)
 	| _ ->
-	    (whitespace_mode, namespace_decls, base_uri, att1 :: other_attributes')
+	    (whitespace_mode, special_attributes, base_uri, att1 :: other_attributes')
       end
 
 (* Checks for duplicates in attributes -- Returns the original
@@ -147,9 +135,7 @@ let local_attribute_hash = Hashtbl.create 17
 
 let check_duplicate_attributes attributes =
   let _ = Hashtbl.clear local_attribute_hash in
-  let add_function (_, _, special, asym, _) =
-    if (!special) then ()
-    else
+  let add_function (_, _, asym, _) =
     let asym =
       match !asym with
       | Some asym -> asym

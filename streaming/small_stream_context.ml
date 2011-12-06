@@ -93,8 +93,8 @@ let push_elem_to_ss_context ss_context se remaining_list =
 	in
 	Stack.push (Streaming_util.fmkse_event SAX_endElement Finfo.bogus, remaining_list) ss_context.stacked_sexpr_list;
 	(Streaming_util.fmkse_event
-	   (SAX_startElement (uqname_of_rqname rqname,attributes,ref has_element_content, ref [],
-			      ref (Some (rsym,base_uri,nsenv)), ref None)) Finfo.bogus, nse)
+	   (SAX_startElement (uqname_of_rqname rqname,attributes,ref has_element_content, ref [],base_uri,
+			      ref (Some (rsym,nsenv)), ref None)) Finfo.bogus, nse)
       end
   | SElem (rqname, Some bt, nsenv, sattributes, base_uri, nse, qname) ->
       raise (Query (Internal_Error "Binding table shouldn't appear during small stream processing"))
@@ -155,7 +155,7 @@ let resolved_xml_stream_of_sexpr sexpr =
 
 (* Builds a sexpr out of an unresolved sexpr *)
 
-let sattribute_of_rsattribute nsenv (uqname,content,special,rqname_opt,typed_opt) =
+let sattribute_of_rsattribute nsenv (uqname,content,rqname_opt,typed_opt) =
   raise (Failure "temp")
 (*
   let rattr_sym = rattr_symbol rqname in

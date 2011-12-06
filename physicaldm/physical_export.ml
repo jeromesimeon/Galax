@@ -44,7 +44,7 @@ let typed_sax_attribute_of_attribute_node nsenv attribute =
   let attr_content = attribute#string_value() in
   let attr_value   = attribute#export_typed_value() in
   let attr_type_annotation = attribute#node_type() in
-  (rattr_uname nsenv attr_name,attr_content,ref false,ref (Some attr_name), ref (Some (attr_type_annotation,attr_value)))
+  (rattr_uname nsenv attr_name,attr_content,ref (Some attr_name), ref (Some (attr_type_annotation,attr_value)))
 
 let typed_sax_attributes_of_attribute_nodes nsenv attributes =
   List.map (typed_sax_attribute_of_attribute_node nsenv) attributes
@@ -119,7 +119,7 @@ let next_datamodel_event export_context =
 		  let has_element_content = enode#has_element_content() in
 		  let nilled_flag = enode#nilled() in
 		  let sax_elem =
-		    (relem_uname nsenv elem_name,sax_elem_attributes,ref has_element_content, ref [], ref (Some (elem_name,elem_base_uri,nsenv)),ref (Some (nilled_flag,elem_type_annotation,elem_value)))
+		    (relem_uname nsenv elem_name,sax_elem_attributes,ref has_element_content, ref [], elem_base_uri, ref (Some (elem_name,nsenv)),ref (Some (nilled_flag,elem_type_annotation,elem_value)))
 		  in
 		  push_node_to_export_context export_context node sax_elem_children;
 		  Some (Streaming_util.mktse_event (Streaming_types.SAX_startElement sax_elem))

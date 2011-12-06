@@ -403,7 +403,7 @@ let attr_name name content =
   let rsym = Namespace_symbols.rattr_symbol
       (Namespace_builtin.glx_prefix, Namespace_builtin.glx_uri, name)
   in
-  (uqname,content,ref false,ref (Some rsym), ref None)
+  (uqname,content,ref (Some rsym), ref None)
 
 let sum_document_stats key point1 stats_item = sum_relative_points point1.relative_stats stats_item
 

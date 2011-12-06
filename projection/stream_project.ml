@@ -42,7 +42,7 @@ let rec project_next_projection pfs project_context =
   | SAX_endDocument ->
       Project_context.pop_project_context project_context [xml_event]
 
-  | SAX_startElement (relem_sym, attributes, has_element_content, special, baseuri, delta_bindings) ->
+  | SAX_startElement (relem_sym, attributes, has_element_content, special, baseuri, relem, telem) ->
 
       (* Identify which kind of action is required based on the path structure *)
       let action = Path_structutil.one_step xml_event pfs in
@@ -70,7 +70,7 @@ let rec project_next_projection pfs project_context =
 	    
 	    let projected_attributes = project_attributes attributes pfs' in
 	    
-	    let new_xml_event = fmkse_event (SAX_startElement (relem_sym, projected_attributes, has_element_content, special, baseuri, delta_bindings)) xml_event.se_loc  in
+	    let new_xml_event = fmkse_event (SAX_startElement (relem_sym, projected_attributes, has_element_content, special, baseuri, relem,telem)) xml_event.se_loc  in
 	    
 	    if (projected_attributes = []) then
 	      begin
@@ -96,7 +96,7 @@ let rec project_next_projection pfs project_context =
 	    
 	    let projected_attributes = project_attributes attributes pfs' in
 	    
-	    let new_xml_event = fmkse_event (SAX_startElement (relem_sym, projected_attributes, has_element_content, special, baseuri, delta_bindings)) xml_event.se_loc in
+	    let new_xml_event = fmkse_event (SAX_startElement (relem_sym, projected_attributes, has_element_content, special, baseuri, relem, telem)) xml_event.se_loc in
 	    
 	    begin
 	      Project_context.push_project_context_keep_moving_preserve_node
@@ -113,7 +113,7 @@ let rec project_next_projection pfs project_context =
                but keep the events for the current node. - Jerome *)
 	    
 	    let refill_local_buffer = [
-	      fmkse_event (SAX_startElement (relem_sym, attributes, has_element_content, special, baseuri, delta_bindings)) xml_event.se_loc;
+	      fmkse_event (SAX_startElement (relem_sym, attributes, has_element_content, special, baseuri, relem, telem)) xml_event.se_loc;
 	      fmkse_event (SAX_endElement) xml_event.se_loc
 	    ]
 	    in

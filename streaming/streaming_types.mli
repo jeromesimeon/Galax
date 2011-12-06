@@ -39,7 +39,7 @@ type special = bool ref
 type typed_sax_xml_attribute =
     Namespace_symbols.rtype_symbol  (* The XML Schema type annotation *)
       * Dm_atomic.atomicValue list  (* The XML Schema simple value *)
-type sax_xml_attribute = Namespace_names.uqname * Datatypes.xs_untyped * special * Namespace_symbols.rattr_symbol option ref * typed_sax_xml_attribute option ref
+type sax_xml_attribute = Namespace_names.uqname * Datatypes.xs_untyped * Namespace_symbols.rattr_symbol option ref * typed_sax_xml_attribute option ref
 type sax_xml_attribute_forest = sax_xml_attribute list
 
 type sax_special_xml_attribute = Namespace_names.uqname * Datatypes.xs_untyped
@@ -51,7 +51,6 @@ type sax_special_xml_attribute_forest = sax_special_xml_attribute list
 
 type resolved_element_desc =
     Namespace_symbols.relem_symbol                   (* QNames are resolved *)
-      * sax_base_uri                                 (* Base URI *)
       * Namespace_context.nsenv                      (* A Namespace environment is available *)
 
 type typed_element_desc =
@@ -62,7 +61,7 @@ type typed_element_desc =
 type has_element_content = bool ref
 
 type document_desc = sax_xml_decl option * sax_dtd_decl * sax_base_uri
-type element_desc  = Namespace_names.uqname * sax_xml_attribute_forest * has_element_content * sax_special_xml_attribute_forest ref * resolved_element_desc option ref * typed_element_desc option ref
+type element_desc  = Namespace_names.uqname * sax_xml_attribute_forest * has_element_content * sax_special_xml_attribute_forest ref * sax_base_uri * resolved_element_desc option ref * typed_element_desc option ref
 type pi_desc       = Namespace_names.ncname * Datatypes.xs_untyped
 type comment_desc  = Datatypes.xs_untyped
 type text_desc     = Datatypes.xs_untyped
@@ -144,7 +143,7 @@ type ordered_sax_xml_attribute_forest =
 
 (* Ordered typed elements *)
 
-type ordered_element_desc  = Namespace_names.uqname * ordered_sax_xml_attribute_forest * has_element_content * sax_special_xml_attribute_forest ref * resolved_element_desc option ref * typed_element_desc option ref
+type ordered_element_desc  = Namespace_names.uqname * ordered_sax_xml_attribute_forest * has_element_content * sax_special_xml_attribute_forest ref * sax_base_uri * resolved_element_desc option ref * typed_element_desc option ref
 
 (* SAX events *)
 

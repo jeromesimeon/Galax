@@ -126,36 +126,35 @@ let resolve_attribute ts_context attribute =
   let (nsenv,in_scope_nsenv) = Resolve_stream_context.get_nsenv ts_context in
   begin
     match attribute with
-    | (attr_uqname, attr_content, special, attr_sym_ref, attr_type_ref) ->
-	if (!special) then ()
-	else
-	  begin
-	    match !attr_sym_ref with
-	    | Some _ -> ()
-	    | None ->
-		let rattr_sym =
-		  Resolve_stream_context.resolve_attribute_name ts_context nsenv attr_uqname
-		in
-		attr_sym_ref := Some rattr_sym
-	  end
+    | (attr_uqname, attr_content, attr_sym_ref, attr_type_ref) ->
+	begin
+	  match !attr_sym_ref with
+	  | Some _ -> ()
+	  | None ->
+	      let rattr_sym =
+		Resolve_stream_context.resolve_attribute_name ts_context nsenv attr_uqname
+	      in
+	      attr_sym_ref := Some rattr_sym
+	end
   end
 
 let resolve_attributes ts_context attributes =
   begin
+    (* Resolve the attributes *)
     List.iter (resolve_attribute ts_context) attributes;
-    attributes
+    (* Check for duplicates *)
+    Streaming_util.check_duplicate_attributes attributes
   end
 
-let update_resolved_element_content resolved_element_content esym base_uri nsenv =
-  resolved_element_content := Some (esym,base_uri,nsenv)
+let update_resolved_element_content resolved_element_content esym nsenv =
+  resolved_element_content := Some (esym,nsenv)
 
 let resolved_of_well_formed_event ts_context event =
   begin
     match event.se_desc with
-    | SAX_startElement (elem_uqname,sax_attributes,has_element_content,special,relem_desc,rtype) ->
+    | SAX_startElement (elem_uqname,sax_attributes,has_element_content,special_attributes,base_uri,relem_desc,rtype) ->
 	(* First, extract the namespace attributes *)
-	let (ws_mode, new_nss, base_uri, _) =
-	  Streaming_util.extract_special_attributes sax_attributes
+	let new_nss = Streaming_util.bindings_of_special_attributes !special_attributes
 	in
 	(* Second, update the namespace environment *)
 	let (nsenv,in_scope_nsenv) =
@@ -172,10 +171,10 @@ let resolved_of_well_formed_event ts_context event =
 	let in_scope_nsenv =
 	  if default then patch_bindings in_scope_nsenv Namespace_builtin.default_built_in_namespaces else in_scope_nsenv
 	in
-	let resolved_sax_xml_attributes = resolve_attributes ts_context sax_attributes in
-	(* Checking for attribute duplicates here! *)
-	Streaming_util.check_duplicate_attributes resolved_sax_xml_attributes;
-	update_resolved_element_content relem_desc relem_sym (ref base_uri) in_scope_nsenv
+	begin
+	  resolve_attributes ts_context sax_attributes;
+	  update_resolved_element_content relem_desc relem_sym in_scope_nsenv
+	end
     | SAX_endElement ->
 	Resolve_stream_context.pop_nsenv ts_context
     | SAX_attribute sax_xml_attribute ->
@@ -237,12 +236,12 @@ let prefix_event prefix_context resolved_event =
   match resolved_event.se_desc with
   | SAX_startDocument _
   | SAX_endDocument -> ()
-  | SAX_startElement (_,resolved_sax_xml_attributes,_,special,resolved_element_content,_) ->
+  | SAX_startElement (_,_,_,special,_,resolved_element_content,_) ->
       begin
 	let nsenv =
 	  match !resolved_element_content with
 	  | None -> raise (Query(Stream_Error("Trying to unresolve an unresolved stream")))
-	  | Some (_,_,nsenv) -> nsenv
+	  | Some (_,nsenv) -> nsenv
 	in
 	let ns_bindings = Prefix_context.push_nsenv_in_prefix_context prefix_context nsenv in
 	let ns_attributes = recreate_ns_bindings ns_bindings in
@@ -258,7 +257,7 @@ let prefix_event prefix_context resolved_event =
   | SAX_comment _
   | SAX_characters _ ->
       ()
-  | SAX_attribute (_,_,special,resolved_attribute_content, _) ->
+  | SAX_attribute (_,_,resolved_attribute_content, _) ->
 (* Prior code when we used to rebuild the event. -JS *)
 (*
       (* At the top-level, assume an empty namespace environment *)
@@ -270,7 +269,6 @@ let prefix_event prefix_context resolved_event =
 *)
       begin
 	(* Just resets the resolved part *)
-	special := false;
 	resolved_attribute_content := None
       end
   | SAX_atomicValue _
@@ -311,15 +309,13 @@ let prefix_xml_stream resolved_xml_stream =
 
 let type_attribute attribute =
   match attribute with
-  | (rattr_qname,attr_content,special,attr_sym,attr_type) ->
-      if (!special) then ()
-      else
-	begin
-	  match !attr_sym with
-	  | None -> raise (Query(Stream_Error("Trying to type an unresolved stream [attribute error]" ^ (Namespace_names.string_of_uqname rattr_qname))))
-	  | Some rattr_sym ->
-	      attr_type := Some (untypedAtomicsym,[])
-	end
+  | (rattr_qname,attr_content,attr_sym,attr_type) ->
+      begin
+	match !attr_sym with
+	| None -> raise (Query(Stream_Error("Trying to type an unresolved stream [attribute error]" ^ (Namespace_names.string_of_uqname rattr_qname))))
+	| Some rattr_sym ->
+	    attr_type := Some (untypedAtomicsym,[])
+      end
 
 let type_attributes attributes =
   List.iter type_attribute attributes
@@ -330,11 +326,11 @@ let typed_of_resolved_event event =
   | SAX_endDocument
   | SAX_startEncl
   | SAX_endEncl -> ()
-  | SAX_startElement (elem_uqname,sax_attributes,has_element_content,special,relem_content,relem_type) ->
+  | SAX_startElement (elem_uqname,sax_attributes,has_element_content,special,base_uri,relem_content,relem_type) ->
       begin
 	match !relem_content with
 	| None -> raise (Query(Stream_Error("Trying to type an unresolved stream")))
-	| Some (relem_sym,base_uri,nsenv) ->
+	| Some (relem_sym,nsenv) ->
 	    begin
 	      (* Add type to the element's attributes *)
 	      type_attributes sax_attributes;
@@ -376,14 +372,14 @@ let typed_of_resolved_xml_stream xml_stream =
 
  (* Turns a typed XML stream into a resolved, untyped one *)
 
-let erase_attribute (_,_,_,_,ratt_type) = ratt_type := None
+let erase_attribute (_,_,_,ratt_type) = ratt_type := None
 let erase_attributes typed_attributes = List.iter erase_attribute typed_attributes
 
 let erase_event typed_event =
   match typed_event.se_desc with
   | SAX_startDocument _
   | SAX_endDocument -> ()
-  | SAX_startElement (_,typed_sax_xml_attributes,_,_,_,relem_type) ->
+  | SAX_startElement (_,typed_sax_xml_attributes,_,_,_,_,relem_type) ->
       begin
 	erase_attributes typed_sax_xml_attributes;
 	relem_type := None
@@ -457,7 +453,7 @@ let rec erase_event_section_3_7_1 typed_xml_stream typed_event =
   match typed_event.se_desc with
   | SAX_startDocument _
   | SAX_endDocument -> typed_event
-  | SAX_startElement (_,typed_sax_xml_attributes,_,_,_,relem_type) ->
+  | SAX_startElement (_,typed_sax_xml_attributes,_,_,_,_,relem_type) ->
       begin
 	erase_attributes typed_sax_xml_attributes;
 	relem_type := None;
@@ -526,6 +522,7 @@ let order_start_element streaming_ordered_context element_desc : ordered_element
      sax_xml_attribute_forest,
      has_element_content,
      special,
+     base_uri,
      res_elem,
      typed_elem) ->
        let ordered_sax_xml_attribute_forest =
@@ -535,6 +532,7 @@ let order_start_element streaming_ordered_context element_desc : ordered_element
 	ordered_sax_xml_attribute_forest,
 	has_element_content,
 	special,
+	base_uri,
 	res_elem,
 	typed_elem)
 

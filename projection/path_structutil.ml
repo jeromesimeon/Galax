@@ -87,11 +87,11 @@ let node_sym_of_sax_event sax_event =
       None
   | SAX_endDocument ->
       None
-  | SAX_startElement (_,_,_,_,reo,_) ->
+  | SAX_startElement (_,_,_,_,_,reo,_) ->
       let relem_sym =
 	match !reo with
 	| None -> raise (Query (Projection "Should not apply projection operation on an unresolved element!"))
-	| Some (relem_sym,_,_) -> relem_sym
+	| Some (relem_sym,_) -> relem_sym
       in
       Some (RUnitElemSymbol relem_sym)
   | SAX_endElement ->
@@ -102,7 +102,7 @@ let node_sym_of_sax_event sax_event =
       None
   | SAX_characters text_desc ->
       None
-  | SAX_attribute (_,_,s,rao,_) ->
+  | SAX_attribute (_,_,rao,_) ->
       let rattr_sym =
 	match !rao with
 	| None -> raise (Query (Projection "Should not apply projection operation on an unresolved attribute!"))
@@ -533,7 +533,7 @@ let one_step_attribute_check rsym (path, subtree) =
 	    false
       end
 
-let one_step_attribute pfl (_,_,s,rao,_) =
+let one_step_attribute pfl (_,_,rao,_) =
   let rattr_sym =
     match !rao with
     | None -> raise (Query (Projection "Should not apply projection operation on an unresolved attribute!"))

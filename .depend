@@ -1102,12 +1102,12 @@ streaming/streaming_ops.cmx: ./streaming/streaming_util.cmx \
     ./dm/base/cursor.cmx streaming/streaming_ops.cmi
 streaming/streaming_diff.cmo: ./base/whitespace.cmi \
     ./streaming/streaming_types.cmi ./streaming/streaming_ops.cmi \
-    ./namespace/namespace_symbols.cmi ./namespace/namespace_names.cmi \
-    ./base/error.cmi ./dm/base/cursor.cmi streaming/streaming_diff.cmi
+    ./namespace/namespace_symbols.cmi ./base/error.cmi ./dm/base/cursor.cmi \
+    streaming/streaming_diff.cmi
 streaming/streaming_diff.cmx: ./base/whitespace.cmx \
     ./streaming/streaming_types.cmi ./streaming/streaming_ops.cmx \
-    ./namespace/namespace_symbols.cmx ./namespace/namespace_names.cmx \
-    ./base/error.cmx ./dm/base/cursor.cmx streaming/streaming_diff.cmi
+    ./namespace/namespace_symbols.cmx ./base/error.cmx ./dm/base/cursor.cmx \
+    streaming/streaming_diff.cmi
 streaming/streaming_conv.cmo: ./streaming/streaming_util.cmi \
     ./streaming/streaming_types.cmi ./streaming/streaming_ops.cmi \
     ./streaming/sax_annot.cmi ./namespace/namespace_symbols.cmi \

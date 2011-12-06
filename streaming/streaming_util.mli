@@ -35,9 +35,11 @@ val mktse_event   : sax_event_desc -> sax_event
 
 (* Extracts special attributes *)
 
+val bindings_of_special_attributes : sax_special_xml_attribute_forest -> (Namespace_names.prefix * Namespace_names.uri) list
+
 val extract_special_attributes :
     sax_xml_attribute_forest ->
-      (Whitespace.mode * (Namespace_names.prefix * Namespace_names.uri) list * Dm_atomic.atomicAnyURI option * sax_xml_attribute_forest)
+      (Whitespace.mode * sax_special_xml_attribute_forest * Dm_atomic.atomicAnyURI option * sax_xml_attribute_forest)
 
 (* Checks for duplicates in attributes -- Returns the original sequence of attributes or raises and error *)
 val check_duplicate_attributes : sax_xml_attribute_forest -> unit

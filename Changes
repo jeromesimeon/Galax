@@ -5,6 +5,11 @@
 Dec 6, 2011 - Jerome
 
   o Streaming:
+     - Cleaned up some of the handling of namespace attributes.
+
+Dec 6, 2011 - Jerome
+
+  o Streaming:
      - Reduces namespace environment manipulation during stream
        resolution, resulting in much faster processing in some cases.
 

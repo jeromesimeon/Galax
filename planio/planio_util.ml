@@ -88,11 +88,11 @@ let rec start_typed_element_get_name_no_consume (st : Streaming_types.typed_xml_
   | Some event ->
       begin
 	match event.se_desc with 
-	  ((SAX_startElement (e, attrs, has, _, eo, et))) ->
+	  ((SAX_startElement (e, attrs, has, _, _, eo, et))) ->
 	    let e =
 	      match !eo with
 	      | None -> raise (Query (Algebra_Parsing_Error ("Element hasn't been resolved")))
-	      | Some (rel,_,_) -> rel
+	      | Some (rel,_) -> rel
 	    in
 	    e, attrs
     (* Comments and characters are ignored *)
@@ -114,11 +114,11 @@ let rec start_element_get_name_no_consume st =
   | Some event ->
       begin
 	match event.se_desc with 
-	  ((SAX_startElement (_, attrs, has, _, eo, _))) ->
+	  ((SAX_startElement (_, attrs, has, _, _, eo, _))) ->
 	    let e =
 	      match !eo with
 	      | None -> raise (Query (Algebra_Parsing_Error ("Element hasn't been resolved")))
-	      | Some (rel,_,_) -> rel
+	      | Some (rel,_) -> rel
 	    in
 	    e, attrs
     (* Comments and characters are ignored *)
@@ -226,11 +226,11 @@ let rec check_opt_element elem st =
 	  | (SAX_characters _) ->
 	      Stream.junk st;
 	      check_opt_element elem st
-	  | ((SAX_startElement (_, attrs, has, _, eo, _))) ->
+	  | ((SAX_startElement (_, attrs, has, _, _, eo, _))) ->
 	      let e =
 		match !eo with
 		| None -> raise (Query (Algebra_Parsing_Error ("Element hasn't been resolved")))
-		| Some (rel,_,_) -> rel
+		| Some (rel,_) -> rel
 	      in
 	      e = relem
 	  | _ -> false
@@ -259,10 +259,7 @@ let rec parse_attr_helper coerce_fn (attr_name:Namespace_symbols.rattr_symbol) e
   in
   match attr_list with
       [] -> empty_fn ()
-    | (_, value, special, ao, _) :: rest -> 
-	if !special
-	then parse_attr_helper coerce_fn attr_name empty_fn rest 
-	else
+    | (_, value, ao, _) :: rest -> 
 	let aname =
 	  match !ao with
 	  | None -> error_fn ()
@@ -287,18 +284,15 @@ let parse_get_typed_attr_from_attr_list (attr_list:Streaming_types.sax_xml_attri
   let rec parse_attr_helper coerce_fn attr_name empty_fn attr_list =
     match attr_list with
       [] -> empty_fn ()
-    | (_, value, s, ao, _) :: rest -> 
-	if !s
-	then parse_attr_helper coerce_fn attr_name empty_fn rest 
-	else
-	  let aname =
-	    match !ao with
-	    | None -> error_fn ()
-	    | Some rat -> rat
-	  in
-	  if (attr_name = aname)
-	  then coerce_fn value
-	  else parse_attr_helper coerce_fn attr_name empty_fn rest 
+    | (_, value, ao, _) :: rest -> 
+	let aname =
+	  match !ao with
+	  | None -> error_fn ()
+	  | Some rat -> rat
+	in
+	if (attr_name = aname)
+	then coerce_fn value
+	else parse_attr_helper coerce_fn attr_name empty_fn rest 
   in parse_attr_helper coerce_fn attr_name error_fn attr_list
 
 let get_opt_attr_from_attr_list attr_list coerce_fn (a_name:Namespace_symbols.rattr_symbol) =
@@ -311,12 +305,12 @@ let construct_attribute_top attr_name str = (attr_name, str)
 
 let construct_attribute attr_name str =
   let uq = Namespace_names.uqname_of_rqname attr_name in
-  (uq,str,ref false,ref None, ref None)
+  (uq,str,ref None, ref None)
 
 let construct_element name attrs sub_elements =
   let attr_fun (an,ac) =
     let uq = Namespace_names.uqname_of_rqname an in
-    (uq,ac,ref false,ref None, ref None)
+    (uq,ac,ref None, ref None)
   in
   let attrs = List.map attr_fun attrs in
   construct_element_top name attrs sub_elements
@@ -472,10 +466,10 @@ let get_arity_attr attrs arity_attr_name algop_kind =
 
 let subexpr_attrs attr_name arity_attr_name sub =
   match sub with
-      NoSub     -> [(Namespace_names.uqname_of_rqname attr_name, "No", ref false, ref (Some (Namespace_symbols.rattr_symbol attr_name)), ref None)] 
-    | OneSub _  -> [(Namespace_names.uqname_of_rqname attr_name, "One", ref false, ref (Some (Namespace_symbols.rattr_symbol attr_name)), ref None)]
-    | TwoSub _  -> [(Namespace_names.uqname_of_rqname attr_name, "Two", ref false, ref (Some (Namespace_symbols.rattr_symbol attr_name)), ref None)] 
-    | ManySub x -> [(Namespace_names.uqname_of_rqname attr_name, "Many", ref false, ref (Some (Namespace_symbols.rattr_symbol attr_name)), ref None);(Namespace_names.uqname_of_rqname arity_attr_name, string_of_int (Array.length x), ref false, ref (Some (Namespace_symbols.rattr_symbol arity_attr_name)), ref None)] 
+      NoSub     -> [(Namespace_names.uqname_of_rqname attr_name, "No", ref (Some (Namespace_symbols.rattr_symbol attr_name)), ref None)] 
+    | OneSub _  -> [(Namespace_names.uqname_of_rqname attr_name, "One", ref (Some (Namespace_symbols.rattr_symbol attr_name)), ref None)]
+    | TwoSub _  -> [(Namespace_names.uqname_of_rqname attr_name, "Two", ref (Some (Namespace_symbols.rattr_symbol attr_name)), ref None)] 
+    | ManySub x -> [(Namespace_names.uqname_of_rqname attr_name, "Many", ref (Some (Namespace_symbols.rattr_symbol attr_name)), ref None);(Namespace_names.uqname_of_rqname arity_attr_name, string_of_int (Array.length x), ref (Some (Namespace_symbols.rattr_symbol arity_attr_name)), ref None)] 
 
 let dep_subexpr_attrs sub =
   subexpr_attrs dep_attr_name dep_arity_attr_name sub

@@ -134,11 +134,11 @@ let raise_unexpected_event_error () = raise (Query (Projection "Unexpected event
 
 let relem_symbol_of_sax_event sax_event =
   match sax_event.se_desc with
-  | SAX_startElement (_,_,_,_,eo,_) ->
+  | SAX_startElement (_,_,_,_,_,eo,_) ->
       let relem_sym =
 	match !eo with
 	| None -> raise_unexpected_event_error ()
-	| Some (rel,_,_) -> rel
+	| Some (rel,_) -> rel
       in
       relem_sym
   | _ ->
@@ -146,11 +146,11 @@ let relem_symbol_of_sax_event sax_event =
 
 let relem_symbol_of_sax_event_and_type sax_event =
   match sax_event.se_desc with
-  | SAX_startElement (_,_,_,_,eo,et) ->
+  | SAX_startElement (_,_,_,_,_,eo,et) ->
       let relem_sym =
 	match !eo with
 	| None -> raise_unexpected_event_error ()
-	| Some (rel,_,_) -> rel
+	| Some (rel,_) -> rel
       in
       let type_annot =
 	match !et with
@@ -163,7 +163,7 @@ let relem_symbol_of_sax_event_and_type sax_event =
 
 let rattr_symbol_of_sax_event sax_event =
   match sax_event.se_desc with
-  | SAX_attribute (_,_,s,ao,_) ->
+  | SAX_attribute (_,_,ao,_) ->
       let rattr_sym =
 	match !ao with
 	| None -> raise_unexpected_event_error ()
@@ -175,7 +175,7 @@ let rattr_symbol_of_sax_event sax_event =
 
 let rattr_symbol_of_sax_event_and_type sax_event =
   match sax_event.se_desc with
-  | SAX_attribute (_,_,s,ao,at) ->
+  | SAX_attribute (_,_,ao,at) ->
       let rattr_sym =
 	match !ao with
 	| None -> raise_unexpected_event_error ()
@@ -587,7 +587,7 @@ let one_step_attribute_check rsym (path, subtree) =
 	    false
       end
 
-let one_step_attribute pfl (_,_,s,ao,_) =
+let one_step_attribute pfl (_,_,ao,_) =
   let rsym =
     match !ao with
     | None -> raise_unexpected_event_error ()

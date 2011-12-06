@@ -110,7 +110,7 @@ module Shredded_Load_Functor
     (* Builds an attribute node *)
     (****************************)
 
-    let load_sax_xml_attribute_in_shredded_store shredded_load_context parent (_,attribute_content,special,att_opt,_) =
+    let load_sax_xml_attribute_in_shredded_store shredded_load_context parent (_,attribute_content,att_opt,_) =
       let rattr_sym =
 	match !att_opt with
 	| None -> raise (Query (Stream_Error "Stream is not well-formed in Loading"))
@@ -140,13 +140,13 @@ module Shredded_Load_Functor
 		Shredded_store.store_children shredded_store current_node (Cursor.cursor_of_list children);
 		Shredded_Load_Context.no_longer_parent shredded_load_context
 
-	  | SAX_startElement (_, attributes, has_element_content, _, relem_sym_opt, _) -> 
-	      let relem_sym,baseuri,delta_bindings =
+	  | SAX_startElement (_, attributes, has_element_content, _, baseuri,relem_sym_opt, _) -> 
+	      let relem_sym,delta_bindings =
 		match !relem_sym_opt with
 		| None ->
 		    raise (Query (Stream_Error "Stream is not well-formed in Loading"))
-		| Some (relem_sym,base_uri,delta) -> 
-		    (relem_sym,base_uri,delta)
+		| Some (relem_sym,delta) -> 
+		    (relem_sym,delta)
 	      in
 	      let pre_order      = Shredded_Load_Context.new_preorder shredded_load_context in 
 	      let parent         = Shredded_Load_Context.get_current_parent shredded_load_context in 
@@ -177,7 +177,6 @@ module Shredded_Load_Functor
 				     shredded_store pre_order parent relem_sym None new_nsid	
 		in
 		  (* Store its attributes *)
-		let attributes = List.filter (fun (_,_,special,_,_) -> not !special) attributes in
 		let attr_nodeids = 
 		  List.map (load_sax_xml_attribute_in_shredded_store shredded_load_context (element_node,new_nsid)) attributes
 		in
@@ -345,7 +344,7 @@ module Shredded_Load_Functor
       next_ordered_typed_event_discard doc_stream
 
     let load_ordered_typed_sax_xml_attribute_in_shredded_store shredded_load_context parent 
-      ((_ , attribute_content, special, att_opt, atttype_opt),(docid,pre_order,post)) =
+      ((_ , attribute_content, att_opt, atttype_opt),(docid,pre_order,post)) =
       let rattr_sym =
 	match !att_opt with
 	| None -> raise (Query (Stream_Error "Stream is not well-formed in Loading"))
@@ -379,14 +378,14 @@ module Shredded_Load_Functor
 		Shredded_store.store_children shredded_store current_node (Cursor.cursor_of_list children);
 		Shredded_Load_Context.no_longer_parent shredded_load_context
 
-	  | OTSAX_startElement ((_, attributes, has_element_content, _, relem_sym_opt, relem_typed_opt), 
+	  | OTSAX_startElement ((_, attributes, has_element_content, _, baseuri,relem_sym_opt, relem_typed_opt), 
 				(docid, pre_order)) ->
-	      let relem_sym,baseuri,delta_bindings =
+	      let relem_sym,delta_bindings =
 		match !relem_sym_opt with
 		| None ->
 		    raise (Query (Stream_Error "Stream is not well-formed in Loading"))
-		| Some (relem_sym,base_uri,delta) -> 
-		    (relem_sym,base_uri,delta)
+		| Some (relem_sym,delta) -> 
+		    (relem_sym,delta)
 	      in
 	      let nilled, type_annotation, atomicValues =
 		match !relem_typed_opt with
@@ -422,7 +421,6 @@ module Shredded_Load_Functor
 		  parent relem_sym (Some (type_annotation,nilled,atomicValues)) new_nsid 
 		in
 		  (* Store its attributes *)
-		let attributes = List.filter (fun ((_,_,special,_,_),_) -> not !special) attributes in
 		let attr_nodeids = 
 		  List.map (load_ordered_typed_sax_xml_attribute_in_shredded_store shredded_load_context (element_node,new_nsid)) 
 		    attributes

@@ -1914,7 +1914,7 @@ module Shredded_Store_Functor
 
       (* 3. Get the leading attributes in the resolved stream *)
       let _ =
-	List.map (fun (n,t,s,c,d) -> (n, Basetypes.text_of_xs_untyped t,c,d))
+	List.map (fun (n,t,c,d) -> (n, Basetypes.text_of_xs_untyped t,c,d))
 	  (Streaming_ops.consume_leading_attribute_events resolved_input_stream)
       in
 	

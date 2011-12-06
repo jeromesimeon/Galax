@@ -92,12 +92,16 @@ let make_att c (name,content) =
   let qname = uqname_element_of_string name in
 (*  let fixed_content = glx_expand_attvalue c content in *)
   let fixed_content = content in
-  (qname,fixed_content, ref false, ref None, ref None)
+  (qname,fixed_content, ref None, ref None)
 
 let make_element_desc c name attlist scope_opt entid =
   let qname = uqname_element_of_string name in
   let sax_xml_attribute_forest = List.rev (List.map (make_att c) attlist) in
-  (qname,sax_xml_attribute_forest,ref false,ref [], ref None, ref None)
+  (* Extract the namespace attributes *)
+  let (ws_mode, special_attributes, base_uri, other_attributes) =
+    Streaming_util.extract_special_attributes sax_xml_attribute_forest
+  in
+  (qname,other_attributes,ref false,ref special_attributes, ref base_uri, ref None, ref None)
 
 let make_text_desc data =
   data

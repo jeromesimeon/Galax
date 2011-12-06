@@ -350,7 +350,7 @@ let xtype_of_ChildrenAndAttributes chldr attrs =
 let extract_relem_sym relem_sym =
   match !relem_sym with
   | None -> import_error_limited ("Can't find resolved element")
-  | Some (r,_,_) -> r
+  | Some (r,_) -> r
 
 let extract_rattr_sym ra =
   match !ra with
@@ -360,18 +360,17 @@ let extract_rattr_sym ra =
 let extract_nsenv relem_sym =
   match !relem_sym with
   | None -> import_error_limited ("Can't find resolved element")
-  | Some (_,_,nsenv) -> nsenv
+  | Some (_,nsenv) -> nsenv
 
 (* Get the value of a WXS attribute. *)
 let probe_attr atts ncname  = 
-  let needed_attr (_,_,special,rattr_symbol,_) = 
-    if (!special) then false else
+  let needed_attr (_,_,rattr_symbol,_) = 
     let rattr_symbol = extract_rattr_sym rattr_symbol in
     let (_, uri, name) = NS.rattr_name rattr_symbol
     in (uri = NB.empty_uri) && (name = ncname)
   in
   try 
-    let (_,v,_,_,_) = List.find needed_attr atts
+    let (_,v,_,_) = List.find needed_attr atts
     in Some v
   with Not_found -> None
 
@@ -450,19 +449,19 @@ let check_tag relem_symbol tagname =
     (uri = NB.xs_uri) && (ncname = tagname)
 
 let open_tag ims tagname = parser
-    [< '{ se_desc = SAX_startElement(_, atts, _, _, relem_sym,_) ; se_loc = se_loc }
+    [< '{ se_desc = SAX_startElement(_, atts, _, _, _, relem_sym,_) ; se_loc = se_loc }
        when check_tag relem_sym tagname >] -> 
 	 let nsenv = extract_nsenv relem_sym in
 	 let ims' = IMS.add_bindings ims nsenv 
 	 in (ims', atts, se_loc)
 
 let crack_tag tagname = parser 
-  | [< '{ se_desc = SAX_startElement(_, _, _, _, relem_sym, _)  ; se_loc = se_loc }
+  | [< '{ se_desc = SAX_startElement(_, _, _, _, _, relem_sym, _)  ; se_loc = se_loc }
 	 when check_tag relem_sym tagname >] -> ()
 
 
 let complain_unkn_elt parent_name = parser
-  | [< '{ se_desc = SAX_startElement(_, _, _, _, relem_sym, _); se_loc = se_loc } >] -> 
+  | [< '{ se_desc = SAX_startElement(_, _, _, _, _, relem_sym, _); se_loc = se_loc } >] -> 
       let relem_sym = extract_relem_sym relem_sym in
       let (_, uri, _) = NS.relem_name relem_sym in
       let parent_tag = "<xs:" ^ parent_name ^ ">" in
@@ -475,7 +474,7 @@ let complain_unkn_elt parent_name = parser
 			"<" ^ (NS.relem_prefix_string relem_sym) ^ ">")
  
 let complain_unkn_tail context_descr = parser
-  |  [< '{ se_desc = SAX_startElement(_, _, _, _, relem_sym, _); se_loc = se_loc  }>] -> 
+  |  [< '{ se_desc = SAX_startElement(_, _, _, _, _, relem_sym, _); se_loc = se_loc  }>] -> 
       let relem_sym = extract_relem_sym relem_sym in
       let (_, _, _) = NS.relem_name relem_sym in
 	import_error se_loc (context_descr ^ ": After some expected items, " ^
@@ -1239,7 +1238,7 @@ let rec import_components ims = parser
        comps = optmultiparse(content_Component ims) >] -> (ims,comps)
 
 let open_tag_schema targpref_opt = parser 
-  | [< '{ se_desc = SAX_startElement(_, atts, _, _, rsymb, _); se_loc = se_loc }
+  | [< '{ se_desc = SAX_startElement(_, atts, _, _, _, rsymb, _); se_loc = se_loc }
       when check_tag rsymb "schema" >] -> 
 	begin
 	  let document_nsenv = extract_nsenv rsymb in

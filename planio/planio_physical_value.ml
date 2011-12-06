@@ -92,11 +92,11 @@ let rec aux_unbox_item_sequence_stream level match_level st =
 	cursor_junk st; 
 	let (level', typed_event') = 
 	  match typed_event.se_desc with
-	  | SAX_startElement (_,typed_sax_xml_attributes,has_element_content,_,eo,_) -> 
+	  | SAX_startElement (_,typed_sax_xml_attributes,has_element_content,_,_,eo,_) -> 
 	      let (rsym,nsenv) =
 		match !eo with
 		| None -> raise (Query(Internal_Error("Expected resolved XML event")))
-		| Some (rsym,_,nsenv) -> (rsym,nsenv)
+		| Some (rsym,nsenv) -> (rsym,nsenv)
 	      in
 	      begin
 		Debug.print_dxq_debug(Format.sprintf "Unbox %s at level %d\n" (symbol_prefix_string rsym) level);

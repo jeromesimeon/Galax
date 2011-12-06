@@ -60,8 +60,7 @@ let compare_attribute_names_aux rsym1 rsym2 =
   let (_,uri2,ncname2) = Namespace_symbols.rattr_name rsym2 in
   compare (uri1,ncname1) (uri2,ncname2)
 
-let compare_attribute_names (_,_,s1,rattr1,_) (_,_,s2,rattr2,_) =
-  if (!s1 || !s2) then 0 else
+let compare_attribute_names (_,_,rattr1,_) (_,_,rattr2,_) =
   let rsym1 =
     match !rattr1 with
     | Some rsym1 -> rsym1
@@ -77,8 +76,7 @@ let compare_attribute_names (_,_,s1,rattr1,_) (_,_,s2,rattr2,_) =
 let compare_characters c1 c2 =
   c1 = c2
 
-let compare_attributes (_,c1,s1,rattr1,_) (_,c2,s2,rattr2,_) =
-  if (!s1 || !s2) then true else
+let compare_attributes (_,c1,rattr1,_) (_,c2,rattr2,_) =
   let rsym1 =
     match !rattr1 with
     | Some rsym1 -> rsym1
@@ -89,17 +87,10 @@ let compare_attributes (_,c1,s1,rattr1,_) (_,c2,s2,rattr2,_) =
     | Some rsym2 -> rsym2
     | None -> raise (Query(Stream_Error("Trying to type an unresolved stream [compare_attribute_names error]")))
   in
-  if not((compare_attribute_names_aux rsym1 rsym2) = 0)
-  then
-    begin
-      Printf.printf ("Attributes %s and %s differ") (Namespace_names.prefixed_string_of_rqname (Namespace_symbols.rattr_name rsym1)) (Namespace_names.prefixed_string_of_rqname (Namespace_symbols.rattr_name rsym2));flush stdout
-    end;
   ((compare_attribute_names_aux rsym1 rsym2) = 0) &&
   (compare_characters c1 c2)
 
 let rec compare_attributes_lists satts1 satts2 =
-  let satts1 = List.filter (fun (_,_,s,_,_) -> not !s) satts1 in
-  let satts2 = List.filter (fun (_,_,s,_,_) -> not !s) satts2 in
   match (satts1,satts2) with
   | [],[] -> true
   | att1 :: satts1', att2 :: satts2' ->
@@ -110,22 +101,17 @@ let rec compare_attributes_lists satts1 satts2 =
 	false
   | _ -> false
 
-let compare_start_elems (_,atts1,_,_,relem1,_) (_,atts2,_,_,relem2,_) =
+let compare_start_elems (_,atts1,_,_,_,relem1,_) (_,atts2,_,_,_,relem2,_) =
   let rsym1 =
     match !relem1 with
-    | Some (rsym1,_,_) -> rsym1
+    | Some (rsym1,_) -> rsym1
     | None -> raise (Query(Stream_Error("Trying to type an unresolved stream [compare_start_elems error]")))
   in
   let rsym2 =
     match !relem2 with
-    | Some (rsym2,_,_) -> rsym2
+    | Some (rsym2,_) -> rsym2
     | None -> raise (Query(Stream_Error("Trying to type an unresolved stream [compare_start_elems error]")))
   in
-  if not(Namespace_symbols.relem_equal rsym1 rsym2)
-  then
-    begin
-      Printf.printf ("Elements %s and %s differ") (Namespace_names.prefixed_string_of_rqname (Namespace_symbols.relem_name rsym1)) (Namespace_names.prefixed_string_of_rqname (Namespace_symbols.relem_name rsym2));flush stdout
-    end;
   (Namespace_symbols.relem_equal rsym1 rsym2) &&
   let satts1 = List.sort compare_attribute_names atts1 in
   let satts2 = List.sort compare_attribute_names atts2 in
