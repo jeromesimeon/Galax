@@ -23,7 +23,7 @@ open Error
 (*****************************)
 
 type ts_context =
-    { ts_nsenv          : (Namespace_context.nsenv * Namespace_context.nsenv) Stack.t;
+    { ts_nsenv          : Namespace_context.nsenv Stack.t;
       ts_attr_names 	: (Namespace_context.nsenv * Namespace_names.uqname, Namespace_symbols.symbol) Hashtbl.t;
       ts_elem_names 	: (Namespace_context.nsenv * Namespace_names.uqname, Namespace_symbols.symbol) Hashtbl.t }
 
@@ -35,7 +35,7 @@ type ts_context =
 let build_ts_context () =
   let init_stack = Stack.create () in
   begin
-    Stack.push (Namespace_context.default_xml_nsenv, Namespace_context.default_xml_out_nsenv ()) init_stack;
+    Stack.push (Namespace_context.default_xml_out_nsenv ()) init_stack;
     { ts_nsenv = init_stack;
       ts_attr_names = Hashtbl.create 1439;
       ts_elem_names = Hashtbl.create 1439; }
@@ -61,13 +61,13 @@ let pop_nsenv ts_context =
 let push_ns_bindings ts_context bindings =
   match bindings with
   | [] ->
-      let (nsenv,in_scope_nsenv) = get_nsenv ts_context in
-      Stack.push (nsenv,in_scope_nsenv) ts_context.ts_nsenv
+      let in_scope_nsenv = get_nsenv ts_context in
+      Stack.push in_scope_nsenv ts_context.ts_nsenv
   | _ ->
-      let (nsenv,in_scope_nsenv) = get_nsenv ts_context in
-      let nsenv' = Namespace_context.add_all_ns_test nsenv bindings in
-      let in_scope_nsenv' = Namespace_context.add_all_ns_test in_scope_nsenv bindings in
-      Stack.push (nsenv',in_scope_nsenv') ts_context.ts_nsenv
+      let in_scope_nsenv = get_nsenv ts_context in
+      (* let in_scope_nsenv' = Namespace_context.add_all_ns_test in_scope_nsenv bindings in *)
+      let in_scope_nsenv' = Namespace_context.add_all_ns in_scope_nsenv bindings in
+      Stack.push in_scope_nsenv' ts_context.ts_nsenv
 
 let resolve_element_name ts_context nsenv uqname =
   try

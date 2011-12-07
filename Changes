@@ -2,6 +2,11 @@
 | Changelog |
  -----------
 
+Dec 7, 2011 - Jerome
+
+  o Streaming:
+     - Further cleanup of namespace resolution.
+
 Dec 6, 2011 - Jerome
 
   o GIT:

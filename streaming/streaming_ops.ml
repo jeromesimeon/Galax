@@ -132,8 +132,8 @@ let resolve_attribute ts_context attribute =
 	(* Awaiting resolution *)
 	| None ->
 	    (* Look up current namespace environment *)
-	    let (nsenv,in_scope_nsenv) = Resolve_stream_context.get_nsenv ts_context in
-	    let rattr_sym = Resolve_stream_context.resolve_attribute_name ts_context nsenv attr_uqname in
+	    let in_scope_nsenv = Resolve_stream_context.get_nsenv ts_context in
+	    let rattr_sym = Resolve_stream_context.resolve_attribute_name ts_context in_scope_nsenv attr_uqname in
 	    attr_sym_ref := Some rattr_sym
       end
 
@@ -156,7 +156,7 @@ let resolved_of_well_formed_event ts_context event =
 	let new_nss = Streaming_util.bindings_of_special_attributes !special_attributes
 	in
 	(* Second, update the namespace environment *)
-	let (nsenv,in_scope_nsenv) =
+	let in_scope_nsenv =
 	  begin
 	    Resolve_stream_context.push_ns_bindings ts_context new_nss;
 	    Resolve_stream_context.get_nsenv ts_context
@@ -164,8 +164,7 @@ let resolved_of_well_formed_event ts_context event =
 	in
 	(* Third, resolve the element QName using that new environment *)
 	let relem_sym,default =
-	  (* Resolve_stream_context.resolve_element_name ts_context in_scope_nsenv elem_uqname *)
-	  Resolve_stream_context.resolve_element_name ts_context nsenv elem_uqname
+	  Resolve_stream_context.resolve_element_name ts_context in_scope_nsenv elem_uqname
 	in
 	let in_scope_nsenv =
 	  if default then patch_bindings in_scope_nsenv Namespace_builtin.default_built_in_namespaces else in_scope_nsenv

@@ -50,7 +50,7 @@ let get_schema () =
       (* Now schema import *)
       let imported_schema        = Schema_import.import_schema_document proc_ctxt None resolved_schema_stream in
       (* Finally, schema normalization *)
-      let normalized_schema      = Schema_norm.normalize (Namespace_context.default_xml_nsenv) imported_schema in
+      let normalized_schema      = Schema_norm.normalize Namespace_context.default_xml_nsenv imported_schema in
       normalized_schema
 
 
@@ -211,7 +211,7 @@ let process_file_aux proc_ctxt uri_string =
     then
       if (!dtd) then 
 	match dtdopt with
-	| Some xschema -> Some (Schema_norm.normalize (Namespace_context.default_xml_nsenv) xschema)
+	| Some xschema -> Some (Schema_norm.normalize Namespace_context.default_xml_nsenv xschema)
 	| None -> raise (Query(Error("No DTD found in "^uri_string)))
       else Some (get_schema ())
     else

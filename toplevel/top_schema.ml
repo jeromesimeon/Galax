@@ -95,7 +95,7 @@ let process_file proc_ctxt schema_file =
       end;
       if !normalize_type
       then
-	let cxschema = Schema_norm.normalize (Namespace_context.default_xml_nsenv) xschema in
+	let cxschema = Schema_norm.normalize Namespace_context.default_xml_nsenv xschema in
 	begin
 	  if !print_normalized_type
 	  then

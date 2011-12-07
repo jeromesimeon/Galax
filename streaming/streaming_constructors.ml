@@ -298,6 +298,7 @@ let sequence_constructor t1 t2 =
 let glx_result_serialization input_stream =
   let sym = Namespace_symbols.relem_symbol Namespace_builtin.glx_result in
   let nsenv = 
+(*    let export_orig_nsenv = Namespace_context.default_xml_out_nsenv () in *)
     let export_orig_nsenv = Namespace_context.default_xml_out_nsenv () in
     let delta_bindings = [(Namespace_builtin.glx_prefix,Namespace_builtin.glx_uri)] in
     Namespace_context.add_all_ns export_orig_nsenv delta_bindings

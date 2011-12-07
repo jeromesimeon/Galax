@@ -52,7 +52,7 @@ val default_all_nsenv     : nsenv
 (* adds a new prefix,uri binding in a namespace environment *)
 
 val add_all_ns        : nsenv -> binding_table -> nsenv
-val add_all_ns_test   : nsenv -> binding_table -> nsenv
+(* val add_all_ns_test   : nsenv -> binding_table -> nsenv *)
 val add_all_ns_xquery : nsenv -> binding_table -> nsenv
 
 val filter_nsenv_in_scope : nsenv -> binding_table -> nsenv * binding_table

@@ -33,7 +33,7 @@ val build_ts_context : unit -> ts_context
 (* Accesses the ts context *)
 (***************************)
 
-val get_nsenv : ts_context -> Namespace_context.nsenv * Namespace_context.nsenv
+val get_nsenv : ts_context -> Namespace_context.nsenv
 val pop_nsenv : ts_context -> unit
 
 

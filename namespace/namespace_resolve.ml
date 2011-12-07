@@ -57,7 +57,12 @@ let resolve_element_qname_default nsr uqname =
       let uri = get_ns_of_prefix nsr NSWildcardPrefix in
       (NSWildcardPrefix, uri, localname),false
   | (NSDefaultElementPrefix, localname) ->
-      let uri = get_ns_of_prefix nsr NSDefaultElementPrefix in
+      let uri =
+	try
+	  get_ns_of_prefix nsr NSDefaultElementPrefix
+	with
+	| _-> NSUri ""
+      in
       if (uri = NSUri "")
       then (NSDefaultElementPrefix, uri, localname),true
       else (NSDefaultElementPrefix, uri, localname),false
