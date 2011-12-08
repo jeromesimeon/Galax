@@ -251,10 +251,6 @@ let binding_in_scope nsenv (prefix,uri) =
 
 let filter_in_scope nsenv binding_table = List.filter (binding_in_scope nsenv) binding_table
 
-let add_all_ns_test nsenv binding_table =
-  let patched_bindings = filter_in_scope nsenv binding_table in
-  add_all_ns nsenv patched_bindings
-
 let filter_nsenv_in_scope nsenv binding_table =
   let patched_bindings = filter_in_scope nsenv binding_table in
   add_all_ns nsenv patched_bindings,patched_bindings

@@ -142,7 +142,7 @@ let resolve_attributes ts_context attributes =
     (* Resolve the attributes *)
     List.iter (resolve_attribute ts_context) attributes;
     (* Check for duplicates *)
-    Streaming_util.check_duplicate_attributes attributes
+    (* Streaming_util.check_duplicate_attributes attributes *)
   end
 
 let update_resolved_element_content resolved_element_content esym nsenv =
@@ -195,6 +195,9 @@ let resolve_event_wrap ts_context xml_stream =
     Some next_event
   with
   | Stream.Failure ->
+(*    Printf.printf "Total attribute names looked up: %i\n" !Resolve_stream_context.attr_lookup_count;
+      Printf.printf "Total attribute names not found: %i\n" !Resolve_stream_context.attr_missed_lookup_count;
+      flush stdout; *)
       None
 
 let next_event_resolved_of_well_formed_xml_stream ts_context xml_stream n =

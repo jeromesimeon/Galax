@@ -22,10 +22,21 @@ open Error
 (* A type for the ts context *)
 (*****************************)
 
+module HashedEnv =
+  struct
+    type t = Namespace_context.nsenv * Namespace_names.uqname
+    let equal (e1,k1) (e2,k2) =
+      (e1 == e2) && (k1 = k2)
+    let hash (e1,k1) =
+      Hashtbl.hash k1
+  end
+
+module HashtblEnv = Hashtbl.Make(HashedEnv)
+
 type ts_context =
     { ts_nsenv          : Namespace_context.nsenv Stack.t;
-      ts_attr_names 	: (Namespace_context.nsenv * Namespace_names.uqname, Namespace_symbols.symbol) Hashtbl.t;
-      ts_elem_names 	: (Namespace_context.nsenv * Namespace_names.uqname, Namespace_symbols.symbol) Hashtbl.t }
+      ts_attr_names 	: Namespace_symbols.symbol HashtblEnv.t;
+      ts_elem_names 	: Namespace_symbols.symbol HashtblEnv.t }
 
 
 (****************************)
@@ -37,8 +48,8 @@ let build_ts_context () =
   begin
     Stack.push (Namespace_context.default_xml_out_nsenv ()) init_stack;
     { ts_nsenv = init_stack;
-      ts_attr_names = Hashtbl.create 1439;
-      ts_elem_names = Hashtbl.create 1439; }
+      ts_attr_names = HashtblEnv.create 1439;
+      ts_elem_names = HashtblEnv.create 1439; }
   end
 
 (* Accesses the loading context *)
@@ -65,31 +76,35 @@ let push_ns_bindings ts_context bindings =
       Stack.push in_scope_nsenv ts_context.ts_nsenv
   | _ ->
       let in_scope_nsenv = get_nsenv ts_context in
-      (* let in_scope_nsenv' = Namespace_context.add_all_ns_test in_scope_nsenv bindings in *)
       let in_scope_nsenv' = Namespace_context.add_all_ns in_scope_nsenv bindings in
       Stack.push in_scope_nsenv' ts_context.ts_nsenv
 
 let resolve_element_name ts_context nsenv uqname =
   try
-    Hashtbl.find ts_context.ts_elem_names (nsenv,uqname),false
+    HashtblEnv.find ts_context.ts_elem_names (nsenv,uqname),false
   with
   | _ ->
       let rqname,default = Namespace_resolve.resolve_element_qname_default nsenv uqname in
       let s = (Namespace_symbols.relem_symbol rqname) in
       begin
-	Hashtbl.add ts_context.ts_elem_names (nsenv,uqname) s;
+	HashtblEnv.add ts_context.ts_elem_names (nsenv,uqname) s;
 	s,default
       end
 
+let attr_lookup_count = ref 0
+let attr_missed_lookup_count = ref 0
+
 let resolve_attribute_name ts_context nsenv uqname =
   try
-    Hashtbl.find ts_context.ts_attr_names (nsenv,uqname)
+    incr attr_lookup_count;
+    HashtblEnv.find ts_context.ts_attr_names (nsenv,uqname)
   with
   | _ ->
+      incr attr_missed_lookup_count;
       let rqname = Namespace_resolve.resolve_attribute_qname nsenv uqname in
       let s = (Namespace_symbols.rattr_symbol rqname) in
       begin
-	Hashtbl.add ts_context.ts_attr_names (nsenv,uqname) s;
+	HashtblEnv.add ts_context.ts_attr_names (nsenv,uqname) s;
 	s
       end
 

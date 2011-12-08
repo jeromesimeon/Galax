@@ -47,3 +47,6 @@ val resolve_element_name : ts_context -> Namespace_context.nsenv -> Namespace_na
 
 val resolve_attribute_name : ts_context -> Namespace_context.nsenv -> Namespace_names.uqname -> Namespace_symbols.symbol
 
+val attr_lookup_count : int ref
+val attr_missed_lookup_count : int ref
+
