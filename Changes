@@ -4,6 +4,12 @@
 
 Dec 8, 2011 - Jerome
 
+  o Testing:
+     - Fixed serialization of XML optimized plans during testing
+     - Some fixes to the GLX tests catalog
+
+Dec 8, 2011 - Jerome
+
   o Streaming:
      - Further cleanup of namespace resolution.
 

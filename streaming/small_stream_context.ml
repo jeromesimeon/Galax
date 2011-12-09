@@ -96,8 +96,6 @@ let push_elem_to_ss_context ss_context se remaining_list =
 	   (SAX_startElement (uqname_of_rqname rqname,attributes,ref has_element_content, ref [],base_uri,
 			      ref (Some (rsym,nsenv)), ref None)) Finfo.bogus, nse)
       end
-  | SElem (rqname, Some bt, nsenv, sattributes, base_uri, nse, qname) ->
-      raise (Query (Internal_Error "Binding table shouldn't appear during small stream processing"))
   | SText content ->
       (Streaming_util.fmkse_event (SAX_characters content) Finfo.bogus, remaining_list)
   | SPI (target,content) ->
@@ -155,11 +153,12 @@ let resolved_xml_stream_of_sexpr sexpr =
 
 (* Builds a sexpr out of an unresolved sexpr *)
 
-let sattribute_of_rsattribute nsenv (uqname,content,rqname_opt,typed_opt) =
-  raise (Failure "temp")
-(*
+let sattribute_of_rsattribute nsenv att =
+  let (uqname,content,rqname_opt,typed_opt) = att in
+  let rqname = Namespace_resolve.resolve_attribute_qname nsenv uqname in
   let rattr_sym = rattr_symbol rqname in
-  (rqname,content,ref (Some rattr_sym)) *)
+  rqname_opt := Some rattr_sym;
+  att
 
 let rec sexpr_of_rsexpr nsenv rsexpr =
   match rsexpr with

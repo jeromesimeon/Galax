@@ -981,7 +981,7 @@ let create_var config (var,sourceid) =
     Hashtbl.add config.sources sourceid input_doc;
     (var,input_doc)
   with
-  | e -> raise(Query(Internal_Error("In test_core.create_var"^(bprintf_error "  " e)^"\n")))
+  | e -> raise(Query(Internal_Error("In test_core.create_var["^var^"]"^(bprintf_error "  " e)^"\n")))
 
 let create_ci config sid =
 try

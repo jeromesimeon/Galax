@@ -221,7 +221,6 @@
     <groups>
       <test-group name="UseCase"/>
       <test-group name="Optimization"/>
-      <test-group name="Interfaces"/>
     </groups>
   </test-unit>
 </config>
