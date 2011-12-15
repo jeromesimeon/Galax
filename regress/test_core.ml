@@ -853,7 +853,16 @@ let compare_results query_file case output_dir result test_comp compared_plan =
 	    compare_many compare_error case error err compared_plan
       end
   | Ignore_Comparison ofil ->
-      raise_test_error "Test harness cannot perform ignore comparison yet"
+      let output_file = Filename.concat output_dir ofil in
+      begin
+	match result with
+	| Eval_KnownBug (bugid,bugloc) ->
+	    make_known_bug case bugid bugloc
+	| Eval_Succeeded result ->
+	    make_pass case output_file compared_plan
+	| Eval_Failed error ->
+	    make_pass case output_file compared_plan
+      end
   | Inspect_Comparison ofil ->
       make_pass_inspect case
 
@@ -1032,6 +1041,7 @@ let wrap_result all_bugs case eval_case (query_file, mod_locs, interface_locs, v
   | Not_found ->
       begin
 	try
+	  (* Printf.printf "[Eval][file] %s" query_file; flush stdout; *)
 	  let vars_qinp = List.map create_prolog_var prologvars in
 	  let result = eval_case (query_file, mod_locs, interface_locs, (vars @ vars_qinp)) ci in
 	  begin

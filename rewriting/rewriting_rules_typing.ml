@@ -64,7 +64,7 @@ let subtype_check rewrite_ctxt actual expected =
   let schema = Norm_context.cxschema_from_norm_context norm_ctxt in
   match proc_ctxt.typing_kind with 
   | Typing_Strong -> true
-  | _ -> Subtyping_top.is_subtype_of schema actual expected
+  | _ -> is_subtype_of schema actual expected
 
 (* 
   For any function call whose argument type matches its formal type, the
@@ -259,8 +259,17 @@ let cast_type_rewrite rewrite_ctxt ce =
   match ce.pcexpr_desc with
   | CECast (cexpr, _, (_, ctype')) -> 
       let ctype = get_type_annotation_from_cexpr cexpr in
-      if (ctype = ctype') then (cexpr, true)
-      else raise Not_applied
+      if (subtype_check rewrite_ctxt ctype ctype')
+      then
+	begin
+	  (* Printf.printf "[CAST] Rewriting: [%s] to: [%s]\n" (Print_xquery_core.bprint_cexpr "" ce) (Print_xquery_core.bprint_cexpr "" cexpr); flush stdout; *)
+	  (cexpr, true)
+	end
+      else
+	begin
+	  (* Printf.printf "[CAST] Not rewriting: [%s]\n" (Print_xquery_core.bprint_cexpr "" ce); flush stdout; *)
+	  raise Not_applied
+	end
   | _ -> raise Not_applied
 
 (*
@@ -720,7 +729,7 @@ let rec remove_empty_clauses rewrite_ctxt ctype0 cases =
 	| CCase (_, ctype) ->
 	    let (new_cases1, changed) = remove_empty_clauses rewrite_ctxt ctype0 remaining_cases in
 	    let res = 
-	      if (Subtyping_top.intersects_with schema ctype0 ctype) then 
+	      if (intersects_with schema ctype0 ctype) then 
 	      ((patternk, ovn, case_cexpr) :: new_cases1, changed)
 	    else 
 ( (* print_string ("Removing case : empty intersection"); *)

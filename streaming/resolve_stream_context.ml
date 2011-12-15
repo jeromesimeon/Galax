@@ -26,7 +26,7 @@ module HashedEnv =
   struct
     type t = Namespace_context.nsenv * Namespace_names.uqname
     let equal (e1,k1) (e2,k2) =
-      (e1 == e2) && (k1 = k2)
+      (e1 = e2) && (k1 = k2)
     let hash (e1,k1) =
       Hashtbl.hash k1
   end

@@ -579,22 +579,25 @@ let normalize_effective_boolean_value nc e1 eh fi =
 *)
 
 let normalize_predicate_truth_value norm_ctxt e1 pos_var eh fi = 
-(*  let (v0, var0) = gen_new_cvar eh fi in *)
+  let (v0, var0) = gen_new_cvar norm_ctxt eh fi in
   let (v1, var1) = gen_new_cvar norm_ctxt eh fi in
   let (v2, var2) = gen_new_cvar norm_ctxt eh fi in
 
   let double_type  = (fmkcsequencetype (CITAtomic Namespace_builtin.xs_double, None) fi, Schema_builtin.cxtype_double) in
+  let integer_type  = (fmkcsequencetype (CITAtomic Namespace_builtin.xs_integer, None) fi, Schema_builtin.cxtype_integer) in
   let numeric_sequencetype = (fmkcsequencetype (CITNumeric, None) fi, Schema_builtin.cxtype_numeric) in
 
   let cast_expr  = build_core_cast norm_ctxt var1 double_type eh fi in
-(*  let round_expr = build_core_call norm_ctxt Namespace_builtin.fn_round_double [cast_expr] eh fi in *)
   let cast_expr' = build_core_cast norm_ctxt pos_var double_type eh fi in 
+  let pos_integer_expr   =
+    build_core_call norm_ctxt Namespace_builtin.op_integer_equal [pos_var;var0] eh fi
+  in
   let pos_expr   =
     build_core_call norm_ctxt Namespace_builtin.op_double_equal [cast_expr'; cast_expr] eh fi
   in
   let default_expr = normalize_effective_boolean_value norm_ctxt var2 eh fi in
   let patlist = [
-(*  (fmkcpattern (CCase integer_type) fi, Some v0, pos_integer_expr); *)
+    (fmkcpattern (CCase integer_type) fi, Some v0, pos_integer_expr);
     (fmkcpattern (CCase numeric_sequencetype) fi, Some v1, pos_expr);
     (fmkcpattern CDefault fi, Some v2, default_expr)
   ]

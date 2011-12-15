@@ -2,6 +2,12 @@
 | Changelog |
  -----------
 
+Dec 15, 2011 - Jerome
+
+  o Rewriting:
+     - Fixed some of the basic rewrites for E1[E2] when E2 is a
+       numeric, leads to better access times for those cases.
+
 Dec 8, 2011 - Jerome
 
   o Testing:

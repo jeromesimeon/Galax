@@ -103,46 +103,35 @@ let make_element_desc c name attlist scope_opt entid =
   in
   (qname,other_attributes,ref false,ref special_attributes, ref base_uri, ref None, ref None)
 
-let make_text_desc data =
-  data
-
-let make_pi_desc target value =
-  (target,value)
-
-let make_comment_desc content =
-  content
-
 let rec map_event fi_ref c pp event =
   match event with
   | E_start_doc (xmlversion,dtd) ->
       begin
 	if xmlversion = "1.0"
-	then
-	  ()
-	else
-	  sax_raise_parsing_error pp ("XML version: " ^ xmlversion ^ " not supported");
+	then ()
+	else sax_raise_parsing_error pp ("XML version: " ^ xmlversion ^ " not supported");
 	set_dtd_in_context c dtd;
-	Some (fmkse_event (SAX_startDocument (make_document_desc c xmlversion dtd)) (!fi_ref))
+	Some (fmkse_event (SAX_startDocument (make_document_desc c xmlversion dtd)) !fi_ref)
       end
   | E_end_doc lit_name ->
-      Some (fmkse_event (SAX_endDocument) !fi_ref)
+      Some (fmkse_event SAX_endDocument !fi_ref)
   | E_start_tag (name, attlist, scope_opt, entid) ->
-      Some (fmkse_event (SAX_startElement (make_element_desc c name attlist scope_opt entid)) (!fi_ref))
+      Some (fmkse_event (SAX_startElement (make_element_desc c name attlist scope_opt entid)) !fi_ref)
   | E_end_tag (name, entid) ->
-      Some (fmkse_event (SAX_endElement) (!fi_ref))
+      Some (fmkse_event SAX_endElement !fi_ref)
   | E_char_data data ->
-      Some (fmkse_event (SAX_characters (make_text_desc data)) (!fi_ref))
+      Some (fmkse_event (SAX_characters data) !fi_ref)
   | E_pinstr (target,value,entid) ->
-      Some (fmkse_event (SAX_processingInstruction (make_pi_desc target value)) (!fi_ref))
+      Some (fmkse_event (SAX_processingInstruction (target,value)) !fi_ref)
   | E_comment content ->
-      Some (fmkse_event (SAX_comment (make_comment_desc content)) (!fi_ref))
-  (* Silently ignoring super root event *)
+      Some (fmkse_event (SAX_comment content) !fi_ref)
+	(* Silently ignoring super root event *)
   | E_start_super ->
       next_pxp_event fi_ref c pp
   | E_end_super ->
       next_pxp_event fi_ref c pp
   | E_position (entity,line,col) ->
-    (*
+      (*
      * These events are only created if the next event will be
      * E_start_tag, E_pinstr, or E_comment, and if the configuration option
      * store_element_position is true.

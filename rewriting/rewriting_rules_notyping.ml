@@ -321,17 +321,138 @@ let let_clause_rewrite rewrite_ctxt (cfl_clause_list) (cfl_clause) (ce) =
 (* FOR SIMPLIFICATION *)
 (**********************)
 
+(*
+  for $x at $i in Expr0
+  where $i = Expr1
+  return Expr2
+
+  used_count $i in Expr1 = 0
+  used_count $i in Expr2 = 0 
+  used_count $x in Expr1 = 0
+  ==
+  let $x := fn:subsequence(Expr0,Expr1,1)
+  return Expr2
+*)
+
+let subtype_check rewrite_ctxt actual expected = 
+  let stat_ctxt = get_context rewrite_ctxt in
+  let norm_ctxt = Typing_context.norm_context_from_stat_context stat_ctxt in
+  let schema = Norm_context.cxschema_from_norm_context norm_ctxt in
+  Subtyping_top.is_subtype_of schema actual expected
+
+let double_cast rewrite_ctxt (t1,t2) =
+  let double = Schema_builtin.cxtype_double in
+  (subtype_check rewrite_ctxt t1 double) && (subtype_check rewrite_ctxt t1 double)
+
+let double_uncast rewrite_ctxt (ce1,ce2) =
+  match (ce1.pcexpr_desc,ce2.pcexpr_desc) with
+  | (CECast (ce1',_, (_, ctype1')),CECast (ce2',_, (_, ctype2'))) ->
+      begin
+	if (double_cast rewrite_ctxt (ctype1',ctype2')) then (ce1',ce2')
+	else (ce1,ce2)
+      end
+  | _ -> (ce1,ce2)
+
+let decompose_equal_on_variable rewrite_ctxt vname ce =
+  match ce.pcexpr_desc with
+  | CECall (fname,[ce1;ce2],_,_,_) when fname = op_double_equal ->
+      let ce1',ce2' = double_uncast rewrite_ctxt (ce1,ce2) in
+      begin
+	match ce1'.pcexpr_desc with
+	| CEVar vname' when vname' = vname ->
+	    (* Printf.printf "Found positional condition against [%s]\n" (Print_xquery_core.bprint_cexpr "" ce2); flush stdout; *)
+	    (ce2,true)
+	| _ ->
+	    begin
+	      match ce2'.pcexpr_desc with
+	      | CEVar vname' when vname' = vname ->
+		  (* Printf.printf "Found positional condition against [%s]\n" (Print_xquery_core.bprint_cexpr "" ce2); flush stdout; *)
+		  (ce1,true)
+	      | _ ->
+		  ce,false
+	    end
+      end
+  | CECall (fname,[ce1;ce2],_,_,_) when fname = op_integer_equal ->
+      begin
+	match ce1.pcexpr_desc with
+	| CEVar vname' when vname' = vname ->
+	    (* Printf.printf "Found positional condition against [%s]\n" (Print_xquery_core.bprint_cexpr "" ce2); flush stdout; *)
+	    (ce2,true)
+	| _ ->
+	    begin
+	      match ce2.pcexpr_desc with
+	      | CEVar vname' when vname' = vname ->
+		  (* Printf.printf "Found positional condition against [%s]\n" (Print_xquery_core.bprint_cexpr "" ce2); flush stdout; *)
+		  (ce1,true)
+	      | _ ->
+		  ce,false
+	    end
+      end
+  | _ -> ce,false
+
+let is_positional_condition rewrite_ctxt in_vname at_vname where_expr ret_expr =
+  (* Printf.printf "Trying for positional condition on [%s]\n" (Print_xquery_core.bprint_cexpr "" where_expr); flush stdout; *)
+  if not((used_count in_vname where_expr) = 0) then false
+  else if not((used_count at_vname where_expr) = 0) then false
+  else if not((used_count at_vname ret_expr) = 0) then false
+  else
+    begin
+      match where_expr.pcexpr_desc with
+      | CECall (fname, arguments, sign, _, _) ->
+	  if (fname = op_double_equal) || (fname = op_integer_equal) then
+	    begin
+	      match arguments with
+	      | [arg1;arg2] ->
+		  let (_,success) = decompose_equal_on_variable rewrite_ctxt at_vname where_expr
+		  in success
+	      | _ -> false
+	    end
+	  else false
+      | _ -> false
+    end
+
 (* Function to apply for-clause simplification *)
 let for_clause_rewrite rewrite_ctxt
     (cfl_clause_list : acfl_expr list) (cfl_clause : acfl_expr) (ce : acexpr) =
   match cfl_clause with
   | CEFOR (odt, vname, Some vname', cexpr1) ->
       begin
-	match used_count vname' ce with
-	| 0 ->
-	    (cfl_clause_list@[ CEFOR(odt, vname, None, cexpr1) ], ce, true) (* Rule 1 *)
+	match ce.pcexpr_desc with
+	| CEFLWOR([], Some where_expr, None, ret_expr) when (is_positional_condition rewrite_ctxt vname vname' where_expr ret_expr) ->
+	    let ah = ce.pcexpr_annot in
+	    let eh = ce.pcexpr_origin in
+	    let loc = ce.pcexpr_loc in
+	    let stat_ctxt = get_context rewrite_ctxt in
+	    let norm_ctxt = Typing_context.norm_context_from_stat_context stat_ctxt in
+	    begin
+	      match cfl_clause with
+	      | CEFOR (odt, vname, Some vname', cexpr1) ->
+		  (* Printf.printf "Found: for $x in $i where $i=$j return Expr\n"; flush stdout; *)
+		  let (cexpr2,success) =
+		    decompose_equal_on_variable rewrite_ctxt vname' where_expr
+		  in
+		  let cexpr_one = fmkacexpr (CEScalar (IntegerLiteral (Big_int.big_int_of_int  1))) ah eh loc
+		  in
+		  let (input_types, output_type), opt_fun_kind, upd = 
+		    Norm_context.one_sig_from_norm_context norm_ctxt (fn_subsequence, 3)
+		  in
+		  let input_types = List.map (fun _ -> None) input_types in
+		  let ce1 =
+		    fmkacexpr (CECall (fn_subsequence, [cexpr1;cexpr2;cexpr_one], (input_types,output_type), upd, false)) ah eh loc
+		  in
+		  let ce = fmkacexpr (CEFLWOR([], None, None, ret_expr)) ah eh loc in
+		  (cfl_clause_list@[CELET(odt, vname, ce1)], ce, false)
+	      | _ ->
+		  (cfl_clause_list@[cfl_clause], ce, false)
+	    end
 	| _ ->
-	    (cfl_clause_list@[cfl_clause], ce, false)
+	    begin
+	      match used_count vname' ce with
+	      | 0 ->
+		  (cfl_clause_list@[ CEFOR(odt, vname, None, cexpr1) ], ce, true) (* Rule 1 *)
+	      | _ ->
+		  (cfl_clause_list@[cfl_clause], ce, false)
+	    end
       end
   | _ ->
       (cfl_clause_list@[cfl_clause], ce, false)

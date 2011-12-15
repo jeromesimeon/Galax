@@ -538,6 +538,8 @@ and print_creturn ff r =
 
 in print_cexpr_prec 0 ff e
 
+let bprint_cexpr s e =
+  Gmisc.bprintf_stub s (fun ff x -> print_cexpr ff x (fun x y -> ())) e
 
 (*******************)
 (* Core Statements *)

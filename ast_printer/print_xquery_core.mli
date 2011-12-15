@@ -27,6 +27,7 @@ val print_csequencetype : Format.formatter -> Xquery_core_ast.csequencetype -> u
 (***************************)
 
 val print_cexpr : Format.formatter -> Xquery_core_ast.acexpr -> (Format.formatter -> Xquery_core_ast_annotation.ast_annot -> unit) -> unit
+val bprint_cexpr : string -> Xquery_core_ast.acexpr -> string
 
 (*******************)
 (* Core Statements *)
