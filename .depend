@@ -2737,24 +2737,26 @@ rewriting/rewriting_judgments.cmx: ./ast/xquery_core_ast_util.cmx \
 rewriting/rewriting_rules_notyping.cmo: ./ast/xquery_core_ast_util.cmi \
     ./ast/xquery_core_ast_annotation.cmi ./ast/xquery_core_ast.cmi \
     ./ast/xquery_common_ast_util.cmi ./ast/xquery_common_ast.cmi \
-    ./typing/typing_context.cmi ./schema/schema_util.cmi \
-    ./schema/schema_builtin.cmi ./rewriting/rewriting_judgments.cmi \
-    ./procctxt/processing_context.cmi ./ast_printer/print_top.cmi \
-    ./normalization/norm_util.cmi ./normalization/norm_context.cmi \
-    ./namespace/namespace_names.cmi ./namespace/namespace_builtin.cmi \
-    ./base/error.cmi ./dm/atomic/dm_atomic.cmi ./dm/dm.cmi ./base/debug.cmi \
+    ./typing/typing_context.cmi ./subtyping/subtyping_top.cmi \
+    ./schema/schema_util.cmi ./schema/schema_builtin.cmi \
+    ./rewriting/rewriting_judgments.cmi ./procctxt/processing_context.cmi \
+    ./ast_printer/print_top.cmi ./normalization/norm_util.cmi \
+    ./normalization/norm_context.cmi ./namespace/namespace_names.cmi \
+    ./namespace/namespace_builtin.cmi ./base/error.cmi \
+    ./dm/atomic/dm_atomic.cmi ./dm/dm.cmi ./base/debug.cmi \
     ./datatypes/datatypes.cmi ./ast_walker/ast_walker_rewrite_context.cmi \
     ./ast_walker/ast_walker_rewrite.cmi \
     rewriting/rewriting_rules_notyping.cmi
 rewriting/rewriting_rules_notyping.cmx: ./ast/xquery_core_ast_util.cmx \
     ./ast/xquery_core_ast_annotation.cmx ./ast/xquery_core_ast.cmi \
     ./ast/xquery_common_ast_util.cmx ./ast/xquery_common_ast.cmx \
-    ./typing/typing_context.cmx ./schema/schema_util.cmx \
-    ./schema/schema_builtin.cmx ./rewriting/rewriting_judgments.cmx \
-    ./procctxt/processing_context.cmx ./ast_printer/print_top.cmx \
-    ./normalization/norm_util.cmx ./normalization/norm_context.cmx \
-    ./namespace/namespace_names.cmx ./namespace/namespace_builtin.cmx \
-    ./base/error.cmx ./dm/atomic/dm_atomic.cmx ./dm/dm.cmx ./base/debug.cmx \
+    ./typing/typing_context.cmx ./subtyping/subtyping_top.cmx \
+    ./schema/schema_util.cmx ./schema/schema_builtin.cmx \
+    ./rewriting/rewriting_judgments.cmx ./procctxt/processing_context.cmx \
+    ./ast_printer/print_top.cmx ./normalization/norm_util.cmx \
+    ./normalization/norm_context.cmx ./namespace/namespace_names.cmx \
+    ./namespace/namespace_builtin.cmx ./base/error.cmx \
+    ./dm/atomic/dm_atomic.cmx ./dm/dm.cmx ./base/debug.cmx \
     ./datatypes/datatypes.cmi ./ast_walker/ast_walker_rewrite_context.cmx \
     ./ast_walker/ast_walker_rewrite.cmx \
     rewriting/rewriting_rules_notyping.cmi

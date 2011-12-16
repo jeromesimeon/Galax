@@ -259,17 +259,8 @@ let cast_type_rewrite rewrite_ctxt ce =
   match ce.pcexpr_desc with
   | CECast (cexpr, _, (_, ctype')) -> 
       let ctype = get_type_annotation_from_cexpr cexpr in
-      if (subtype_check rewrite_ctxt ctype ctype')
-      then
-	begin
-	  (* Printf.printf "[CAST] Rewriting: [%s] to: [%s]\n" (Print_xquery_core.bprint_cexpr "" ce) (Print_xquery_core.bprint_cexpr "" cexpr); flush stdout; *)
-	  (cexpr, true)
-	end
-      else
-	begin
-	  (* Printf.printf "[CAST] Not rewriting: [%s]\n" (Print_xquery_core.bprint_cexpr "" ce); flush stdout; *)
-	  raise Not_applied
-	end
+      if (ctype = ctype') then (cexpr, true)
+      else raise Not_applied
   | _ -> raise Not_applied
 
 (*

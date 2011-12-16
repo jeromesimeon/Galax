@@ -2,6 +2,14 @@
 | Changelog |
  -----------
 
+Dec 16, 2011 - Jerome
+
+  o Rewriting:
+     - Reverted slightly too aggressive rewriting rule for casting,
+       introducing a regression.
+     - Consolidated E1[E2] rewrite, making sure they are correct and
+       do not introduce regressions.
+
 Dec 15, 2011 - Jerome
 
   o Rewriting:

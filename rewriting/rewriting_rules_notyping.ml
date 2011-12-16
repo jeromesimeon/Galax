@@ -340,50 +340,18 @@ let subtype_check rewrite_ctxt actual expected =
   let schema = Norm_context.cxschema_from_norm_context norm_ctxt in
   Subtyping_top.is_subtype_of schema actual expected
 
-let double_cast rewrite_ctxt (t1,t2) =
-  let double = Schema_builtin.cxtype_double in
-  (subtype_check rewrite_ctxt t1 double) && (subtype_check rewrite_ctxt t1 double)
-
-let double_uncast rewrite_ctxt (ce1,ce2) =
-  match (ce1.pcexpr_desc,ce2.pcexpr_desc) with
-  | (CECast (ce1',_, (_, ctype1')),CECast (ce2',_, (_, ctype2'))) ->
-      begin
-	if (double_cast rewrite_ctxt (ctype1',ctype2')) then (ce1',ce2')
-	else (ce1,ce2)
-      end
-  | _ -> (ce1,ce2)
-
-let decompose_equal_on_variable rewrite_ctxt vname ce =
+let decompose_equal_on_variable rewrite_ctxt at_vname ce =
   match ce.pcexpr_desc with
-  | CECall (fname,[ce1;ce2],_,_,_) when fname = op_double_equal ->
-      let ce1',ce2' = double_uncast rewrite_ctxt (ce1,ce2) in
-      begin
-	match ce1'.pcexpr_desc with
-	| CEVar vname' when vname' = vname ->
-	    (* Printf.printf "Found positional condition against [%s]\n" (Print_xquery_core.bprint_cexpr "" ce2); flush stdout; *)
-	    (ce2,true)
-	| _ ->
-	    begin
-	      match ce2'.pcexpr_desc with
-	      | CEVar vname' when vname' = vname ->
-		  (* Printf.printf "Found positional condition against [%s]\n" (Print_xquery_core.bprint_cexpr "" ce2); flush stdout; *)
-		  (ce1,true)
-	      | _ ->
-		  ce,false
-	    end
-      end
   | CECall (fname,[ce1;ce2],_,_,_) when fname = op_integer_equal ->
       begin
 	match ce1.pcexpr_desc with
-	| CEVar vname' when vname' = vname ->
-	    (* Printf.printf "Found positional condition against [%s]\n" (Print_xquery_core.bprint_cexpr "" ce2); flush stdout; *)
-	    (ce2,true)
+	| CEVar var_vname when var_vname = at_vname ->
+	    if ((used_count at_vname ce2) = 0) then (ce2,true) else (ce,false)
 	| _ ->
 	    begin
 	      match ce2.pcexpr_desc with
-	      | CEVar vname' when vname' = vname ->
-		  (* Printf.printf "Found positional condition against [%s]\n" (Print_xquery_core.bprint_cexpr "" ce2); flush stdout; *)
-		  (ce1,true)
+	      | CEVar var_vname when var_vname = at_vname ->
+		  if ((used_count at_vname ce1) = 0) then (ce1,true) else (ce,false)
 	      | _ ->
 		  ce,false
 	    end
@@ -393,7 +361,6 @@ let decompose_equal_on_variable rewrite_ctxt vname ce =
 let is_positional_condition rewrite_ctxt in_vname at_vname where_expr ret_expr =
   (* Printf.printf "Trying for positional condition on [%s]\n" (Print_xquery_core.bprint_cexpr "" where_expr); flush stdout; *)
   if not((used_count in_vname where_expr) = 0) then false
-  else if not((used_count at_vname where_expr) = 0) then false
   else if not((used_count at_vname ret_expr) = 0) then false
   else
     begin
