@@ -694,7 +694,7 @@
   <test-case name="K2-Axes-99" result="pass"/>
   <test-case name="K2-Axes-100" result="pass"/>
   <test-case name="K2-Axes-101" result="pass"/>
-  <test-case name="K2-Axes-102" result="fail" comment="Test case [K2-Axes-102] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/PathExpr/Steps/Axes/K2-Axes-102.xq   Lexing Error: 1 Found QName while in operator state [File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/PathExpr/Steps/Axes/K2-Axes-102.xq&quot;, line 18, characters 39-40:] ] :-("/>
+  <test-case name="K2-Axes-102" result="pass"/>
   <test-case name="K2-Axes-103" result="pass"/>
   <test-case name="K2-Axes-104" result="pass"/>
   <test-case name="NodeTest001" result="pass"/>
@@ -5789,6 +5789,115 @@
   <test-case name="K2-DirectConElemAttr-76" result="pass"/>
   <test-case name="DirectConElemAttr-1" result="pass"/>
   <test-case name="DirectConElemAttr-2" result="pass"/>
+  <test-case name="Constr-namespace-1" result="pass"/>
+  <test-case name="Constr-namespace-2" result="pass"/>
+  <test-case name="Constr-namespace-3" result="pass"/>
+  <test-case name="Constr-namespace-4" result="pass"/>
+  <test-case name="Constr-namespace-5" result="pass"/>
+  <test-case name="Constr-namespace-6" result="pass"/>
+  <test-case name="Constr-namespace-7" result="pass"/>
+  <test-case name="Constr-namespace-8" result="pass"/>
+  <test-case name="Constr-namespace-9" result="pass"/>
+  <test-case name="Constr-namespace-10" result="pass"/>
+  <test-case name="Constr-namespace-11" result="pass"/>
+  <test-case name="Constr-namespace-12" result="pass"/>
+  <test-case name="Constr-namespace-13" result="pass"/>
+  <test-case name="Constr-namespace-14" result="pass"/>
+  <test-case name="Constr-namespace-15" result="pass"/>
+  <test-case name="Constr-namespace-16" result="pass"/>
+  <test-case name="Constr-namespace-17" result="pass"/>
+  <test-case name="Constr-namespace-18" result="pass"/>
+  <test-case name="Constr-namespace-19" result="pass"/>
+  <test-case name="Constr-namespace-20" result="pass"/>
+  <test-case name="Constr-namespace-21" result="pass"/>
+  <test-case name="Constr-namespace-22" result="pass"/>
+  <test-case name="Constr-namespace-23" result="pass"/>
+  <test-case name="Constr-namespace-24" result="pass"/>
+  <test-case name="Constr-namespace-25" result="pass"/>
+  <test-case name="Constr-namespace-26" result="pass"/>
+  <test-case name="Constr-namespace-27" result="pass"/>
+  <test-case name="Constr-namespace-29" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-1" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-2" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-3" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-4" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-5" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-6" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-7" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-8" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-9" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-10" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-11" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-12" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-13" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-14" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-15" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-16" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-17" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-18" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-19" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-20" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-21" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-22" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-23" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-24" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-25" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-26" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-27" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-28" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-29" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-30" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-31" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-32" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-33" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-34" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-35" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-36" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-37" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-38" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-39" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-40" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-41" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-42" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-43" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-44" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-45" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-46" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-47" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-48" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-49" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-50" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-51" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-52" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-53" result="fail" comment="Result of case [K2-DirectConElemNamespace-53] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Construct/DirectConElem/DirectConElemNamespace/K2-DirectConElemNamespace-53.txt] differ :-("/>
+  <test-case name="K2-DirectConElemNamespace-54" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-55" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-56" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-57" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-58" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-59" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-61" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-62" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-63" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-64" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-65" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-67" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-68" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-69" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-70" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-71" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-72" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-73" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-74" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-75" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-76" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-77" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-78" result="pass"/>
+  <test-case name="K2-DirectConElemNamespace-79" result="pass"/>
+  <test-case name="DirectConElemNamespace-3" result="pass"/>
+  <test-case name="DirectConElemNamespace-4" result="pass"/>
+  <test-case name="DirectConElemNamespace-5" result="pass"/>
+  <test-case name="DirectConElemNamespace-6" result="pass"/>
   <test-case name="Constr-cont-invalid-1" result="pass"/>
   <test-case name="Constr-cont-invalid-2" result="pass"/>
   <test-case name="Constr-cont-invalid-3" result="pass"/>
@@ -6089,6 +6198,11 @@
   <test-case name="K2-DirectConOther-69" result="pass"/>
   <test-case name="K2-DirectConOther-70" result="pass"/>
   <test-case name="K2-DirectConOther-71" result="pass"/>
+  <test-case name="XML10-3ed-Mixed-content" result="pass"/>
+  <test-case name="XML10-4ed-Excluded-char-1" result="pass"/>
+  <test-case name="XML10-4ed-Excluded-char-2" result="pass"/>
+  <test-case name="XML10-5ed-Included-char-1" result="pass"/>
+  <test-case name="XML11-1ed-Included-char-1" result="pass"/>
   <test-case name="Constr-compelem-name-1" result="pass"/>
   <test-case name="Constr-compelem-name-2" result="pass"/>
   <test-case name="Constr-compelem-name-3" result="pass"/>
@@ -6548,7 +6662,7 @@
   <test-case name="K2-ForExprWithout-5" result="pass"/>
   <test-case name="K2-ForExprWithout-6" result="pass"/>
   <test-case name="K2-ForExprWithout-7" result="pass"/>
-  <test-case name="K2-ForExprWithout-8" result="fail" comment="Test case [K2-ForExprWithout-8] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/FLWORExpr/ForExpr/ForExprWithout/K2-ForExprWithout-8.xq   Lexing Error: 1 Found QName while in operator state [File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/FLWORExpr/ForExpr/ForExprWithout/K2-ForExprWithout-8.xq&quot;, line 19, characters 22-23:] ] :-("/>
+  <test-case name="K2-ForExprWithout-8" result="fail" comment="Result of case [K2-ForExprWithout-8] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/FLWORExpr/ForExpr/ForExprWithout/K2-ForExprWithout-8.txt] differ :-("/>
   <test-case name="K2-ForExprWithout-9" result="pass"/>
   <test-case name="K2-ForExprWithout-10" result="pass"/>
   <test-case name="K2-ForExprWithout-11" result="pass"/>
@@ -7601,10 +7715,10 @@
   <test-case name="K2-sequenceExprTypeswitch-9" result="pass"/>
   <test-case name="K2-sequenceExprTypeswitch-10" result="pass"/>
   <test-case name="K2-sequenceExprTypeswitch-11" result="pass"/>
-  <test-case name="K2-sequenceExprTypeswitch-12" result="fail" comment="Test case [K2-sequenceExprTypeswitch-12] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/exprSeqTypes/sequenceExprTypeswitch/K2-sequenceExprTypeswitch-12.xq   Lexing Error: 1 Found QName while in operator state [File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/exprSeqTypes/sequenceExprTypeswitch/K2-sequenceExprTypeswitch-12.xq&quot;, line 14, characters 27-28:] ] :-("/>
+  <test-case name="K2-sequenceExprTypeswitch-12" result="pass"/>
   <test-case name="K2-sequenceExprTypeswitch-13" result="pass"/>
   <test-case name="K2-sequenceExprTypeswitch-14" result="pass"/>
-  <test-case name="K2-sequenceExprTypeswitch-15" result="fail" comment="Test case [K2-sequenceExprTypeswitch-15] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/exprSeqTypes/sequenceExprTypeswitch/K2-sequenceExprTypeswitch-15.xq   Lexing Error: 1 Found QName while in operator state [File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/exprSeqTypes/sequenceExprTypeswitch/K2-sequenceExprTypeswitch-15.xq&quot;, line 9, characters 8-9:] ] :-("/>
+  <test-case name="K2-sequenceExprTypeswitch-15" result="pass"/>
   <test-case name="K2-sequenceExprTypeswitch-16" result="pass"/>
   <test-case name="cast-derived-1" result="pass"/>
   <test-case name="cast-derived-2" result="pass"/>
@@ -12239,6 +12353,13 @@
   <test-case name="K2-ErrorFunc-1" result="pass"/>
   <test-case name="K2-ErrorFunc-2" result="pass"/>
   <test-case name="K2-ErrorFunc-3" result="pass"/>
+  <test-case name="errors-and-optimization-1" result="pass"/>
+  <test-case name="errors-and-optimization-2" result="pass"/>
+  <test-case name="errors-and-optimization-3" result="pass"/>
+  <test-case name="errors-and-optimization-4" result="pass"/>
+  <test-case name="errors-and-optimization-5" result="pass"/>
+  <test-case name="errors-and-optimization-6" result="pass"/>
+  <test-case name="errors-and-optimization-7" result="pass"/>
   <test-case name="fn-trace-1" result="pass"/>
   <test-case name="fn-trace-2" result="pass"/>
   <test-case name="fn-trace-3" result="pass"/>

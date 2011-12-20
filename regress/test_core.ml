@@ -1336,7 +1336,7 @@ let total_results name version case_results =
   eval_result (query_result version) vars
 
 let query_final_result =
-  "declare default element namespace \"http://www.w3.org/2005/02/query-test-XQTSResult\";declare variable $result external;<test-suite-result>{text { \"\n \"}}<implementation name=\"Galax\" version=\"0.6.9\" anonymous-result-column=\"false\">{text { \"\n  \"}}<organization name=\"Galax Team\" website=\"http://www.galaxquery.org\"/>{text { \"\n  \"}}<submittor name=\"Jerome Simeon\"/></implementation>{$result,text{\"\n\"}}</test-suite-result>"
+  "declare default element namespace \"http://www.w3.org/2005/02/query-test-XQTSResult\";declare variable $result external;<test-suite-result>{text { \"\n \"}}<implementation name=\"Galax\" version=\""^Conf.version^"\" anonymous-result-column=\"false\">{text { \"\n  \"}}<organization name=\"Galax Team\" website=\""^Conf.galax_web^""/>{text { \"\n  \"}}<submittor name=\"Jerome Simeon\"/></implementation>{$result,text{\"\n\"}}</test-suite-result>"
 
 let total_result res =
   let (x,v,y) = res in

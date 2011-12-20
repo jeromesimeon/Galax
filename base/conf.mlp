@@ -40,6 +40,7 @@ let motd = "Thank you for using "^system^"!\n"
 
 let xquery_version = "1.0"
 
+let galax_web = "http://galax.sourceforge.net/"
 
 (****************)
 (* Galax stdlib *)

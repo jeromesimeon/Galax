@@ -40,6 +40,8 @@ val motd : string
 
 val xquery_version : string
 
+val galax_web : string
+
 (**************************)
 (* Galax library location *)
 (**************************)

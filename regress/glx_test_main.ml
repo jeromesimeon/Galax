@@ -50,7 +50,7 @@ let run_unit all_bugs name version unit =
     let all_groups = run_groups unit all_bugs in
     let all = get_all_results all_groups in
     Printf.printf "Producing result file...";flush stdout;
-    let r1 = total_result (name,version,all) in
+    let r1 = total_result (name,!(unit.unit_version),all) in
     Printf.printf "Serializing result file ...";flush stdout;
     let oc = open_out result_file in
     begin
