@@ -8,6 +8,14 @@ Dec 20, 2011 - Jerome
      - Fixed odd bug on leading '/' and leading '//' not properly
        checking for document node.
 
+  o Testing:
+     - Simple switch of XQTS to v103
+     - Added some missing test groups (some new namespace, errors, XML
+       1.1 tests)
+
+  o Parsing:
+     - Fixed bug in parsing of default typeswitch clause with a variable.
+
 Dec 16, 2011 - Jerome
 
   o Rewriting:

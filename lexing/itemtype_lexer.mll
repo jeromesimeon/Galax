@@ -114,6 +114,9 @@ rule token lh = parse
       { pop_state lh; push_kindtest lh; PROCESSINGINSTRUCTIONLPAR }
   | "empty-sequence" whitespace "("
       { pop_state lh; push_kindtest lh; EMPTYSEQUENCELPAR }
+  (* Note: necessary to handle transition out of the default clause in typeswitch *)
+  | "return"
+      { pop_state lh; pop_state lh; push_default lh; RETURN }
 
 (* XML Names *)
   | qname

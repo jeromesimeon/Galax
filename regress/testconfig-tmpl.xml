@@ -99,11 +99,13 @@
       <test-group name="NodeComp"/>
       <test-group name="SeqOp"/>
       <test-group name="LogicExpr"/>
-      <test-group name="DirectConElemAttr"/>
       <test-group name="DirectConElem"/>
+      <test-group name="DirectConElemAttr"/>
+      <test-group name="DirectConElemNamespace"/>
       <test-group name="DirectConElemContent"/>
       <test-group name="DirectConElemWhitespace"/>
       <test-group name="DirectConOther"/>
+      <test-group name="XMLEdition"/>
       <test-group name="ComputeCon"/>
       <test-group name="ConInScopeNamespace"/>
       <test-group name="ForExprWithout"/>
@@ -149,6 +151,7 @@
       <test-group name="StringFunc"/>
       <test-group name="NodeLangFunc"/>
       <test-group name="ErrorFunc"/>
+      <test-group name="ErrorsAndOptimization"/>
       <test-group name="TraceFunc"/>
       <test-group name="ConstructFunc"/>
       <test-group name="NodeRootFunc"/>

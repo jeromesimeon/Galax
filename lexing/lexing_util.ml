@@ -589,7 +589,7 @@ let operator_keyword_table = [
   [|"empty"|],(xquery_none,EMPTY);
   [|"least"|],(xquery_none,LEAST);
   [|"greatest"|],(xquery_none,GREATEST);
-  [|"default"|],(xquery_none,DEFAULT);
+  [|"default"|],(xquery_toop_pushitem,DEFAULT);
   [|"into"|],(xquery_todef,INTO);
   [|"as"|],(xquery_as,AS);
   [|"before"|],(xquery_todef,BEFORE);
