@@ -697,9 +697,19 @@ in
 	      let e'' = item_seq_to_untyped norm_context e' eh fi in
 	      fmkcexpr (CECommentComputed e'') eh fi
 	  | ERoot ->
+	      let input_step = normalize_path_expr norm_context e (PAxis (Self,PNodeKindTest AnyKind)) in
 	      let frfname = fn_root in
-	      let celist = [cexpr_fs_dot eh fi] in
-	      normalize_function_application norm_context frfname celist e fi
+	      let celist = [input_step] in
+	      let root_ce = normalize_function_application norm_context frfname celist e fi in
+	      let dt = fmksequencetype (ITKindTest (DocumentKind None),None) fi in
+	      let cdt = normalize_sequencetype norm_context dt in
+	      (* Treat inherits its annotation from its argument expression *)
+	      let annot = copy_annot root_ce.pcexpr_annot in
+	      let treat_cexpr = fmkcexpr (CETreat (root_ce,cdt)) eh fi in
+	      begin
+		set_annotation_for_cexpr treat_cexpr annot;
+		treat_cexpr
+	      end
 	  | EInstanceOf (e,dt) ->
 	      let e' = normalize_expr_aux norm_context  e in
 	      let pat_cexpr_list =

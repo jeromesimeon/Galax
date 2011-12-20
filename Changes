@@ -2,6 +2,12 @@
 | Changelog |
  -----------
 
+Dec 20, 2011 - Jerome
+
+  o Normalization:
+     - Fixed odd bug on leading '/' and leading '//' not properly
+       checking for document node.
+
 Dec 16, 2011 - Jerome
 
   o Rewriting:
