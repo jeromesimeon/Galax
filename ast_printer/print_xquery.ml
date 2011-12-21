@@ -632,7 +632,7 @@ and print_path_expr p ff pe =
       fprintf ff "@@%a" print_node_test nt
   | PAxis (a,nt) ->
       fprintf ff "%a::%a" print_axis a print_node_test nt
-  | PStepQualifiers (e',sqs) ->
+  | PStepQualifiers (b, e',sqs) ->
       if p > 16 then
 	fprintf ff "@[<hv 1>(@[<hv 1>%a@,%a@])@]" (print_expr_prec 16) e' print_step_qualifiers sqs
       else

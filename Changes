@@ -16,6 +16,10 @@ Dec 20, 2011 - Jerome
   o Parsing:
      - Fixed bug in parsing of default typeswitch clause with a variable.
 
+  o XPath:
+     - Fixed a couple of issues with reverse axis and
+       following/preceding sibbling (empty for attributes nodes).
+
   o Configuration:
      - Cleaned up a few wrong version references and links to Web site
        in the code.

@@ -624,7 +624,7 @@ let normalize_ident_expr norm_context e =
 	let path_cexpr = fmkcexpr ce (Some e) fi in
 	path_cexpr
 
-    | PStepQualifiers (e, sqs) ->
+    | PStepQualifiers (b, e, sqs) ->
 	raise (Query (Malformed_Core_Expr "Expression is not normalized (found '[]')"))
 
   and normalize_ident_insert_location norm_context il =

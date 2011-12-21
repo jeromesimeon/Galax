@@ -66,7 +66,7 @@ let eval_axis_node_test static_context axis anode_test (node : node)=
   | Following_sibling -> 
       begin
 	match (node#node_kind()) with
-	| AttributeNodeKind
+	| AttributeNodeKind ->	Cursor.cursor_empty()
 	| _ ->
 	    begin
 	      match node#parent None with
@@ -77,7 +77,7 @@ let eval_axis_node_test static_context axis anode_test (node : node)=
   | Preceding_sibling -> 
       begin
 	match (node#node_kind()) with
-	| AttributeNodeKind
+	| AttributeNodeKind ->	Cursor.cursor_empty()
 	| _ -> 
 	    begin
 	      match node#parent None with

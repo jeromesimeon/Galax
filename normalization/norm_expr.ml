@@ -1104,9 +1104,9 @@ in
         let path_cexpr = fmkcexpr ce eh fi in
 	path_cexpr
 
-    | PStepQualifiers (e, sqs) ->
+    | PStepQualifiers (b, e, sqs) ->
         let ce = normalize_expr_aux norm_context e in
-        List.fold_left (normalize_step_qualifier ce norm_context) ce sqs
+        List.fold_left (normalize_step_qualifier ce norm_context b) ce sqs
 
 (*
 
@@ -1115,7 +1115,7 @@ in
 
 *)
 
-  and normalize_step_qualifier ce norm_context qual_expr sq = 
+  and normalize_step_qualifier ce norm_context b qual_expr sq = 
     match sq.pstep_qualifier_desc with 
     | PredicateQualifier e -> 
 	let fi = e.pexpr_loc in 
@@ -1140,81 +1140,8 @@ in
 	  begin
             (* Determine whether StepExpr is a forward or reverse axis or
                a primary expression *)
-	    match ce.pcexpr_desc with
-	    | CEForwardAxis _ -> 
-		begin
-		  match predkind with
-		                (*  ForwardAxis ::= child
-		                   | descendant
-		                   | attribute
-		                   | self
-		                   | descendant-or-self 
-				   | following-sibling
-		                   | following
-				   | namespace
-
-		                   [ForwardStep Predicates "[" 1 "]"]Expr
-		                   ==
-		                   let $fs:sequence :=
-		                   fs:distinct-doc-order( [ForwardStep Predicates]Expr )
-				   return fn:first($fs:sequence)
-		                *)
-		  | First -> 
-		      let first_expr = build_core_call norm_context fs_first [seqvar] eh fi in 
-		      let docorder_expr = build_core_call norm_context fs_distinct_docorder [qual_expr] eh fi in
-		      let letc = (CELET(None, fs_sequence, docorder_expr)) in
-		      let flwr_expr = fmkcexpr (CEFLWOR ([letc],None,None, first_expr)) eh fi in
-		      flwr_expr
-
-		  | Last ->
-		                  (*
-		                     [ForwardStep Predicates "[" fn:last() "]"]Expr
-		                     ==
-		                     let $fs:sequence := fs:distinct-doc-order( [ForwardStep Predicates]Expr ) 
-		                     return fs:last($fs:sequence)
-		                  *)
-		      let first_expr = build_core_call norm_context fs_last_fn [seqvar] eh fi in 
-		      let docorder_expr = build_core_call norm_context fs_distinct_docorder [qual_expr] eh fi in
-		      let letc = (CELET(None, fs_sequence, docorder_expr)) in
-		      let flwr_expr = fmkcexpr (CEFLWOR ([letc],None,None, first_expr)) eh fi in
-		      flwr_expr
-
-		  | Numeric ->
-		                  (*
-		                     [ForwardStep Predicates "[" Numeric "]"]Expr
-		                     ==
-		                     let $fs:sequence := fs:distinct-doc-order( [ForwardStep Predicates]Expr ) 
-		                     return fn:subsequence($fs:sequence,Numeric,1)
-		                  *)
- 		      let subseq_expr = build_core_call norm_context fn_subsequence [seqvar; cond; one_int_expr] eh fi in 
-		      let docorder_expr = build_core_call norm_context fs_distinct_docorder [qual_expr] eh fi in
-		      let letc = (CELET(None, fs_sequence, docorder_expr)) in
-		      let flwr_expr = fmkcexpr (CEFLWOR ([letc],None,None, subseq_expr)) eh fi in
-		      flwr_expr
-
-		  | Other ->
-		                  (*
-		                     NB: We do not apply fs:apply-ordering-mode after fs:distinct-doc-order
-		                     
-		                     [ForwardStep PredicateList "[" Expr "]"]Expr
-		                     ==
-		                     let $fs:sequence := fs:distinct-docorder([ForwardStep PredicateList]_Expr)
-		                     let $fs:last := fn:count($fs:sequence)
-		                     for $fs:dot at $fs:position in $fs:sequence
-		                     where ([Expr]_Predicates)
-		                     return $fs:dot
-		                  *)
-		      begin
-			let docorder_expr = build_core_call norm_context fs_distinct_docorder [qual_expr] eh fi in 
-			let letc1 = CELET(None, fs_sequence, docorder_expr) in
-			let letc2 = CELET(None, fs_last, count_expr) in
-			let forc1 = CEFOR(None, fs_dot, Some fs_position, seqvar) in 
-			let cfl_expr_list = [letc1; letc2; forc1] in 
-			let flwr_expr = fmkcexpr (CEFLWOR (cfl_expr_list,Some cond',None,dotvar)) eh fi in
-			flwr_expr
-		      end
-		end
-	    | CEReverseAxis _ -> 
+	    match (b,ce.pcexpr_desc) with
+	    | false,CEReverseAxis _ -> 
 		begin
 		  match predkind with
 		  | First ->
@@ -1288,7 +1215,80 @@ in
 			flwr_expr
 		      end
 		end
-	    | _ ->
+	    | _,CEForwardAxis _ | true,CEReverseAxis _ -> 
+		begin
+		  match predkind with
+		                (*  ForwardAxis ::= child
+		                   | descendant
+		                   | attribute
+		                   | self
+		                   | descendant-or-self 
+				   | following-sibling
+		                   | following
+				   | namespace
+
+		                   [ForwardStep Predicates "[" 1 "]"]Expr
+		                   ==
+		                   let $fs:sequence :=
+		                   fs:distinct-doc-order( [ForwardStep Predicates]Expr )
+				   return fn:first($fs:sequence)
+		                *)
+		  | First -> 
+		      let first_expr = build_core_call norm_context fs_first [seqvar] eh fi in 
+		      let docorder_expr = build_core_call norm_context fs_distinct_docorder [qual_expr] eh fi in
+		      let letc = (CELET(None, fs_sequence, docorder_expr)) in
+		      let flwr_expr = fmkcexpr (CEFLWOR ([letc],None,None, first_expr)) eh fi in
+		      flwr_expr
+
+		  | Last ->
+		                  (*
+		                     [ForwardStep Predicates "[" fn:last() "]"]Expr
+		                     ==
+		                     let $fs:sequence := fs:distinct-doc-order( [ForwardStep Predicates]Expr ) 
+		                     return fs:last($fs:sequence)
+		                  *)
+		      let first_expr = build_core_call norm_context fs_last_fn [seqvar] eh fi in 
+		      let docorder_expr = build_core_call norm_context fs_distinct_docorder [qual_expr] eh fi in
+		      let letc = (CELET(None, fs_sequence, docorder_expr)) in
+		      let flwr_expr = fmkcexpr (CEFLWOR ([letc],None,None, first_expr)) eh fi in
+		      flwr_expr
+
+		  | Numeric ->
+		                  (*
+		                     [ForwardStep Predicates "[" Numeric "]"]Expr
+		                     ==
+		                     let $fs:sequence := fs:distinct-doc-order( [ForwardStep Predicates]Expr ) 
+		                     return fn:subsequence($fs:sequence,Numeric,1)
+		                  *)
+ 		      let subseq_expr = build_core_call norm_context fn_subsequence [seqvar; cond; one_int_expr] eh fi in 
+		      let docorder_expr = build_core_call norm_context fs_distinct_docorder [qual_expr] eh fi in
+		      let letc = (CELET(None, fs_sequence, docorder_expr)) in
+		      let flwr_expr = fmkcexpr (CEFLWOR ([letc],None,None, subseq_expr)) eh fi in
+		      flwr_expr
+
+		  | Other ->
+		                  (*
+		                     NB: We do not apply fs:apply-ordering-mode after fs:distinct-doc-order
+		                     
+		                     [ForwardStep PredicateList "[" Expr "]"]Expr
+		                     ==
+		                     let $fs:sequence := fs:distinct-docorder([ForwardStep PredicateList]_Expr)
+		                     let $fs:last := fn:count($fs:sequence)
+		                     for $fs:dot at $fs:position in $fs:sequence
+		                     where ([Expr]_Predicates)
+		                     return $fs:dot
+		                  *)
+		      begin
+			let docorder_expr = build_core_call norm_context fs_distinct_docorder [qual_expr] eh fi in 
+			let letc1 = CELET(None, fs_sequence, docorder_expr) in
+			let letc2 = CELET(None, fs_last, count_expr) in
+			let forc1 = CEFOR(None, fs_dot, Some fs_position, seqvar) in 
+			let cfl_expr_list = [letc1; letc2; forc1] in 
+			let flwr_expr = fmkcexpr (CEFLWOR (cfl_expr_list,Some cond',None,dotvar)) eh fi in
+			flwr_expr
+		      end
+		end
+	    | _,_ ->
 		begin
 		  match predkind with
                         (* Philippe - fixme:

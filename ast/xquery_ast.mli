@@ -161,7 +161,7 @@ and path_expr =
   | PSlash of expr * expr                                (* e1/e2 *)
   | PSlashSlash of expr * expr                           (* e1//e2 *)
   | PAxis of axis * node_test                            (* axis::nodetest *)
-  | PStepQualifiers of expr * step_qualifier list        (* e1[e2][e3]=>e1... *)
+  | PStepQualifiers of bool * expr * step_qualifier list (* e1[e2][e3]=>e1... *)
 
 and step_qualifier =
     { pstep_qualifier_desc: step_qualifier_desc;

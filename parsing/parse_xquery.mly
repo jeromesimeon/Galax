@@ -1099,19 +1099,19 @@ axisstepexpr:
   | AXIS nodetest stepqualifiers
       { let axis = $1 in
         let axis_expr = mkexpr (EPath(PAxis (axis,$2))) in 
-        mkexpr (EPath(PStepQualifiers (axis_expr,$3))) }
+        mkexpr (EPath(PStepQualifiers (false,axis_expr,$3))) }
   | ATSIGN nodetest
       { mkexpr (EPath(PAxis (Attribute,$2))) }
   | ATSIGN nodetest stepqualifiers
       { let axis_expr = mkexpr (EPath(PAxis (Attribute,$2))) in 
-        mkexpr (EPath(PStepQualifiers (axis_expr,$3))) }
+        mkexpr (EPath(PStepQualifiers (false,axis_expr,$3))) }
 ;
 
 otherstepexpr:
   | primaryexpr
       { $1 }
   | primaryexpr stepqualifiers
-      { mkexpr (EPath (PStepQualifiers ($1,$2))) }
+      { mkexpr (EPath (PStepQualifiers (true,$1,$2))) }
 ;
 
 stepqualifiers:
