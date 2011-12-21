@@ -1,9 +1,9 @@
 <test-suite-result xmlns="http://www.w3.org/2005/02/query-test-XQTSResult">
- <implementation name="Galax" version="0.6.9" anonymous-result-column="false">
-  <organization name="Galax Team" website="http://www.galaxquery.org"/>
+ <implementation name="Galax" version="1.0.2" anonymous-result-column="false">
+  <organization name="Galax Team" website="http://galax.sourceforge.net/"/>
   <submittor name="Jerome Simeon"/></implementation>
 
-  <test-run dateRun="2011-12-20-05:00"><test-suite version=""/></test-run>
+  <test-run dateRun="2011-12-20-05:00"><test-suite version="1.0.3"/></test-run>
   
   <test-case name="combined-errors-1" result="pass"/>
   <test-case name="combined-errors-2" result="pass"/>
@@ -17566,10 +17566,10 @@
   <test-case name="K2-ancestorAxis-6" result="pass"/>
   <test-case name="K2-ancestorAxis-7" result="pass"/>
   <test-case name="K2-ancestorAxis-8" result="pass"/>
-  <test-case name="K2-ancestorAxis-9" result="fail" comment="Result of case [K2-ancestorAxis-9] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Optional/FullAxis/ancestorAxis/K2-ancestorAxis-9.txt] differ :-("/>
+  <test-case name="K2-ancestorAxis-9" result="pass"/>
   <test-case name="K2-ancestorAxis-10" result="pass"/>
   <test-case name="K2-ancestorAxis-11" result="pass"/>
-  <test-case name="K2-ancestorAxis-12" result="fail" comment="Result of case [K2-ancestorAxis-12] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Optional/FullAxis/ancestorAxis/K2-ancestorAxis-12.txt] differ :-("/>
+  <test-case name="K2-ancestorAxis-12" result="pass"/>
   <test-case name="K2-ancestorAxis-13" result="pass"/>
   <test-case name="K2-ancestorAxis-14" result="pass"/>
   <test-case name="K2-ancestorAxis-15" result="pass"/>
@@ -17667,7 +17667,7 @@
   <test-case name="K2-following-siblingAxis-8" result="pass"/>
   <test-case name="K2-following-siblingAxis-9" result="pass"/>
   <test-case name="K2-following-siblingAxis-10" result="pass"/>
-  <test-case name="following-sibling-attr" result="fail" comment="Result of case [following-sibling-attr] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Optional/FullAxis/following-siblingAxis/following-sibling-attr.txt] differ :-("/>
+  <test-case name="following-sibling-attr" result="pass"/>
   <test-case name="preceding-1" result="pass"/>
   <test-case name="preceding-2" result="pass"/>
   <test-case name="preceding-3" result="pass"/>
@@ -17694,8 +17694,8 @@
   <test-case name="K2-precedingAxis-1" result="pass"/>
   <test-case name="K2-precedingAxis-2" result="pass"/>
   <test-case name="K2-precedingAxis-3" result="pass"/>
-  <test-case name="K2-precedingAxis-4" result="fail" comment="Result of case [K2-precedingAxis-4] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Optional/FullAxis/precedingAxis/K2-precedingAxis-4.txt] differ :-("/>
-  <test-case name="K2-precedingAxis-5" result="fail" comment="Result of case [K2-precedingAxis-5] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Optional/FullAxis/precedingAxis/K2-precedingAxis-5.txt] differ :-("/>
+  <test-case name="K2-precedingAxis-4" result="pass"/>
+  <test-case name="K2-precedingAxis-5" result="pass"/>
   <test-case name="K2-precedingAxis-6" result="pass"/>
   <test-case name="K2-precedingAxis-7" result="pass"/>
   <test-case name="K2-precedingAxis-8" result="pass"/>
