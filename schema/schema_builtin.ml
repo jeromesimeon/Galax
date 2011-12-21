@@ -186,6 +186,10 @@ let cxtype_atomic_optional =  make_builtin_optional_type cxtype_atomic
 let cxtype_atomic_star     =  make_builtin_zeroormore_type cxtype_atomic
 let cxtype_atomic_plus     =  make_builtin_oneormore_type cxtype_atomic
 
+let cxtype_double_optional   = make_builtin_optional_type cxtype_double
+let cxtype_integer_optional   = make_builtin_optional_type cxtype_integer
+let cxtype_string_optional   = make_builtin_optional_type cxtype_string
+
 let xs_anyAtomicType_decl = 
   fmkctype_decl xs_anyAtomicType (xs_anySimpleType, None, CSimpleTypeUnion [xs_string; xs_boolean; xs_decimal; xs_float; xs_double; xs_duration; xs_dateTime; xs_time; xs_date; xs_gYearMonth; xs_gYear; xs_gMonthDay; xs_gDay; xs_gMonth; xs_hexBinary; xs_base64Binary; xs_anyURI; xs_QName; xs_NOTATION]) (Some cxtype_atomic)
 

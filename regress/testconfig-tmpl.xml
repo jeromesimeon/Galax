@@ -171,6 +171,7 @@
       <test-group name="ContextFunc"/>
       <test-group name="FullAxis"/>
       <test-group name="UseCase"/>
+      <test-group name="XMark"/>
       <test-group name="Catalog"/>
       <test-group name="SeqAVGFunc"/>
       <test-group name="NodeNumberFunc"/>

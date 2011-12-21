@@ -105,6 +105,10 @@ let double_cdt_cxtype fi = (fmkcsequencetype (CITAtomic Namespace_builtin.xs_dou
 let integer_cdt_cxtype fi = (fmkcsequencetype (CITAtomic Namespace_builtin.xs_integer,None) fi, cxtype_integer)
 let string_cdt_cxtype fi =  (fmkcsequencetype (CITAtomic Namespace_builtin.xs_string,None) fi, cxtype_string)
 
+let double_opt_cdt_cxtype fi = (fmkcsequencetype (CITAtomic Namespace_builtin.xs_double,Some Occurrence.optional) fi, cxtype_double_optional)
+let integer_opt_cdt_cxtype fi = (fmkcsequencetype (CITAtomic Namespace_builtin.xs_integer,Some Occurrence.optional) fi, cxtype_integer_optional)
+let string_opt_cdt_cxtype fi = (fmkcsequencetype (CITAtomic Namespace_builtin.xs_string,Some Occurrence.optional) fi, cxtype_string_optional)
+
 (*
    for $v in Expr1         for $v in Expr1 	 
    FLWR_CLAUSES 	       FLWR_CLAUSES 	 
@@ -493,9 +497,9 @@ let fs_untyped_to_atomic_type_rewrite (rewrite_ctxt) (ce) =
   match ce.pcexpr_desc with
   | CECall (fname, arguments, sign, upd, selfrecur) ->
       let target_type =
-	if (fname = fs_untyped_to_double) then double_cdt_cxtype loc
-	else if (fname = fs_untyped_to_integer) then integer_cdt_cxtype loc
-	else if (fname = fs_untyped_to_string) then string_cdt_cxtype loc
+	if (fname = fs_untyped_to_double) then double_opt_cdt_cxtype loc
+	else if (fname = fs_untyped_to_integer) then integer_opt_cdt_cxtype loc
+	else if (fname = fs_untyped_to_string) then string_opt_cdt_cxtype loc
 	else raise Not_applied
       in
       begin

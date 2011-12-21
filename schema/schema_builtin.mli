@@ -60,15 +60,19 @@ val cxtype_anyAtomic_plus     	  : cxtype  (* xs:anyAtomicType+ *)
 
 (* Simple content *)
 
-val cxtype_atomic          : cxtype    (* atomic() *)
-val cxtype_atomic_optional : cxtype    (* atomic()? *)
-val cxtype_atomic_star     : cxtype    (* atomic()* *)
-val cxtype_atomic_plus     : cxtype    (* atomic()+ *)
-val cxtype_numeric         : cxtype    (* numeric() *)
-val cxtype_anystring       : cxtype    (* anystring() *)
-val cxtype_numeric_optional: cxtype    (* numeric()? *)
-val cxtype_numeric_star    : cxtype    (* numeric()* *)
-val cxtype_numeric_plus    : cxtype    (* numeric()+ *)
+val cxtype_atomic           : cxtype    (* atomic() *)
+val cxtype_atomic_optional  : cxtype    (* atomic()? *)
+val cxtype_atomic_star      : cxtype    (* atomic()* *)
+val cxtype_atomic_plus      : cxtype    (* atomic()+ *)
+val cxtype_numeric          : cxtype    (* numeric() *)
+val cxtype_anystring        : cxtype    (* anystring() *)
+val cxtype_numeric_optional : cxtype    (* numeric()? *)
+val cxtype_numeric_star     : cxtype    (* numeric()* *)
+val cxtype_numeric_plus     : cxtype    (* numeric()+ *)
+
+val cxtype_double_optional  : cxtype    (* xs:double? *)
+val cxtype_integer_optional : cxtype    (* xs:integer? *)
+val cxtype_string_optional  : cxtype    (* xs:string? *)
 
 val cxtype_greater_than_types : cxtype
  (* Types that support greater than: numeric, boolean, string,

@@ -2,6 +2,12 @@
 | Changelog |
  -----------
 
+Dec 21, 2011 - Jerome
+
+  o Rewriting:
+     - Fixed slightly too aggressive rewriting rules for
+       fs:untyped-to-double, leading to errors in some cases.
+
 Dec 20, 2011 - Jerome
 
   o Normalization:
@@ -4510,7 +4516,7 @@ February 10, 2006 - Philippe
 
 February 9, 2006 - Jerome
 
-  o Rewritting:
+  o Rewriting:
      - Turned variable inlining off again, but added a switch to turn
        it on (for Philippe).
 
@@ -16104,7 +16110,7 @@ July 17, 2001 - Jerome
   - Modified XQuery parser to generate EText instead of string values
     for XML text.
   - Added EText expressions for text nodes in the AST.
-  - Finished rewritting all the demo examples. All the examples from
+  - Finished rewriting all the demo examples. All the examples from
     the XML DevCon demo are now running.
   - Cosmetic changes in xmlquery and in the demo scripts.
 

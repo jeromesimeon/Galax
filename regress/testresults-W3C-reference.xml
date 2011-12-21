@@ -17865,6 +17865,27 @@
   <test-case name="ns-queries-results-q7" result="pass"/>
   <test-case name="ns-queries-results-q8" result="pass"/>
   <test-case name="parts-queries-results-q1" result="pass"/>
+  <test-case name="XMark-Q1" result="pass"/>
+  <test-case name="XMark-Q2" result="pass"/>
+  <test-case name="XMark-Q3" result="pass"/>
+  <test-case name="XMark-Q4" result="pass"/>
+  <test-case name="XMark-Q5" result="pass"/>
+  <test-case name="XMark-Q6" result="pass"/>
+  <test-case name="XMark-Q7" result="pass"/>
+  <test-case name="XMark-Q8" result="pass"/>
+  <test-case name="XMark-Q9" result="pass"/>
+  <test-case name="XMark-Q10" result="pass"/>
+  <test-case name="XMark-Q11" result="pass"/>
+  <test-case name="XMark-Q12" result="pass"/>
+  <test-case name="XMark-Q13" result="pass"/>
+  <test-case name="XMark-Q14" result="pass"/>
+  <test-case name="XMark-Q15" result="pass"/>
+  <test-case name="XMark-Q16" result="pass"/>
+  <test-case name="XMark-Q17" result="pass"/>
+  <test-case name="XMark-Q18" result="pass"/>
+  <test-case name="XMark-Q19" result="pass"/>
+  <test-case name="XMark-Q20" result="pass"/>
+  <test-case name="XMark-All" result="pass"/>
   <test-case name="Catalog001" result="pass"/>
   <test-case name="Catalog002" result="pass"/>
   <test-case name="Catalog003" result="pass"/>

@@ -2774,10 +2774,11 @@ rewriting/rewriting_rules_typing.cmo: ./ast/xquery_type_core_ast_util.cmi \
     ./schema/schema_util.cmi ./schema/schema_judge.cmi \
     ./schema/schema_builtin.cmi ./rewriting/rewriting_rules_notyping.cmi \
     ./rewriting/rewriting_judgments.cmi ./procctxt/processing_context.cmi \
-    ./ast_printer/print_top.cmi ./normalization/norm_util.cmi \
-    ./normalization/norm_context.cmi ./namespace/namespace_names.cmi \
-    ./namespace/namespace_builtin.cmi ./base/gmisc.cmi ./base/error.cmi \
-    ./datatypes/datatypes.cmi ./ast_walker/ast_walker_rewrite_context.cmi \
+    ./ast_printer/print_top.cmi ./base/occurrence.cmi \
+    ./normalization/norm_util.cmi ./normalization/norm_context.cmi \
+    ./namespace/namespace_names.cmi ./namespace/namespace_builtin.cmi \
+    ./base/gmisc.cmi ./base/error.cmi ./datatypes/datatypes.cmi \
+    ./ast_walker/ast_walker_rewrite_context.cmi \
     ./ast_walker/ast_walker_rewrite.cmi rewriting/rewriting_rules_typing.cmi
 rewriting/rewriting_rules_typing.cmx: ./ast/xquery_type_core_ast_util.cmx \
     ./ast/xquery_core_ast_util.cmx ./ast/xquery_core_ast_annotation.cmx \
@@ -2787,10 +2788,11 @@ rewriting/rewriting_rules_typing.cmx: ./ast/xquery_type_core_ast_util.cmx \
     ./schema/schema_util.cmx ./schema/schema_judge.cmx \
     ./schema/schema_builtin.cmx ./rewriting/rewriting_rules_notyping.cmx \
     ./rewriting/rewriting_judgments.cmx ./procctxt/processing_context.cmx \
-    ./ast_printer/print_top.cmx ./normalization/norm_util.cmx \
-    ./normalization/norm_context.cmx ./namespace/namespace_names.cmx \
-    ./namespace/namespace_builtin.cmx ./base/gmisc.cmx ./base/error.cmx \
-    ./datatypes/datatypes.cmi ./ast_walker/ast_walker_rewrite_context.cmx \
+    ./ast_printer/print_top.cmx ./base/occurrence.cmx \
+    ./normalization/norm_util.cmx ./normalization/norm_context.cmx \
+    ./namespace/namespace_names.cmx ./namespace/namespace_builtin.cmx \
+    ./base/gmisc.cmx ./base/error.cmx ./datatypes/datatypes.cmi \
+    ./ast_walker/ast_walker_rewrite_context.cmx \
     ./ast_walker/ast_walker_rewrite.cmx rewriting/rewriting_rules_typing.cmi
 code_util/code_util_matching.cmo: ./ast/xquery_common_ast.cmi \
     ./ast/xquery_ast.cmi ./ast/xquery_algebra_ast.cmi \
