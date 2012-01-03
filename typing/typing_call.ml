@@ -211,9 +211,10 @@ let match_function_signature typing_ctxt fn arguments_types signatures =
             if (sigs = [] && is_weak_typing proc_ctxt) then 
 	      begin
 (*
-print_string("Defaulting to "^(prefixed_string_of_rqname fn')^"\n");
-print_string("Output type "^(Print_top.bprintf_cxtype "" output_cxtype)^"\n");
-*)
+Printf.printf "Defaulting to %s\n" (prefixed_string_of_rqname fn');
+Printf.printf "Output type %s\n" (Print_top.bprintf_cxtype "" output_cxtype);
+flush stdout; *)
+
 		(fn', (expected_input_types, output_cxtype), upd)
 	      end
 	    else args_match_signature sigs
@@ -270,6 +271,15 @@ let match_signature_on_first_arg typing_ctxt fn actual signatures =
      types.
   - Jerome *)
 
+let string_of_type t =
+  Print_type_core.bprint_cxtype t
+
+let string_of_types ts =
+  let types_string =
+    List.map string_of_type ts
+  in
+  String.concat ";" types_string
+
 let match_overloaded_function_signature typing_ctxt fn argument_types overloaded_signature_table =
   (* Pick the first function whose signature matches the types of the
      function arguments, after type promotion *)
@@ -277,6 +287,7 @@ let match_overloaded_function_signature typing_ctxt fn argument_types overloaded
     let (fn', (input_types,  output_type), upd) =
       match_function_signature typing_ctxt fn argument_types overloaded_signature_table
     in
+    (* Printf.printf "Found new function: %s, can implement function %s over types [%s]\n" (prefixed_string_of_rqname fn') (prefixed_string_of_rqname fn) (string_of_types argument_types); flush stdout; *)
     (fn', input_types, output_type, upd)
   with
   | _ -> (fn, argument_types, Schema_builtin.cxtype_item_star, NonUpdating)

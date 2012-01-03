@@ -21,6 +21,7 @@ val print_cattr_decl : Format.formatter -> Xquery_type_core_ast.cattr_declaratio
 val print_ctype_decl : Format.formatter -> Xquery_type_core_ast.ctype_declaration -> unit
 
 val print_cxtype     : Format.formatter -> Xquery_type_core_ast.cxtype -> unit
+val bprint_cxtype    : Xquery_type_core_ast.cxtype -> string
 
 val print_cxschema   : Format.formatter -> Xquery_type_core_ast.cxschema -> unit
 val print_letter_mappings  : Format.formatter -> Xquery_type_core_ast_annotation.letter_mappings -> unit

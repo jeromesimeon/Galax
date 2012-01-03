@@ -39,6 +39,7 @@ let build =
 let motd = "Thank you for using "^system^"!\n"
 
 let xquery_version = "1.0"
+let xquery_conformance = ref false
 
 let galax_web = "http://galax.sourceforge.net/"
 

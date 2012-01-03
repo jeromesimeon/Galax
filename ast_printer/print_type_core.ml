@@ -168,7 +168,6 @@ and print_cxtype_prec p ff xt =
 	fprintf ff "%a &@ %a" 
 	  (print_cxtype_prec 2) cxtype1 (print_cxtype_prec 2) cxtype2
 
-
 (******************************)
 (* Print a type specification *)
 (******************************)
@@ -227,6 +226,7 @@ let print_celem_derivation ff (substfor, nillable, xtypespec) =
     print_nillable nillable
     print_xtype_spec xtypespec  
 
+let bprint_cxtype t = Gmisc.bprintf_stub "" (fun ff -> print_cxtype ff) t
 
 (****************************)
 (* Print a type declaration *)

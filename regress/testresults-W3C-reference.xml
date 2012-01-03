@@ -183,7 +183,7 @@
   <test-case name="K2-Literals-17" result="pass"/>
   <test-case name="K2-Literals-18" result="pass"/>
   <test-case name="K2-Literals-19" result="pass"/>
-  <test-case name="K2-Literals-20" result="fail" comment="Test case [K2-Literals-20] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Expressions/PrimaryExpr/Literals/K2-Literals-20.xq] succeeded :-("/>
+  <test-case name="K2-Literals-20" result="pass"/>
   <test-case name="K2-Literals-21" result="pass"/>
   <test-case name="K2-Literals-22" result="pass"/>
   <test-case name="K2-Literals-23" result="pass"/>
@@ -191,7 +191,7 @@
   <test-case name="K2-Literals-25" result="pass"/>
   <test-case name="K2-Literals-26" result="pass"/>
   <test-case name="K2-Literals-27" result="pass"/>
-  <test-case name="K2-Literals-28" result="fail" comment="Result of case [K2-Literals-28] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/PrimaryExpr/Literals/K2-Literals-28.txt] differ :-("/>
+  <test-case name="K2-Literals-28" result="pass"/>
   <test-case name="K2-Literals-29" result="pass"/>
   <test-case name="K2-Literals-30" result="pass"/>
   <test-case name="K2-Literals-31" result="pass"/>
@@ -202,7 +202,7 @@
   <test-case name="K2-Literals-36" result="pass"/>
   <test-case name="K2-Literals-37" result="pass"/>
   <test-case name="K2-Literals-38" result="pass"/>
-  <test-case name="K2-Literals-39" result="fail" comment="Result of case [K2-Literals-39] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/PrimaryExpr/Literals/K2-Literals-39.txt] differ :-("/>
+  <test-case name="K2-Literals-39" result="pass"/>
   <test-case name="Parenexpr-1" result="pass"/>
   <test-case name="Parenexpr-2" result="pass"/>
   <test-case name="Parenexpr-3" result="pass"/>
@@ -6403,7 +6403,7 @@
   <test-case name="Constr-docnode-attr-2" result="pass"/>
   <test-case name="Constr-docnode-attr-3" result="pass"/>
   <test-case name="K2-ConDocNode-1" result="pass"/>
-  <test-case name="K2-ConDocNode-2" result="fail" comment="Test case [K2-ConDocNode-2] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Construct/ComputeCon/ConDocNode/K2-ConDocNode-2.xq] succeeded :-("/>
+  <test-case name="K2-ConDocNode-2" result="pass"/>
   <test-case name="K2-ConDocNode-3" result="pass"/>
   <test-case name="K2-ConDocNode-4" result="pass"/>
   <test-case name="K2-ConDocNode-5" result="pass"/>

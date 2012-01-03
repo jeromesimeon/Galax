@@ -1336,13 +1336,13 @@ ast_printer/print_type_core.cmo: ./ast/xquery_type_core_ast_annotation.cmi \
     ./ast/xquery_type_core_ast.cmi ./ast_printer/print_common.cmi \
     ./base/occurrence.cmi ./namespace/namespace_symbols_util.cmi \
     ./namespace/namespace_symbols.cmi ./namespace/namespace_names.cmi \
-    ./base/error.cmi ./ast_walker/ast_walker_fold.cmi \
+    ./base/gmisc.cmi ./base/error.cmi ./ast_walker/ast_walker_fold.cmi \
     ast_printer/print_type_core.cmi
 ast_printer/print_type_core.cmx: ./ast/xquery_type_core_ast_annotation.cmx \
     ./ast/xquery_type_core_ast.cmi ./ast_printer/print_common.cmx \
     ./base/occurrence.cmx ./namespace/namespace_symbols_util.cmx \
     ./namespace/namespace_symbols.cmx ./namespace/namespace_names.cmx \
-    ./base/error.cmx ./ast_walker/ast_walker_fold.cmx \
+    ./base/gmisc.cmx ./base/error.cmx ./ast_walker/ast_walker_fold.cmx \
     ast_printer/print_type_core.cmi
 ast_printer/print_top.cmo: ./ast/xquery_core_ast_annotation.cmi \
     ./ast/xquery_core_ast.cmi ./ast/xquery_common_ast.cmi \
@@ -2641,11 +2641,11 @@ typing/typing_call.cmo: ./ast/xquery_type_core_ast_util.cmi \
     ./typing/typing_errors.cmi ./typing/typing_context.cmi \
     ./subtyping/subtyping_top.cmi ./schema/schema_util.cmi \
     ./schema/schema_simplification.cmi ./schema/schema_builtin.cmi \
-    ./procctxt/processing_context.cmi ./ast_printer/print_top.cmi \
-    ./base/occurrence.cmi ./normalization/norm_util.cmi \
-    ./normalization/norm_context.cmi ./namespace/namespace_names.cmi \
-    ./base/gmisc.cmi ./base/finfo.cmi ./base/error.cmi \
-    ./datatypes/datatypes_util.cmi ./datatypes/datatypes.cmi \
+    ./procctxt/processing_context.cmi ./ast_printer/print_type_core.cmi \
+    ./ast_printer/print_top.cmi ./base/occurrence.cmi \
+    ./normalization/norm_util.cmi ./normalization/norm_context.cmi \
+    ./namespace/namespace_names.cmi ./base/gmisc.cmi ./base/finfo.cmi \
+    ./base/error.cmi ./datatypes/datatypes_util.cmi ./datatypes/datatypes.cmi \
     typing/typing_call.cmi
 typing/typing_call.cmx: ./ast/xquery_type_core_ast_util.cmx \
     ./ast/xquery_type_core_ast.cmi ./ast/xquery_core_ast.cmi \
@@ -2654,11 +2654,11 @@ typing/typing_call.cmx: ./ast/xquery_type_core_ast_util.cmx \
     ./typing/typing_errors.cmx ./typing/typing_context.cmx \
     ./subtyping/subtyping_top.cmx ./schema/schema_util.cmx \
     ./schema/schema_simplification.cmx ./schema/schema_builtin.cmx \
-    ./procctxt/processing_context.cmx ./ast_printer/print_top.cmx \
-    ./base/occurrence.cmx ./normalization/norm_util.cmx \
-    ./normalization/norm_context.cmx ./namespace/namespace_names.cmx \
-    ./base/gmisc.cmx ./base/finfo.cmx ./base/error.cmx \
-    ./datatypes/datatypes_util.cmx ./datatypes/datatypes.cmi \
+    ./procctxt/processing_context.cmx ./ast_printer/print_type_core.cmx \
+    ./ast_printer/print_top.cmx ./base/occurrence.cmx \
+    ./normalization/norm_util.cmx ./normalization/norm_context.cmx \
+    ./namespace/namespace_names.cmx ./base/gmisc.cmx ./base/finfo.cmx \
+    ./base/error.cmx ./datatypes/datatypes_util.cmx ./datatypes/datatypes.cmi \
     typing/typing_call.cmi
 typing/typing_step.cmo: ./ast/xquery_type_core_ast_util.cmi \
     ./ast/xquery_type_core_ast.cmi ./ast/xquery_core_ast_util.cmi \

@@ -70,6 +70,15 @@ let same_tag os cs =
 			   ^ (Namespace_names.string_of_uqname cs)
 			   ^ " mismatched")))
 
+(* Checks only one statement in main module *)
+
+let single_statement () =
+  if (!Conf.xquery_conformance)
+  then
+    raise (Query (Unknown "Main module should have a single expression"))
+  else
+    ()
+
 (* Deals with entity references in XQuery *)
 
 let xquery_parse_context =
@@ -735,11 +744,11 @@ second_declaration_list:
 
 statements:
   | /* no statement */
-      { [] }
+      { single_statement (); [] }
   | statement
       { $1 :: [] }
   | statement SEMICOLON statements
-      { $1 :: $3 }
+      { single_statement (); $1 :: $3  }
 ;
 
 statement:

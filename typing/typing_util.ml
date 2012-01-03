@@ -170,15 +170,13 @@ let rec can_be_promoted_to_judge schema t1 t2 =
     with
     | exn -> raise(Query(Internal_Error(bprintf_error ("In can_be_promoted_to_judge t1 = "^(Print_top.bprintf_cxtype "" t1)^" t2 = "^(Print_top.bprintf_cxtype "" t2)) exn)))
   in
-(*
-  begin
+(*  begin
     match promote_type with
     | None -> 
-	Printf.printf " NONE\n"
+	Printf.printf "Promote type: NONE\n"
     | Some typ ->
-	Printf.printf " %s\n" (Print_top.bprintf_cxtype "" typ)
-  end;
-*)
+	Printf.printf "Promote type: %s\n" (Print_top.bprintf_cxtype "" typ)
+  end; *)
   promote_type
 
 (*

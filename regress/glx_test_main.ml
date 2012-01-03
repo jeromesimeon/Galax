@@ -47,6 +47,7 @@ let run_unit all_bugs name version unit =
     make_catalog unit ();
     let result_file = unit.result_file in
     Conf.warning := false;
+    Conf.xquery_conformance := true;
     let all_groups = run_groups unit all_bugs in
     let all = get_all_results all_groups in
     Printf.printf "Producing result file...";flush stdout;

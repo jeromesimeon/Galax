@@ -39,6 +39,7 @@ val motd : string
     (* Any additional notice *)
 
 val xquery_version : string
+val xquery_conformance : bool ref
 
 val galax_web : string
 

@@ -338,6 +338,7 @@ and string lh = parse
   | "&"
       { raise (Query (Lexing(lexing_locinfo lexbuf, "Malformed entity reference"))) }
   | "\013\n" { add_char_to_string lh '\n'; string lh lexbuf }
+  | "\013" { add_char_to_string lh '\n'; string lh lexbuf }
   | '"'    { let s = get_string lh in pop_state lh; push_operator lh; STRING s }  (* End of string *)
   | eof    { raise (Query (Lexing(lexing_locinfo lexbuf, "String not terminated"))) }
   | _      { add_char_to_string lh (lexeme_char lexbuf 0); string lh lexbuf }
@@ -365,6 +366,7 @@ and string_single lh = parse
   | "&"
       { raise (Query (Lexing(lexing_locinfo lexbuf, "Malformed entity reference"))) }
   | "\013\n" { add_char_to_string lh '\n'; string_single lh lexbuf }
+  | "\013" { add_char_to_string lh '\n'; string_single lh lexbuf }
   | '\''   { let s = get_string lh in pop_state lh; push_operator lh; STRING s }  (* End of string *)
   | eof    { raise (Query (Lexing(lexing_locinfo lexbuf, "String not terminated"))) }
   | _      { add_char_to_string lh (lexeme_char lexbuf 0); string_single lh lexbuf }

@@ -2,6 +2,13 @@
 | Changelog |
  -----------
 
+Jan 3, 2012 - Jerome
+
+  o Parsing:
+     - Fixed minor issue with new-line normalization.
+     - Added strict conformance flag. Sample rule is no multiple
+       expressions in the main module.
+
 Dec 21, 2011 - Jerome
 
   o Rewriting:

@@ -49,6 +49,10 @@ let opt_version = "-version"
 let arg_version proc_ctxt = fun () -> print_version (); exit 0
 let msg_version = "Prints the "^Conf.system^" version"
 
+let opt_conformance = "-conformance"
+let arg_conformance proc_ctxt = fun () -> Conf.xquery_conformance := true
+let msg_conformance = "Follows strict conformance rules"
+
 let opt_verbose = "-verbose"
 let arg_verbose proc_ctxt =
   fun onoff -> Conf.verbose := bool_of_onoff(onoff)
@@ -795,7 +799,8 @@ let make_galax_parse_options bos title =
 (* Misc options *)
 let make_misc_options bos title =
   let (bo_unit,bo_int,bo_string,bo_set,bo_clear) = bos in
-  [ opt_version, (bo_unit   arg_version), msg_version;
+  [ opt_version, (bo_unit arg_version), msg_version;
+    opt_conformance, (bo_unit arg_conformance), msg_conformance;
     opt_verbose, (bo_string arg_verbose), msg_verbose;
     opt_debug,   (bo_string arg_debug),   msg_debug ^ title
   ]
