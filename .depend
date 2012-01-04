@@ -1722,7 +1722,7 @@ parsing/parse_context.cmx: ./procctxt/processing_context.cmx ./base/error.cmx \
     parsing/parse_context.cmi
 parsing/parse_xquery.cmo: ./ast/xquery_type_ast_util.cmi \
     ./ast/xquery_type_ast.cmi ./ast/xquery_common_ast.cmi \
-    ./ast/xquery_ast_util.cmi ./ast/xquery_ast.cmi \
+    ./ast/xquery_ast_util.cmi ./ast/xquery_ast.cmi ./base/whitespace.cmi \
     ./procctxt/processing_context.cmi ./parsing/parse_context.cmi \
     ./base/occurrence.cmi ./namespace/namespace_names.cmi ./base/finfo.cmi \
     ./base/error.cmi ./base/encoding.cmi ./datatypes/decimal.cmi \
@@ -1730,7 +1730,7 @@ parsing/parse_xquery.cmo: ./ast/xquery_type_ast_util.cmi \
     parsing/parse_xquery.cmi
 parsing/parse_xquery.cmx: ./ast/xquery_type_ast_util.cmx \
     ./ast/xquery_type_ast.cmi ./ast/xquery_common_ast.cmx \
-    ./ast/xquery_ast_util.cmx ./ast/xquery_ast.cmi \
+    ./ast/xquery_ast_util.cmx ./ast/xquery_ast.cmi ./base/whitespace.cmx \
     ./procctxt/processing_context.cmx ./parsing/parse_context.cmx \
     ./base/occurrence.cmx ./namespace/namespace_names.cmx ./base/finfo.cmx \
     ./base/error.cmx ./base/encoding.cmx ./datatypes/decimal.cmx \

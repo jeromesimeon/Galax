@@ -678,7 +678,7 @@
   <test-case name="K2-Axes-83" result="pass"/>
   <test-case name="K2-Axes-84" result="pass"/>
   <test-case name="K2-Axes-85" result="pass"/>
-  <test-case name="K2-Axes-86" result="fail" comment="Test case [K2-Axes-86] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/PathExpr/Steps/Axes/K2-Axes-86.xq] succeeded :-("/>
+  <test-case name="K2-Axes-86" result="pass"/>
   <test-case name="K2-Axes-87" result="pass"/>
   <test-case name="K2-Axes-88" result="pass"/>
   <test-case name="K2-Axes-89" result="pass"/>
@@ -816,9 +816,9 @@
   <test-case name="K2-NameTest-18" result="pass"/>
   <test-case name="K2-NameTest-19" result="pass"/>
   <test-case name="K2-NameTest-20" result="pass"/>
-  <test-case name="K2-NameTest-21" result="fail" comment="Test case [K2-NameTest-21] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/PathExpr/Steps/NodeTestSection/NameTest/K2-NameTest-21.xq] succeeded :-("/>
-  <test-case name="K2-NameTest-22" result="fail" comment="Result of case [K2-NameTest-22] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/PathExpr/Steps/NodeTestSection/NameTest/K2-NameTest-22.txt] differ :-("/>
-  <test-case name="K2-NameTest-23" result="fail" comment="Test case [K2-NameTest-23] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/PathExpr/Steps/NodeTestSection/NameTest/K2-NameTest-23.xq] succeeded :-("/>
+  <test-case name="K2-NameTest-21" result="pass"/>
+  <test-case name="K2-NameTest-22" result="pass"/>
+  <test-case name="K2-NameTest-23" result="pass"/>
   <test-case name="K2-NameTest-24" result="pass"/>
   <test-case name="K2-NameTest-25" result="pass"/>
   <test-case name="K2-NameTest-26" result="pass"/>
@@ -827,7 +827,7 @@
   <test-case name="K2-NameTest-29" result="pass"/>
   <test-case name="K2-NameTest-30" result="pass"/>
   <test-case name="K2-NameTest-31" result="pass"/>
-  <test-case name="K2-NameTest-32" result="fail" comment="Result of case [K2-NameTest-32] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/PathExpr/Steps/NodeTestSection/NameTest/K2-NameTest-32.txt] differ :-("/>
+  <test-case name="K2-NameTest-32" result="pass"/>
   <test-case name="K2-NameTest-33" result="pass"/>
   <test-case name="K2-NameTest-34" result="pass"/>
   <test-case name="K2-NameTest-35" result="pass"/>
@@ -859,14 +859,14 @@
   <test-case name="K2-NameTest-61" result="pass"/>
   <test-case name="K2-NameTest-62" result="pass"/>
   <test-case name="K2-NameTest-63" result="pass"/>
-  <test-case name="K2-NameTest-64" result="fail" comment="Result of case [K2-NameTest-64] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/PathExpr/Steps/NodeTestSection/NameTest/K2-NameTest-64.txt] differ :-("/>
-  <test-case name="K2-NameTest-65" result="fail" comment="Result of case [K2-NameTest-65] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/PathExpr/Steps/NodeTestSection/NameTest/K2-NameTest-65.txt] differ :-("/>
+  <test-case name="K2-NameTest-64" result="pass"/>
+  <test-case name="K2-NameTest-65" result="pass"/>
   <test-case name="K2-NameTest-66" result="pass"/>
   <test-case name="K2-NameTest-67" result="pass"/>
   <test-case name="K2-NameTest-68" result="pass"/>
   <test-case name="K2-NameTest-69" result="pass"/>
   <test-case name="K2-NameTest-70" result="pass"/>
-  <test-case name="K2-NameTest-71" result="fail" comment="Result of case [K2-NameTest-71] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/PathExpr/Steps/NodeTestSection/NameTest/K2-NameTest-71.txt] differ :-("/>
+  <test-case name="K2-NameTest-71" result="pass"/>
   <test-case name="K2-NameTest-72" result="pass"/>
   <test-case name="K2-NameTest-73" result="pass"/>
   <test-case name="K2-NameTest-74" result="pass"/>

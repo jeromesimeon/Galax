@@ -877,12 +877,9 @@ let _fn_string_length code_ctxt alg_ctxt n =
 let _fn_normalize_space code_ctxt alg_ctxt n =
   let s  = Args.get_array_param1 n in
   let str = 
-    if Cursor.cursor_is_empty s then ""
-    else
-      String.concat " "
-	(List.filter (fun s -> not (s = ""))
-	   (List.map Whitespace.remove_whitespace 
-	      (Whitespace.whitespace_separate (normalize_optional_string s))))
+    if Cursor.cursor_is_empty s
+    then ""
+    else Whitespace.normalize_space (normalize_optional_string s)
   in Cursor.cursor_of_singleton (_string str)
 
 (* F&O Section 7.4.6 fn:normalize-unicode *)

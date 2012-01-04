@@ -46,3 +46,5 @@ val whitespace_id_normalize : string -> string
 
 val remove_trailing_spaces : string -> string
 
+val normalize_space : string -> string
+

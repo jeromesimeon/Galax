@@ -168,3 +168,8 @@ let remove_trailing_spaces str =
   done;
   Str.string_before str (!i+1)
 
+let normalize_space s =
+  String.concat " "
+    (List.filter (fun s -> not (s = ""))
+       (List.map remove_whitespace 
+	  (whitespace_separate s)))

@@ -57,6 +57,12 @@ let check_version s e =
     else raise (Query (Unknown ("XQuery version " ^ s ^ " not supported")))
   end
 
+(* Normalizes processing-instruction kind tests *)
+
+let normalize_pi_test s =
+  let s = Whitespace.normalize_space s in
+  Datatypes_util.ncname_of_untyped s
+
 (* Checks consitency between opening and closing tags *)
 
 let same_tag os cs =
@@ -78,6 +84,13 @@ let single_statement () =
     raise (Query (Unknown "Main module should have a single expression"))
   else
     ()
+
+(* In case of abbreviated syntax, tells you which axis to use from the nodekind test *)
+
+let make_axis_from_nt nt =
+  match nt with
+  | (PNodeKindTest (AttributeKind _)) -> Attribute
+  | _ -> Child
 
 (* Deals with entity references in XQuery *)
 
@@ -1157,7 +1170,9 @@ primaryexpr:
       { mkexpr EParent }
       /* Node test */
   | nodetest
-      { mkexpr (EPath(PAxis (Child,$1))) }
+      { let nt = $1 in
+        let axis = make_axis_from_nt nt in
+        mkexpr (EPath(PAxis (axis,$1))) }
       /* Variable */
   | variable
       { mkexpr (EVar $1) }
@@ -1770,7 +1785,7 @@ kindtest:
   | PROCESSINGINSTRUCTIONLPAR NCNAME
       { PIKind (Some $2) }
   | PROCESSINGINSTRUCTIONLPAR STRING
-      { PIKind (Some $2) }
+      { let ncname = normalize_pi_test $2 in PIKind (Some ncname) }
   | DOCUMENTNODELPAR
       { DocumentKind (None) }
   | DOCUMENTNODELPAR documentnode_kindtest

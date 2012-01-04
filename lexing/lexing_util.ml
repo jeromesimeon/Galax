@@ -751,42 +751,8 @@ let match_in_hash tl sl1 =
   | _ ->
       NoMatch
 
-(*
-let match_keyword sl1 (sl2,m) =
-  let size1 = Array.length sl1 in
-  let size2 = Array.length sl2 in
-  if size2 < size1 then NoMatch
-  else
-    try
-      for i = 0 to (size1-1) do
-	if not(sl1.(i) = sl2.(i)) then raise Not_found
-      done;
-      if size2 > size1 then PartialMatch else Match m
-    with
-    | Not_found -> NoMatch
-*)
-
 let find_match_keyword tl sl1 =
   match_in_hash tl sl1
-
-(*
-  let current = ref NoMatch in
-  let rec find_match_keyword_aux tl sl1 =
-    match tl with
-    | [] -> !current
-    | sl2 :: tl' ->
-	begin
-	  match match_keyword sl1 sl2 with
-	  | NoMatch -> find_match_keyword_aux tl' sl1
-	  | PartialMatch ->
-	      current := PartialMatch;
-	      find_match_keyword_aux tl' sl1
-	  | Match x ->
-	      Match x
-	end
-  in
-  find_match_keyword_aux tl sl1
-*)
 
 let print_buffered sl =
   Printf.printf "Lexing: ";
@@ -859,34 +825,8 @@ let rec match_curly li lh =
     match find_match_keyword actual_table sl with
     | NoMatch 
 	(* NoMatch is permissible when the "{" follows the "then" in an if-then-else *)
-(* this doesn't work...
-	lh.buffered <- [||];
-	lh.default_token <- false;
-	None
-*)
     | PartialMatch ->
-	(*
-	begin
-	  match lh.buffered with
-	  | [|s|] ->
-	      begin
-		let new_tokens =
-		  let tok =
-		    match process_qname_string s with
-		    | NCNAME_KIND ncname ->
-			NCNAME ncname
-		    | QNAME_KIND qname ->
-			QNAME qname
-		  in
-		  [tok;LCURLY]
-		in
-		let new_buffered_tokens = lh.buffered_tokens @ new_tokens in
-		reset_buffered lh new_buffered_tokens;
-		None
-	      end
-	  | _ ->
-	  *)
-	      qname_lexing_error3 li
+	qname_lexing_error3 li
     | Match (pp,t) ->
 	lh.buffered <- [||];
 	lh.default_token <- false;
@@ -999,6 +939,4 @@ let get_buffered lh =
 
 let set_buffered lh sl =
   lh.buffered <- (Array.of_list sl)
-
-(* let _ = print_string("Lexing_util\n") *)
 
