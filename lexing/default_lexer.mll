@@ -179,7 +179,7 @@ rule token lh = parse
       { Some SLASHSLASH }
 
 (* XML tags *)
-  | "<?" (ncname as n) whitespace (* Processing instruction *)
+  | "<?" (ncname as n) (* Processing instruction *)
       { pop_state lh; push_operator lh; push_processing_instruction lh; Some (OPENINGPI n) }
   | "<!--"                  (* Opening comment *)
       { pop_state lh; push_operator lh; push_comment lh; Some LOPENINGCOMMENT }

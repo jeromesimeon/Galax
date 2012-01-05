@@ -5081,7 +5081,7 @@
   <test-case name="K2-SeqUnion-24" result="pass"/>
   <test-case name="K2-SeqUnion-25" result="pass"/>
   <test-case name="K2-SeqUnion-26" result="pass"/>
-  <test-case name="K2-SeqUnion-27" result="fail" comment="Test case [K2-SeqUnion-27] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/SeqOp/SeqUnion/K2-SeqUnion-27.xq   Parsing Error: Parse error in file /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/SeqOp/SeqUnion/K2-SeqUnion-27.xq [File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/SeqOp/SeqUnion/K2-SeqUnion-27.xq&quot;, line 7, characters 49-50:] ] :-("/>
+  <test-case name="K2-SeqUnion-27" result="pass"/>
   <test-case name="K2-SeqUnion-28" result="pass"/>
   <test-case name="K2-SeqUnion-29" result="pass"/>
   <test-case name="K2-SeqUnion-30" result="pass"/>
@@ -5147,7 +5147,7 @@
   <test-case name="K2-SeqIntersect-20" result="pass"/>
   <test-case name="K2-SeqIntersect-21" result="pass"/>
   <test-case name="K2-SeqIntersect-22" result="pass"/>
-  <test-case name="K2-SeqIntersect-23" result="fail" comment="Test case [K2-SeqIntersect-23] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/SeqOp/SeqIntersect/K2-SeqIntersect-23.xq   Parsing Error: Parse error in file /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/SeqOp/SeqIntersect/K2-SeqIntersect-23.xq [File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/SeqOp/SeqIntersect/K2-SeqIntersect-23.xq&quot;, line 7, characters 53-54:] ] :-("/>
+  <test-case name="K2-SeqIntersect-23" result="pass"/>
   <test-case name="K2-SeqIntersect-24" result="pass"/>
   <test-case name="K2-SeqIntersect-25" result="pass"/>
   <test-case name="K2-SeqIntersect-26" result="pass"/>
@@ -5214,7 +5214,7 @@
   <test-case name="K2-SeqExcept-20" result="pass"/>
   <test-case name="K2-SeqExcept-21" result="pass"/>
   <test-case name="K2-SeqExcept-22" result="pass"/>
-  <test-case name="K2-SeqExcept-23" result="fail" comment="Test case [K2-SeqExcept-23] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/SeqOp/SeqExcept/K2-SeqExcept-23.xq   Parsing Error: Parse error in file /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/SeqOp/SeqExcept/K2-SeqExcept-23.xq [File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/SeqOp/SeqExcept/K2-SeqExcept-23.xq&quot;, line 7, characters 50-51:] ] :-("/>
+  <test-case name="K2-SeqExcept-23" result="pass"/>
   <test-case name="K2-SeqExcept-24" result="pass"/>
   <test-case name="K2-SeqExcept-25" result="pass"/>
   <test-case name="K2-SeqExcept-26" result="pass"/>
@@ -6147,8 +6147,8 @@
   <test-case name="K2-DirectConOther-18" result="pass"/>
   <test-case name="K2-DirectConOther-19" result="pass"/>
   <test-case name="K2-DirectConOther-20" result="pass"/>
-  <test-case name="K2-DirectConOther-21" result="fail" comment="Test case [K2-DirectConOther-21] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Construct/DirectConOther/K2-DirectConOther-21.xq] succeeded :-("/>
-  <test-case name="K2-DirectConOther-22" result="fail" comment="Test case [K2-DirectConOther-22] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Construct/DirectConOther/K2-DirectConOther-22.xq] succeeded :-("/>
+  <test-case name="K2-DirectConOther-21" result="pass"/>
+  <test-case name="K2-DirectConOther-22" result="pass"/>
   <test-case name="K2-DirectConOther-23" result="pass"/>
   <test-case name="K2-DirectConOther-24" result="pass"/>
   <test-case name="K2-DirectConOther-25" result="pass"/>

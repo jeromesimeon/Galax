@@ -132,7 +132,7 @@ and atomicString ?ta:type_annotation v =
       string_gt v' (a#getAtomicString())
     method cast_to nsenv at bt : atomicValue = 
       match bt with 
-      | ATString -> ((new atomicString  ~ta:at v') :> atomicValue) (* (self :> atomicValue) *)
+      | ATString -> ((new atomicString ~ta:at v') :> atomicValue) (* (self :> atomicValue) *)
       | ATBoolean ->
 	  (new atomicBoolean ~ta:at (boolean_of_untyped v'))
       | ATDecimal -> 

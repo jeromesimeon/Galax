@@ -1265,6 +1265,9 @@ primaryexpr:
   | PINCNAMECURLY expr RCURLY
       { mkexpr (EPIComputed([mkexpr (EScalar (StringLiteral $1))], $2)) }
 
+  | PINCNAMECURLY RCURLY
+      { mkexpr (EPIComputed([mkexpr (EScalar (StringLiteral $1))], [])) }
+
     /* Ordered and Unordered expressions */
   | ORDEREDCURLY expr RCURLY
       { mkexpr (EOrdered $2) }

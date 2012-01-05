@@ -618,6 +618,14 @@ in
 	      let celist1 = normalize_expr_list norm_context  elist1 in
 	      let ce1 = map_to_sequence eh fi celist1 in
 	      let target = normalize_atomize norm_context ce1 eh fi in
+	      let ctname = Namespace_builtin.xs_NCName in
+	      let schema  = cxschema_from_norm_context norm_context in
+	      let cdt = fmkcsequencetype (CITAtomic ctname,None) fi in
+	      let cty =
+		let a = Namespace_symbols.rtype_symbol ctname in
+		Schema_util.make_atomic_type schema a
+	      in
+	      let target = fmkcexpr (CECast (target, nsenv, (cdt, cty))) eh fi in
 	      let celist2 = normalize_expr_list norm_context  elist2 in
 	      let ce2 = map_to_sequence eh fi celist2 in
 	      let pi_content = item_seq_to_untyped norm_context ce2 eh fi in

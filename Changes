@@ -2,6 +2,16 @@
 | Changelog |
  -----------
 
+Jan 5, 2012 - Jerome
+
+ o Parsing:
+     - Computed processing instruction accepts no expression content.
+     - Direct processing instruction constructor checks for space
+       after NCName.
+     - Computed processing instruction names, should make sure to cast
+       to xs:NCName. (Note: cast to xs:NCName does not properly check
+       for facet constraints at this point).
+
 Jan 4, 2012 - Jerome
 
  o Documentation:

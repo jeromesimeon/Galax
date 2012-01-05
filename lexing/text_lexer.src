@@ -48,7 +48,7 @@ rule text lh = parse
           push_closing_tag lh;
           TEXTLCLOSINGTAG text_content
 	end }
-  | "<?" (ncname as n) whitespace    (* Processing instruction *)
+  | "<?" (ncname as n)    (* Processing instruction *)
       { let text_content = get_string lh in
         begin
 	  push_processing_instruction lh;
@@ -165,8 +165,17 @@ and pi lh = parse
   | "?>" { let pi_content = get_string lh in
 	   pop_state lh;
 	   TEXTCLOSINGPI (pi_content) }
+  | whitespaceplus { pi_content lh lexbuf }
   | eof  { raise (Query (Lexing(lexing_locinfo lexbuf, "Processing instruction not terminated"))) }
-  | character    { add_string_to_string lh (lexeme lexbuf); pi lh lexbuf }
+  | _
+      { raise (Query (Lexing(lexing_locinfo lexbuf, ("Illegal character '" ^ (lexeme lexbuf) ^ "' in PI")))) }
+
+and pi_content lh = parse
+  | "?>" { let pi_content = get_string lh in
+	   pop_state lh;
+	   TEXTCLOSINGPI (pi_content) }
+  | character { add_string_to_string lh (lexeme lexbuf); pi_content lh lexbuf }
+  | eof  { raise (Query (Lexing(lexing_locinfo lexbuf, "Processing instruction not terminated"))) }
   | _
       { raise (Query (Lexing(lexing_locinfo lexbuf, ("Illegal character '" ^ (lexeme lexbuf) ^ "' in PI")))) }
 
