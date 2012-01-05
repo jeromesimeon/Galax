@@ -2949,10 +2949,43 @@ let retrieve_doc refresh_doc code_ctxt =
    URIs.  - Jerome *)
 let _fn_doc = retrieve_doc false
 
+let _fn_doc_available code_ctxt =
+  let comp_ctxt = annotated_compile_context_from_code_selection_context code_ctxt in
+  let norm_ctxt = Compile_context.norm_context_from_compile_context comp_ctxt in
+  let proc_ctxt = Norm_context.processing_context_from_norm_context norm_ctxt in
+  let mod_proc_ctxt = Norm_context.module_context_from_norm_context norm_ctxt in
+  let base_uri = Processing_context.get_base_uri mod_proc_ctxt in
+  (fun alg_ctxt n ->
+    let p1 = Args.get_array_param1 n in
+    if (Cursor.cursor_is_empty p1)
+    then Cursor.cursor_empty()
+    else
+      let uri_string = get_string p1 in
+      let absolute_uri_string =
+	match base_uri with
+	| None -> uri_string
+	| Some base_uri ->
+	    let uri = AnyURI._actual_uri_of_string uri_string in
+	    let absolute_uri = AnyURI._uri_resolve base_uri uri in
+	    AnyURI._string_of_uri absolute_uri
+      in
+      (* check for name indices in code context *)
+      try
+	let retrieve_document_function =
+	  Fn_doc.lookup_doc_function absolute_uri_string
+	in
+	let alive_documents = 
+	  Some (alive_documents_from_algebra_context alg_ctxt)
+	in
+        ignore (retrieve_document_function alive_documents proc_ctxt);
+	Cursor.cursor_of_singleton (_boolean true)
+      with
+      | _ -> Cursor.cursor_of_singleton (_boolean false)
+  )
+
 (* Needed a function that always re-reads the document, in order to 
    be able to call again a web service, for instance. - Nicola *)
 let _glx_getdoc = retrieve_doc true
-
 
 let _fn_collection code_ctxt =
   let comp_ctxt = annotated_compile_context_from_code_selection_context code_ctxt in
@@ -4474,6 +4507,7 @@ let fun_table = [
   (fn_sum_double, 2), _fn_sum_double;
 
   (fn_doc,        1), _fn_doc;
+  (fn_doc_available, 1), _fn_doc_available;
   (fn_collection, 1), _fn_collection;
 
   (* F&O Section 16 : Functions on Dynamic Context *)

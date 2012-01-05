@@ -2004,8 +2004,8 @@
   <test-case name="K-NumericUnaryPlus-10" result="pass"/>
   <test-case name="K-NumericUnaryPlus-11" result="pass"/>
   <test-case name="K-NumericUnaryPlus-12" result="pass"/>
-  <test-case name="K2-NumericUnaryPlus-1" result="fail" comment="Test case [K2-NumericUnaryPlus-1] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/ArithExpr/NumericOpr/NumericUnaryPlus/K2-NumericUnaryPlus-1.xq   Unknown Error: Builtin function op:numeric-unary-plus with arity 1 not found At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/ArithExpr/NumericOpr/NumericUnaryPlus/K2-NumericUnaryPlus-1.xq&quot;, line 7, characters 20-30 At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/ArithExpr/NumericOpr/NumericUnaryPlus/K2-NumericUnaryPlus-1.xq&quot;, line 7, characters 14-31 At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/ArithExpr/NumericOpr/NumericUnaryPlus/K2-NumericUnaryPlus-1.xq&quot;, line 7, characters 5-32 ] :-("/>
-  <test-case name="K2-NumericUnaryPlus-2" result="fail" comment="Test case [K2-NumericUnaryPlus-2] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/ArithExpr/NumericOpr/NumericUnaryPlus/K2-NumericUnaryPlus-2.xq   Unknown Error: Builtin function op:numeric-unary-plus with arity 1 not found At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/ArithExpr/NumericOpr/NumericUnaryPlus/K2-NumericUnaryPlus-2.xq&quot;, line 7, characters 6-9 At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/ArithExpr/NumericOpr/NumericUnaryPlus/K2-NumericUnaryPlus-2.xq&quot;, line 7, characters 5-10 ] :-("/>
+  <test-case name="K2-NumericUnaryPlus-1" result="pass"/>
+  <test-case name="K2-NumericUnaryPlus-2" result="pass"/>
   <test-case name="op-numeric-unary-plus-1" result="fail" comment="Result of case [op-numeric-unary-plus-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/Operators/ArithExpr/NumericOpr/NumericUnaryPlus/op-numeric-unary-plus-1.txt] differ :-("/>
   <test-case name="op-numeric-unary-minusint1args-1" result="pass"/>
   <test-case name="op-numeric-unary-minusint1args-2" result="pass"/>
@@ -2066,8 +2066,8 @@
   <test-case name="K2-NumericUnaryMinus-5" result="pass"/>
   <test-case name="K2-NumericUnaryMinus-6" result="pass"/>
   <test-case name="K2-NumericUnaryMinus-7" result="pass"/>
-  <test-case name="K2-NumericUnaryMinus-8" result="fail" comment="Test case [K2-NumericUnaryMinus-8] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/ArithExpr/NumericOpr/NumericUnaryMinus/K2-NumericUnaryMinus-8.xq   Unknown Error: Builtin function op:numeric-unary-minus with arity 1 not found At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/ArithExpr/NumericOpr/NumericUnaryMinus/K2-NumericUnaryMinus-8.xq&quot;, line 7, characters 20-30 At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/ArithExpr/NumericOpr/NumericUnaryMinus/K2-NumericUnaryMinus-8.xq&quot;, line 7, characters 14-31 At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/ArithExpr/NumericOpr/NumericUnaryMinus/K2-NumericUnaryMinus-8.xq&quot;, line 7, characters 5-32 ] :-("/>
-  <test-case name="K2-NumericUnaryMinus-9" result="fail" comment="Test case [K2-NumericUnaryMinus-9] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/ArithExpr/NumericOpr/NumericUnaryMinus/K2-NumericUnaryMinus-9.xq   Unknown Error: Builtin function op:numeric-unary-minus with arity 1 not found At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/ArithExpr/NumericOpr/NumericUnaryMinus/K2-NumericUnaryMinus-9.xq&quot;, line 7, characters 6-9 At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Operators/ArithExpr/NumericOpr/NumericUnaryMinus/K2-NumericUnaryMinus-9.xq&quot;, line 7, characters 5-10 ] :-("/>
+  <test-case name="K2-NumericUnaryMinus-8" result="pass"/>
+  <test-case name="K2-NumericUnaryMinus-9" result="pass"/>
   <test-case name="K2-NumericUnaryMinus-10" result="pass"/>
   <test-case name="op-numeric-unary-minus-1" result="fail" comment="Result of case [op-numeric-unary-minus-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/Operators/ArithExpr/NumericOpr/NumericUnaryMinus/op-numeric-unary-minus-1.txt] differ :-("/>
   <test-case name="op-add-yearMonthDurations2args-1" result="pass"/>
@@ -2148,7 +2148,7 @@
   <test-case name="op-multiply-yearMonthDuration-17" result="pass"/>
   <test-case name="op-multiply-yearMonthDuration-18" result="pass"/>
   <test-case name="op-multiply-yearMonthDuration-19" result="pass"/>
-  <test-case name="op-multiply-yearMonthDuration-20" result="fail" comment="Result of case [op-multiply-yearMonthDuration-20] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/Operators/ArithExpr/DurationArith/YearMonthDurationMultiply/op-multiply-yearMonthDuration-20.txt] differ :-("/>
+  <test-case name="op-multiply-yearMonthDuration-20" result="pass"/>
   <test-case name="K-YearMonthDurationMultiply-1" result="pass"/>
   <test-case name="K-YearMonthDurationMultiply-2" result="pass"/>
   <test-case name="K-YearMonthDurationMultiply-3" result="pass"/>

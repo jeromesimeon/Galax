@@ -91,11 +91,10 @@ uninstall:
 	for i in *.gif; do ($(RM) $(CONF_GALAX_MAN)/$$i); done
 
 realclean: 
-	$(RM) version.tex
-	$(RM) manual.log manual.pdf *.aux *.haux *.htoc *.html
+	$(MAKE) clean
 clean: 
 	$(RM) version.tex
-	$(RM) manual.log manual.pdf *.aux *.html
+	$(RM) manual.log manual.pdf *.aux *.haux *.htoc *.html *toc
 
 clobber::
 

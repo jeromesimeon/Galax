@@ -1695,7 +1695,8 @@ let multiply_yearMonthDuration ymd mult =
   if (mult = infinity) || (mult = neg_infinity) then raise (Query (Parameter_Mismatch ("Overflow in xs:monthYearDuraction multiplication")));
   let ymdnorm = normalize_yearMonthDuration ymd in
   let newmonths = (float_of_int(ymdnorm.ymd_months)) *. mult in
-  let tmpmonths = if (ceil newmonths) -. newmonths > 0.5 then (int_of_float newmonths) else (int_of_float (ceil newmonths)) in
+  let tmpmonths = int_of_float (floor (newmonths +. 0.5)) in
+(* let tmpmonths = if (ceil newmonths) -. newmonths > 0.5 then (int_of_float newmonths) else (int_of_float (ceil newmonths)) in *)
   mkyearMonthDuration ((tmpmonths / 12), (tmpmonths mod 12))
 let multiply_yearMonthDuration2 mult ymd =
   multiply_yearMonthDuration ymd mult

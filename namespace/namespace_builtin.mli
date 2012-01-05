@@ -330,6 +330,7 @@ val fn_data       	: rqname
 val fn_deep_equal 	: rqname
 val fn_distinct_values  : rqname
 val fn_doc      	: rqname
+val fn_doc_available   	: rqname
 val fn_empty 	 	: rqname
 val fn_empty 	 	: rqname
 val fn_ends_with 	: rqname

@@ -5,32 +5,42 @@
 Jan 5, 2012 - Jerome
 
  o Parsing:
-     - Computed processing instruction accepts no expression content.
-     - Direct processing instruction constructor checks for space
-       after NCName.
-     - Computed processing instruction names, should make sure to cast
-       to xs:NCName. (Note: cast to xs:NCName does not properly check
-       for facet constraints at this point).
+    - Computed processing instruction accepts no expression content.
+    - Direct processing instruction constructor checks for space after
+      NCName.
+    - Computed processing instruction names, should make sure to cast
+      to xs:NCName. (Note: cast to xs:NCName does not properly check
+      for facet constraints at this point).
+
+ o Overloaded functions:
+    - Fixed overloading of unary arithmetic operators over the empty
+      sequence.
+
+ o Date and time:
+    - Fixed rounding error when multiplying over a yearMonthDuration.
+
+ o Functions and operators:
+    - Added missing (new?) fn:doc-available, simply reusing fn:doc.
 
 Jan 4, 2012 - Jerome
 
  o Documentation:
-     - Some cleanup and basic update of the documentation.
+    - Some cleanup and basic update of the documentation.
 
  o Configuration:
-     - Made the ./configure script more robust to variations in
-       ocaml's version number.
+    - Made the ./configure script more robust to variations in ocaml's
+      version number.
 
 Jan 3, 2012 - Jerome
 
  o Parsing:
-     - Fixed minor issue with new-line normalization.
-     - Added strict conformance flag. Sample rule is no multiple
-       expressions in the main module.
-     - Fixed bug in parsing or processing instruction kind tests
-       provided as a string, succeedings even when not a validNCName.
-     - Fixed bug in parsing for attribute and schema-attribute node
-       kinds.
+    - Fixed minor issue with new-line normalization.
+    - Added strict conformance flag. Sample rule is no multiple
+      expressions in the main module.
+    - Fixed bug in parsing or processing instruction kind tests
+      provided as a string, succeedings even when not a validNCName.
+    - Fixed bug in parsing for attribute and schema-attribute node
+      kinds.
 
 Dec 21, 2011 - Jerome
 
