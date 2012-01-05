@@ -8,6 +8,19 @@
 #                                                                       #
 #########################################################################
 
+# $Id: Makefile-inst,v 1.3 2007/02/01 22:08:55 simeon Exp $ #
+
+#########################################################################
+# Descripton:
+#		This is the installed Makefile for the Galax usecases
+#########################################################################
+
+#########################################################################
+# Section:	Default target
+# Description:
+#		The default target for this Makefile is "all"
+#########################################################################
+
 default: all
 
 #########################################################################
@@ -20,10 +33,7 @@ default: all
 #		Makefile.galax:	Variables defined for compiling and linking Galax
 #								applications in the build environment
 #########################################################################
-LOCALPREFIX=../..
-
-include $(LOCALPREFIX)/config/Makefile.galax
-
+include CONF_GALAX_CONFIG/Makefile.galax
 
 #########################################################################
 # Section:	Local variables
@@ -31,31 +41,29 @@ include $(LOCALPREFIX)/config/Makefile.galax
 #		These variables are used for targets of this Makefile
 ###########################################################################
 
-BINDIR=../..
+USECASES= parts_q1 parts_q2 parts_q3_vs1 parts_q3_vs2 parts_q4 parts_q6\
+r namespaces nil soap addressbook
 
-ifdef OCAMLOPT
-BINEXT=$(OPT)
-else
-BINEXT=$(BYTE)
-endif
+#########################################################################
+# Section:  Main targets
+# Description:
+#     This is where all of the named toplevel targets are placed.
+#
+#  all:        This target runs the usecases
+#  clean::     This target cleans files created in the all section
+#########################################################################
 
-CONF_GALAX_XQUPDATE_USECASES=$(CONF_GALAX_USECASES)/update10
-
-USECASES= \
-parts_q1\
-parts_q2\
-parts_q3_vs1\
-parts_q3_vs2\
-parts_q4\
-parts_q6\
-r\
-namespaces\
-nil\
-soap\
-addressbook
+all:
+	$(MAKE) -s tests
 
 tests:
 	$(MAKE) -s tests-in
+
+#########################################################################
+# Sub-Section:  Secondary targets
+# Description:
+#     These are the supporting targets for "all"
+#########################################################################
 
 tests-in:
 	$(MAKE) -s banner
@@ -69,16 +77,8 @@ banner:
 	@echo "============================================="
 
 %_usecase.out: %_usecase.xq 
-	($(BINDIR)/glx$(BINEXT) xquery -language xquerybang -serialize standard $*_usecase.xq >$*_usecase.out; \
+	($(CONF_GALAX_BIN)/glx xquery -language xquerybang -serialize standard $*_usecase.xq >$*_usecase.out; \
 	$(MAKE) -k -s check T=$*_usecase E=$*_usecase; )
-
-install: $(CONF_GALAX_XQUPDATE_USECASES)
-	$(SED) -e "s:CONF_GALAX_CONFIG:$(CONF_GALAX_CONFIG):" Makefile-inst > $(CONF_GALAX_XQUPDATE_USECASES)/Makefile
-	for i in $(USECASES); do ($(CP) $${i}_usecase.xq  $${i}_usecase.expect $(CONF_GALAX_XQUPDATE_USECASES)); done
-
-uninstall:
-	$(RM) $(CONF_GALAX_XQUPDATE_USECASES)/Makefile
-	for i in $(USECASES); do ($(RM) $(CONF_GALAX_XQUPDATE_USECASES)/$${i}_usecase.xq  $(CONF_GALAX_XQUPDATE_USECASES)/$${i}_usecase.expect); done
 
 run-orig:
 	@echo "";\
@@ -93,11 +93,9 @@ run-orig:
 clean:
 	rm -f *.out *.cmp *.mon
 
-$(CONF_GALAX_XQUPDATE_USECASES):
-	$(MKDIR) $(CONF_GALAX_XQUPDATE_USECASES)
-
-gen:
-	for t in $(USECASES); \
-		do $(BINDIR)/glx$(BINEXT) xquery -language xquerybang -serialize wf $${t}_usecase.xq >$${t}_usecase.expect; \
-	done
+########################################################################
+# Section:  Makefile post-includes
+# Description:
+#		There are currently no post-includes for this Makefile
+#########################################################################
 
