@@ -181,7 +181,7 @@ compile-double-core:
 	do $(CONF_GALAX_BIN)/glx compile -execute normalized -print-optimized-plan off -print-prolog on -print-normalized-expr on $${t}_usecase_pretty_core.xq > $${t}_usecase_double_pretty_core.xq; \
 	done)
 
-#########################################################################
+########################################################################
 # Section:  Makefile post-includes
 # Description:
 #		There are currently no post-includes for this Makefile

@@ -11,6 +11,9 @@ Jan 4, 2012 - Jerome
      - Made the ./configure script more robust to variations in
        ocaml's version number.
 
+ o Installation:
+     - Fixed installed makefile for update usecases.
+
 Jan 3, 2012 - Jerome
 
  o Parsing:
