@@ -111,8 +111,8 @@ let string_opt_cdt_cxtype fi = (fmkcsequencetype (CITAtomic Namespace_builtin.xs
 
 (*
    for $v in Expr1         for $v in Expr1 	 
-   FLWR_CLAUSES 	       FLWR_CLAUSES 	 
-   return Expr2		       return Expr2		 
+   FLWR_CLAUSES 	   FLWR_CLAUSES 	 
+   return Expr2		   return Expr2		 
    			       
    Expr1 cannot fail	   Expr1 : Type1	     
    Expr1 : Type1	   Type1 <: Item	     

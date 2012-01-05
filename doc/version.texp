@@ -1,0 +1,4 @@
+\newcommand{\version}{%%RELEASE%%} % Version of XQuery to which Galax is aligned 
+\newcommand{\galaxversion}{%%RELEASE%%} % Version of Galax
+\newcommand{\status}{%%STATUS%%}
+\newcommand{\xquerytestsuiteversion}{%%XQUERYUNIT%%}

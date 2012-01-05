@@ -1,15 +1,15 @@
 This chapter documents the relationship of Galax to the target W3C
-working drafts. Galax \version\ is a prototype implementation, and
-therefore it is not (yet) completely aligned with the relevant W3C
+working drafts. Galax \galaxversion\ is a prototype implementation,
+and therefore it is not (yet) completely aligned with the relevant W3C
 working drafts (WDs).  This chapter also document the non-standard
-features in Galax \version\ and the known bugs and limitations.
+features in Galax \galaxversion\ and the known bugs and limitations.
 
-Galax \version\ implements the \xqueryversion\ XQuery 1.0 and XPath
-2.0 Candidate Recommendations, the XML 1.0 Recommendation, the
-Namespaces in XML Recommendation, and XML Schema Recommendation (Parts
-1 and 2).
+Galax \galaxversion\ implements the \xqueryversion\ XQuery 1.0 and
+XPath 2.0 Recommendations (Second Edition), the XML 1.0
+Recommendation, the Namespaces in XML Recommendation, and XML Schema
+Recommendation (Parts 1 and 2).
 
-Galax \version\ implements the XQuery 1.0 Recommendations:
+Galax \galaxversion\ implements the XQuery 1.0 Specifications:
 \begin{itemize}
 \item XQuery 1.0 and XPath 2.0 Data Model.
       W3C Recommendation \xqueryrec.
@@ -34,20 +34,22 @@ Galax \version\ implements the XQuery 1.0 Recommendations:
 
 \section{Data Model}
 
-Galax \version\ fully supports the XQuery 1.0 and XPath 2.0 Data Model.
+Galax \galaxversion\ fully supports the XQuery 1.0 and XPath 2.0 Data
+Model.
 
-Galax \version\ implements an xsd:float value as an xsd:double value.
+Galax \galaxversion\ implements an xsd:float value as an xsd:double
+value.
 
 \section{XQuery}
 
 The alignment issues in this section follow the outline of the
-"Expressions" section in \ahrefurl{http://www.w3c.org/TR/xquery}.  If a
-subsection is not listed here, it means that Galax \version\ implements
-the semantics described in that section.
+"Expressions" section in \ahrefurl{http://www.w3c.org/TR/xquery}.  If
+a subsection is not listed here, it means that Galax \galaxversion\
+implements the semantics described in that section.
 
 \subsection*{\ahref{\rawxqueryurl\#static_context}{XQuery Section 2.1.1 Static Context}}
 
-   Galax \version\ does not support:
+   Galax \galaxversion\ does not support:
 \begin{itemize}
 \item \term{XPath 1.0 compatibility modes}.
 \item \term{Collations}.
@@ -63,18 +65,19 @@ The \term{implicit timezone} is set to the local timezone.
 
 Galax's processing model is similar to XQuery's abstract processing
 model.  See Section~\ref{sec:developers} for more information on
-Galax's internal processing model. 
+Galax's internal processing model.
 
 \subsection*{\ahref{\rawxqueryurl\#id-serialization}{XQuery Section 2.2.4 Serialization}}
 
 \subsection*{\ahref{\rawxqueryurl\#id-ebv}{XQuery Section 2.3.3 Effective Boolean Value}}
 
-   Galax \version\ does not check that a numeric value is equal to NaN
-   when computing an effective boolean value.
+   Galax \galaxversion\ does not check that a numeric value is equal
+   to NaN when computing an effective boolean value.
 
 \subsection*{\ahref{\rawxqueryurl\#id-input-sources}{XQuery Section 2.3.4 Input Sources}}
 
-   Galax \version\ does not support the \func{fn:collection()} function.
+   Galax \galaxversion\ does not support the \func{fn:collection()}
+   function.
  
    The context item and values for external variables can be specified
    on the command line or in the API.  See
@@ -94,35 +97,35 @@ Galax supports the \term{Schema Import}, \term{Static Typing}, and
 
 \subsection*{\ahref{\rawxqueryurl\#id-module-feature}{XQuery Section 2.6.4 Module Feature}}
 
-   Galax \version\ supports the Module feature.
+   Galax \galaxversion\ supports the Module feature.
 
 \subsection*{\ahref{\rawxqueryurl\#id-pragmas}{XQuery Section 2.6.5 Pragmas}}
 
-   Galax \version\ does not support the \term{Pragmas} feature.
+   Galax \galaxversion\ does not support the \term{Pragmas} feature.
 
 \subsection*{\ahref{\rawxqueryurl\#id-must-understand}{XQuery Section 2.6.6 Must-Understand Extensions}}
 
-   Galax \version\ does not support must-understand extensions.
+   Galax \galaxversion\ does not support must-understand extensions.
 
 \subsection*{\ahref{\rawxqueryurl\#id-static-extensions}{XQuery Section 2.6.7 Static Typing Extensions}}
 
-   Galax \version\ does not support static typing extensions.
+   Galax \galaxversion\ does not support static typing extensions.
 
 \subsection*{\ahref{\rawxqueryurl\#id-literals}{XQuery Section 3.1.1 Literals}}
 
-   Galax \version\ implements an xsd:float value as an xsd:double value.
+   Galax \galaxversion\ implements an xsd:float value as an xsd:double value.
 
 \subsection*{\ahref{\rawxqueryurl\#axes}{XQuery Section 3.2.1.1 Axes}}
 
-   Galax \version\ supports all axes with the exception of the
+   Galax \galaxversion\ supports all axes with the exception of the
    \term{preceding} and \term{following} axes.
 
 \subsection*{\ahref{\rawxqueryurl\#id-constructors}{XQuery Section 3.7 Constructors}}
 
-When constructing a new element, Galax \version always
-erases/eliminates type annotations on copied elements. 
+When constructing a new element, Galax \galaxversion\ always
+erases/eliminates type annotations on copied elements.
 
-When constructing a new element, Galax \version requires that 
+When constructing a new element, Galax \galaxversion\ requires that 
 the new element's attributes precede its other content. 
 
 \subsection*{\ahref{\rawxqueryurl\#id-ns-nodes-on-elements}{XQuery Section 3.7.4 In-scope Namespaces of a Constructed Element}}
@@ -135,29 +138,29 @@ this.
 \subsection*{\ahref{\rawxqueryurl\#id-unordered-expressions}{XQuery 
 Section 3.9 Ordered and Unordered Expressions}}
 
-Galax \version\ will accept queries that contain the \code{ordered} or
-   \code{unordered} expressions, but they have no effect on query
-  evaluation (i.e., they are no-ops). 
+Galax \galaxversion\ will accept queries that contain
+   the \code{ordered} or \code{unordered} expressions, but they have
+   no effect on query evaluation (i.e., they are no-ops).
 
 \subsection*{\ahref{\rawxqueryurl\#id-module-declaration}{XQuery Section 4.2 Module Declaration}}
 \subsection*{\ahref{\rawxqueryurl\#id-module-imports}{XQuery Section 4.2 Module Import}}
 
-Galax \version\ supports the Module feature.
+Galax \galaxversion\ supports the Module feature.
 
 \subsection*{\ahref{\rawxqueryurl\#id-default-collation-declaration}{XQuery
     Section 4.4 Default Collation Declaration}}
 
-    Galax \version\ does not support collations.
+    Galax \galaxversion\ does not support collations.
 
 \subsection*{\ahref{\rawxqueryurl\#id-construction-declaration}{XQuery
 Section 4.6 Construction Declaration}}
 
-Galax \version\ does not support the construction declaration. 
+Galax \galaxversion\ does not support the construction declaration. 
 
 \subsection*{\ahref{\rawxqueryurl\#id-default-ordering-decl}{XQuery
 Section 4.8 Default Ordering Declaration}}
 
-Galax \version\ does not support the default ordering declaration. 
+Galax \galaxversion\ does not support the default ordering declaration. 
 
 \subsection*{\ahref{\rawxqueryurl\#id-schema-imports}{XQuery
 Section 4.9 Schema Import}}
@@ -174,16 +177,16 @@ Section 4.9 Schema Import}}
   semantics also defines how imported schemas are mapped into internal
   XQuery types.
   
-  Galax \version\ implements the static and dynamic semantics of core
+  Galax \galaxversion\ implements the static and dynamic semantics of core
   expressions defined in the XQuery 1.0 Formal Semantics. 
 
 \section{Functions and Operators}
 
-  Galax \version\ supports most of the functions in the XQuery 1.0 and
+  Galax \galaxversion\ supports most of the functions in the XQuery 1.0 and
   XPath 2.0 Functions and Operators document.  The signatures of
   supported functions are listed in \code{\${GALAXLIB}/pervasive.xq}.
 
-  Galax \version\ does not support the following functions: 
+  Galax \galaxversion\ does not support the following functions: 
 \begin{verbatim}
   fn:id
   fn:idref
@@ -195,20 +198,20 @@ Section 4.9 Schema Import}}
     The \code{fn:trace} function emits its input sequence and message are to standard output. 
 
 \subsection*{\ahref{\rawfandourl\#constructor-functions-for-user-defined-types}{Functions
-and Operators Section 5.2 Constructor Functions for User-Defined Types}}
-Galax \version does not support constructor functions for user-defined
-types. 
+and Operators Section 5.2 Constructor Functions for User-Defined
+Types}} Galax \galaxversion\ does not support constructor functions
+for user-defined types.
 
 \subsection*{Functions and Operators Section 12 Functions and Operators on base64Binary and hexBinary}
 
- Galax \version\ does not support any functions on binary data.
+ Galax \galaxversion\ does not support any functions on binary data.
 
 
 \section{Use Cases}
 
   See \code{\${GALAXHOME}/usecases/STATUS}
 
-\section{Galax \version\ extensions}
+\section{Galax \galaxversion\ extensions}
 
 \subsection{Defining XQuery Types in the Query Prolog}
 
@@ -216,7 +219,7 @@ types.
     predefined XML schema using the \code{import schema} declaration in the
     query prolog or by defining XQuery types explicitly in the query prolog.
 
-    Galax \version\ supports the definition of XQuery types in the query
+    Galax \galaxversion\ supports the definition of XQuery types in the query
     prolog using the internal type syntax defined in the XQuery 1.0
     Formal Semantics.  The grammar is provided here for reference:
 

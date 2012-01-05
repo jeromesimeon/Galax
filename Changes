@@ -2,9 +2,18 @@
 | Changelog |
  -----------
 
+Jan 4, 2012 - Jerome
+
+ o Documentation:
+     - Some cleanup and basic update of the documentation.
+
+ o Configuration:
+     - Made the ./configure script more robust to variations in
+       ocaml's version number.
+
 Jan 3, 2012 - Jerome
 
-  o Parsing:
+ o Parsing:
      - Fixed minor issue with new-line normalization.
      - Added strict conformance flag. Sample rule is no multiple
        expressions in the main module.
@@ -35,7 +44,7 @@ Dec 20, 2011 - Jerome
 
   o XPath:
      - Fixed a couple of issues with reverse axis and
-       following/preceding sibbling (empty for attributes nodes).
+       following/preceding sibling (empty for attributes nodes).
 
   o Configuration:
      - Cleaned up a few wrong version references and links to Web site

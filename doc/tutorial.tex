@@ -1,6 +1,6 @@
 \section{Executing a query}
 
-The simplest way to use Galax is by calling the \term{galax-run}
+The simplest way to use Galax is by calling the \term{glx xquery}
 interpreter from the command line.  This chapter describes the most
 frequently used command-line options.  Chapter~\ref{sec:commandline}
 enumerates all the command-line options.
@@ -10,7 +10,7 @@ Section~\ref{sec:src-dist} and run the following query to make sure
 your environment is set-up correctly:
 \begin{verbatim}
 % echo '<two>{ 1+1 }</two>' > test.xq
-% galax-run test.xq
+% glx xquery test.xq
 <two>2</two>
 \end{verbatim}
 
@@ -28,12 +28,12 @@ implemented by separating the query prolog from the query expressions.
 Here is how to execute the Parts usecase:
 \begin{alltt}
 % cd $GALAXHOME/usecases 
-% galax-run -context parts_context.xq parts_usecase.xq
+% glx xquery -context parts_context.xq parts_usecase.xq
 \end{alltt}
 
 The other use cases are executed similarly, for example:
 \begin{alltt}
-% galax-run -context rel_context.xq rel_usecase.xq
+% glx xquery -context rel_context.xq rel_usecase.xq
 \end{alltt}
 
 \section{Accessing Input}
@@ -43,14 +43,14 @@ You can access an input document by calling the
 \begin{alltt}
 % cd $GALAXHOME/usecases 
 % echo 'fn:doc("docs/books.xml")' > doc.xq
-% galax-run doc.xq
+% glx xquery doc.xq
 \end{alltt}
 
 You can access an input document by referring to the context item (the
 ``.'' dot variable), whose value is the document's content:
 \begin{alltt}
 % echo '.' >dot.xq
-% galax-run -context-item docs/books.xml dot.xq
+% glx xquery -context-item docs/books.xml dot.xq
 \end{alltt}
 
 You can also access an input document by using the \cmd{-doc}
@@ -58,7 +58,7 @@ argument, which binds an external variable to the content of the given
 document file:
 \begin{alltt}
 % echo 'declare variable $x external; $x' > var.xq
-% galax-run -doc x=docs/books.xml var.xq
+% glx xquery -doc x=docs/books.xml var.xq
 \end{alltt}
 
 \section{Controlling Output}
@@ -68,14 +68,14 @@ reflects the precise data model instance. For example, the result of
 this query is serialized as the literal \code{2}:
 \begin{alltt}
 % echo "document \{ 1+1 \}"> docnode.xq
-% galax-run docnode.xq
+% glx xquery docnode.xq
 document \{ 2 \}
 \end{alltt}
 
 If you want the output of your query to be as the standard prescribes, 
 then use the \code{-serialize standard} option:
 \begin{alltt}
-% galax-run docnode.xq -serialize standard
+% glx xquery docnode.xq -serialize standard
 2
 \end{alltt}
 
@@ -83,7 +83,7 @@ then use the \code{-serialize standard} option:
 If you want the output of your query to be a well-formed XML value,
 then use the \code{-serialize wf} option:
 \begin{alltt}
-% galax-run docnode.xq -serialize wf
+% glx xquery docnode.xq -serialize wf
 \end{alltt}
 The result of this query is:
 \begin{alltt}
@@ -96,7 +96,7 @@ By default, Galax serializes the result value to standard output.  Use
 the \cmd{-output-xml} option to serialize the result value to an output
 file.
 \begin{alltt}
-% galax-run docnode.xq -serialize standard -output-xml output.xml
+% glx xquery docnode.xq -serialize standard -output-xml output.xml
 % cat output.xml
 2
 \end{alltt}
@@ -123,7 +123,7 @@ command prints the original query, and the optimized logical plan for
 the query.
 
 \begin{alltt}
-% galax-run docnode.xq -verbose on -print-expr on -print-optimized-plan on
+% glx xquery docnode.xq -verbose on -print-expr on -print-optimized-plan on
 \end{alltt}
 
 \section{Updates and Procedural Extensions}
@@ -133,9 +133,9 @@ and a procedural extensions. To enable one of those extensions, you
 must use the corresponding language level option on the command line:
 
 \begin{alltt}
-galax-run -language ultf       (: W3C Update Facility :)
-galax-run -language xquerybang (: XQuery! Language :)
-galax-run -language xqueryp    (: XQueryP Language :)
+glx xquery -language ultf       (: W3C Update Facility :)
+glx xquery -language xquerybang (: XQuery! Language :)
+glx xquery -language xqueryp    (: XQueryP Language :)
 \end{alltt}
 
 Some examples of each of the three languages are provided in the

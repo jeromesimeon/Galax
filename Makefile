@@ -381,10 +381,10 @@ ocaml-galax$(EXE):	$(GALAX_LIB)
 
 # Source code generation
 #
-base/pervasive.xq:	stdlib/pervasive.xq
+base/pervasive.xq: stdlib/pervasive.xq
 	$(CP) stdlib/pervasive.xq base/pervasive.xq
 
-base/pervasive.ml:	tools/escaping/escaping$(EXE) base/pervasive.xq
+base/pervasive.ml: tools/escaping/escaping$(EXE) base/pervasive.xq
 	tools/escaping/escaping$(EXE) base/pervasive.xq
 
 base/conf.ml: base/conf.mlp

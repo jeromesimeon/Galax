@@ -40,7 +40,7 @@ include $(LOCALPREFIX)/website/Makefile.config
 # Description:
 #		These variables are used for targets of this Makefile
 ###########################################################################
-SOURCES=general.tex commandline.tex alignment.tex readme.tex install.tex \
+SOURCES=version.tex general.tex commandline.tex alignment.tex readme.tex install.tex \
 release_notes.tex api.tex developers.tex license.tex tutorial.tex
 
 HTMLFILES=\
@@ -91,8 +91,10 @@ uninstall:
 	for i in *.gif; do ($(RM) $(CONF_GALAX_MAN)/$$i); done
 
 realclean: 
+	$(RM) version.tex
 	$(RM) manual.log manual.pdf *.aux *.haux *.htoc *.html
 clean: 
+	$(RM) version.tex
 	$(RM) manual.log manual.pdf *.aux *.html
 
 clobber::
@@ -103,11 +105,18 @@ clobber::
 #     These are the supporting targets for "all"
 #########################################################################
 
+version.tex: version.texp
+	@$(RM) base/conf.ml 
+	$(SED) -e 's|%%RELEASE%%|$(RELEASE)|' \
+	    -e 's|%%STATUS%%|$(STATUS)|' \
+	    -e 's|%%XQUERYUNIT%%|$(XQUERYUNIT)|' \
+            version.texp > version.tex
+
 manual.html: manual.pdf 
 	hevea -fix -exec xxdate.exe manual.tex
 	hacha manual.html
 
-manual.pdf:	manual.tex $(SOURCES) 
+manual.pdf: manual.tex $(SOURCES) 
 	pdflatex manual.tex
 	pdflatex manual.tex
 

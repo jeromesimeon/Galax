@@ -4,6 +4,7 @@
 \usepackage{fullpage}
 \usepackage{alltt}
 \usepackage[latin1]{inputenc}
+\input{version}
 \newcommand{\eat}[1]{}
 \newcommand{\term}[1]{\textbf{#1}}
 \newcommand{\func}[1]{\texttt{#1}}
@@ -11,11 +12,9 @@
 \newcommand{\code}[1]{\textbf{\texttt{#1}}}
 \newcommand{\note}[1]{\textbf{Note:} #1}
 \newcommand{\scream}[1]{\textbf{*** } #1 \textbf{***}}
-\newcommand{\version}{1.0.2} % Version of XQuery to which Galax is aligned 
 \newcommand{\xqueryrec}{January, 2010}
 \newcommand{\xqueryversion}{\xqueryrec} 
 \newcommand{\xquerytestsuiteurl}{\ahrefurl{http://www.w3.org/XML/Query/test-suite/}}
-\newcommand{\xquerytestsuiteversion}{1.0.2}
 \newcommand{\totaltests}{10,055}
 \newcommand{\galaxtotaltests}{7917}
 \newcommand{\galaxpassestests}{7852}
@@ -43,13 +42,14 @@
 \newcommand{\bugzillaurl}{\ahrefurl{http://sourceforge.net/tracker/?group\_id=274294}}
 
 \htmlprefix{Galax Manual: }
-\title{\Large\bf {\LARGE Galax Version
-\version\ Documentation}\\[0.5cm] \textit{``XML processing in O'Caml''}}
+\title{\Large\bf {\LARGE Galax Version \galaxversion\ Documentation}\\[0.5cm] \textit{An XML Processor in Ocaml}}
 \author{Mary Fern\'andez, AT\&T Labs Research \\ J\'er\^ome Sim\'eon, IBM T.J. Watson Research Center}
 \date{\today}
 
 \begin{document}
+
 \maketitle
+
 \tableofcontents
 
 \part{User's Manual}

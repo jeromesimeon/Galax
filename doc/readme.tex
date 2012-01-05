@@ -1,20 +1,18 @@
-\section{What is XQuery 1.0?}
+\section{What is XQuery?}
 
-XQuery 1.0 is a query language for XML, defined by the World-Wide Web
-Consortium (W3C), under the XML activity.  XQuery is a powerful
-language, which supports XPath 2.0 as a subset and includes
-expressions to construct new XML documents, SQL-like expressions to
-perform selection, joins, and sorting over collections of XML values,
-operations on namespaces, and expressions over XML Schema types.
-XQuery is a functional language, which comes with an extensive library
-of built-in functions, and allows user to define their own functions.
+XQuery is a language to process XML, defined by the World-Wide Web
+Consortium (W3C), under the XML activity. XQuery, which includes XPath
+as a subset, allows users to access, transform, and generate XML. It
+includes supports for SQL-like queries over XML data. It is a
+functional language, with an extensive built-in function library, and
+the ability for users to define their own functions and libraries.
 More information about XQuery can be found of the XML Query Working
 Group Web page\footnote{\xquerywgurl}.
 
 \section{What is Galax?}
 
-Galax is an implementation of XQuery 1.0 designed with the following
-goals in mind: completeness, conformance, performance, and
+Galax is an implementation of XQuery designed with the following goals
+in mind: completeness, conformance, performance, and
 extensibility. Galax is open-source, and has been used on a large
 variety of real-life XML applications. Galax relies on a formally
 specified and open architecture which is particularly well suited for
@@ -24,22 +22,23 @@ extensions of the language or optimizations.
 Here is a list of the main Galax features.
 
 \begin{itemize}
-\item Galax implements the January 2007 (W3C Recommendation)
-  set of specifications for XQuery.
+\item Galax implements the Second Edition of the XQuery 1.0
+  recommendation, dated December 14, 2010.
 \item Galax supports Minimal Conformance, as well as the following
   optional features: Static Typing, Full Axis, Module, and
   Serialization. The following table lists Galax 1.0 results with
-  respect to the XQuery Tests Suite version 1.0.2:
+  respect to the XQuery Tests Suite version \xquerytestsuiteversion:
 \begin{center}
 \begin{tabular}{|lrrrr|}
   \hline
   & Pass & Fail & Total & Percent\\\hline
-  Minimal Conformance      &       14553 & 71 & 14637 & (99.4\%)\\\hline
+  Minimal Conformance      &       17169 & 312 & 17496 & (98.1\%)\\\hline
   Optional Features &&&& \\
-  \hspace*{0.5cm}Static Typing Feature   &      46    & 0   & 46 & (100\%)\\
-  \hspace*{0.5cm}Full Axis Feature        &     130  & 0   & 130 & (100\%)\\
-  \hspace*{0.5cm}Module Feature            &    32    & 0   & 32 & (100\%)\\\hline
+  \hspace*{0.5cm}Static Typing Feature   &      50   & 0   & 50 & (100\%)\\
+  \hspace*{0.5cm}Full Axis Feature        &     191  & 0   & 191 & (100\%)\\
+  \hspace*{0.5cm}Module Feature            &    48    & 0   & 56 & (85.7\%)\\\hline
 \end{tabular}
+
 \end{center}
 \item Galax supports Unicode, with native support for the UTF-8 and
   ISO-8859-1 character encodings.
@@ -89,32 +88,35 @@ The following features are experimental.
 \subsection{Changes since the last version}
 
 The following lists the main changes included with this version
-(\version).
+(\galaxversion).
 
 \begin{itemize}
-\item Galax 1.0 supports the latest OCaml 3.10 compiler and GODI
-3.10.
-\item Support for the XQuery Update Facility 1.0, August 2007 Working
-Draft. Support for the XQuery 1.0 Update Facility Static Typing
-Feature.
-\item Improved implementation of XQueryP.
+\item Environment:
 \begin{itemize}
-\item Re-implementation of while loops.
-\item Fixed issues with scoping.
+\item Builds on OCaml 3.12, and recent libraries.
+\item Switched to XQuery test suite version 1.0.3.
 \end{itemize}
-\item Improved support for modules.
-  \begin{itemize}
-  \item Properly implemented nested imports.
-  \item Added support for module interfaces.
-  \end{itemize}
-\item Support for XQueryX trivial embedding.
+\item Performance:
+\begin{itemize}
+\item Improvements to streaming namespace resolution.
+\item More aggressive rewrites of E1[E2] when E2 is a numeric value.
+\end{itemize}
 \item Bug fixes:
-  \begin{itemize}
-  \item Fixed problems with support for in-scope namespaces.
-  \item Fixed problems with checking of cyclic variable declarations.
-  \item Fixed several problems with the parser, using wrong lexical states inside constructors.
-  \item Small bug fixes in support for the prolog.
-  \end{itemize}
+\begin{itemize}
+\item Parsing:
+\begin{itemize}
+\item '\\013' characters now get properly normalized to new lines.
+\item processing instructions kind-test verifies it is a proper NCName.
+\item default axis for attribute() and schema-attribute() kind tests
+  is attribute.
+\item default typeswitch clause with a variable parses properly.
+\end{itemize}
+\item Semantics:
+\begin{itemize}
+\item leading '/' checks for document node.
+\item following/preceding sibling axis on attribute nodes is empty.
+\end{itemize}
+\end{itemize}
 \end{itemize}
 
 Changes from older versions can be found in

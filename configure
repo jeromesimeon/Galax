@@ -18,7 +18,7 @@
 # value	 2:	on by command line ("forced")
 
 version="1.0"
-ocaml_version="3.12.1+rc1"
+ocaml_version="3.12"
 # Function:	print_options()
 # Description:
 #		Print the current values of all options
@@ -551,7 +551,7 @@ then
 	echo "Setting ocaml_bin to $ocaml_bin"
 
 	ocamlv=`$ocaml_bin/ocaml -version | sed -e 's/.*version //g'`
-	ocaml_major_version=`echo ${ocamlv} | sed -e 's/\.[0-9]$//g'`
+	ocaml_major_version=`echo ${ocamlv}  | sed -e 's/+.*//g' | sed -e 's/\.[0-9]$//g'`
         if [ "${ocaml_major_version}" != "${ocaml_version}" ] 
 	then
           echo "ERROR: Expected OCaml major version ${ocaml_version}, found ${ocaml_major_version}"
