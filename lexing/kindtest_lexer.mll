@@ -86,7 +86,7 @@ rule token lh = parse
 
 (* Parenthesis *)
   | ")"
-      { set_item_type lh; pop_state lh; RPAR }
+      { pop_state lh; set_item_type lh; RPAR }
 (*
   | ")" whitespace "+"
       { pop_state lh; RPARPLUS }

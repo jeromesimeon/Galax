@@ -529,7 +529,7 @@ dm/dm_step.cmo dm/dm.cmo dm/dm_util.cmo
 
 GALAX_LEXING=lexing/lexing_util.cmo lexing/default_lexer.cmo \
 $(GALAX_UTF8_LEXING_OBJECTS) $(GALAX_ISO88591_LEXING_OBJECTS) \
-lexing/xmldecl_lexer.cmo lexing/type_lexer.cmo lexing/schema_lexer.cmo \
+lexing/type_lexer.cmo lexing/schema_lexer.cmo \
 lexing/itemtype_lexer.cmo \
 lexing/kindtest_lexer.cmo lexing/varname_lexer.cmo \
 lexing/pragma_lexer.cmo lexing/operator_lexer.cmo \
@@ -764,7 +764,6 @@ lexing/pragma_lexer.mll \
 lexing/schema_lexer.mll \
 lexing/type_lexer.mll \
 lexing/varname_lexer.mll \
-lexing/xmldecl_lexer.mll \
 $(GALAX_UTF8_MLLFILES) \
 $(GALAX_ISO88591_MLLFILES)
 

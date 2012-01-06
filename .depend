@@ -1650,10 +1650,6 @@ lexing/text_lexer_iso88591.cmo: ./ast/xquery_ast.cmi \
 lexing/text_lexer_iso88591.cmx: ./ast/xquery_ast.cmi \
     ./parsing/parse_xquery.cmx ./lexing/lexing_util.cmx ./base/finfo.cmx \
     ./base/error.cmx
-lexing/xmldecl_lexer.cmo: ./parsing/parse_xquery.cmi ./lexing/lexing_util.cmi \
-    ./base/finfo.cmi ./base/error.cmi
-lexing/xmldecl_lexer.cmx: ./parsing/parse_xquery.cmx ./lexing/lexing_util.cmx \
-    ./base/finfo.cmx ./base/error.cmx
 lexing/type_lexer.cmo: ./ast/xquery_ast.cmi ./parsing/parse_xquery.cmi \
     ./namespace/namespace_names.cmi ./lexing/lexing_util.cmi ./base/finfo.cmi \
     ./base/error.cmi ./lexing/default_lexer.cmo

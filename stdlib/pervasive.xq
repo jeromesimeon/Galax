@@ -44,8 +44,8 @@ declare function op:int-divide($arg1 as xs:int?, $arg2 as xs:int?)     as xs:dec
 declare function op:int-idivide($arg1 as xs:int?, $arg2 as xs:int?)    as xs:int? 	  external;
 declare function op:int-mod($arg1 as xs:int?, $arg2 as xs:int?)        as xs:int? 	  external;
 
-declare function op:int-unary-plus($arg1 as xs:int)           	 as xs:int 	  external;
-declare function op:int-unary-minus($arg1 as xs:int)          	 as xs:int 	  external;
+declare function op:int-unary-plus($arg1 as xs:int?)           	 as xs:int? 	  external;
+declare function op:int-unary-minus($arg1 as xs:int?)          	 as xs:int? 	  external;
 
 declare function op:int-equal($arg1 as xs:int, $arg2 as xs:int)        	 as xs:boolean external;
 declare function op:int-nequal($arg1 as xs:int, $arg2 as xs:int)       	 as xs:boolean external;
@@ -62,8 +62,8 @@ declare function op:integer-divide($arg1 as xs:integer?, $arg2 as xs:integer?)  
 declare function op:integer-idivide($arg1 as xs:integer?, $arg2 as xs:integer?)  as xs:integer? external;
 declare function op:integer-mod($arg1 as xs:integer?, $arg2 as xs:integer?)      as xs:integer? external;
 
-declare function op:integer-unary-plus($arg1 as xs:integer)  as xs:integer external;
-declare function op:integer-unary-minus($arg1 as xs:integer) as xs:integer external;
+declare function op:integer-unary-plus($arg1 as xs:integer?)  as xs:integer? external;
+declare function op:integer-unary-minus($arg1 as xs:integer?) as xs:integer? external;
 
 declare function op:integer-equal($arg1 as xs:integer, $arg2 as xs:integer)  	 as xs:boolean  external;
 declare function op:integer-nequal($arg1 as xs:integer, $arg2 as xs:integer) 	 as xs:boolean  external;
@@ -80,8 +80,8 @@ declare function op:decimal-divide($arg1 as xs:decimal?, $arg2 as xs:decimal?)  
 declare function op:decimal-idivide($arg1 as xs:decimal?, $arg2 as xs:decimal?)  as xs:integer? external;
 declare function op:decimal-mod($arg1 as xs:decimal?, $arg2 as xs:decimal?)      as xs:decimal? external;
 
-declare function op:decimal-unary-plus($arg1 as xs:decimal)  as xs:decimal external;
-declare function op:decimal-unary-minus($arg1 as xs:decimal) as xs:decimal external;
+declare function op:decimal-unary-plus($arg1 as xs:decimal?)  as xs:decimal? external;
+declare function op:decimal-unary-minus($arg1 as xs:decimal?) as xs:decimal? external;
 
 declare function op:decimal-equal($arg1 as xs:decimal, $arg2 as xs:decimal)  	 as xs:boolean  external;
 declare function op:decimal-nequal($arg1 as xs:decimal, $arg2 as xs:decimal) 	 as xs:boolean  external;
@@ -98,8 +98,8 @@ declare function op:float-divide($arg1 as xs:float?, $arg2 as xs:float?)      	 
 declare function op:float-idivide($arg1 as xs:float?, $arg2 as xs:float?)    	 as xs:integer?   external;
 declare function op:float-mod($arg1 as xs:float?, $arg2 as xs:float?)         	 as xs:float?   external;
 
-declare function op:float-unary-plus($arg1 as xs:float)  as xs:float   external;
-declare function op:float-unary-minus($arg1 as xs:float) as xs:float   external;
+declare function op:float-unary-plus($arg1 as xs:float?)  as xs:float?   external;
+declare function op:float-unary-minus($arg1 as xs:float?) as xs:float?   external;
 
 declare function op:float-equal($arg1 as xs:float, $arg2 as xs:float)       	 as xs:boolean  external;
 declare function op:float-nequal($arg1 as xs:float, $arg2 as xs:float)      	 as xs:boolean  external;
@@ -116,8 +116,8 @@ declare function op:double-divide($arg1 as xs:double?, $arg2 as xs:double?)   	 
 declare function op:double-idivide($arg1 as xs:double?, $arg2 as xs:double?)  	 as xs:integer?  external;
 declare function op:double-mod($arg1 as xs:double?, $arg2 as xs:double?)      	 as xs:double?  external;
 
-declare function op:double-unary-plus($arg1 as xs:double)    		 as xs:double  external;
-declare function op:double-unary-minus($arg1 as xs:double)   		 as xs:double  external;
+declare function op:double-unary-plus($arg1 as xs:double?)    		 as xs:double?  external;
+declare function op:double-unary-minus($arg1 as xs:double?)   		 as xs:double?  external;
        
 declare function op:double-equal($arg1 as xs:double, $arg2 as xs:double)    	 as xs:boolean  external;
 declare function op:double-nequal($arg1 as xs:double, $arg2 as xs:double)   	 as xs:boolean  external;
@@ -520,6 +520,7 @@ declare function fn:sum-double($arg1 as xs:double*, $arg2 as xs:double?) as xs:d
 declare function op:to($arg1 as xs:integer?, $arg2 as xs:integer?) as xs:integer+ external;
 
 declare function fn:doc($arg1 as xs:string?) as document-node()? external;
+declare function fn:doc-available($arg1 as xs:string?) as xs:boolean external;
 declare function fn:collection($arg1 as xs:string?) as node()* external;
 declare function fn:id($arg as xs:string*, $node as node()) as element()* external;
 declare function fn:idref($arg as xs:string*, $node as node()) as node()* external; 

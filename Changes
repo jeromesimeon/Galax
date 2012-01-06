@@ -4,6 +4,9 @@
 
 Jan 5, 2012 - Jerome
 
+ o Lexing:
+    - Removed Xmldecl_lexer, unused.
+
  o Parsing:
     - Computed processing instruction accepts no expression content.
     - Direct processing instruction constructor checks for space after

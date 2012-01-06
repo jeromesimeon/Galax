@@ -145,7 +145,6 @@ let check_pragma_content content =
 %token <Datatypes.xs_untyped> TEXTLCURLY
 
 %token <Namespace_names.ncname> OPENINGPI
-%token CLOSINGPI
 %token LOPENINGCOMMENT
 %token <Datatypes.xs_untyped> TEXTCLOSINGPI
 %token <Datatypes.xs_untyped> TEXTRCLOSINGCOMMENT
