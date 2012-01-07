@@ -64,3 +64,20 @@ let forward_axis axis =
 
 let bogus_cvname = (Namespace_names.NSDefaultElementPrefix,Namespace_names.NSWildcardUri,"")
 
+(* Prints axis *)
+
+let string_of_axis axis =
+  match axis with
+  | Ancestor -> "ancestor::"
+  | Ancestor_or_self -> "ancestor-or-self::"
+  | Attribute -> "attribute::"
+  | Child -> "child::"
+  | Descendant -> "descendant::"
+  | Descendant_or_self -> "descendant-or-self::"
+  | Following_sibling -> "following-sibling::"
+  | Preceding_sibling -> "preceding-sibling::"
+  | Parent -> "parent::"
+  | Self -> "self::"
+  | Following -> "following::"
+  | Preceding -> "preceding::"
+

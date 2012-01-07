@@ -786,6 +786,7 @@
 ./toplevel/top_xmlplan2plan.cmi: ./toplevel/top_args.cmi
 ./toplevel/top_run.cmi: ./toplevel/top_args.cmi
 ./toplevel/top_compile.cmi: ./toplevel/top_args.cmi
+./toplevel/top_tokenize.cmi: ./toplevel/top_args.cmi
 ./toplevel/top_schema.cmi: ./toplevel/top_args.cmi
 ./toplevel/top_args.cmi:
 ./toplevel/top_config.cmi: ./procctxt/processing_context.cmi
@@ -1750,17 +1751,21 @@ parsing/parse_util.cmx: ./ast/xquery_common_ast.cmx ./ast/xquery_ast.cmi \
     ./lexing/itemtype_lexer.cmx ./base/finfo.cmx ./base/error.cmx \
     ./base/encoding.cmx ./lexing/default_lexer.cmx \
     ./lexing/copynamespaces_lexer.cmx ./base/conf.cmx parsing/parse_util.cmi
-parsing/parse_top.cmo: ./ast/xquery_common_ast.cmi ./ast/xquery_ast.cmi \
+parsing/parse_top.cmo: ./ast/xquery_common_ast_util.cmi \
+    ./ast/xquery_common_ast.cmi ./ast/xquery_ast.cmi \
     ./procctxt/processing_context.cmi ./parsing/parse_xquery.cmi \
     ./parsing/parse_util.cmi ./parsing/parse_io.cmi \
-    ./parsing/parse_context.cmi ./lexing/lexing_util.cmi ./base/galax_io.cmi \
-    ./base/finfo.cmi ./base/error.cmi ./base/encoding.cmi \
+    ./parsing/parse_context.cmi ./namespace/namespace_names.cmi \
+    ./lexing/lexing_util.cmi ./base/galax_io.cmi ./base/finfo.cmi \
+    ./base/error.cmi ./base/encoding.cmi ./datatypes/decimal.cmi \
     parsing/parse_top.cmi
-parsing/parse_top.cmx: ./ast/xquery_common_ast.cmx ./ast/xquery_ast.cmi \
+parsing/parse_top.cmx: ./ast/xquery_common_ast_util.cmx \
+    ./ast/xquery_common_ast.cmx ./ast/xquery_ast.cmi \
     ./procctxt/processing_context.cmx ./parsing/parse_xquery.cmx \
     ./parsing/parse_util.cmx ./parsing/parse_io.cmx \
-    ./parsing/parse_context.cmx ./lexing/lexing_util.cmx ./base/galax_io.cmx \
-    ./base/finfo.cmx ./base/error.cmx ./base/encoding.cmx \
+    ./parsing/parse_context.cmx ./namespace/namespace_names.cmx \
+    ./lexing/lexing_util.cmx ./base/galax_io.cmx ./base/finfo.cmx \
+    ./base/error.cmx ./base/encoding.cmx ./datatypes/decimal.cmx \
     parsing/parse_top.cmi
 parsing/parse_xqueryx.cmo: ./ast/xquery_ast_util.cmi ./ast/xquery_ast.cmi \
     ./parsing/parse_top.cmi ./namespace/namespace_resolve.cmi \
@@ -4846,6 +4851,18 @@ toplevel/top_compile.cmx: ./toplevel/top_util.cmx ./toplevel/top_options.cmx \
     ./toplevel/galax_server.cmx ./base/galax_io.cmx \
     ./galapi/caml_api/galax.cmx ./base/error.cmx ./dm/dm.cmx ./base/conf.cmx \
     toplevel/top_compile.cmi
+toplevel/top_tokenize.cmo: ./toplevel/top_util.cmi ./toplevel/top_options.cmi \
+    ./toplevel/top_config.cmi ./procmod/procmod_compiler.cmi \
+    ./procctxt/processing_context.cmi ./ast_printer/print_top.cmi \
+    ./parsing/parse_top.cmi ./procctxt/monitoring_context.cmi \
+    ./monitor/monitor.cmi ./toplevel/galax_server.cmi ./base/error.cmi \
+    ./dm/dm.cmi ./base/conf.cmi toplevel/top_tokenize.cmi
+toplevel/top_tokenize.cmx: ./toplevel/top_util.cmx ./toplevel/top_options.cmx \
+    ./toplevel/top_config.cmx ./procmod/procmod_compiler.cmx \
+    ./procctxt/processing_context.cmx ./ast_printer/print_top.cmx \
+    ./parsing/parse_top.cmx ./procctxt/monitoring_context.cmx \
+    ./monitor/monitor.cmx ./toplevel/galax_server.cmx ./base/error.cmx \
+    ./dm/dm.cmx ./base/conf.cmx toplevel/top_tokenize.cmi
 toplevel/top_schema.cmo: ./toplevel/top_util.cmi ./toplevel/top_options.cmi \
     ./toplevel/top_config.cmi ./streaming/streaming_parse.cmi \
     ./streaming/streaming_ops.cmi ./schema/schema_norm.cmi \
@@ -4992,14 +5009,14 @@ regress/test_core.cmx: ./base/whitespace.cmx ./toplevel/top_util.cmx \
     ./galapi/caml_api/galax.cmx ./base/error.cmx ./dm/atomic/dm_atomic.cmx \
     ./dm/dm.cmx ./datatypes/dateTime.cmx ./datatypes/datatypes.cmi \
     ./dm/base/cursor.cmx ./base/conf.cmx
-toplevel/glx_main.cmo: ./toplevel/top_util.cmi ./toplevel/top_schema.cmi \
-    ./toplevel/top_run.cmi ./toplevel/top_project.cmi \
-    ./toplevel/top_parse.cmi ./toplevel/top_compile.cmi \
-    ./toplevel/top_args.cmi
-toplevel/glx_main.cmx: ./toplevel/top_util.cmx ./toplevel/top_schema.cmx \
-    ./toplevel/top_run.cmx ./toplevel/top_project.cmx \
-    ./toplevel/top_parse.cmx ./toplevel/top_compile.cmx \
-    ./toplevel/top_args.cmx
+toplevel/glx_main.cmo: ./toplevel/top_util.cmi ./toplevel/top_tokenize.cmi \
+    ./toplevel/top_schema.cmi ./toplevel/top_run.cmi \
+    ./toplevel/top_project.cmi ./toplevel/top_parse.cmi \
+    ./toplevel/top_compile.cmi ./toplevel/top_args.cmi
+toplevel/glx_main.cmx: ./toplevel/top_util.cmx ./toplevel/top_tokenize.cmx \
+    ./toplevel/top_schema.cmx ./toplevel/top_run.cmx \
+    ./toplevel/top_project.cmx ./toplevel/top_parse.cmx \
+    ./toplevel/top_compile.cmx ./toplevel/top_args.cmx
 toplevel/glx_map_main.cmo: ./toplevel/top_xqueryx2xquery.cmi \
     ./toplevel/top_xquery2xmlplan.cmi ./toplevel/top_xquery2soap.cmi \
     ./toplevel/top_xquery2plan.cmi ./toplevel/top_xmlplan2plan.cmi \

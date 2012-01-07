@@ -35,3 +35,7 @@ val forward_axis : axis -> bool
 
 val bogus_cvname : cvname
 
+(* Prints axis *)
+
+val string_of_axis : axis -> string
+

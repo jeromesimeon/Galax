@@ -37,6 +37,8 @@ let rec dispatch_go ek gargs =
       Top_run.go gargs
   | ExecXQueryCompile ->
       Top_compile.go gargs
+  | ExecXQueryTokenize ->
+      Top_tokenize.go gargs
   | ExecXML ->
       Top_parse.go gargs
   | ExecXMLSchema ->

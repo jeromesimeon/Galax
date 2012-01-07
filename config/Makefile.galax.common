@@ -724,7 +724,7 @@ GALAX_API=galapi/caml_api/dm_functions.cmo galapi/caml_api/galax.cmo
 GALAX_TOPLEVEL=toplevel/top_config.cmo toplevel/top_util.cmo \
                toplevel/top_options.cmo toplevel/galax_server_util.cmo toplevel/galax_server.cmo \
 	       toplevel/top_args.cmo toplevel/top_run.cmo toplevel/top_parse.cmo \
-               toplevel/top_compile.cmo toplevel/top_schema.cmo toplevel/top_project.cmo \
+               toplevel/top_compile.cmo toplevel/top_tokenize.cmo toplevel/top_schema.cmo toplevel/top_project.cmo \
                toplevel/top_wsdl2xquery.cmo toplevel/top_xquery2xmlplan.cmo toplevel/top_xqueryx2xquery.cmo \
                toplevel/top_xquery2plan.cmo toplevel/top_xmlplan2plan.cmo toplevel/top_xquery2soap.cmo
 
@@ -1061,6 +1061,7 @@ $(LOCALPREFIX)/toplevel/top_xquery2plan.cmi \
 $(LOCALPREFIX)/toplevel/top_xmlplan2plan.cmi \
 $(LOCALPREFIX)/toplevel/top_run.cmi \
 $(LOCALPREFIX)/toplevel/top_compile.cmi \
+$(LOCALPREFIX)/toplevel/top_tokenize.cmi \
 $(LOCALPREFIX)/toplevel/top_schema.cmi \
 $(LOCALPREFIX)/toplevel/top_args.cmi \
 $(LOCALPREFIX)/toplevel/top_config.cmi \

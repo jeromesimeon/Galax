@@ -2,6 +2,15 @@
 | Changelog |
  -----------
 
+Jan 6, 2012 - Jerome
+
+ o Lexing:
+    - Added a hook to the tokenizer from the command line, returning
+      the set of lexing tokens, along with the lexical state's stack.
+
+      Usage:
+        glx tokenize [files]
+
 Jan 5, 2012 - Jerome
 
  o Lexing:

@@ -20,6 +20,7 @@ type executable_kind =
   | ExecHelp
   | ExecXQuery
   | ExecXQueryCompile
+  | ExecXQueryTokenize
   | ExecXML
   | ExecXMLSchema
   | ExecProject
@@ -39,6 +40,7 @@ let dispatch_table =
   [ "help", (ExecHelp,"Command-line help");
     "xquery", (ExecXQuery, "XQuery evaluation");
     "compile", (ExecXQueryCompile, "XQuery compilation");
+    "tokenize", (ExecXQueryTokenize, "XQuery lexing tokens");
     "xml", (ExecXML, "XML parser");
     "xmlschema", (ExecXMLSchema, "XML Schema import");
     "project", (ExecProject, "XQuery-based document projection") ]

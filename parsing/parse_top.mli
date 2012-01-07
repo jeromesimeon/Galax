@@ -55,3 +55,5 @@ val ast_from_string    : string -> Xquery_ast.main_module
 val tokens_from_file   : string -> (Parse_xquery.token * Lexing_util.lex_state list * bool) list
 val tokens_from_string : string -> (Parse_xquery.token * Lexing_util.lex_state list * bool) list
 
+val print_tokens : bool -> Format.formatter -> (Parse_xquery.token * Lexing_util.lex_state list * bool) list -> unit
+

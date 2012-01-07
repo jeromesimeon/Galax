@@ -287,8 +287,9 @@ let check_pragma_content content =
 
 %token LETSERVER IMPLEMENT FROMSERVER ATSERVER FORSERVER BOX EVALCLOSURE DO 
 
-/* End of buffer/file */
+/* Error or End of buffer/file */
 
+%token LEXERROR
 %token EOF
 
 
