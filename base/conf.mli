@@ -173,6 +173,8 @@ val dfgraph_formatter : Format.formatter ref
 
 val genresults : bool ref
 
+val print_lex_states : bool ref
+
 (********************)
 (* XML Plan Loading *)
 (********************)

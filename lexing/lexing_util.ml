@@ -111,6 +111,9 @@ let get_whole_lex_stack lh =
 let set_item_type lh =
   lh.flag_item_type <- true
 
+let get_item_type lh =
+  lh.flag_item_type
+
 let unset_item_type lh =
   lh.flag_item_type <- false
 
@@ -166,6 +169,7 @@ let push_none lh = ()
 
 let push_default lh =
   reset_string lh;
+  unset_item_type lh;
   Stack.push DefaultState lh.current_lex_state
 
 let push_operator lh =

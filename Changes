@@ -2,6 +2,12 @@
 | Changelog |
  -----------
 
+Jan 10, 2012 - Jerome
+
+ o Lexing:
+    - Fixed lexical state issue arising from function types.
+    - Added -print-states [on/off] option to the top-level tokenizer.
+
 Jan 6, 2012 - Jerome
 
  o Lexing:

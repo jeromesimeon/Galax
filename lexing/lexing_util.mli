@@ -235,3 +235,4 @@ val set_item_type : lexing_handler -> unit
 val unset_item_type : lexing_handler -> unit
 
 val check_item_type : lexing_handler -> bool
+val get_item_type : lexing_handler -> bool

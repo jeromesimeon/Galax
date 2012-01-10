@@ -50,6 +50,7 @@ type option_classes =
   | XQueryX_Options
   | WSDL_Options
   | SOAP_Options
+  | Tokenize_Options
 
 (* Misc options *)
 

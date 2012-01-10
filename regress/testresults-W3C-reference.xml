@@ -17262,7 +17262,7 @@
   <test-case name="fn-doc-31" result="pass"/>
   <test-case name="K2-SeqDocFunc-14" result="pass"/>
   <test-case name="fn-doc-32" result="pass"/>
-  <test-case name="fn-doc-33" result="fail" comment="Test case [fn-doc-33] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/NodeSeqFunc/SeqDocFunc/fn-doc-33.xq   Lexing Error: 1 Found QName while in operator state [File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/NodeSeqFunc/SeqDocFunc/fn-doc-33.xq&quot;, line 13, characters 22-23:] ] :-("/>
+  <test-case name="fn-doc-33" result="pass"/>
   <test-case name="fn-doc-34" result="pass"/>
   <test-case name="fn-doc-35" result="pass"/>
   <test-case name="fn-doc-36" result="pass"/>

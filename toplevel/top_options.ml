@@ -699,6 +699,12 @@ let opt_soap_namespace = "-soap-namespace"
 let arg_soap_namespace proc_ctxt = fun s -> Conf.nms_uri := s
 let msg_soap_namespace = "The namespace of the exported module"
 
+(* Tokenize options *)
+
+let opt_tokenize_states = "-print-states"
+let arg_tokenize_states proc_ctxt = fun s -> Conf.print_lex_states := bool_of_onoff(s)
+let msg_tokenize_states = "Prints the lexical states"
+
 
 (******************************)
 (* Titles for option clusters *)
@@ -727,6 +733,7 @@ let title_galax_parse_options        = "\n\n // Parse specific options\n"
 let title_galax_project_options      = "\n\n // Project specific options\n"
 let title_wsdl_options               = "\n\n // WSDL specific options\n"
 let title_soap_options               = "\n\n // SOAP specific options\n"
+let title_tokenize_options           = "\n\n // Tokenizer specific options\n"
 
 
 (*****************)
@@ -992,6 +999,12 @@ let make_soap_options bos title =
       opt_soap_address, (bo_string arg_soap_address), msg_soap_address;
       opt_soap_namespace, (bo_string arg_soap_namespace), msg_soap_namespace ]
 
+(* Tokenize options *)
+
+let make_tokenize_options bos title =
+  let (bo_unit,bo_int,bo_string,bo_set,bo_clear) = bos in
+    [ opt_tokenize_states, (bo_string arg_tokenize_states), msg_tokenize_states ]
+
 type option_classes =
   | GalaxProject_Options
   | GalaxParse_Options
@@ -1014,6 +1027,7 @@ type option_classes =
   | XQueryX_Options
   | WSDL_Options
   | SOAP_Options
+  | Tokenize_Options
 
 let option_table =
   [ GalaxProject_Options, (make_galax_project_options,title_galax_project_options);
@@ -1036,7 +1050,8 @@ let option_table =
     Testing_Options, (make_testing_options, title_testing_options);
     XQueryX_Options, (make_xqueryx_options,title_xqueryx_options);
     WSDL_Options, (make_wsdl_options,title_wsdl_options);
-    SOAP_Options, (make_soap_options,title_soap_options) ]
+    SOAP_Options, (make_soap_options,title_soap_options);
+    Tokenize_Options, (make_tokenize_options,title_tokenize_options) ]
 
 let rec make_parse_list bos usage option_list first =
   match option_list with
