@@ -2019,9 +2019,10 @@ normalization/norm_expr.cmo: ./ast/xquery_type_ast_util.cmi \
     ./ast/xquery_common_ast_util.cmi ./ast/xquery_common_ast.cmi \
     ./ast/xquery_ast_util.cmi ./ast/xquery_ast.cmi \
     ./streaming/streaming_ops.cmi ./schema/schema_util.cmi \
-    ./schema/schema_judge.cmi ./procctxt/processing_context.cmi \
-    ./parsing/parse_xqueryx.cmi ./normalization/norm_util.cmi \
-    ./normalization/norm_overloaded.cmi ./normalization/norm_context.cmi \
+    ./schema/schema_judge.cmi ./schema/schema_builtin.cmi \
+    ./procctxt/processing_context.cmi ./parsing/parse_xqueryx.cmi \
+    ./normalization/norm_util.cmi ./normalization/norm_overloaded.cmi \
+    ./normalization/norm_context.cmi \
     ./namespace/namespace_symbols_builtin.cmi \
     ./namespace/namespace_symbols.cmi ./namespace/namespace_resolve.cmi \
     ./namespace/namespace_names.cmi ./namespace/namespace_builtin.cmi \
@@ -2034,9 +2035,10 @@ normalization/norm_expr.cmx: ./ast/xquery_type_ast_util.cmx \
     ./ast/xquery_common_ast_util.cmx ./ast/xquery_common_ast.cmx \
     ./ast/xquery_ast_util.cmx ./ast/xquery_ast.cmi \
     ./streaming/streaming_ops.cmx ./schema/schema_util.cmx \
-    ./schema/schema_judge.cmx ./procctxt/processing_context.cmx \
-    ./parsing/parse_xqueryx.cmx ./normalization/norm_util.cmx \
-    ./normalization/norm_overloaded.cmx ./normalization/norm_context.cmx \
+    ./schema/schema_judge.cmx ./schema/schema_builtin.cmx \
+    ./procctxt/processing_context.cmx ./parsing/parse_xqueryx.cmx \
+    ./normalization/norm_util.cmx ./normalization/norm_overloaded.cmx \
+    ./normalization/norm_context.cmx \
     ./namespace/namespace_symbols_builtin.cmx \
     ./namespace/namespace_symbols.cmx ./namespace/namespace_resolve.cmx \
     ./namespace/namespace_names.cmx ./namespace/namespace_builtin.cmx \

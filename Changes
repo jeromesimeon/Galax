@@ -2,6 +2,19 @@
 | Changelog |
  -----------
 
+Jan 17, 2012 - Jerome
+
+ o F&O:
+    - Fixed rounding issue with fn:subsequence.
+
+Jan 10, 2012 - Jerome
+
+ o Configuration:
+    - Fixed bug in configuration generation introduced in previous patch.
+
+ o F&O:
+    - fn:doc-available returns false for the empty sequence, not empty.
+
 Jan 10, 2012 - Jerome
 
  o Lexing:

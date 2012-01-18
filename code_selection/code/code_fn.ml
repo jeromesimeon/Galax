@@ -2958,7 +2958,8 @@ let _fn_doc_available code_ctxt =
   (fun alg_ctxt n ->
     let p1 = Args.get_array_param1 n in
     if (Cursor.cursor_is_empty p1)
-    then Cursor.cursor_empty()
+    (* Should return false for empty-sequence *)
+    then Cursor.cursor_of_singleton (_boolean false)
     else
       let uri_string = get_string p1 in
       let absolute_uri_string =

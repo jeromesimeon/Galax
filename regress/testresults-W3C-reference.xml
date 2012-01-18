@@ -15926,10 +15926,10 @@
   <test-case name="K2-SeqSubsequenceFunc-1" result="pass"/>
   <test-case name="K2-SeqSubsequenceFunc-2" result="pass"/>
   <test-case name="K2-SeqSubsequenceFunc-3" result="pass"/>
-  <test-case name="K2-SeqSubsequenceFunc-4" result="fail" comment="Test case [K2-SeqSubsequenceFunc-4] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-4.xq   Cast Error: Cannot promote decimal to integer At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-4.xq&quot;, line 7, characters 14-31 ] :-("/>
-  <test-case name="K2-SeqSubsequenceFunc-5" result="fail" comment="Test case [K2-SeqSubsequenceFunc-5] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-5.xq   Cast Error: Cannot promote decimal to integer At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-5.xq&quot;, line 7, characters 14-31 ] :-("/>
-  <test-case name="K2-SeqSubsequenceFunc-6" result="fail" comment="Test case [K2-SeqSubsequenceFunc-6] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-6.xq   Cast Error: Cannot promote decimal to integer At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-6.xq&quot;, line 7, characters 14-33 ] :-("/>
-  <test-case name="K2-SeqSubsequenceFunc-7" result="fail" comment="Test case [K2-SeqSubsequenceFunc-7] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-7.xq   Cast Error: Cannot promote decimal to integer At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-7.xq&quot;, line 7, characters 14-33 ] :-("/>
+  <test-case name="K2-SeqSubsequenceFunc-4" result="pass"/>
+  <test-case name="K2-SeqSubsequenceFunc-5" result="pass"/>
+  <test-case name="K2-SeqSubsequenceFunc-6" result="pass"/>
+  <test-case name="K2-SeqSubsequenceFunc-7" result="pass"/>
   <test-case name="K2-SeqSubsequenceFunc-8" result="pass"/>
   <test-case name="K2-SeqSubsequenceFunc-9" result="pass"/>
   <test-case name="K2-SeqSubsequenceFunc-10" result="pass"/>
@@ -17222,7 +17222,7 @@
   <test-case name="fn-doc-available-4" result="pass"/>
   <test-case name="fn-doc-available-5" result="pass"/>
   <test-case name="fn-doc-available-6" result="pass"/>
-  <test-case name="fn-doc-available-7" result="fail" comment="Result of case [fn-doc-available-7] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NodeSeqFunc/SeqDocAvailableFunc/fn-doc-available-7.txt] differ :-("/>
+  <test-case name="fn-doc-available-7" result="pass"/>
   <test-case name="K2-SeqDocAvailableFunc-1" result="pass"/>
   <test-case name="fn-doc-1" result="pass"/>
   <test-case name="fn-doc-2" result="pass"/>

@@ -283,7 +283,6 @@ let normalize_expr norm_context e =
 	    else if (rqname_equal rfname fn_number && arity = 0) then
 	          (* fn:number() is normalized to fn:number($dot) *)
 	      (cexpr_fs_dot (Some e) fi ) :: []
-
   	    else if ((rqname_equal rfname fn_round_half_to_even)  && arity = 1) then
 		      (* fn:sum(Expr) is normalized to fn:sum(Expr,0) *)
 	      (List.hd celist) :: (fmkcexpr (CEScalar (IntegerLiteral Decimal._integer_zero)) (Some e) fi):: []
@@ -296,6 +295,23 @@ let normalize_expr norm_context e =
 	      celist @ (fmkcexpr (CEScalar (StringLiteral "")) (Some e) fi) :: []
 	    else if (rqname_equal rfname fn_replace && arity = 3) then
 	      celist @ (fmkcexpr (CEScalar (StringLiteral "")) (Some e) fi) :: []
+	    else if (rqname_equal rfname fn_subsequence) then
+	      begin
+		let wrap_double_param ce =
+		  let round_ce = build_core_overloaded_call norm_context fn_round [ce] (Some e) fi in
+		  let integer_type  = (fmkcsequencetype (CITAtomic Namespace_builtin.xs_integer, None) fi, Schema_builtin.cxtype_integer) in
+		  build_core_cast norm_context round_ce integer_type (Some e) fi
+		in
+		match celist with
+		| [ce1;ce2] ->
+		    let ce2' = wrap_double_param ce2 in
+		    [ce1;ce2']
+		| [ce1;ce2;ce3] ->
+		    let ce2' = wrap_double_param ce2 in
+		    let ce3' = wrap_double_param ce3 in
+		    [ce1;ce2';ce3']
+		| _ -> celist
+	      end
 	    else if (((rqname_equal rfname fn_compare
 		     || rqname_equal rfname fn_contains 
 		     || rqname_equal rfname fn_starts_with) 
