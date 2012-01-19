@@ -295,7 +295,7 @@ let normalize_expr norm_context e =
 	      celist @ (fmkcexpr (CEScalar (StringLiteral "")) (Some e) fi) :: []
 	    else if (rqname_equal rfname fn_replace && arity = 3) then
 	      celist @ (fmkcexpr (CEScalar (StringLiteral "")) (Some e) fi) :: []
-	    else if (rqname_equal rfname fn_subsequence) then
+(*	    else if (rqname_equal rfname fn_subsequence) then
 	      begin
 		let wrap_double_param ce =
 		  let round_ce = build_core_overloaded_call norm_context fn_round [ce] (Some e) fi in
@@ -311,7 +311,7 @@ let normalize_expr norm_context e =
 		    let ce3' = wrap_double_param ce3 in
 		    [ce1;ce2';ce3']
 		| _ -> celist
-	      end
+	      end *)
 	    else if (((rqname_equal rfname fn_compare
 		     || rqname_equal rfname fn_contains 
 		     || rqname_equal rfname fn_starts_with) 
@@ -1201,10 +1201,10 @@ in
 		                 let $fs:sequence := fs:distinct-doc-order( [ReverseStep Predicates]Expr ) 
 		                 let $fs:last := fn:count($fs:sequence) 
 		                 let $fs:position := $fs:last - Numeric + 1 
-		                 return fn:subsequence($fs:sequence,$fs:position,1)
+		                 return fs:subsequence($fs:sequence,$fs:position,1)
 		                 
 		              *)
- 		      let subseq_expr = build_core_call norm_context fn_subsequence [seqvar; posvar; one_int_expr] eh fi in 
+ 		      let subseq_expr = build_core_call norm_context fs_subsequence [seqvar; posvar; one_int_expr] eh fi in 
 		      let arith_expr = build_core_call norm_context op_integer_subtract [lastvar; cond] eh fi in
 		      let arith_expr1 = build_core_call norm_context op_integer_add [arith_expr; one_int_expr] eh fi in
 		      let docorder_expr = build_core_call norm_context fs_distinct_docorder [qual_expr] eh fi in 
@@ -1282,9 +1282,9 @@ in
 		                     [ForwardStep Predicates "[" Numeric "]"]Expr
 		                     ==
 		                     let $fs:sequence := fs:distinct-doc-order( [ForwardStep Predicates]Expr ) 
-		                     return fn:subsequence($fs:sequence,Numeric,1)
+		                     return fs:subsequence($fs:sequence,Numeric,1)
 		                  *)
- 		      let subseq_expr = build_core_call norm_context fn_subsequence [seqvar; cond; one_int_expr] eh fi in 
+ 		      let subseq_expr = build_core_call norm_context fs_subsequence [seqvar; cond; one_int_expr] eh fi in 
 		      let docorder_expr = build_core_call norm_context fs_distinct_docorder [qual_expr] eh fi in
 		      let letc = (CELET(None, fs_sequence, docorder_expr)) in
 		      let flwr_expr = fmkcexpr (CEFLWOR ([letc],None,None, subseq_expr)) eh fi in
@@ -1346,9 +1346,9 @@ in
                           (*
 		             [PrimaryExpr Predicates "[" Numeric "]"]Expr
 		             ==
-		             fn:subsequence([PrimaryExpr Predicates]Expr,Numeric,1)
+		             fs:subsequence([PrimaryExpr Predicates]Expr,Numeric,1)
 		          *)
- 		      build_core_call norm_context fn_subsequence [qual_expr; cond; one_int_expr] eh fi 
+ 		      build_core_call norm_context fs_subsequence [qual_expr; cond; one_int_expr] eh fi 
 	          | Other ->
                           (*  
 		             [PrimaryExpr Predicates "[" Expr "]"]Expr   

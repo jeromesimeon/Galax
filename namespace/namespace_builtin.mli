@@ -681,27 +681,28 @@ val err_default_error : rqname
      implementing the XQuery semantics.
  *)
 
-val fs_convert_simple_operand 	      : rqname
-val fs_distinct_docorder      	      : rqname
-val fs_distinct_docorder_or_atomic_sequence : rqname
-val fs_distinct 	      	      : rqname
-val fs_distinct_or_atomic_sequence    : rqname
-val fs_docorder 	      	      : rqname
-val fs_docorder_or_atomic_sequence    : rqname
-val fs_first    	      	      : rqname
-val fs_item_sequence_to_untypedAtomic : rqname
+val fs_convert_simple_operand 	      	       : rqname
+val fs_distinct_docorder      	      	       : rqname
+val fs_distinct_docorder_or_atomic_sequence    : rqname
+val fs_distinct 	      	      	       : rqname
+val fs_distinct_or_atomic_sequence    	       : rqname
+val fs_docorder 	      	      	       : rqname
+val fs_docorder_or_atomic_sequence    	       : rqname
+val fs_first    	      	      	       : rqname
+val fs_item_sequence_to_untypedAtomic 	       : rqname
 val fs_item_sequence_to_untypedAtomic_optional : rqname
-val fs_item_sequence_to_node_sequence : rqname
-val fs_last_fn       	     	      : rqname
-val fs_node_sequence 	     	      : rqname
-val fs_node_sequence_or_atomic_sequence : rqname
-val fs_promote_to_numeric             : rqname
-val fs_promote_to_anystring           : rqname
-val fs_unsafe_promote_to_numeric      : rqname
-val fs_untyped_to_any     	      : rqname
-val fs_untyped_to_double  	      : rqname
-val fs_untyped_to_integer 	      : rqname
-val fs_untyped_to_string  	      : rqname
+val fs_item_sequence_to_node_sequence 	       : rqname
+val fs_last_fn       	     	      	       : rqname
+val fs_node_sequence 	     	      	       : rqname
+val fs_node_sequence_or_atomic_sequence        : rqname
+val fs_promote_to_numeric             	       : rqname
+val fs_promote_to_anystring           	       : rqname
+val fs_unsafe_promote_to_numeric      	       : rqname
+val fs_untyped_to_any     	      	       : rqname
+val fs_untyped_to_double  	      	       : rqname
+val fs_untyped_to_integer 	      	       : rqname
+val fs_untyped_to_string  	      	       : rqname
+val fs_subsequence                    	       : rqname
 
 
 (*****************)

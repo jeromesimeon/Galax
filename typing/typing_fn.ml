@@ -238,9 +238,9 @@ let _remove_type static_ctxt fi arguments_types  output_type =
       fmkcxtype (CBound(p, occurs 0, n)) fi
 
 (*
-   7.2.13 The fn:subsequence function
+   7.2.13 The fs:subsequence function
 *)
-let _fn_subsequence nargs static_ctxt fi arguments_types output_type =
+let _fs_subsequence nargs static_ctxt fi arguments_types output_type =
   let schema = schema_from_static_context static_ctxt in
   let (input_type1, input_type2, input_type3) = 
     if (nargs = 2) then 
@@ -268,6 +268,39 @@ let _fn_subsequence nargs static_ctxt fi arguments_types output_type =
   else
     begin
       ignore(raise_wrong_expected_type_error static_ctxt input_type2 cxtype_integer);
+      output_type
+    end
+(*
+   7.2.13 The fn:subsequence function
+*)
+let _fn_subsequence nargs static_ctxt fi arguments_types output_type =
+  let schema = schema_from_static_context static_ctxt in
+  let (input_type1, input_type2, input_type3) = 
+    if (nargs = 2) then 
+      let (a1, a2) = Args.get_param2 arguments_types in
+      let i1 = simplify_ty schema a1 in
+      let i2 = simplify_ty schema a2 in
+      (i1, i2, None)
+    else
+      let (a1, a2, a3) = Args.get_param3 arguments_types in
+      let i1 = simplify_ty schema a1 in
+      let i2 = simplify_ty schema a2 in
+      let i3 = simplify_ty schema a3 in
+      (i1, i2, Some i3)
+  in
+  if (is_subtype_of schema input_type2 Schema_builtin.cxtype_double) &&
+    (match input_type3 with
+    | None -> true
+    | Some i3 -> is_subtype_of schema i3 Schema_builtin.cxtype_double)
+  then
+    if (is_subtype_of_empty_sequence schema input_type1) then cxtype_empty
+    else if (is_subtype_of_empty_choice schema input_type1) then cxtype_none
+    else
+      let (p,m,n) = factor input_type1 in
+      fmkcxtype (CBound(p,m,n)) fi
+  else
+    begin
+      ignore(raise_wrong_expected_type_error static_ctxt input_type2 cxtype_double);
       output_type
     end
 (*  7.2.1 The fn:last context function 
@@ -781,6 +814,8 @@ let type_rule_table = [
   ((fs_untyped_to_integer), 1), _fs_untyped_to_integer;
   ((fs_untyped_to_string), 1), _fs_untyped_to_string;
   ((fs_promote_to_numeric), 2), _fs_promote_to_numeric;
+  ((fs_subsequence),2), (_fs_subsequence 2);
+  ((fs_subsequence),3), (_fs_subsequence 3);
   (* document order functions *)
   ((fs_distinct_docorder),1), (_fs_distinct_docorder fs_distinct_docorder);
   ((fs_docorder),1), (_fs_distinct_docorder fs_docorder);
@@ -892,7 +927,6 @@ let type_rule_table = [
   ((fn_reverse),1), factor_input_type;
   ((fn_subsequence),2), (_fn_subsequence 2);
   ((fn_subsequence),3), (_fn_subsequence 3);
-
   ((op_union),2), _op_union;
   ((op_intersect),2), _op_intersect;
   ((op_except),2), _op_except;

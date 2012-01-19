@@ -431,8 +431,8 @@ declare function fn:distinct-values($arg1 as xs:anyAtomicType*, $arg2 as xs:stri
 declare function fn:insert-before($arg1 as item()*, $arg2 as xs:integer, $arg3 as item()*) 	 as item()*   	   external;
 declare function fn:remove($arg1 as item()*, $arg2 as xs:integer) as item()* external;
 declare function fn:reverse($arg1 as item()*) as item()* external;
-declare function fn:subsequence($arg1 as item()*, $arg2 as xs:integer) as item()* external;
-declare function fn:subsequence($arg1 as item()*, $arg2 as xs:integer, $arg3 as xs:integer) as item()*   	   external;
+declare function fn:subsequence($arg1 as item()*, $arg2 as xs:double) as item()* external;
+declare function fn:subsequence($arg1 as item()*, $arg2 as xs:double, $arg3 as xs:double) as item()*   	   external;
 
 declare function fn:unordered($arg1 as item()*)                             as item()*        external;
 
@@ -587,6 +587,8 @@ declare function fs:distinct($arg1 as node()*)                as node()* externa
 (: docorder and distinct can be optimized to node-sequence: :)
 declare function fs:node-sequence($arg1 as node()*)           as node()* external;
 declare function fs:node-sequence-or-atomic-sequence($arg1 as item()*) as item()* external;
+declare function fs:subsequence($arg1 as item()*, $arg2 as xs:integer) as item()* external;
+declare function fs:subsequence($arg1 as item()*, $arg2 as xs:integer, $arg3 as xs:integer) as item()*   	   external;
 
 (: Used in semantics of constructors :)
 

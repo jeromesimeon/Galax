@@ -2,6 +2,12 @@
 | Changelog |
  -----------
 
+Jan 18, 2012 - Jerome
+
+ o F&O:
+    - Final fix to fn:subsequence, issue with NaN or INF as parameter.
+    - Fix to negative marker on fn:round resulting in -0 rather than 0.
+
 Jan 17, 2012 - Jerome
 
  o F&O:

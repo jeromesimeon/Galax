@@ -391,6 +391,7 @@ let distinct_order_handle_fun fname =
   else if (fname = fn_data
 	 || fname = fn_index_of
 	 || fname = fn_subsequence
+	 || fname = fs_subsequence
 	 || fname = fn_count
 	 || fname = fn_position
 	 || fname = fn_last

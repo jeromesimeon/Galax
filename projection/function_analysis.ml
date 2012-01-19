@@ -300,6 +300,7 @@ let fun_used_return_subtree_table =
   [
   
     (fn_subsequence);
+    (fs_subsequence);
     (fn_substring_after);
     (fn_substring_before);
     (fn_substring);

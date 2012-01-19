@@ -330,7 +330,7 @@ let let_clause_rewrite rewrite_ctxt (cfl_clause_list) (cfl_clause) (ce) =
   used_count $i in Expr2 = 0 
   used_count $x in Expr1 = 0
   ==
-  let $x := fn:subsequence(Expr0,Expr1,1)
+  let $x := fs:subsequence(Expr0,Expr1,1)
   return Expr2
 *)
 
@@ -401,11 +401,11 @@ let for_clause_rewrite rewrite_ctxt
 		  let cexpr_one = fmkacexpr (CEScalar (IntegerLiteral (Big_int.big_int_of_int  1))) ah eh loc
 		  in
 		  let (input_types, output_type), opt_fun_kind, upd = 
-		    Norm_context.one_sig_from_norm_context norm_ctxt (fn_subsequence, 3)
+		    Norm_context.one_sig_from_norm_context norm_ctxt (fs_subsequence, 3)
 		  in
 		  let input_types = List.map (fun _ -> None) input_types in
 		  let ce1 =
-		    fmkacexpr (CECall (fn_subsequence, [cexpr1;cexpr2;cexpr_one], (input_types,output_type), upd, false)) ah eh loc
+		    fmkacexpr (CECall (fs_subsequence, [cexpr1;cexpr2;cexpr_one], (input_types,output_type), upd, false)) ah eh loc
 		  in
 		  let ce = fmkacexpr (CEFLWOR([], None, None, ret_expr)) ah eh loc in
 		  (cfl_clause_list@[CELET(odt, vname, ce1)], ce, false)
