@@ -43,13 +43,6 @@ let check_version s e =
     | None -> ()
     | Some e ->
 	ignore(Encoding.encoding_of_string e)
-(*
-	try
-	with _ ->
-	  (eprintf_warning ("Unknown encoding \"" ^ e ^ "\".  See http://www.w3.org/TR/REC-xml/#charencoding");
-	  ())
-*)
-
   end;
   begin
     if s = Conf.xquery_version
@@ -215,6 +208,7 @@ let check_pragma_content content =
 %token ASCENDING DESCENDING EMPTY GREATEST LEAST
 %token OR AND
 %token STAR MULT DIV IDIV MOD MINUS PLUS
+%token IPLUS ISTAR
 %token <Namespace_names.ncname> STARNCNAME NCNAMESTAR
 %token IN SATISFIES RETURN THEN ELSE TO WHERE 
 %token INTERSECT UNION EXCEPT
@@ -279,7 +273,7 @@ let check_pragma_content content =
 %token LTOP GTOP LT GT
 %token PLUS MINUS
 %token BAR ATSIGN COMMA AMPERSAND SEMICOLON
-%token LPAR RPAR IRPAR RPARSTAR RPARPLUS RPARQUESTION LBRACK RBRACK LCURLY RCURLY
+%token LPAR RPAR IRPAR LBRACK RBRACK LCURLY RCURLY
 %token DOLLAR
 %token <Namespace_names.uqname> FUNCTIONNAMELPAR
 
@@ -1690,20 +1684,14 @@ sequencetype:
       { $1 }
   | itemtype RPAR item_occurrence
       { mksequencetype($1, $3) }
-  | itemtype RPARSTAR
-      { mksequencetype ($1, Some(Occurrence.occurs 0, Occurrence.unbounded)) }
-  | itemtype RPARPLUS
-      { mksequencetype ($1, Some(Occurrence.occurs 1, Occurrence.unbounded)) }
-  | itemtype RPARQUESTION
-      { mksequencetype ($1, Some(Occurrence.occurs 0, Occurrence.occurs 1)) }
 ;
 
 item_occurrence:
   | 
     { None }
-  | MULT
+  | ISTAR
       { Some(Occurrence.occurs 0, Occurrence.unbounded) }
-  | PLUS
+  | IPLUS
       { Some(Occurrence.occurs 1, Occurrence.unbounded) }
   | QUESTION
       { Some(Occurrence.occurs 0, Occurrence.occurs 1) }

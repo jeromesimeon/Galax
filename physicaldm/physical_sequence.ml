@@ -74,7 +74,8 @@ let sequence_of_option oo   =
 let materialize_sequence s =
   match s with
   | LSeq l -> s
-  | CSeq c -> LSeq (Cursor.list_of_cursor "Physical_sequence.materialize_sequence" c)
+  | CSeq c ->
+      LSeq (Cursor.list_of_cursor "Physical_sequence.materialize_sequence" c)
 
 let stream_sequence s =
   match s with

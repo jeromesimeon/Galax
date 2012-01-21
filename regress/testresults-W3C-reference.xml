@@ -6662,7 +6662,7 @@
   <test-case name="K2-ForExprWithout-5" result="pass"/>
   <test-case name="K2-ForExprWithout-6" result="pass"/>
   <test-case name="K2-ForExprWithout-7" result="pass"/>
-  <test-case name="K2-ForExprWithout-8" result="fail" comment="Result of case [K2-ForExprWithout-8] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/FLWORExpr/ForExpr/ForExprWithout/K2-ForExprWithout-8.txt] differ :-("/>
+  <test-case name="K2-ForExprWithout-8" result="pass"/>
   <test-case name="K2-ForExprWithout-9" result="pass"/>
   <test-case name="K2-ForExprWithout-10" result="pass"/>
   <test-case name="K2-ForExprWithout-11" result="pass"/>
@@ -6830,7 +6830,7 @@
   <test-case name="K2-LetExprWithout-13" result="pass"/>
   <test-case name="K2-LetExprWithout-14" result="pass"/>
   <test-case name="K2-LetExprWithout-15" result="pass"/>
-  <test-case name="K2-LetExprWithout-16" result="fail" comment="Result of case [K2-LetExprWithout-16] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/FLWORExpr/LetExpr/LetExprWithout/K2-LetExprWithout-16.txt] differ :-("/>
+  <test-case name="K2-LetExprWithout-16" result="pass"/>
   <test-case name="K2-LetExprWithout-17" result="pass"/>
   <test-case name="K2-LetExprWithout-18" result="pass"/>
   <test-case name="K2-LetExprWithout-19" result="pass"/>

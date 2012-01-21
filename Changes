@@ -2,6 +2,24 @@
 | Changelog |
  -----------
 
+Jan 20, 2012 - Jerome
+
+ o Parsing:
+    - Fixed a few regressions introduced by the latest change to the parser.
+
+ o Streaming:
+    - Fixed an issue with code-selection for global variables,
+      streaming too aggressively.
+
+ o Type-checking:
+    - Fixed a bug in type intersection involving node().
+
+Jan 19, 2012 - Jerome
+
+ o Parsing:
+    - Removing obolete rules leading to (harmless) shift/reduce.
+    - Cleaned up some unused tokens and lexing rules.
+
 Jan 18, 2012 - Jerome
 
  o F&O:

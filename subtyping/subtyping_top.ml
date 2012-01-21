@@ -226,9 +226,8 @@ let intersects_with schema cxtype1 cxtype2 =
 
   (* node() or node()+ *)
   else if (cxtype2 = cxtype_node || cxtype2 = cxtype_node_plus) then
-     (* p does not contain atomic, min = 1, max = 1 *)
-    (List.exists is_node_cxtype p) &&
-    Occurrence.equal min occurs_one 
+     (* p contains nods, and max >= 1 *)
+    (List.exists is_node_cxtype p) && not(Occurrence.equal max occurs_zero)
   (* node()? or node()* *)
   else if (cxtype2 = cxtype_node_optional || cxtype2 = cxtype_node_star) then
     (List.exists is_node_cxtype p)

@@ -89,6 +89,7 @@ val is_following_xpath  : docorder -> docorder -> bool
 (************)
 
 val string_of_docorder : docorder -> string
+val string_of_nodeid   : nodeid -> string
 
 
 (*************************************)
