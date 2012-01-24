@@ -45,6 +45,11 @@ Jan 10, 2012 - Jerome
     - Fixed lexical state issue arising from function types.
     - Added -print-states [on/off] option to the top-level tokenizer.
 
+January 7, 2012 - Jerome
+
+ o Configuration:
+    - Fixed lexing tool script for MacOSX.
+
 Jan 6, 2012 - Jerome
 
  o Lexing:
