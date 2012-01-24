@@ -1,6 +1,6 @@
-#! /bin/sh
+#!/bin/sh
 # (*
-exec ocaml "$0" "$@"
+exec /usr/local/bin/ocaml "$0" "$@"
 *) directory ".";;
 
 (* Note:

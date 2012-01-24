@@ -2,6 +2,11 @@
 | Changelog |
  -----------
 
+January 7, 2012 - Jerome
+
+ o Configuration:
+    - Fixed lexing tool script for MacOSX.
+
 Jan 6, 2012 - Jerome
 
  o Lexing:
