@@ -182,7 +182,7 @@ and fl_expr_desc =
 and order_by =
     stablekind * order_spec list
 
-and order_spec = expr * sortkind * emptysortkind option
+and order_spec = expr * sortkind * emptysortkind option * string option
 
 and insert_location =
   | EAsLastInto of expr

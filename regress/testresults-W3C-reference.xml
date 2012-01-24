@@ -6970,9 +6970,9 @@
   <test-case name="orderBy56" result="pass"/>
   <test-case name="orderBy57" result="pass" comment="[INSPECT] Known XQTS bug :-|"/>
   <test-case name="orderBy59" result="pass"/>
-  <test-case name="orderBy60" result="fail" comment="Test case [orderBy60] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Expressions/FLWORExpr/OrderbyExpr/OrderbyExprWith/orderBy60.xq   Lexing Error: 1 Found QName while in operator state [File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Expressions/FLWORExpr/OrderbyExpr/OrderbyExprWith/orderBy60.xq&quot;, line 18, characters 36-45:] ] :-("/>
-  <test-case name="orderBy61" result="fail" comment="Test case [orderBy61] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Expressions/FLWORExpr/OrderbyExpr/OrderbyExprWith/orderBy61.xq   Lexing Error: 1 Found QName while in operator state [File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Expressions/FLWORExpr/OrderbyExpr/OrderbyExprWith/orderBy61.xq&quot;, line 16, characters 36-45:] ] :-("/>
-  <test-case name="orderBy62" result="fail" comment="Test case [orderBy62] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Expressions/FLWORExpr/OrderbyExpr/OrderbyExprWith/orderBy62.xq   Lexing Error: 1 Found QName while in operator state [File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Expressions/FLWORExpr/OrderbyExpr/OrderbyExprWith/orderBy62.xq&quot;, line 15, characters 22-31:] ] :-("/>
+  <test-case name="orderBy60" result="pass"/>
+  <test-case name="orderBy61" result="pass"/>
+  <test-case name="orderBy62" result="pass"/>
   <test-case name="orderbylocal-1" result="pass"/>
   <test-case name="orderbylocal-2" result="pass"/>
   <test-case name="orderbylocal-3" result="pass"/>
@@ -7062,7 +7062,7 @@
   <test-case name="orderbywithout-38" result="pass"/>
   <test-case name="orderbywithout-39" result="pass" comment="[INSPECT] Known XQTS bug :-|"/>
   <test-case name="orderbywithout-40" result="pass"/>
-  <test-case name="K2-OrderbyExprWithout-1" result="fail" comment="Test case [K2-OrderbyExprWithout-1] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/FLWORExpr/OrderbyExpr/OrderbyExprWithout/K2-OrderbyExprWithout-1.xq   Lexing Error: 1 Found QName while in operator state [File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/FLWORExpr/OrderbyExpr/OrderbyExprWithout/K2-OrderbyExprWithout-1.xq&quot;, line 9, characters 25-34:] ] :-("/>
+  <test-case name="K2-OrderbyExprWithout-1" result="pass"/>
   <test-case name="K2-OrderbyExprWithout-2" result="pass"/>
   <test-case name="K2-OrderbyExprWithout-3" result="pass"/>
   <test-case name="K2-OrderbyExprWithout-4" result="pass"/>

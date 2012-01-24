@@ -85,6 +85,11 @@ let make_axis_from_nt nt =
   | (PNodeKindTest (AttributeKind _)) -> Attribute
   | _ -> Child
 
+(* Deals with collations *)
+
+let check_collation s =
+  ()
+
 (* Deals with entity references in XQuery *)
 
 let xquery_parse_context =
@@ -214,7 +219,7 @@ let check_pragma_content content =
 %token INTERSECT UNION EXCEPT
 %token PRECEDES FOLLOWS
 %token CASE INSTANCEOF DEFAULT
-%token IFLPAR TYPESWITCHLPAR STABLEORDERBY ORDERBY
+%token IFLPAR TYPESWITCHLPAR STABLEORDERBY ORDERBY COLLATION
 %token ASSERTAS CASTAS CASTABLEAS TREATAS
 %token VALIDATELCURLY VALIDATESTRICTLCURLY VALIDATELAXLCURLY
 %token ORDEREDCURLY UNORDEREDCURLY
@@ -955,11 +960,20 @@ expr_single:
       { wrap_dxq (fun () -> mkexpr (EEvalClosure($2))) }
 ;
 
+collation:
+  | /* Empty */
+      { None }
+  | COLLATION STRING
+      { Some $2 }
+;
+
 sortspeclist:
-  | sortspec
-      { $1 :: [] }
-  | sortspec COMMA sortspeclist
-      { $1 :: $3 }
+  | sortspec collation
+      { let (a,b,c) = $1 in
+        (a,b,c,$2) :: [] }
+  | sortspec collation COMMA sortspeclist
+      { let (a,b,c) = $1 in
+        (a,b,c,$2) :: $4 }
 ;
 
 sortspec:

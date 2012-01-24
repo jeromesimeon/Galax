@@ -583,6 +583,7 @@ let make_new_token li lh move_state tok =
 
 let operator_keyword_table = [
   (* One word keywords *)
+  [|"collation"|],(xquery_todef,COLLATION);
   [|"or"|],(xquery_todef,OR);
   [|"and"|],(xquery_todef,AND);
   [|"in"|],(xquery_todef,IN);

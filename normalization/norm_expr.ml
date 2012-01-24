@@ -1017,12 +1017,18 @@ in
     match order_by_clause with
     | None -> None
     | Some (stablekind,order_spec_list) ->
-        let apply_one_order_spec (e,sortkind,emptysortkind) =
+        let apply_one_order_spec (e,sortkind,emptysortkind,col) =
+	  (* Checks for proper collation *)
+	  let mod_proc_ctxt = module_context_from_norm_context norm_context in
+	  begin
+	    match col with
+	    | None -> ()
+	    | Some col -> Processing_context.check_collation mod_proc_ctxt col
+	  end;
 	  let ce = normalize_expr_aux norm_context  e in
 	  let ckey = normalize_atomize norm_context ce (Some e) fi in
 	  match emptysortkind with
 	  | None ->
-	      let mod_proc_ctxt = module_context_from_norm_context norm_context in
 	      let emptysortkind = mod_proc_ctxt.Processing_context.default_order_kind in
 	      (ckey,sortkind,emptysortkind)
 	  | Some emptysortkind ->

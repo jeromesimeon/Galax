@@ -466,10 +466,14 @@ and print_sortspeclist ff ssl =
 
 and print_sortspec ff sk =
   match sk with
-  | (e,sk,None) ->
+  | (e,sk,None,None) ->
       fprintf ff "@[%a@] @[%a@]" (print_expr_prec 0) e print_sortkind sk
-  | (e,sk,Some esk) ->
+  | (e,sk,Some esk,None) ->
       fprintf ff "@[%a@] @[%a@] @[%a@]" (print_expr_prec 0) e print_sortkind sk print_emptysortkind esk
+  | (e,sk,None,Some c) ->
+      fprintf ff "@[%a@] @[%a@] @[%s@]" (print_expr_prec 0) e print_sortkind sk c
+  | (e,sk,Some esk,Some c) ->
+      fprintf ff "@[%a@] @[%a@] @[%a@] @[%s@]" (print_expr_prec 0) e print_sortkind sk print_emptysortkind esk c
 
 and print_flclauses ff fls =
   match fls with

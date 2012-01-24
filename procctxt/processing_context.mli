@@ -113,6 +113,7 @@ val set_ns_inherit_kind      : module_processing_context -> Xquery_common_ast.in
 val get_base_uri             : module_processing_context -> AnyURI._uri option
 val get_default_collation    : module_processing_context -> string (* AnyURI._uri *)
 val set_base_uri             : module_processing_context -> AnyURI._uri option -> unit
+val check_collation          : module_processing_context -> string -> unit
 val set_default_collation    : module_processing_context -> string -> unit
 
 (*****************************)

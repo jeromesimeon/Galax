@@ -386,18 +386,24 @@ let set_base_uri proc_ctxt base_uri =  proc_ctxt.base_uri <- base_uri
 let known_collation uri =
   uri = Conf.collns
 
-let set_default_collation proc_ctxt uri =
+let check_collation_aux proc_ctxt uri =
   let uri' = 
     match  proc_ctxt.base_uri with
     | Some base_uri -> 
 	(AnyURI._string_of_uri(AnyURI._uri_resolve base_uri (AnyURI._kinda_uri_of_string uri)))
     | None -> uri
   in
-  if known_collation uri' then
-    proc_ctxt.default_collation <- uri'
+  if known_collation uri' then uri'
   else
     raise
       (Query(Wrong_Args("[err:XQST0038] Unknown collation:" ^ uri')))
+
+let check_collation proc_ctxt uri =
+  ignore(check_collation_aux proc_ctxt uri)
+
+let set_default_collation proc_ctxt uri =
+  let uri' = check_collation_aux proc_ctxt uri in
+  proc_ctxt.default_collation <- uri'
 
 
 (***************************)

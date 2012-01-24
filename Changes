@@ -2,6 +2,11 @@
 | Changelog |
  -----------
 
+January 24, 2012 - Jerome
+
+ o Parsing:
+    - Added collation support in order-by clause.
+
 January 23, 2012 - Jerome
 
  o Rewritings:
