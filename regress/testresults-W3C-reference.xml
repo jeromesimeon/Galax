@@ -1390,7 +1390,7 @@
   <test-case name="K2-NumericAdd-1" result="pass"/>
   <test-case name="K2-NumericAdd-2" result="pass"/>
   <test-case name="K2-NumericAdd-3" result="pass"/>
-  <test-case name="op-numeric-add-1" result="fail" comment="Result of case [op-numeric-add-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/Operators/ArithExpr/NumericOpr/NumericAdd/op-numeric-add-1.txt] differ :-("/>
+  <test-case name="op-numeric-add-1" result="pass"/>
   <test-case name="op-numeric-subtractint2args-1" result="pass"/>
   <test-case name="op-numeric-subtractint2args-2" result="pass"/>
   <test-case name="op-numeric-subtractint2args-3" result="pass"/>
@@ -1500,7 +1500,7 @@
   <test-case name="K-NumericSubtract-38" result="pass"/>
   <test-case name="K2-NumericSubtract-1" result="pass"/>
   <test-case name="K2-NumericSubtract-2" result="pass"/>
-  <test-case name="op-numeric-subtract-1" result="fail" comment="Result of case [op-numeric-subtract-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/Operators/ArithExpr/NumericOpr/NumericSubtract/op-numeric-subtract-1.txt] differ :-("/>
+  <test-case name="op-numeric-subtract-1" result="pass"/>
   <test-case name="op-numeric-multiplydec2args-1" result="pass"/>
   <test-case name="op-numeric-multiplydec2args-2" result="pass"/>
   <test-case name="op-numeric-multiplydec2args-3" result="pass"/>
@@ -1580,7 +1580,7 @@
   <test-case name="K-NumericMultiply-31" result="pass"/>
   <test-case name="K-NumericMultiply-32" result="pass"/>
   <test-case name="K-NumericMultiply-33" result="pass"/>
-  <test-case name="op-numeric-multiply-1" result="fail" comment="Result of case [op-numeric-multiply-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/Operators/ArithExpr/NumericOpr/NumericMultiply/op-numeric-multiply-1.txt] differ :-("/>
+  <test-case name="op-numeric-multiply-1" result="pass"/>
   <test-case name="op-numeric-divideint2args-1" result="pass"/>
   <test-case name="op-numeric-divideint2args-2" result="pass"/>
   <test-case name="op-numeric-divideint2args-3" result="pass"/>
@@ -1704,7 +1704,7 @@
   <test-case name="K2-NumericDivide-15" result="pass"/>
   <test-case name="K2-NumericDivide-16" result="pass"/>
   <test-case name="K2-NumericDivide-17" result="pass"/>
-  <test-case name="op-numeric-divide-1" result="fail" comment="Result of case [op-numeric-divide-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/Operators/ArithExpr/NumericOpr/NumericDivide/op-numeric-divide-1.txt] differ :-("/>
+  <test-case name="op-numeric-divide-1" result="pass"/>
   <test-case name="op-numeric-integer-divideint2args-1" result="pass"/>
   <test-case name="op-numeric-integer-divideint2args-2" result="pass"/>
   <test-case name="op-numeric-integer-divideint2args-3" result="pass"/>
@@ -1952,7 +1952,7 @@
   <test-case name="K2-NumericMod-60" result="pass"/>
   <test-case name="K2-NumericMod-61" result="pass"/>
   <test-case name="K2-NumericMod-62" result="pass"/>
-  <test-case name="op-numeric-mod-1" result="fail" comment="Result of case [op-numeric-mod-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/Operators/ArithExpr/NumericOpr/NumericMod/op-numeric-mod-1.txt] differ :-("/>
+  <test-case name="op-numeric-mod-1" result="pass"/>
   <test-case name="op-numeric-unary-plusint1args-1" result="pass"/>
   <test-case name="op-numeric-unary-plusint1args-2" result="pass"/>
   <test-case name="op-numeric-unary-plusint1args-3" result="pass"/>
@@ -2006,7 +2006,7 @@
   <test-case name="K-NumericUnaryPlus-12" result="pass"/>
   <test-case name="K2-NumericUnaryPlus-1" result="pass"/>
   <test-case name="K2-NumericUnaryPlus-2" result="pass"/>
-  <test-case name="op-numeric-unary-plus-1" result="fail" comment="Result of case [op-numeric-unary-plus-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/Operators/ArithExpr/NumericOpr/NumericUnaryPlus/op-numeric-unary-plus-1.txt] differ :-("/>
+  <test-case name="op-numeric-unary-plus-1" result="pass"/>
   <test-case name="op-numeric-unary-minusint1args-1" result="pass"/>
   <test-case name="op-numeric-unary-minusint1args-2" result="pass"/>
   <test-case name="op-numeric-unary-minusint1args-3" result="pass"/>
@@ -2069,7 +2069,7 @@
   <test-case name="K2-NumericUnaryMinus-8" result="pass"/>
   <test-case name="K2-NumericUnaryMinus-9" result="pass"/>
   <test-case name="K2-NumericUnaryMinus-10" result="pass"/>
-  <test-case name="op-numeric-unary-minus-1" result="fail" comment="Result of case [op-numeric-unary-minus-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/Operators/ArithExpr/NumericOpr/NumericUnaryMinus/op-numeric-unary-minus-1.txt] differ :-("/>
+  <test-case name="op-numeric-unary-minus-1" result="pass"/>
   <test-case name="op-add-yearMonthDurations2args-1" result="pass"/>
   <test-case name="op-add-yearMonthDurations2args-2" result="pass"/>
   <test-case name="op-add-yearMonthDurations2args-3" result="pass"/>
@@ -12618,7 +12618,7 @@
   <test-case name="K2-ABSFunc-48" result="pass"/>
   <test-case name="K2-ABSFunc-49" result="pass"/>
   <test-case name="K2-ABSFunc-50" result="pass"/>
-  <test-case name="fn-abs-1" result="fail" comment="Result of case [fn-abs-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/ABSFunc/fn-abs-1.txt] differ :-("/>
+  <test-case name="fn-abs-1" result="pass"/>
   <test-case name="fn-ceilingint1args-1" result="pass"/>
   <test-case name="fn-ceilingint1args-2" result="pass"/>
   <test-case name="fn-ceilingint1args-3" result="pass"/>
@@ -12676,7 +12676,7 @@
   <test-case name="K2-CeilingFunc-10" result="pass"/>
   <test-case name="K2-CeilingFunc-11" result="pass"/>
   <test-case name="K2-CeilingFunc-12" result="pass"/>
-  <test-case name="fn-ceiling-1" result="fail" comment="Result of case [fn-ceiling-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/CeilingFunc/fn-ceiling-1.txt] differ :-("/>
+  <test-case name="fn-ceiling-1" result="pass"/>
   <test-case name="fn-floorint1args-1" result="pass"/>
   <test-case name="fn-floorint1args-2" result="pass"/>
   <test-case name="fn-floorint1args-3" result="pass"/>
@@ -12735,7 +12735,7 @@
   <test-case name="K2-FloorFunc-11" result="pass"/>
   <test-case name="K2-FloorFunc-12" result="pass"/>
   <test-case name="K2-FloorFunc-13" result="pass"/>
-  <test-case name="fn-floor-1" result="fail" comment="Result of case [fn-floor-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/FloorFunc/fn-floor-1.txt] differ :-("/>
+  <test-case name="fn-floor-1" result="pass"/>
   <test-case name="fn-roundint1args-1" result="pass"/>
   <test-case name="fn-roundint1args-2" result="pass"/>
   <test-case name="fn-roundint1args-3" result="pass"/>
@@ -12974,7 +12974,7 @@
   <test-case name="K2-RoundFunc-188" result="pass"/>
   <test-case name="K2-RoundFunc-189" result="pass"/>
   <test-case name="K2-RoundFunc-190" result="pass"/>
-  <test-case name="fn-round-1" result="fail" comment="Result of case [fn-round-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/fn-round-1.txt] differ :-("/>
+  <test-case name="fn-round-1" result="pass"/>
   <test-case name="fn-round-half-to-evenint1args-1" result="pass"/>
   <test-case name="fn-round-half-to-evenint1args-2" result="pass"/>
   <test-case name="fn-round-half-to-evenint1args-3" result="pass"/>
@@ -13047,8 +13047,8 @@
   <test-case name="K2-RoundEvenFunc-26" result="pass"/>
   <test-case name="K2-RoundEvenFunc-27" result="pass"/>
   <test-case name="K2-RoundEvenFunc-28" result="pass"/>
-  <test-case name="fn-round-half-to-even-1" result="fail" comment="Result of case [fn-round-half-to-even-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundEvenFunc/fn-round-half-to-even-1.txt] differ :-("/>
-  <test-case name="fn-round-half-to-even-2" result="fail" comment="Result of case [fn-round-half-to-even-2] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundEvenFunc/fn-round-half-to-even-2.txt] differ :-("/>
+  <test-case name="fn-round-half-to-even-1" result="pass"/>
+  <test-case name="fn-round-half-to-even-2" result="pass"/>
   <test-case name="fn-codepoints-to-string1args-1" result="pass"/>
   <test-case name="fn-codepoints-to-string1args-2" result="pass"/>
   <test-case name="fn-codepoints-to-string1args-3" result="pass"/>
@@ -16760,7 +16760,7 @@
   <test-case name="fn-max-7" result="pass"/>
   <test-case name="fn-max-8" result="pass"/>
   <test-case name="fn-max-9" result="pass"/>
-  <test-case name="fn-max-10" result="fail" comment="Result of case [fn-max-10] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/SeqFunc/AggregateSeqFunc/SeqMAXFunc/fn-max-10.txt] differ :-("/>
+  <test-case name="fn-max-10" result="pass"/>
   <test-case name="fn-minint1args-1" result="pass"/>
   <test-case name="fn-minint1args-2" result="pass"/>
   <test-case name="fn-minint1args-3" result="pass"/>
@@ -16940,7 +16940,7 @@
   <test-case name="fn-min-7" result="pass"/>
   <test-case name="fn-min-8" result="pass"/>
   <test-case name="fn-min-9" result="pass"/>
-  <test-case name="fn-min-10" result="fail" comment="Result of case [fn-min-10] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/SeqFunc/AggregateSeqFunc/SeqMINFunc/fn-min-10.txt] differ :-("/>
+  <test-case name="fn-min-10" result="pass"/>
   <test-case name="fn-sumint1args-1" result="pass"/>
   <test-case name="fn-sumint1args-2" result="pass"/>
   <test-case name="fn-sumint1args-3" result="pass"/>

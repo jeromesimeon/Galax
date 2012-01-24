@@ -2,7 +2,15 @@
 | Changelog |
  -----------
 
-Jan 20, 2012 - Jerome
+January 23, 2012 - Jerome
+
+ o Rewritings:
+    - Fixed somewhat embarrassing bug on rewriting of overloaded
+      functions, not properly checking for all cases in union types.
+    - Fixed rewriting bug for overloaded function applied to anyURI,
+      revealed by the previous fix.
+
+January 20, 2012 - Jerome
 
  o Parsing:
     - Fixed a few regressions introduced by the latest change to the parser.
@@ -14,24 +22,24 @@ Jan 20, 2012 - Jerome
  o Type-checking:
     - Fixed a bug in type intersection involving node().
 
-Jan 19, 2012 - Jerome
+January 19, 2012 - Jerome
 
  o Parsing:
     - Removing obolete rules leading to (harmless) shift/reduce.
     - Cleaned up some unused tokens and lexing rules.
 
-Jan 18, 2012 - Jerome
+January 18, 2012 - Jerome
 
  o F&O:
     - Final fix to fn:subsequence, issue with NaN or INF as parameter.
     - Fix to negative marker on fn:round resulting in -0 rather than 0.
 
-Jan 17, 2012 - Jerome
+January 17, 2012 - Jerome
 
  o F&O:
     - Fixed rounding issue with fn:subsequence.
 
-Jan 10, 2012 - Jerome
+January 10, 2012 - Jerome
 
  o Configuration:
     - Fixed bug in configuration generation introduced in previous patch.
@@ -39,7 +47,7 @@ Jan 10, 2012 - Jerome
  o F&O:
     - fn:doc-available returns false for the empty sequence, not empty.
 
-Jan 10, 2012 - Jerome
+January 10, 2012 - Jerome
 
  o Lexing:
     - Fixed lexical state issue arising from function types.
@@ -50,7 +58,7 @@ January 7, 2012 - Jerome
  o Configuration:
     - Fixed lexing tool script for MacOSX.
 
-Jan 6, 2012 - Jerome
+January 6, 2012 - Jerome
 
  o Lexing:
     - Added a hook to the tokenizer from the command line, returning
@@ -59,7 +67,7 @@ Jan 6, 2012 - Jerome
       Usage:
         glx tokenize [files]
 
-Jan 5, 2012 - Jerome
+January 5, 2012 - Jerome
 
  o Lexing:
     - Removed Xmldecl_lexer, unused.
@@ -82,7 +90,7 @@ Jan 5, 2012 - Jerome
  o Functions and operators:
     - Added missing (new?) fn:doc-available, simply reusing fn:doc.
 
-Jan 4, 2012 - Jerome
+January 4, 2012 - Jerome
 
  o Documentation:
     - Some cleanup and basic update of the documentation.
@@ -94,7 +102,7 @@ Jan 4, 2012 - Jerome
  o Installation:
      - Fixed installed makefile for update usecases.
 
-Jan 3, 2012 - Jerome
+January 3, 2012 - Jerome
 
  o Parsing:
     - Fixed minor issue with new-line normalization.
@@ -105,13 +113,13 @@ Jan 3, 2012 - Jerome
     - Fixed bug in parsing for attribute and schema-attribute node
       kinds.
 
-Dec 21, 2011 - Jerome
+December 21, 2011 - Jerome
 
   o Rewriting:
      - Fixed slightly too aggressive rewriting rules for
        fs:untyped-to-double, leading to errors in some cases.
 
-Dec 20, 2011 - Jerome
+December 20, 2011 - Jerome
 
   o Normalization:
      - Fixed odd bug on leading '/' and leading '//' not properly
@@ -133,7 +141,7 @@ Dec 20, 2011 - Jerome
      - Cleaned up a few wrong version references and links to Web site
        in the code.
 
-Dec 16, 2011 - Jerome
+December 16, 2011 - Jerome
 
   o Rewriting:
      - Reverted slightly too aggressive rewriting rule for casting,
@@ -141,42 +149,42 @@ Dec 16, 2011 - Jerome
      - Consolidated E1[E2] rewrite, making sure they are correct and
        do not introduce regressions.
 
-Dec 15, 2011 - Jerome
+December 15, 2011 - Jerome
 
   o Rewriting:
      - Fixed some of the basic rewrites for E1[E2] when E2 is a
        numeric, leads to better access times for those cases.
 
-Dec 8, 2011 - Jerome
+December 8, 2011 - Jerome
 
   o Testing:
      - Fixed serialization of XML optimized plans during testing
      - Some fixes to the GLX tests catalog
 
-Dec 8, 2011 - Jerome
+December 8, 2011 - Jerome
 
   o Streaming:
      - Further cleanup of namespace resolution.
 
-Dec 6, 2011 - Jerome
+December 6, 2011 - Jerome
 
   o GIT:
      - Removed some files that shouldn't be tracked.
   o Streaming:
      - Slightly neater attribute resolution code.
 
-Dec 6, 2011 - Jerome
+December 6, 2011 - Jerome
 
   o Streaming:
      - Cleaned up some of the handling of namespace attributes.
 
-Dec 6, 2011 - Jerome
+December 6, 2011 - Jerome
 
   o Streaming:
      - Reduces namespace environment manipulation during stream
        resolution, resulting in much faster processing in some cases.
 
-Dec 5, 2011 - Jerome
+December 5, 2011 - Jerome
 
   o Build:
       - Now builds on ocaml 3.12.1+rc1
@@ -191,13 +199,13 @@ Dec 5, 2011 - Jerome
         stream type, in an attempt to reduce the number of events
         being copied.
 
-Mar 30, 2011 - Jerome
+March 30, 2011 - Jerome
 
   o String matching:
      - Fixed problem with tokenization of empty sequence, introduced
        by latest fix.
 
-Mar 9, 2011 - Jerome
+March 9, 2011 - Jerome
 
   o Build:
       - Now builds on ocaml 3.12, with camomile 0.8
@@ -1170,7 +1178,7 @@ August 1, 2007 - Jerome
 
   o XQuery: Added missing modules! Ugh too...
 
-Aug 1, 2007 - Mary
+August 1, 2007 - Mary
   o schema/schema_import.mlp : incorrectly updated the generated file
     schema_import.ml, then put it back in CVS. Ugh.
 
@@ -15701,11 +15709,11 @@ December 1, 2001 - Jerome
   - Fixed several bugs in recfactor. not terminating for recursive
     elements. wrong bounds.
 
-Nov 30, 2001 - Mary
+November 30, 2001 - Mary
   - base/error.ml -- errors not printed to stderr
   - schema/schemamapping.ml - made some functions public
 
-Nov 29, 2001 - Mary
+November 29, 2001 - Mary
 
   - added TREE use case
      o Validation error when trying to validate:

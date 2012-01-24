@@ -34,8 +34,11 @@ val intersects_with : cxschema -> cxtype -> cxtype -> bool
 (* <: numeric *)
 val is_subtype_of_anynumeric    : cxschema -> cxtype -> bool
 
-(* <: numeric *)
+(* <: xs:string *)
 val is_subtype_of_anystring     : cxschema -> cxtype -> bool
+
+(* <: xs:anyURI *)
+val is_subtype_of_anyURI        : cxschema -> cxtype -> bool
 
 (* <: atomic *)
 val is_subtype_of_anyatomic     : cxschema -> cxtype -> bool

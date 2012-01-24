@@ -213,8 +213,8 @@ let match_function_signature typing_ctxt fn arguments_types signatures =
 (*
 Printf.printf "Defaulting to %s\n" (prefixed_string_of_rqname fn');
 Printf.printf "Output type %s\n" (Print_top.bprintf_cxtype "" output_cxtype);
-flush stdout; *)
-
+flush stdout;
+*)
 		(fn', (expected_input_types, output_cxtype), upd)
 	      end
 	    else args_match_signature sigs
@@ -280,15 +280,55 @@ let string_of_types ts =
   in
   String.concat ";" types_string
 
+let check_occurrences_in_overload min1 max1 min2 max2 =
+  ()
+
+let cartesian_product_in_overload tl1 tl2 =
+  List.flatten (List.map (fun x -> List.map (fun y -> [x;y]) tl2) tl1)
+
+let decompose_argument_types_to_pairs argument_types =
+  let (t1,t2) =
+    match argument_types with
+    | [t1;t2] -> (t1,t2)
+    | _ -> raise Not_found
+  in
+  let (ft1,min1,max1) = Schema_util.factor_with_units t1 in
+  let (ft2,min2,max2) = Schema_util.factor_with_units t2 in
+  begin
+    check_occurrences_in_overload min1 max1 min2 max2;
+    cartesian_product_in_overload ft1 ft2
+  end
+
 let match_overloaded_function_signature typing_ctxt fn argument_types overloaded_signature_table =
   (* Pick the first function whose signature matches the types of the
      function arguments, after type promotion *)
   try
-    let (fn', (input_types,  output_type), upd) =
-      match_function_signature typing_ctxt fn argument_types overloaded_signature_table
+    let argument_types_pairs =
+      decompose_argument_types_to_pairs argument_types
     in
-    (* Printf.printf "Found new function: %s, can implement function %s over types [%s]\n" (prefixed_string_of_rqname fn') (prefixed_string_of_rqname fn) (string_of_types argument_types); flush stdout; *)
-    (fn', input_types, output_type, upd)
+    let match_one_argument_pair argument_types_pair =
+      let (fn', (input_types,  output_type), upd) =
+	match_function_signature typing_ctxt fn argument_types_pair overloaded_signature_table
+      in
+(* Printf.printf "Found new function: %s, can implement function %s over types [%s]\n" (prefixed_string_of_rqname fn') (prefixed_string_of_rqname fn) (string_of_types argument_types_pair); flush stdout; *)
+      (fn', (input_types, output_type), upd)
+    in
+    let all_matching_monomorphic_functions =
+      List.map match_one_argument_pair argument_types_pairs
+    in
+    let (fn', (input_types,  output_type), upd) =
+      (* returns the single function that works, or raises an exception *)
+      match all_matching_monomorphic_functions with
+      | [x] -> x
+      | _ -> raise Not_found
+    in
+    begin
+(*      Printf.printf "---------------------\n";
+      Printf.printf "Found final function: %s, can implement function %s over types [%s]\n" (prefixed_string_of_rqname fn') (prefixed_string_of_rqname fn) (string_of_types argument_types);
+      Printf.printf "---------------------\n";
+      flush stdout; *)
+      (fn', input_types, output_type, upd)
+    end
   with
   | _ -> (fn, argument_types, Schema_builtin.cxtype_item_star, NonUpdating)
 

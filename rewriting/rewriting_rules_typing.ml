@@ -104,6 +104,7 @@ let float_cdt_cxtype fi = (fmkcsequencetype (CITAtomic Namespace_builtin.xs_floa
 let double_cdt_cxtype fi = (fmkcsequencetype (CITAtomic Namespace_builtin.xs_double,None) fi, cxtype_double)
 let integer_cdt_cxtype fi = (fmkcsequencetype (CITAtomic Namespace_builtin.xs_integer,None) fi, cxtype_integer)
 let string_cdt_cxtype fi =  (fmkcsequencetype (CITAtomic Namespace_builtin.xs_string,None) fi, cxtype_string)
+let anyURI_cdt_cxtype fi =  (fmkcsequencetype (CITAtomic Namespace_builtin.xs_anyURI,None) fi, cxtype_anyURI)
 
 let double_opt_cdt_cxtype fi = (fmkcsequencetype (CITAtomic Namespace_builtin.xs_double,Some Occurrence.optional) fi, cxtype_double_optional)
 let integer_opt_cdt_cxtype fi = (fmkcsequencetype (CITAtomic Namespace_builtin.xs_integer,Some Occurrence.optional) fi, cxtype_integer_optional)
@@ -323,6 +324,11 @@ let overloaded_type_rewrite (rewrite_ctxt) (ce) =
 		    fmkacexpr (CECall(fs_promote_to_numeric, [ce; proto_value], 
 				      ([None; None], (numeric_sequence_type, cxtype_numeric)), upd, false)) ah eh loc
 		  end
+		else if (is_subtype_of_anyURI schema p) then
+		  let nsenv  = Norm_context.nsenv_from_norm_context norm_ctxt in
+		  let (vname,cve) = Norm_context.gen_new_cvar_typed norm_ctxt ah eh loc in
+  		  let cast = fmkacexpr (CECast(cve, nsenv, anyURI_cdt_cxtype loc)) ah eh loc in
+		  make_for_flwor [CEFOR (None, vname, None, ce)] cast ah eh loc
 		else if (is_subtype_of_anystring schema p) then
 		  let nsenv  = Norm_context.nsenv_from_norm_context norm_ctxt in
 		  let (vname,cve) = Norm_context.gen_new_cvar_typed norm_ctxt ah eh loc in

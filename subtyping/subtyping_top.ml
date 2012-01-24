@@ -273,6 +273,9 @@ let is_subtype_of_anynumeric schema model =
 let is_subtype_of_anystring schema model =
   is_subtype_of schema model cxtype_anystring
 
+let is_subtype_of_anyURI schema model =
+  is_subtype_of schema model cxtype_anyURI
+
 let is_subtype_of_anyatomic schema model =
   is_subtype_of schema model cxtype_atomic
 
