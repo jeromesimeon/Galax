@@ -170,6 +170,8 @@ let dfgraph_formatter = ref Format.std_formatter
 
 let genresults        = ref false
 
+let print_lex_states = ref false
+
 (********************)
 (* XML Plan Loading *)
 (********************)

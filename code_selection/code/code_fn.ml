@@ -575,13 +575,19 @@ let _fn_floor_integer code_ctxt alg_ctxt n =
 
 (* F&O Section 6.4.4 fn:round *)
 
+let _fn_round_double_aux f =
+  let fl = floor (f +. 0.5) in
+  if ((is_neg f) && not(is_neg fl))
+  then -. fl
+  else fl
+
 let _fn_round_double code_ctxt alg_ctxt n = 
   let s  = Args.get_array_param1  n in
   let f  = get_optional_double s in
   match f with
   | None -> Cursor.cursor_empty()
   | Some f ->
-      let f' = floor (f +. 0.5) in
+      let f' = _fn_round_double_aux f in
       Cursor.cursor_of_singleton (_double f')
 
 let _fn_round_float code_ctxt alg_ctxt n = 
@@ -590,7 +596,7 @@ let _fn_round_float code_ctxt alg_ctxt n =
   match f with
   | None -> Cursor.cursor_empty()
   | Some f ->
-      let f' = floor (f +. 0.5) in
+      let f' = _fn_round_double_aux f in
       Cursor.cursor_of_singleton (_float f')
 
 let _fn_round_decimal code_ctxt alg_ctxt n = 
@@ -2443,10 +2449,40 @@ let _fn_reverse code_ctxt alg_ctxt n =
 
 let _fn_subsequence_2 code_ctxt alg_ctxt n =
   let (p1,p2) = Args.get_array_param2 n in
-  let i2 = _int_of_integer (get_integer p2) in
+  let f2 = _fn_round_double_aux (get_double p2) in
+  let i2 =
+    if (f2 = infinity) then max_int
+    else if (f2 = neg_infinity) then min_int
+    else _int_of_integer (Decimal._cast_float_to_integer f2)
+  in
   Cursor.cursor_subsequence2 p1 i2
 
 let _fn_subsequence_3 code_ctxt alg_ctxt n =
+  let (p1,p2,p3) = Args.get_array_param3 n in
+  let f2 = _fn_round_double_aux (get_double p2) in
+  let i2 =
+    if (f2 = infinity) then max_int
+    else if (f2 = neg_infinity) then min_int
+    else _int_of_integer (Decimal._cast_float_to_integer f2)
+  in
+  let f3 = _fn_round_double_aux (get_double p3) in
+  let lastf = f3 +. f2 in
+  if ((compare lastf nan) = 0)
+  then Cursor.cursor_empty ()
+  else
+    let i3 =
+      if (f3 = infinity) then max_int
+      else if (f3 = neg_infinity) then min_int
+      else _int_of_integer (Decimal._cast_float_to_integer f3)
+    in
+    Cursor.cursor_subsequence3 p1 i2 i3
+
+let _fs_subsequence_2 code_ctxt alg_ctxt n =
+  let (p1,p2) = Args.get_array_param2 n in
+  let i2 = _int_of_integer (get_integer p2) in
+  Cursor.cursor_subsequence2 p1 i2
+
+let _fs_subsequence_3 code_ctxt alg_ctxt n =
   let (p1,p2,p3) = Args.get_array_param3 n in
   let i2 = _int_of_integer(get_integer p2) in
   let i3 = _int_of_integer(get_integer p3) in
@@ -2958,7 +2994,8 @@ let _fn_doc_available code_ctxt =
   (fun alg_ctxt n ->
     let p1 = Args.get_array_param1 n in
     if (Cursor.cursor_is_empty p1)
-    then Cursor.cursor_empty()
+    (* Should return false for empty-sequence *)
+    then Cursor.cursor_of_singleton (_boolean false)
     else
       let uri_string = get_string p1 in
       let absolute_uri_string =
@@ -4466,7 +4503,9 @@ let fun_table = [
   (fn_remove, 2), _fn_remove;
   (fn_reverse, 1), _fn_reverse;
   (fn_subsequence, 2), _fn_subsequence_2;
+  (fs_subsequence, 2), _fs_subsequence_2;
   (fn_subsequence, 3), _fn_subsequence_3;
+  (fs_subsequence, 3), _fs_subsequence_3;
   (fn_unordered,1), _fn_unordered;
 
   (* fn:distinct-values, fn:index-of, and fn:deep-equal all (recursively) depend on the 

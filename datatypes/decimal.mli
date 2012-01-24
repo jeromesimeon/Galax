@@ -118,3 +118,5 @@ val _cast_double_to_decimal    : float -> _decimal
 val _integer_of_int       : int -> _integer
 val _int_of_integer       : _integer -> int
 
+val is_neg_zero : float -> bool
+val is_neg      : float -> bool

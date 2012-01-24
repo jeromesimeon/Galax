@@ -2,6 +2,49 @@
 | Changelog |
  -----------
 
+Jan 20, 2012 - Jerome
+
+ o Parsing:
+    - Fixed a few regressions introduced by the latest change to the parser.
+
+ o Streaming:
+    - Fixed an issue with code-selection for global variables,
+      streaming too aggressively.
+
+ o Type-checking:
+    - Fixed a bug in type intersection involving node().
+
+Jan 19, 2012 - Jerome
+
+ o Parsing:
+    - Removing obolete rules leading to (harmless) shift/reduce.
+    - Cleaned up some unused tokens and lexing rules.
+
+Jan 18, 2012 - Jerome
+
+ o F&O:
+    - Final fix to fn:subsequence, issue with NaN or INF as parameter.
+    - Fix to negative marker on fn:round resulting in -0 rather than 0.
+
+Jan 17, 2012 - Jerome
+
+ o F&O:
+    - Fixed rounding issue with fn:subsequence.
+
+Jan 10, 2012 - Jerome
+
+ o Configuration:
+    - Fixed bug in configuration generation introduced in previous patch.
+
+ o F&O:
+    - fn:doc-available returns false for the empty sequence, not empty.
+
+Jan 10, 2012 - Jerome
+
+ o Lexing:
+    - Fixed lexical state issue arising from function types.
+    - Added -print-states [on/off] option to the top-level tokenizer.
+
 January 7, 2012 - Jerome
 
  o Configuration:

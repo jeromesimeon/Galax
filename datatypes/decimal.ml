@@ -432,3 +432,8 @@ let _string_of_float f =
    else if f = (neg_infinity) then "-INF"
    else string_of_float f
 
+let is_neg_zero f =
+  (_string_of_float f = "-0.")
+
+let is_neg f = 
+  (_string_of_float f).[0] = '-'

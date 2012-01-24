@@ -6662,7 +6662,7 @@
   <test-case name="K2-ForExprWithout-5" result="pass"/>
   <test-case name="K2-ForExprWithout-6" result="pass"/>
   <test-case name="K2-ForExprWithout-7" result="pass"/>
-  <test-case name="K2-ForExprWithout-8" result="fail" comment="Result of case [K2-ForExprWithout-8] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/FLWORExpr/ForExpr/ForExprWithout/K2-ForExprWithout-8.txt] differ :-("/>
+  <test-case name="K2-ForExprWithout-8" result="pass"/>
   <test-case name="K2-ForExprWithout-9" result="pass"/>
   <test-case name="K2-ForExprWithout-10" result="pass"/>
   <test-case name="K2-ForExprWithout-11" result="pass"/>
@@ -6830,7 +6830,7 @@
   <test-case name="K2-LetExprWithout-13" result="pass"/>
   <test-case name="K2-LetExprWithout-14" result="pass"/>
   <test-case name="K2-LetExprWithout-15" result="pass"/>
-  <test-case name="K2-LetExprWithout-16" result="fail" comment="Result of case [K2-LetExprWithout-16] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/FLWORExpr/LetExpr/LetExprWithout/K2-LetExprWithout-16.txt] differ :-("/>
+  <test-case name="K2-LetExprWithout-16" result="pass"/>
   <test-case name="K2-LetExprWithout-17" result="pass"/>
   <test-case name="K2-LetExprWithout-18" result="pass"/>
   <test-case name="K2-LetExprWithout-19" result="pass"/>
@@ -12799,85 +12799,85 @@
   <test-case name="K2-RoundFunc-13" result="pass"/>
   <test-case name="K2-RoundFunc-14" result="pass"/>
   <test-case name="K2-RoundFunc-15" result="pass"/>
-  <test-case name="K2-RoundFunc-16" result="fail" comment="Result of case [K2-RoundFunc-16] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-16.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-16" result="pass"/>
   <test-case name="K2-RoundFunc-17" result="pass"/>
   <test-case name="K2-RoundFunc-18" result="pass"/>
   <test-case name="K2-RoundFunc-19" result="pass"/>
-  <test-case name="K2-RoundFunc-20" result="fail" comment="Result of case [K2-RoundFunc-20] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-20.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-20" result="pass"/>
   <test-case name="K2-RoundFunc-21" result="pass"/>
   <test-case name="K2-RoundFunc-22" result="pass"/>
   <test-case name="K2-RoundFunc-23" result="pass"/>
   <test-case name="K2-RoundFunc-24" result="pass"/>
-  <test-case name="K2-RoundFunc-25" result="fail" comment="Result of case [K2-RoundFunc-25] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-25.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-26" result="fail" comment="Result of case [K2-RoundFunc-26] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-26.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-25" result="pass"/>
+  <test-case name="K2-RoundFunc-26" result="pass"/>
   <test-case name="K2-RoundFunc-27" result="pass"/>
   <test-case name="K2-RoundFunc-28" result="pass"/>
-  <test-case name="K2-RoundFunc-29" result="fail" comment="Result of case [K2-RoundFunc-29] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-29.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-30" result="fail" comment="Result of case [K2-RoundFunc-30] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-30.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-29" result="pass"/>
+  <test-case name="K2-RoundFunc-30" result="pass"/>
   <test-case name="K2-RoundFunc-31" result="pass"/>
   <test-case name="K2-RoundFunc-32" result="pass"/>
-  <test-case name="K2-RoundFunc-33" result="fail" comment="Result of case [K2-RoundFunc-33] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-33.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-34" result="fail" comment="Result of case [K2-RoundFunc-34] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-34.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-33" result="pass"/>
+  <test-case name="K2-RoundFunc-34" result="pass"/>
   <test-case name="K2-RoundFunc-35" result="pass"/>
   <test-case name="K2-RoundFunc-36" result="pass"/>
-  <test-case name="K2-RoundFunc-37" result="fail" comment="Result of case [K2-RoundFunc-37] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-37.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-38" result="fail" comment="Result of case [K2-RoundFunc-38] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-38.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-37" result="pass"/>
+  <test-case name="K2-RoundFunc-38" result="pass"/>
   <test-case name="K2-RoundFunc-39" result="pass"/>
   <test-case name="K2-RoundFunc-40" result="pass"/>
-  <test-case name="K2-RoundFunc-41" result="fail" comment="Result of case [K2-RoundFunc-41] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-41.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-42" result="fail" comment="Result of case [K2-RoundFunc-42] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-42.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-41" result="pass"/>
+  <test-case name="K2-RoundFunc-42" result="pass"/>
   <test-case name="K2-RoundFunc-43" result="pass"/>
   <test-case name="K2-RoundFunc-44" result="pass"/>
-  <test-case name="K2-RoundFunc-45" result="fail" comment="Result of case [K2-RoundFunc-45] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-45.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-46" result="fail" comment="Result of case [K2-RoundFunc-46] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-46.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-45" result="pass"/>
+  <test-case name="K2-RoundFunc-46" result="pass"/>
   <test-case name="K2-RoundFunc-47" result="pass"/>
   <test-case name="K2-RoundFunc-48" result="pass"/>
-  <test-case name="K2-RoundFunc-49" result="fail" comment="Result of case [K2-RoundFunc-49] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-49.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-50" result="fail" comment="Result of case [K2-RoundFunc-50] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-50.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-49" result="pass"/>
+  <test-case name="K2-RoundFunc-50" result="pass"/>
   <test-case name="K2-RoundFunc-51" result="pass"/>
   <test-case name="K2-RoundFunc-52" result="pass"/>
-  <test-case name="K2-RoundFunc-53" result="fail" comment="Result of case [K2-RoundFunc-53] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-53.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-54" result="fail" comment="Result of case [K2-RoundFunc-54] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-54.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-53" result="pass"/>
+  <test-case name="K2-RoundFunc-54" result="pass"/>
   <test-case name="K2-RoundFunc-55" result="pass"/>
   <test-case name="K2-RoundFunc-56" result="pass"/>
-  <test-case name="K2-RoundFunc-57" result="fail" comment="Result of case [K2-RoundFunc-57] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-57.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-58" result="fail" comment="Result of case [K2-RoundFunc-58] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-58.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-57" result="pass"/>
+  <test-case name="K2-RoundFunc-58" result="pass"/>
   <test-case name="K2-RoundFunc-59" result="pass"/>
   <test-case name="K2-RoundFunc-60" result="pass"/>
-  <test-case name="K2-RoundFunc-61" result="fail" comment="Result of case [K2-RoundFunc-61] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-61.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-62" result="fail" comment="Result of case [K2-RoundFunc-62] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-62.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-61" result="pass"/>
+  <test-case name="K2-RoundFunc-62" result="pass"/>
   <test-case name="K2-RoundFunc-63" result="pass"/>
   <test-case name="K2-RoundFunc-64" result="pass"/>
-  <test-case name="K2-RoundFunc-65" result="fail" comment="Result of case [K2-RoundFunc-65] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-65.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-66" result="fail" comment="Result of case [K2-RoundFunc-66] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-66.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-65" result="pass"/>
+  <test-case name="K2-RoundFunc-66" result="pass"/>
   <test-case name="K2-RoundFunc-67" result="pass"/>
   <test-case name="K2-RoundFunc-68" result="pass"/>
-  <test-case name="K2-RoundFunc-69" result="fail" comment="Result of case [K2-RoundFunc-69] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-69.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-70" result="fail" comment="Result of case [K2-RoundFunc-70] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-70.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-69" result="pass"/>
+  <test-case name="K2-RoundFunc-70" result="pass"/>
   <test-case name="K2-RoundFunc-71" result="pass"/>
   <test-case name="K2-RoundFunc-72" result="pass"/>
-  <test-case name="K2-RoundFunc-73" result="fail" comment="Result of case [K2-RoundFunc-73] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-73.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-74" result="fail" comment="Result of case [K2-RoundFunc-74] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-74.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-73" result="pass"/>
+  <test-case name="K2-RoundFunc-74" result="pass"/>
   <test-case name="K2-RoundFunc-75" result="pass"/>
   <test-case name="K2-RoundFunc-76" result="pass"/>
-  <test-case name="K2-RoundFunc-77" result="fail" comment="Result of case [K2-RoundFunc-77] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-77.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-78" result="fail" comment="Result of case [K2-RoundFunc-78] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-78.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-77" result="pass"/>
+  <test-case name="K2-RoundFunc-78" result="pass"/>
   <test-case name="K2-RoundFunc-79" result="pass"/>
   <test-case name="K2-RoundFunc-80" result="pass"/>
-  <test-case name="K2-RoundFunc-81" result="fail" comment="Result of case [K2-RoundFunc-81] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-81.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-82" result="fail" comment="Result of case [K2-RoundFunc-82] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-82.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-81" result="pass"/>
+  <test-case name="K2-RoundFunc-82" result="pass"/>
   <test-case name="K2-RoundFunc-83" result="pass"/>
   <test-case name="K2-RoundFunc-84" result="pass"/>
-  <test-case name="K2-RoundFunc-85" result="fail" comment="Result of case [K2-RoundFunc-85] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-85.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-86" result="fail" comment="Result of case [K2-RoundFunc-86] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-86.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-85" result="pass"/>
+  <test-case name="K2-RoundFunc-86" result="pass"/>
   <test-case name="K2-RoundFunc-87" result="pass"/>
   <test-case name="K2-RoundFunc-88" result="pass"/>
-  <test-case name="K2-RoundFunc-89" result="fail" comment="Result of case [K2-RoundFunc-89] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-89.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-90" result="fail" comment="Result of case [K2-RoundFunc-90] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-90.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-89" result="pass"/>
+  <test-case name="K2-RoundFunc-90" result="pass"/>
   <test-case name="K2-RoundFunc-91" result="pass"/>
   <test-case name="K2-RoundFunc-92" result="pass"/>
-  <test-case name="K2-RoundFunc-93" result="fail" comment="Result of case [K2-RoundFunc-93] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-93.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-94" result="fail" comment="Result of case [K2-RoundFunc-94] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-94.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-93" result="pass"/>
+  <test-case name="K2-RoundFunc-94" result="pass"/>
   <test-case name="K2-RoundFunc-95" result="pass"/>
   <test-case name="K2-RoundFunc-96" result="pass"/>
   <test-case name="K2-RoundFunc-97" result="pass"/>
@@ -12900,8 +12900,8 @@
   <test-case name="K2-RoundFunc-114" result="pass"/>
   <test-case name="K2-RoundFunc-115" result="pass"/>
   <test-case name="K2-RoundFunc-116" result="pass"/>
-  <test-case name="K2-RoundFunc-117" result="fail" comment="Result of case [K2-RoundFunc-117] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-117.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-118" result="fail" comment="Result of case [K2-RoundFunc-118] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-118.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-117" result="pass"/>
+  <test-case name="K2-RoundFunc-118" result="pass"/>
   <test-case name="K2-RoundFunc-119" result="pass"/>
   <test-case name="K2-RoundFunc-120" result="pass"/>
   <test-case name="K2-RoundFunc-121" result="pass"/>
@@ -12952,28 +12952,28 @@
   <test-case name="K2-RoundFunc-166" result="pass"/>
   <test-case name="K2-RoundFunc-167" result="pass"/>
   <test-case name="K2-RoundFunc-168" result="pass"/>
-  <test-case name="K2-RoundFunc-169" result="fail" comment="Result of case [K2-RoundFunc-169] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-169.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-170" result="fail" comment="Result of case [K2-RoundFunc-170] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-170.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-169" result="pass"/>
+  <test-case name="K2-RoundFunc-170" result="pass"/>
   <test-case name="K2-RoundFunc-171" result="pass"/>
   <test-case name="K2-RoundFunc-172" result="pass"/>
-  <test-case name="K2-RoundFunc-173" result="fail" comment="Result of case [K2-RoundFunc-173] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-173.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-174" result="fail" comment="Result of case [K2-RoundFunc-174] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-174.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-173" result="pass"/>
+  <test-case name="K2-RoundFunc-174" result="pass"/>
   <test-case name="K2-RoundFunc-175" result="pass"/>
   <test-case name="K2-RoundFunc-176" result="pass"/>
-  <test-case name="K2-RoundFunc-177" result="fail" comment="Result of case [K2-RoundFunc-177] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-177.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-178" result="fail" comment="Result of case [K2-RoundFunc-178] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-178.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-177" result="pass"/>
+  <test-case name="K2-RoundFunc-178" result="pass"/>
   <test-case name="K2-RoundFunc-179" result="pass"/>
   <test-case name="K2-RoundFunc-180" result="pass"/>
-  <test-case name="K2-RoundFunc-181" result="fail" comment="Result of case [K2-RoundFunc-181] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-181.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-182" result="fail" comment="Result of case [K2-RoundFunc-182] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-182.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-181" result="pass"/>
+  <test-case name="K2-RoundFunc-182" result="pass"/>
   <test-case name="K2-RoundFunc-183" result="pass"/>
   <test-case name="K2-RoundFunc-184" result="pass"/>
-  <test-case name="K2-RoundFunc-185" result="fail" comment="Result of case [K2-RoundFunc-185] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-185.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-186" result="fail" comment="Result of case [K2-RoundFunc-186] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-186.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-185" result="pass"/>
+  <test-case name="K2-RoundFunc-186" result="pass"/>
   <test-case name="K2-RoundFunc-187" result="pass"/>
   <test-case name="K2-RoundFunc-188" result="pass"/>
-  <test-case name="K2-RoundFunc-189" result="fail" comment="Result of case [K2-RoundFunc-189] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-189.txt] differ :-("/>
-  <test-case name="K2-RoundFunc-190" result="fail" comment="Result of case [K2-RoundFunc-190] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/K2-RoundFunc-190.txt] differ :-("/>
+  <test-case name="K2-RoundFunc-189" result="pass"/>
+  <test-case name="K2-RoundFunc-190" result="pass"/>
   <test-case name="fn-round-1" result="fail" comment="Result of case [fn-round-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NumericFunc/RoundFunc/fn-round-1.txt] differ :-("/>
   <test-case name="fn-round-half-to-evenint1args-1" result="pass"/>
   <test-case name="fn-round-half-to-evenint1args-2" result="pass"/>
@@ -15878,7 +15878,7 @@
   <test-case name="fn-subsequence-mix-args-021" result="pass"/>
   <test-case name="fn-subsequence-mix-args-022" result="pass"/>
   <test-case name="fn-subsequence-mix-args-023" result="pass"/>
-  <test-case name="fn-subsequence-mix-args-024" result="fail" comment="Test case [fn-subsequence-mix-args-024] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/fn-subsequence-mix-args-024.xq   Cast Error: Cannot promote double to integer At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/fn-subsequence-mix-args-024.xq&quot;, line 11, characters 21-67 At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/fn-subsequence-mix-args-024.xq&quot;, line 11, characters 5-68 ] :-("/>
+  <test-case name="fn-subsequence-mix-args-024" result="pass"/>
   <test-case name="K-SeqSubsequenceFunc-1" result="pass"/>
   <test-case name="K-SeqSubsequenceFunc-2" result="pass"/>
   <test-case name="K-SeqSubsequenceFunc-3" result="pass"/>
@@ -15926,10 +15926,10 @@
   <test-case name="K2-SeqSubsequenceFunc-1" result="pass"/>
   <test-case name="K2-SeqSubsequenceFunc-2" result="pass"/>
   <test-case name="K2-SeqSubsequenceFunc-3" result="pass"/>
-  <test-case name="K2-SeqSubsequenceFunc-4" result="fail" comment="Test case [K2-SeqSubsequenceFunc-4] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-4.xq   Cast Error: Cannot promote decimal to integer At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-4.xq&quot;, line 7, characters 14-31 ] :-("/>
-  <test-case name="K2-SeqSubsequenceFunc-5" result="fail" comment="Test case [K2-SeqSubsequenceFunc-5] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-5.xq   Cast Error: Cannot promote decimal to integer At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-5.xq&quot;, line 7, characters 14-31 ] :-("/>
-  <test-case name="K2-SeqSubsequenceFunc-6" result="fail" comment="Test case [K2-SeqSubsequenceFunc-6] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-6.xq   Cast Error: Cannot promote decimal to integer At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-6.xq&quot;, line 7, characters 14-33 ] :-("/>
-  <test-case name="K2-SeqSubsequenceFunc-7" result="fail" comment="Test case [K2-SeqSubsequenceFunc-7] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-7.xq   Cast Error: Cannot promote decimal to integer At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/SeqFunc/GeneralSeqFunc/SeqSubsequenceFunc/K2-SeqSubsequenceFunc-7.xq&quot;, line 7, characters 14-33 ] :-("/>
+  <test-case name="K2-SeqSubsequenceFunc-4" result="pass"/>
+  <test-case name="K2-SeqSubsequenceFunc-5" result="pass"/>
+  <test-case name="K2-SeqSubsequenceFunc-6" result="pass"/>
+  <test-case name="K2-SeqSubsequenceFunc-7" result="pass"/>
   <test-case name="K2-SeqSubsequenceFunc-8" result="pass"/>
   <test-case name="K2-SeqSubsequenceFunc-9" result="pass"/>
   <test-case name="K2-SeqSubsequenceFunc-10" result="pass"/>
@@ -17222,7 +17222,7 @@
   <test-case name="fn-doc-available-4" result="pass"/>
   <test-case name="fn-doc-available-5" result="pass"/>
   <test-case name="fn-doc-available-6" result="pass"/>
-  <test-case name="fn-doc-available-7" result="fail" comment="Result of case [fn-doc-available-7] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/NodeSeqFunc/SeqDocAvailableFunc/fn-doc-available-7.txt] differ :-("/>
+  <test-case name="fn-doc-available-7" result="pass"/>
   <test-case name="K2-SeqDocAvailableFunc-1" result="pass"/>
   <test-case name="fn-doc-1" result="pass"/>
   <test-case name="fn-doc-2" result="pass"/>
@@ -17262,7 +17262,7 @@
   <test-case name="fn-doc-31" result="pass"/>
   <test-case name="K2-SeqDocFunc-14" result="pass"/>
   <test-case name="fn-doc-32" result="pass"/>
-  <test-case name="fn-doc-33" result="fail" comment="Test case [fn-doc-33] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/NodeSeqFunc/SeqDocFunc/fn-doc-33.xq   Lexing Error: 1 Found QName while in operator state [File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/NodeSeqFunc/SeqDocFunc/fn-doc-33.xq&quot;, line 13, characters 22-23:] ] :-("/>
+  <test-case name="fn-doc-33" result="pass"/>
   <test-case name="fn-doc-34" result="pass"/>
   <test-case name="fn-doc-35" result="pass"/>
   <test-case name="fn-doc-36" result="pass"/>

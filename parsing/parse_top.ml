@@ -180,7 +180,7 @@ let tokens_from_gio gio =
   try
     while (true) do
       let next = xquery_lexfun lh lexbuf in
-      res := (next,get_whole_lex_stack lh,default_token lh) :: !res;
+      res := (next,get_whole_lex_stack lh,get_item_type lh) :: !res;
       if next = Parse_xquery.EOF then raise Not_found else ()
     done;
     List.rev !res
@@ -188,7 +188,7 @@ let tokens_from_gio gio =
   | Not_found ->
       List.rev !res
   | _ ->
-      List.rev ((Parse_xquery.LEXERROR,get_whole_lex_stack lh,default_token lh) :: !res)
+      List.rev ((Parse_xquery.LEXERROR,get_whole_lex_stack lh,get_item_type lh) :: !res)
 
 let tokens_from_file file =
   tokens_from_gio (Galax_io.File_Input file)
@@ -372,6 +372,8 @@ let string_of_tok tok =
   | MOD -> "MOD"
   | MINUS -> "MINUS"
   | PLUS -> "PLUS"
+  | IPLUS -> "IPLUS"
+  | ISTAR -> "ISTAR"
   | STARNCNAME ncname -> "STARNCNAME<" ^ ncname ^ ">"
   | NCNAMESTAR ncname -> "NCNAMESTAR<" ^ ncname ^ ">"
   | IN -> "IN"
@@ -474,9 +476,6 @@ let string_of_tok tok =
   | LPAR -> "LPAR"
   | RPAR -> "RPAR"
   | IRPAR -> "IRPAR"
-  | RPARSTAR -> "RPARSTAR"
-  | RPARPLUS -> "RPARPLUS"
-  | RPARQUESTION -> "RPARQUESTION"
   | LBRACK -> "LBRACK"
   | RBRACK -> "RBRACK"
   | LCURLY -> "LCURLY"
@@ -541,10 +540,10 @@ let print_token psf ff (tok,states,flag) =
   if psf then
     begin
       Format.pp_print_tab ff ();
-      Format.fprintf ff "%a" (print_states psf) states
+      Format.fprintf ff "%a" (print_states psf) states;
+      Format.pp_print_tab ff ();
+      Format.fprintf ff "%b" flag
     end
-
-(*  Format.fprintf ff "@[<v 0>%s%a;@,@]" (string_of_tok tok) (print_states psf) states *)
 
 let print_tokens_aux psf ff tl =
   List.iter (print_token psf ff) tl
@@ -556,14 +555,18 @@ let print_tokens psf ff tl =
   if psf then
     begin
       Format.pp_set_tab ff ();
-      Format.fprintf ff "Stack";
+      Format.fprintf ff "Stack                                     ";
+      Format.pp_set_tab ff ();
+      Format.fprintf ff "ItemKind Flag";
     end;
   Format.pp_print_tab ff ();
   Format.fprintf ff "------";
   if psf then
     begin
       Format.pp_print_tab ff ();
-      Format.fprintf ff "-----";
+      Format.fprintf ff "-----                                     ";
+      Format.pp_print_tab ff ();
+      Format.fprintf ff "-------------";
     end;
   print_tokens_aux psf ff tl;
   Format.pp_close_tbox ff ();

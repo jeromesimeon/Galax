@@ -357,7 +357,8 @@ and type_check_physical_op code_ctxt ctc pop indep_expr_types dep_exprs =
 	    let _ = access_nosub dep_exprs in 
 	    let _ = access_no_type indep_expr_types in
 	      (* Must assert non-discarded XML type at binding time. *)
-	      PT_XML (get_variable_type ctc vn)
+	      (* Forces materialization for global variables -- we need to do better, but this is broken right now *)
+	      dom_list_xml_type (* PT_XML (get_variable_type ctc vn) *)
 
 	(* Constructors 
 	   

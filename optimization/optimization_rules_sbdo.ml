@@ -177,6 +177,7 @@ let rec get_set_sbdo_state sbdo_kind state action op =
       s,a
   | AOECallBuiltIn ((fn,arity), _, _, _) 
     when (Namespace_names.rqname_equal fn fn_subsequence ||
+          Namespace_names.rqname_equal fn fs_subsequence ||
           Namespace_names.rqname_equal fn fs_first ||
           Namespace_names.rqname_equal fn fs_last_fn) ->
       let args = access_manysub op.psub_expression in
@@ -187,6 +188,7 @@ let rec get_set_sbdo_state sbdo_kind state action op =
   | AOEParse _ -> (init_state sbdo_kind, Nothing)
   | AOECallBuiltIn ((fn,arity), _, _, _) ->
       if (Namespace_names.rqname_equal fn fn_subsequence ||
+	  Namespace_names.rqname_equal fn fs_subsequence ||
           Namespace_names.rqname_equal fn fn_doc)
       then 
 	(* let _ = Printf.printf "BuiltIn call -- returning %s, %s\n" (print_state (init_state sbdo_kind)) (print_action Nothing)in *)

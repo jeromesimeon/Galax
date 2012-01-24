@@ -783,6 +783,7 @@ let fs_untyped_to_any     	 = (fs_prefix,fs_uri,"untyped-to-any")
 let fs_untyped_to_double  	 = (fs_prefix,fs_uri,"untyped-to-double")
 let fs_untyped_to_integer 	 = (fs_prefix,fs_uri,"untyped-to-integer")
 let fs_untyped_to_string  	 = (fs_prefix,fs_uri,"untyped-to-string")
+let fs_subsequence  	         = (fs_prefix,fs_uri,"subsequence")
 
 (*****************)
 (* XQueryX Names *)

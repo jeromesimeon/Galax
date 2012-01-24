@@ -110,11 +110,11 @@ rule token lh = parse
   | ")" 
       { Some RPAR }
   | "*"
-      { Some MULT }
+      { Some ISTAR }
   | "?"
       { Some QUESTION }
   | "+"
-      { Some PLUS }
+      { Some IPLUS }
   | "{"
       { push_default lh;
 	Some LCURLY }

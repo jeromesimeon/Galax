@@ -42,7 +42,7 @@ let process_args proc_ctxt gargs =
     make_options_argv
       proc_ctxt
       (usage_galax_compile ())
-      [ Misc_Options;Monitoring_Options;Context_Options;Behavior_Options;ProcessingPhases_Options;Printing_Options ]
+      [ Misc_Options;Behavior_Options;Tokenize_Options ]
       gargs
   in
   match args with
@@ -65,7 +65,7 @@ let process_main_module proc_ctxt mod_ctxt mod_file =
   begin
     print_processing_file mod_file;
     let tokens = Parse_top.tokens_from_file mod_file in
-    Parse_top.print_tokens true Format.std_formatter tokens
+    Parse_top.print_tokens (!Conf.print_lex_states) Format.std_formatter tokens
   end
 
 let main proc_ctxt module_files =

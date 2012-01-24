@@ -112,11 +112,6 @@ let sax_value_of_table t =
 
 (* Actual operations physical values *)
 
-let dom_value_of_physical_value pv =
-  match pv with
-  | PXMLValue xv -> dom_value_of_xml_value xv
-  | PTable t     -> xml_value_of_table t
-
 let xml_value_of_physical_value pv =
   match pv with
   | PXMLValue (DomValue xv) -> (DomValue xv)

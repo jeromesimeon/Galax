@@ -249,6 +249,32 @@ let string_of_docorder (implemid,pid) =
    ^ (string_of_partial_docorder pid)
    ^ " }")
 
+let string_of_partial_nodeid id =
+  match id with
+  | IntId (docid,i) -> 
+      ("; docid: "
+       ^ (string_of_int docid)
+       ^ ";"
+       ^ "prefix: "
+       ^ (string_of_int i))
+  | IntPairId (docid,ip) ->
+      ("; docid: "
+       ^ (string_of_int docid)
+       ^ ";"
+       ^ "prefix : ("
+       ^ (Int64.to_string ip.gId)
+       ^ ":"
+       ^ (Int64.to_string ip.mId)
+       ^ ")")
+
+let string_of_nodeid (implemid,pid) =
+  ("{ implementation: "
+   ^ (get_implem_name implemid)
+   ^ "implemid: "
+   ^ (string_of_int implemid)
+   ^ (string_of_partial_nodeid pid)
+   ^ " }")
+
 
 (*******************************)
 (* Generic doc id constructors *)

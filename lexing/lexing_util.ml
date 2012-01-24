@@ -111,6 +111,9 @@ let get_whole_lex_stack lh =
 let set_item_type lh =
   lh.flag_item_type <- true
 
+let get_item_type lh =
+  lh.flag_item_type
+
 let unset_item_type lh =
   lh.flag_item_type <- false
 
@@ -166,6 +169,7 @@ let push_none lh = ()
 
 let push_default lh =
   reset_string lh;
+  unset_item_type lh;
   Stack.push DefaultState lh.current_lex_state
 
 let push_operator lh =
@@ -561,6 +565,14 @@ let cleanup_lex_handler li lh =
   reset_buffered lh new_buffered_tokens
 
 let make_new_token li lh move_state tok =
+  let tok =
+    if (get_item_type lh)
+    then
+      begin
+	match tok with MULT -> ISTAR | PLUS -> IPLUS | _ -> tok
+      end
+    else tok
+  in
   cleanup_lex_handler li lh;
   move_state lh;
   match lh.buffered_tokens with
