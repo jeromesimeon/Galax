@@ -174,9 +174,30 @@ rule token lh = parse
 
 (* Slash and SlashSlash *)
   | "/"
-      { Some SLASH }
+      { set_slash lh; Some SLASH }
   | "//"
       { Some SLASHSLASH }
+
+(* Possibly following slash, still in default state *)
+
+  | "="
+      { Some EQUALS }
+  | "!="
+      { Some NOTEQUALS }
+  | ">"
+      { Some GT }
+  | "<="
+      { Some LTEQUALS }
+  | ">="
+      { Some GTEQUALS }
+  | ":="
+      { Some COLONEQUALS }
+  | "|"
+      { Some BAR }
+  | "<<"
+      { Some PRECEDES }
+  | ">>"
+      { Some FOLLOWS }
 
 (* XML tags *)
   | "<?" (ncname as n) (* Processing instruction *)

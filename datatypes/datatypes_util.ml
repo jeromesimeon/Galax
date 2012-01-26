@@ -49,6 +49,12 @@ let ncname_of_untyped t =
   | _ ->
       raise (Query (Validation ("Text: \"" ^ t ^ "\" not an NCNAME")))
 
+(* Normalizes processing-instruction kind tests *)
+
+let normalize_pi_test s =
+  let s = Whitespace.normalize_space s in
+  ncname_of_untyped s
+
 let boolean_of_untyped t =
   try
     Gmisc.wrap_lexer Datatypes_lexer.parse_boolean t

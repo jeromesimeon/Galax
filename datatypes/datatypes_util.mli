@@ -51,6 +51,8 @@ val duration_of_untyped     	   : xs_untyped -> xs_duration
 val yearMonthDuration_of_untyped   : xs_untyped -> xs_yearMonthDuration
 val dayTimeDuration_of_untyped     : xs_untyped -> xs_dayTimeDuration
 
+val normalize_pi_test             : xs_untyped -> xs_ncname
+
 (***************)
 (* Comparisons *)
 (***************)

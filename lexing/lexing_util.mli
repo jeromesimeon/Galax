@@ -231,8 +231,14 @@ val pushdef       : lexing_handler -> unit
 val tokinddef     : lexing_handler -> unit
 val tonone        : lexing_handler -> unit
 
-val set_item_type : lexing_handler -> unit
+(* Item type flag *)
+val set_item_type   : lexing_handler -> unit
 val unset_item_type : lexing_handler -> unit
-
 val check_item_type : lexing_handler -> bool
-val get_item_type : lexing_handler -> bool
+val get_item_type   : lexing_handler -> bool
+
+(* Slash flag *)
+val set_slash   : lexing_handler -> unit
+val unset_slash : lexing_handler -> unit
+val check_slash : lexing_handler -> bool
+val get_slash   : lexing_handler -> bool

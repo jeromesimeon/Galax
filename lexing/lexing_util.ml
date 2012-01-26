@@ -85,6 +85,7 @@ type lexing_handler =
     { current_lex_state        : lex_state Stack.t;
       current_parsing_kind     : language_kind;
       mutable flag_item_type   : bool;
+      mutable flag_slash       : bool;
       mutable depth            : int;
       mutable string_buffer    : string;
       mutable string_end       : int;
@@ -121,6 +122,24 @@ let check_item_type lh =
   let x = lh.flag_item_type in
   begin
     unset_item_type lh;
+    x
+  end
+
+(* Item type flag *)
+
+let set_slash lh =
+  lh.flag_slash <- true
+
+let get_slash lh =
+  lh.flag_slash
+
+let unset_slash lh =
+  lh.flag_slash <- false
+
+let check_slash lh =
+  let x = lh.flag_slash in
+  begin
+    unset_slash lh;
     x
   end
 
@@ -268,6 +287,7 @@ let new_lexing_handler language_kind =
   { current_lex_state    = Stack.create ();
     current_parsing_kind = language_kind;
     flag_item_type       = false;
+    flag_slash           = false;
     depth                = 0;
     string_buffer        = initial_string_buffer ();
     string_end           = 0;

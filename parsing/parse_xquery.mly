@@ -50,12 +50,6 @@ let check_version s e =
     else raise (Query (Unknown ("XQuery version " ^ s ^ " not supported")))
   end
 
-(* Normalizes processing-instruction kind tests *)
-
-let normalize_pi_test s =
-  let s = Whitespace.normalize_space s in
-  Datatypes_util.ncname_of_untyped s
-
 (* Checks consitency between opening and closing tags *)
 
 let same_tag os cs =
@@ -84,11 +78,6 @@ let make_axis_from_nt nt =
   match nt with
   | (PNodeKindTest (AttributeKind _)) -> Attribute
   | _ -> Child
-
-(* Deals with collations *)
-
-let check_collation s =
-  ()
 
 (* Deals with entity references in XQuery *)
 
@@ -1790,7 +1779,7 @@ kindtest:
   | PROCESSINGINSTRUCTIONLPAR NCNAME
       { PIKind (Some $2) }
   | PROCESSINGINSTRUCTIONLPAR STRING
-      { let ncname = normalize_pi_test $2 in PIKind (Some ncname) }
+      { let ncname = Datatypes_util.normalize_pi_test $2 in PIKind (Some ncname) }
   | DOCUMENTNODELPAR
       { DocumentKind (None) }
   | DOCUMENTNODELPAR documentnode_kindtest

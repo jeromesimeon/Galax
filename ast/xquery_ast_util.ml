@@ -197,6 +197,9 @@ let extract_text_from_expression_list el =
       http://www.w3.org/XML/1998/namespace.
 *)
 
+let filter_xml_ns att =
+  match 
+
 let extract_ns_att s el =
   match s with
   | (prefix, localname) ->

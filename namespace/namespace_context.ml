@@ -170,8 +170,7 @@ let check_ns pref uri =
 	raise (Query (Namespace_Error ("Namespace name cannot be empty when using the namespace prefix "^pre^" [See Namespace REC Section 2. Declaring Namespaces]")))
     | (NSWildcardPrefix, uri) ->
 	Error.eprintf_warning (Error.bprintf_error "" (Query (Namespace_Internal ("Cannot redefine the wildcard prefix to "^(string_of_uri uri)))));
-	  ()
-(*	raise (Query (Namespace_Internal ("Cannot redefine the wildcard prefix")))*)
+	()
     | _ ->
 	()
   end

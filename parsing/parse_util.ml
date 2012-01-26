@@ -28,6 +28,8 @@ open Xquery_ast
 open Lexing
 open Lexing_util
 
+(* for tokens *)
+open Parse_xquery
 
 (*******************)
 (* Lexers handling *)
@@ -35,33 +37,33 @@ open Lexing_util
 
 type xml_lexers =
     { encoding             : Encoding.encoding;
-      opening_tag_state    : lexing_handler -> lexbuf -> Parse_xquery.token;
-      closing_tag_state    : lexing_handler -> lexbuf -> Parse_xquery.token;
-      text_state           : lexing_handler -> lexbuf -> Parse_xquery.token;
-      attribute_text_state : lexing_handler -> lexbuf -> Parse_xquery.token;
-      pi_state             : lexing_handler -> lexbuf -> Parse_xquery.token;
-      cdata_state          : lexing_handler -> lexbuf -> Parse_xquery.token;
-      comment_state        : lexing_handler -> lexbuf -> Parse_xquery.token }
+      opening_tag_state    : lexing_handler -> lexbuf -> token;
+      closing_tag_state    : lexing_handler -> lexbuf -> token;
+      text_state           : lexing_handler -> lexbuf -> token;
+      attribute_text_state : lexing_handler -> lexbuf -> token;
+      pi_state             : lexing_handler -> lexbuf -> token;
+      cdata_state          : lexing_handler -> lexbuf -> token;
+      comment_state        : lexing_handler -> lexbuf -> token }
 
 
 type language_lexers =
     { language             	: language_kind;
-      schema_declaration_state  : lexing_handler -> lexbuf -> Parse_xquery.token;
-      type_declaration_state   	: lexing_handler -> lexbuf -> Parse_xquery.token;
-      xtype_state         	: lexing_handler -> lexbuf -> Parse_xquery.token;
-      default_state        	: lexing_handler -> lexbuf -> Parse_xquery.token option;
-      operator_state         	: lexing_handler -> lexbuf -> Parse_xquery.token option;
-      namespacedecl_state    	: lexing_handler -> lexbuf -> Parse_xquery.token;
-      namespacekeyword_state 	: lexing_handler -> lexbuf -> Parse_xquery.token option;
-      copynamespaces_state 	: lexing_handler -> lexbuf -> Parse_xquery.token;
-      xmlspacedecl_state     	: lexing_handler -> lexbuf -> Parse_xquery.token;
-      itemtype_state         	: lexing_handler -> lexbuf -> Parse_xquery.token;
-      kindtest_state         	: lexing_handler -> lexbuf -> Parse_xquery.token;
-      kindtestforpi_state    	: lexing_handler -> lexbuf -> Parse_xquery.token;
-      schemacontextstep_state   : lexing_handler -> lexbuf -> Parse_xquery.token;
-      varname_state             : lexing_handler -> lexbuf -> Parse_xquery.token;
-      vardecl_state             : lexing_handler -> lexbuf -> Parse_xquery.token;
-      pragma_state              : lexing_handler -> lexbuf -> Parse_xquery.token }
+      schema_declaration_state  : lexing_handler -> lexbuf -> token;
+      type_declaration_state   	: lexing_handler -> lexbuf -> token;
+      xtype_state         	: lexing_handler -> lexbuf -> token;
+      default_state        	: lexing_handler -> lexbuf -> token option;
+      operator_state         	: lexing_handler -> lexbuf -> token option;
+      namespacedecl_state    	: lexing_handler -> lexbuf -> token;
+      namespacekeyword_state 	: lexing_handler -> lexbuf -> token option;
+      copynamespaces_state 	: lexing_handler -> lexbuf -> token;
+      xmlspacedecl_state     	: lexing_handler -> lexbuf -> token;
+      itemtype_state         	: lexing_handler -> lexbuf -> token;
+      kindtest_state         	: lexing_handler -> lexbuf -> token;
+      kindtestforpi_state    	: lexing_handler -> lexbuf -> token;
+      schemacontextstep_state   : lexing_handler -> lexbuf -> token;
+      varname_state             : lexing_handler -> lexbuf -> token;
+      vardecl_state             : lexing_handler -> lexbuf -> token;
+      pragma_state              : lexing_handler -> lexbuf -> token }
 
 let lexers_by_encoding = Hashtbl.create 5;;
 
@@ -78,12 +80,38 @@ let current_xml_lexer = ref
       cdata_state          = dummy_lexer;
       comment_state        = dummy_lexer }
 
+let wrap_default dl lh lb =
+  let token = dl lh lb in
+  match token with
+  | Some x ->
+      begin
+	match x with
+	| SLASH -> token
+	| EQUALS | NOTEQUALS
+	| GT
+	| LTEQUALS | GTEQUALS
+	| COLONEQUALS | BAR
+	| PRECEDES | FOLLOWS
+	  ->
+	    if (check_slash lh)
+	    then token
+	    else
+	      raise
+		(Query
+		   (Lexing(lexing_locinfo lb,
+			   ("Illegal character '" ^ (lexeme lb) ^ "' in expression"))))
+	| _ ->
+	    unset_slash lh; token
+      end
+  | None ->
+      unset_slash lh; token
+
 let current_xquery_lexer = ref
     { language               	= XQuery_1_0;
       schema_declaration_state 	= Schema_lexer.token;
       type_declaration_state   	= Type_lexer.type_declaration;
       xtype_state        	= Type_lexer.xtype;
-      default_state          	= Default_lexer.token;
+      default_state          	= wrap_default Default_lexer.token;
       operator_state         	= Operator_lexer.token;
       namespacedecl_state    	= Namespacedecl_lexer.token;
       namespacekeyword_state 	= Namespacekeyword_lexer.token;
@@ -202,7 +230,7 @@ let flush_buffers lh x =
       then
 	begin
 	  set_buffered_tokens lh ((get_buffered_tokens lh) @ [x]);
-	  Parse_xquery.NCNAME s
+	  NCNAME s
 	end
       else
 	raise (Query (Internal_Error "Non-empty string buffer in parser!!"))

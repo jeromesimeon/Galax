@@ -180,14 +180,10 @@ let add_ns_bindings_to_norm_context norm_context new_nss =
   begin
     let nsenv1 = norm_context.norm_nsenv in 
     let nsenv1' = Namespace_context.add_all_ns nsenv1 new_nss in
-    let nsenv2' =
-      Namespace_context.add_all_ns norm_context.norm_in_scope_nsenv new_nss
-	(* Namespace_context.add_force_all_ns norm_context.norm_in_scope_nsenv new_nss *)
-    in
+    let nsenv2' = Namespace_context.add_all_ns norm_context.norm_in_scope_nsenv new_nss in
     let norm_context' = copy_norm_context_with_nsenv norm_context nsenv1' nsenv2' in
     (norm_context',nsenv1')
   end
-
 
 let copy_norm_context ctxt =
   { norm_proc_context   = ctxt.norm_proc_context;

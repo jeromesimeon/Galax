@@ -1719,7 +1719,7 @@ parsing/parse_context.cmx: ./procctxt/processing_context.cmx ./base/error.cmx \
     parsing/parse_context.cmi
 parsing/parse_xquery.cmo: ./ast/xquery_type_ast_util.cmi \
     ./ast/xquery_type_ast.cmi ./ast/xquery_common_ast.cmi \
-    ./ast/xquery_ast_util.cmi ./ast/xquery_ast.cmi ./base/whitespace.cmi \
+    ./ast/xquery_ast_util.cmi ./ast/xquery_ast.cmi \
     ./procctxt/processing_context.cmi ./parsing/parse_context.cmi \
     ./base/occurrence.cmi ./namespace/namespace_names.cmi ./base/finfo.cmi \
     ./base/error.cmi ./base/encoding.cmi ./datatypes/decimal.cmi \
@@ -1727,7 +1727,7 @@ parsing/parse_xquery.cmo: ./ast/xquery_type_ast_util.cmi \
     parsing/parse_xquery.cmi
 parsing/parse_xquery.cmx: ./ast/xquery_type_ast_util.cmx \
     ./ast/xquery_type_ast.cmi ./ast/xquery_common_ast.cmx \
-    ./ast/xquery_ast_util.cmx ./ast/xquery_ast.cmi ./base/whitespace.cmx \
+    ./ast/xquery_ast_util.cmx ./ast/xquery_ast.cmi \
     ./procctxt/processing_context.cmx ./parsing/parse_context.cmx \
     ./base/occurrence.cmx ./namespace/namespace_names.cmx ./base/finfo.cmx \
     ./base/error.cmx ./base/encoding.cmx ./datatypes/decimal.cmx \
@@ -2833,9 +2833,9 @@ code_util/code_util.cmo: ./ast/xquery_common_ast.cmi ./ast/xquery_ast.cmi \
     ./physicaldm/physical_value_util.cmi ./physicaldm/physical_value.cmi \
     ./physicaldm/physical_util.cmi ./physicaldm/physical_sequence.cmi \
     ./physicaldm/physical_item.cmi ./base/occurrence.cmi \
-    ./normalization/norm_context.cmi ./namespace/namespace_names.cmi \
-    ./base/gmisc.cmi ./base/error.cmi ./base/debug.cmi \
-    ./datatypes/datatypes_util.cmi ./datatypes/datatypes.cmi \
+    ./normalization/norm_context.cmi ./namespace/namespace_symbols.cmi \
+    ./namespace/namespace_names.cmi ./base/gmisc.cmi ./base/error.cmi \
+    ./base/debug.cmi ./datatypes/datatypes_util.cmi ./datatypes/datatypes.cmi \
     ./dm/base/cursor.cmi ./code_util/code_util_matching.cmi \
     code_util/code_util.cmi
 code_util/code_util.cmx: ./ast/xquery_common_ast.cmx ./ast/xquery_ast.cmi \
@@ -2844,9 +2844,9 @@ code_util/code_util.cmx: ./ast/xquery_common_ast.cmx ./ast/xquery_ast.cmi \
     ./physicaldm/physical_value_util.cmx ./physicaldm/physical_value.cmi \
     ./physicaldm/physical_util.cmx ./physicaldm/physical_sequence.cmx \
     ./physicaldm/physical_item.cmx ./base/occurrence.cmx \
-    ./normalization/norm_context.cmx ./namespace/namespace_names.cmx \
-    ./base/gmisc.cmx ./base/error.cmx ./base/debug.cmx \
-    ./datatypes/datatypes_util.cmx ./datatypes/datatypes.cmi \
+    ./normalization/norm_context.cmx ./namespace/namespace_symbols.cmx \
+    ./namespace/namespace_names.cmx ./base/gmisc.cmx ./base/error.cmx \
+    ./base/debug.cmx ./datatypes/datatypes_util.cmx ./datatypes/datatypes.cmi \
     ./dm/base/cursor.cmx ./code_util/code_util_matching.cmx \
     code_util/code_util.cmi
 streaming_xpath/df_struct.cmo: streaming_xpath/df_struct.cmi
@@ -3828,11 +3828,12 @@ code_selection/code/code_constructors.cmo: \
     ./normalization/norm_context.cmi \
     ./namespace/namespace_symbols_builtin.cmi ./stdlib/fn_error.cmi \
     ./base/error.cmi ./dm/atomic/dm_atomic_util.cmi ./dm/atomic/dm_atomic.cmi \
-    ./datatypes/datatypes.cmi ./dm/base/cursor.cmi \
-    ./code_selection/cs_util_coercion.cmi ./code_selection/cs_util.cmi \
-    ./compile/compile_context.cmi ./code_util/code_util.cmi \
-    ./code_selection/code_selection_context.cmi ./ast/ast_path_struct.cmi \
-    ./code_selection/algebra_type.cmi ./projection/alg_path_analysis.cmi \
+    ./datatypes/datatypes_util.cmi ./datatypes/datatypes.cmi \
+    ./dm/base/cursor.cmi ./code_selection/cs_util_coercion.cmi \
+    ./code_selection/cs_util.cmi ./compile/compile_context.cmi \
+    ./code_util/code_util.cmi ./code_selection/code_selection_context.cmi \
+    ./ast/ast_path_struct.cmi ./code_selection/algebra_type.cmi \
+    ./projection/alg_path_analysis.cmi \
     code_selection/code/code_constructors.cmi
 code_selection/code/code_constructors.cmx: \
     ./ast/xquery_physical_type_ast_util.cmx \
@@ -3845,11 +3846,12 @@ code_selection/code/code_constructors.cmx: \
     ./normalization/norm_context.cmx \
     ./namespace/namespace_symbols_builtin.cmx ./stdlib/fn_error.cmx \
     ./base/error.cmx ./dm/atomic/dm_atomic_util.cmx ./dm/atomic/dm_atomic.cmx \
-    ./datatypes/datatypes.cmi ./dm/base/cursor.cmx \
-    ./code_selection/cs_util_coercion.cmx ./code_selection/cs_util.cmx \
-    ./compile/compile_context.cmx ./code_util/code_util.cmx \
-    ./code_selection/code_selection_context.cmx ./ast/ast_path_struct.cmi \
-    ./code_selection/algebra_type.cmi ./projection/alg_path_analysis.cmx \
+    ./datatypes/datatypes_util.cmx ./datatypes/datatypes.cmi \
+    ./dm/base/cursor.cmx ./code_selection/cs_util_coercion.cmx \
+    ./code_selection/cs_util.cmx ./compile/compile_context.cmx \
+    ./code_util/code_util.cmx ./code_selection/code_selection_context.cmx \
+    ./ast/ast_path_struct.cmi ./code_selection/algebra_type.cmi \
+    ./projection/alg_path_analysis.cmx \
     code_selection/code/code_constructors.cmi
 code_selection/code/code_functional_ops.cmo: \
     ./ast/xquery_physical_type_ast.cmi ./ast/xquery_physical_algebra_ast.cmi \

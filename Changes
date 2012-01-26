@@ -2,6 +2,16 @@
 | Changelog |
  -----------
 
+January 25, 2012 - Jerome
+
+ o Parsing:
+    - Fixed lexing issue with tokens after '/' that can only be in the
+      operator state.
+
+ o Constructors:
+    - Fixed some error cases when xmlns/xml names are used in
+      attribute or element constructors.
+
 January 24, 2012 - Jerome
 
  o Parsing:

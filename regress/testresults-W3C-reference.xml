@@ -325,7 +325,7 @@
   <test-case name="PathExpr-13" result="pass"/>
   <test-case name="PathExpr-14" result="pass"/>
   <test-case name="PathExpr-15" result="pass"/>
-  <test-case name="PathExpr-16" result="fail" comment="Test case [PathExpr-16] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Expressions/PathExpr/PathExpressions/PathExpr-16.xq   Lexing Error: Illegal character &apos;=&apos; in expression [File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Expressions/PathExpr/PathExpressions/PathExpr-16.xq&quot;, line 13, characters 25-26:] ] :-("/>
+  <test-case name="PathExpr-16" result="pass"/>
   <test-case name="K2-Steps-1" result="pass"/>
   <test-case name="K2-Steps-2" result="pass"/>
   <test-case name="K2-Steps-3" result="pass"/>
@@ -382,7 +382,7 @@
   <test-case name="Steps-leading-lone-slash-13" result="pass"/>
   <test-case name="Steps-leading-lone-slash-14" result="pass"/>
   <test-case name="Steps-leading-lone-slash-15" result="pass"/>
-  <test-case name="Steps-leading-lone-slash-16" result="fail" comment="Test case [Steps-leading-lone-slash-16] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/PathExpr/Steps/Steps-leading-lone-slash-16.xq   Lexing Error: Illegal character &apos;=&apos; in expression [File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/PathExpr/Steps/Steps-leading-lone-slash-16.xq&quot;, line 11, characters 6-7:] ] :-("/>
+  <test-case name="Steps-leading-lone-slash-16" result="pass"/>
   <test-case name="Steps-leading-lone-slash-17" result="pass"/>
   <test-case name="Axes001-1" result="pass"/>
   <test-case name="Axes001-2" result="pass"/>
@@ -6269,12 +6269,12 @@
   <test-case name="K2-ComputeConElem-13" result="pass"/>
   <test-case name="K2-ComputeConElem-14" result="pass"/>
   <test-case name="K2-ComputeConElem-15" result="pass"/>
-  <test-case name="comp-elem-bad-name-1" result="fail" comment="Test case [comp-elem-bad-name-1] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Construct/ComputeCon/ComputeConElem/comp-elem-bad-name-1.xq] succeeded :-("/>
-  <test-case name="comp-elem-bad-name-2" result="fail" comment="Test case [comp-elem-bad-name-2] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Construct/ComputeCon/ComputeConElem/comp-elem-bad-name-2.xq] succeeded :-("/>
-  <test-case name="comp-elem-bad-name-3" result="fail" comment="Test case [comp-elem-bad-name-3] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Construct/ComputeCon/ComputeConElem/comp-elem-bad-name-3.xq] succeeded :-("/>
-  <test-case name="comp-elem-bad-name-4" result="fail" comment="Test case [comp-elem-bad-name-4] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Construct/ComputeCon/ComputeConElem/comp-elem-bad-name-4.xq] succeeded :-("/>
-  <test-case name="comp-elem-bad-name-5" result="fail" comment="Test case [comp-elem-bad-name-5] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Construct/ComputeCon/ComputeConElem/comp-elem-bad-name-5.xq] succeeded :-("/>
-  <test-case name="comp-elem-bad-name-6" result="fail" comment="Test case [comp-elem-bad-name-6] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Construct/ComputeCon/ComputeConElem/comp-elem-bad-name-6.xq] succeeded :-("/>
+  <test-case name="comp-elem-bad-name-1" result="pass"/>
+  <test-case name="comp-elem-bad-name-2" result="pass"/>
+  <test-case name="comp-elem-bad-name-3" result="pass"/>
+  <test-case name="comp-elem-bad-name-4" result="pass"/>
+  <test-case name="comp-elem-bad-name-5" result="pass"/>
+  <test-case name="comp-elem-bad-name-6" result="pass"/>
   <test-case name="Constr-compattr-name-1" result="pass"/>
   <test-case name="Constr-compattr-name-2" result="pass"/>
   <test-case name="Constr-compattr-name-3" result="pass"/>
@@ -6362,7 +6362,7 @@
   <test-case name="K2-ComputeConAttr-52" result="pass"/>
   <test-case name="K2-ComputeConAttr-53" result="pass"/>
   <test-case name="K2-ComputeConAttr-54" result="fail" comment="Result of case [K2-ComputeConAttr-54] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Construct/ComputeCon/ComputeConAttr/K2-ComputeConAttr-54.txt] differ :-("/>
-  <test-case name="K2-ComputeConAttr-55" result="fail" comment="Result of case [K2-ComputeConAttr-55] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Construct/ComputeCon/ComputeConAttr/K2-ComputeConAttr-55.txt] differ :-("/>
+  <test-case name="K2-ComputeConAttr-55" result="pass"/>
   <test-case name="K2-ComputeConAttr-56" result="pass"/>
   <test-case name="K2-ComputeConAttr-57" result="pass"/>
   <test-case name="K2-ComputeConAttr-58" result="pass"/>
@@ -6373,9 +6373,9 @@
   <test-case name="comp-attr-bad-name-2" result="pass"/>
   <test-case name="comp-attr-bad-name-3" result="pass"/>
   <test-case name="comp-attr-bad-name-4" result="pass"/>
-  <test-case name="comp-attr-bad-name-5" result="fail" comment="Test case [comp-attr-bad-name-5] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Construct/ComputeCon/ComputeConAttr/comp-attr-bad-name-5.xq] succeeded :-("/>
-  <test-case name="comp-attr-bad-name-6" result="fail" comment="Test case [comp-attr-bad-name-6] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Construct/ComputeCon/ComputeConAttr/comp-attr-bad-name-6.xq] succeeded :-("/>
-  <test-case name="comp-attr-bad-name-7" result="fail" comment="Test case [comp-attr-bad-name-7] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Construct/ComputeCon/ComputeConAttr/comp-attr-bad-name-7.xq] succeeded :-("/>
+  <test-case name="comp-attr-bad-name-5" result="pass"/>
+  <test-case name="comp-attr-bad-name-6" result="pass"/>
+  <test-case name="comp-attr-bad-name-7" result="pass"/>
   <test-case name="Constr-docnode-adjtext-1" result="pass"/>
   <test-case name="Constr-docnode-adjtext-2" result="pass"/>
   <test-case name="Constr-docnode-adjtext-3" result="pass"/>
@@ -6513,8 +6513,8 @@
   <test-case name="K2-ComputeConPI-1" result="pass"/>
   <test-case name="K2-ComputeConPI-2" result="pass"/>
   <test-case name="K2-ComputeConPI-3" result="pass"/>
-  <test-case name="K2-ComputeConPI-4" result="fail" comment="Result of case [K2-ComputeConPI-4] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Construct/ComputeCon/ComputeConPI/K2-ComputeConPI-4.txt] differ :-("/>
-  <test-case name="K2-ComputeConPI-5" result="fail" comment="Result of case [K2-ComputeConPI-5] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Construct/ComputeCon/ComputeConPI/K2-ComputeConPI-5.txt] differ :-("/>
+  <test-case name="K2-ComputeConPI-4" result="pass"/>
+  <test-case name="K2-ComputeConPI-5" result="pass"/>
   <test-case name="K2-ComputeConPI-6" result="pass"/>
   <test-case name="K2-ComputeConPI-7" result="pass"/>
   <test-case name="K2-ComputeConPI-8" result="pass"/>

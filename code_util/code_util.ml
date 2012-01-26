@@ -303,11 +303,42 @@ let match_overloaded_function stat_ctxt fn signatures =
       Not_found ->
 	raise_type_error_in_function_arguments fn)
 
+let raise_attribute_name () = raise (Query(Datamodel("[err:XQDY0044]
+  It is a dynamic error the node-name of a node constructed by a
+  computed attribute constructor has any of the following properties:
+  Its namespace prefix is xmlns. It has no namespace prefix and its
+  local name is xmlns. Its namespace URI is
+  http://www.w3.org/2000/xmlns/. Its namespace prefix is xml and its
+  namespace URI is not http://www.w3.org/XML/1998/namespace. Its
+  namespace prefix is other than xml and its namespace URI is
+  http://www.w3.org/XML/1998/namespace.")))
+
+let check_xml_names qname =
+  let (prefix,uri,localname) = Namespace_symbols.anon_name qname in
+  let (new_prefix,new_uri,new_localname) =
+    match (prefix,uri,localname) with
+    | (Namespace_names.NSPrefix "xmlns",_,_) -> raise_attribute_name ()
+    | (_,_,"xmlns") -> raise_attribute_name ()
+    | (_,Namespace_names.NSUri "http://www.w3.org/2000/xmlns/",_) -> raise_attribute_name ()
+    | (Namespace_names.NSPrefix "xml",Namespace_names.NSUri "http://www.w3.org/XML/1998/namespace",_) -> (prefix,uri,localname)
+    (* Makes sure to associate the xml prefix in that case.
+       Could not convince myself this was mandated by the standard, but at least one test in the test suite requires it.
+       In anycase, this would not be precluded by the standard, but would be one example of an 'implementation-defined prefix'.
+       - JS
+       *)
+    | (Namespace_names.NSDefaultElementPrefix,Namespace_names.NSUri "http://www.w3.org/XML/1998/namespace",_) -> (Namespace_names.NSPrefix "xml",uri,localname)
+    | (Namespace_names.NSPrefix "xml",_,_) -> raise_attribute_name ()
+    | (_,Namespace_names.NSUri "http://www.w3.org/XML/1998/namespace",_) -> raise_attribute_name ()
+    | _ -> (prefix,uri,localname)
+  in Namespace_symbols.anon_symbol (new_prefix,new_uri,new_localname)
+
 let get_computed_node_name nsenv pv1 =
   let av = Physical_util.get_singleton_atomic pv1 in
-  match av#getAtomicValueKind() with
-  | ATQName -> av#getAtomicQName()
-  | ATString -> Datatypes_util.qname_of_untyped nsenv (av#getAtomicString())
-  | ATUntypedAtomic -> Datatypes_util.qname_of_untyped nsenv (av#getAtomicUntyped())
-  | _ -> raise (Query(Type_Error("Expected xs:QName, xs:string or xs:untypedAtomic value")))
-
+  let qname =
+    match av#getAtomicValueKind() with
+    | ATQName -> av#getAtomicQName()
+    | ATString -> Datatypes_util.qname_of_untyped nsenv (av#getAtomicString())
+    | ATUntypedAtomic -> Datatypes_util.qname_of_untyped nsenv (av#getAtomicUntyped())
+    | _ -> raise (Query(Type_Error("Expected xs:QName, xs:string or xs:untypedAtomic value")))
+  in
+  check_xml_names qname

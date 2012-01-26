@@ -153,6 +153,8 @@ let build_default_cepicomputed_code code_ctxt  =
     let norm_ctxt = norm_context_from_stat_context stat_ctxt in
     let nsenv     = nsenv_from_norm_context norm_ctxt in
     let target = ((Physical_util.get_singleton_atomic pv1)#cast_to nsenv Namespace_symbols_builtin.xs_string ATString)#getAtomicString() in
+    (* Normalizes the name *)
+    let target = Datatypes_util.normalize_pi_test target in
     Streaming_constructors.pi_constructor true target pv2)
 
 let build_picomputed_code code_ctxt algop =
