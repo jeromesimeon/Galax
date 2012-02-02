@@ -27,7 +27,9 @@ val _actual_uri_of_string  : string -> _uri
 
 val _string_of_uri : _uri -> string
 
+val _uri_is_absolute : _uri -> bool
 val _uri_resolve : _uri -> _uri -> _uri
+val _uri_resolve_opt : _uri option -> _uri -> _uri
 
 val _uri_eq  : _uri -> _uri -> bool
 

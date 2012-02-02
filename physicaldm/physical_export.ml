@@ -83,7 +83,9 @@ let next_datamodel_event export_context =
 		begin
 		  let elem_name = enode#elemName() in
 		  let elem_children = enode#children None in
-		  let elem_base_uri = (enode#base_uri()) in
+		  (* Do not actually copy over the original base uri! xml:base attributes will be carrying over the right information. -JS *)
+		  let elem_base_uri = ref None in
+		  (* let elem_base_uri = (enode#base_uri()) in *)
 		  
 		  (* Note:
 

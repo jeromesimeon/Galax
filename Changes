@@ -2,6 +2,11 @@
 | Changelog |
  -----------
 
+February 1, 2012 - Jerome
+
+ o Constructors:
+    - Fixed bug with relative base URI in element constructors.
+
 January 25, 2012 - Jerome
 
  o Parsing:

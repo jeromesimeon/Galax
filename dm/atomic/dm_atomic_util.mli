@@ -41,3 +41,6 @@ val uri_dm_of_uri : AnyURI._uri option -> Dm_atomic.atomicValue option ref
 
 val default_no_uri_dm : Dm_atomic.atomicValue option ref
 
+val is_absolute_atomicAnyURI : Dm_atomic.atomicAnyURI option ref -> bool
+val resolve_atomicAnyURI : Dm_atomic.atomicAnyURI option ref -> Dm_atomic.atomicAnyURI option ref -> Dm_atomic.atomicAnyURI option ref
+

@@ -5950,7 +5950,7 @@
   <test-case name="Constr-cont-nsmode-9" result="pass"/>
   <test-case name="Constr-cont-nsmode-10" result="fail" comment="Test case [Constr-cont-nsmode-10] in file [/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Expressions/Construct/DirectConElem/DirectConElemContent/Constr-cont-nsmode-10.xq] succeeded :-("/>
   <test-case name="Constr-cont-nsmode-11" result="pass"/>
-  <test-case name="Constr-cont-uripres-1" result="fail" comment="Known bug :-| [http://bugzilla.galaxquery.net/show_bug.cgi?id=42]"/>
+  <test-case name="Constr-cont-uripres-1" result="fail" comment="Result of case [Constr-cont-uripres-1] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/Construct/DirectConElem/DirectConElemContent/Constr-cont-uripres-1.txt] differ :-("/>
   <test-case name="Constr-cont-adjtext-1" result="pass"/>
   <test-case name="Constr-cont-adjtext-2" result="pass"/>
   <test-case name="Constr-cont-adjtext-3" result="pass"/>
@@ -5961,8 +5961,8 @@
   <test-case name="Constr-cont-attr-3" result="pass"/>
   <test-case name="Constr-cont-attr-4" result="pass"/>
   <test-case name="Constr-cont-baseuri-1" result="pass"/>
-  <test-case name="Constr-cont-baseuri-2" result="fail" comment="Known bug :-| [http://bugzilla.galaxquery.net/show_bug.cgi?id=42]"/>
-  <test-case name="Constr-cont-baseuri-3" result="fail" comment="Known bug :-| [http://bugzilla.galaxquery.net/show_bug.cgi?id=42]"/>
+  <test-case name="Constr-cont-baseuri-2" result="pass"/>
+  <test-case name="Constr-cont-baseuri-3" result="pass"/>
   <test-case name="Constr-cont-parent-1" result="pass"/>
   <test-case name="Constr-cont-attr-5" result="pass"/>
   <test-case name="Constr-cont-attr-6" result="pass"/>
@@ -11381,7 +11381,7 @@
   <test-case name="base-URI-24" result="pass"/>
   <test-case name="base-uri-25" result="pass"/>
   <test-case name="base-uri-26" result="pass"/>
-  <test-case name="base-uri-27" result="fail" comment="Result of case [base-uri-27] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/PrologExpr/BaseURIProlog/base-uri-27.txt] differ :-("/>
+  <test-case name="base-uri-27" result="pass"/>
   <test-case name="base-uri-28" result="fail" comment="Result of case [base-uri-28] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/PrologExpr/BaseURIProlog/base-uri-28.txt] differ :-("/>
   <test-case name="base-uri-29" result="fail" comment="Result of case [base-uri-29] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Expressions/PrologExpr/BaseURIProlog/base-uri-29.txt] differ :-("/>
   <test-case name="K-BaseURIProlog-1" result="pass"/>
@@ -12224,8 +12224,8 @@
   <test-case name="K2-BaseURIFunc-16" result="pass"/>
   <test-case name="K2-BaseURIFunc-17" result="pass"/>
   <test-case name="K2-BaseURIFunc-18" result="pass"/>
-  <test-case name="K2-BaseURIFunc-19" result="fail" comment="Result of case [K2-BaseURIFunc-19] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/AccessorFunc/BaseURIFunc/K2-BaseURIFunc-19.txt] differ :-("/>
-  <test-case name="K2-BaseURIFunc-20" result="fail" comment="Result of case [K2-BaseURIFunc-20] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/AccessorFunc/BaseURIFunc/K2-BaseURIFunc-20.txt] differ :-("/>
+  <test-case name="K2-BaseURIFunc-19" result="pass"/>
+  <test-case name="K2-BaseURIFunc-20" result="pass"/>
   <test-case name="K2-BaseURIFunc-21" result="fail" comment="Result of case [K2-BaseURIFunc-21] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/AccessorFunc/BaseURIFunc/K2-BaseURIFunc-21.txt] differ :-("/>
   <test-case name="K2-BaseURIFunc-22" result="pass"/>
   <test-case name="K2-BaseURIFunc-23" result="pass"/>
@@ -12234,11 +12234,11 @@
   <test-case name="K2-BaseURIFunc-26" result="pass"/>
   <test-case name="K2-BaseURIFunc-27" result="pass"/>
   <test-case name="K2-BaseURIFunc-28" result="fail" comment="Result of case [K2-BaseURIFunc-28] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/AccessorFunc/BaseURIFunc/K2-BaseURIFunc-28.txt] differ :-("/>
-  <test-case name="K2-BaseURIFunc-29" result="fail" comment="Test case [K2-BaseURIFunc-29] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/AccessorFunc/BaseURIFunc/K2-BaseURIFunc-29.xq   URI Error: Malformed URI http:\\example.com\\examples At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/AccessorFunc/BaseURIFunc/K2-BaseURIFunc-29.xq&quot;, line 7, characters 21-101 At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/AccessorFunc/BaseURIFunc/K2-BaseURIFunc-29.xq&quot;, line 7, characters 4-159 At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/AccessorFunc/BaseURIFunc/K2-BaseURIFunc-29.xq&quot;, line 7, characters 4-159 ] :-("/>
-  <test-case name="K2-BaseURIFunc-30" result="fail" comment="Result of case [K2-BaseURIFunc-30] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/AccessorFunc/BaseURIFunc/K2-BaseURIFunc-30.txt] differ :-("/>
+  <test-case name="K2-BaseURIFunc-29" result="fail" comment="Test case [K2-BaseURIFunc-29] raised error [Internal Error: In test_core.eval_case /home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/AccessorFunc/BaseURIFunc/K2-BaseURIFunc-29.xq   URI Error: Malformed URI http:\\example.com\\examples At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/AccessorFunc/BaseURIFunc/K2-BaseURIFunc-29.xq&quot;, line 7, characters 22-100 At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/AccessorFunc/BaseURIFunc/K2-BaseURIFunc-29.xq&quot;, line 7, characters 21-101 At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/AccessorFunc/BaseURIFunc/K2-BaseURIFunc-29.xq&quot;, line 7, characters 4-159 At File &quot;/home/simeon/Galax/Testing/TTF/v103/Queries/XQuery/Functions/AccessorFunc/BaseURIFunc/K2-BaseURIFunc-29.xq&quot;, line 7, characters 4-159 ] :-("/>
+  <test-case name="K2-BaseURIFunc-30" result="pass"/>
   <test-case name="K2-BaseURIFunc-31" result="pass"/>
   <test-case name="K2-BaseURIFunc-32" result="pass"/>
-  <test-case name="K2-BaseURIFunc-33" result="fail" comment="Result of case [K2-BaseURIFunc-33] and expected result in [/home/simeon/Galax/Testing/TTF/v103/ExpectedTestResults/Functions/AccessorFunc/BaseURIFunc/K2-BaseURIFunc-33.txt] differ :-("/>
+  <test-case name="K2-BaseURIFunc-33" result="pass"/>
   <test-case name="fn-static-base-1" result="pass"/>
   <test-case name="fn-static-base-2" result="pass"/>
   <test-case name="fn-static-base-3" result="pass"/>

@@ -52,6 +52,13 @@ let parse_uri uri_string =
 let is_absolute_uri uri =
   ensure_absolute_url uri
 
+let _uri_is_absolute uri =
+  try
+    ignore(is_absolute_uri uri);
+    true
+  with
+  | Malformed_URL -> false
+
 let default_scheme = "file"
 
 let default_base_uri () = None
@@ -85,6 +92,11 @@ let _string_of_uri uri =
 let _uri_resolve base_uri relative_uri =
   ensure_absolute_url
     (apply_relative_url base_uri relative_uri)
+
+let _uri_resolve_opt bu ru =
+  match bu with
+  | None -> ru
+  | Some bu0 -> _uri_resolve bu0 ru
 
   (* Equality based on string values for now ? - Jerome *)
 let _uri_eq uri1 uri2 =

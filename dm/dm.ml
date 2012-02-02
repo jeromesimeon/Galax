@@ -313,22 +313,29 @@ object (self)
 
   val base_uri = init_base_uri
   method base_uri () =
-    try
-      let a1 : attribute =
-	(cursor_next (self#attributes (Some (None,xmlns_base))))
-      in ref (Some (new atomicAnyURI(_kinda_uri_of_string (a1#string_value()))))
-    with
-    | Stream.Failure ->
-	begin
-	  match !base_uri with
-	  | None ->
-	      begin
-		match (self#parent None) with
-		| None -> ref None
-		| Some n -> n#base_uri()
-	      end
-	  | Some _ -> base_uri
-	end
+    begin
+      match !init_base_uri with
+      | None ->
+	  begin
+	    match (self#parent None) with
+	    | None -> ref None
+	    | Some n -> n#base_uri()
+	  end
+      | Some _ ->
+	  begin
+	    if (Dm_atomic_util.is_absolute_atomicAnyURI base_uri)
+	    then base_uri
+	    else
+	      let basebase =
+		begin
+		  match (self#parent None) with
+		  | None -> ref None
+		  | Some n -> n#base_uri()
+		end
+	      in
+	      Dm_atomic_util.resolve_atomicAnyURI basebase base_uri
+	  end
+    end
 
   method node_kind()           = ElementNodeKind
   method has_element_content() =

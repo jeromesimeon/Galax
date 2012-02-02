@@ -135,13 +135,18 @@ let local_attribute_hash = Hashtbl.create 17
 
 let check_duplicate_attributes attributes =
   let _ = Hashtbl.clear local_attribute_hash in
-  let add_function (_, _, asym, _) =
+  let xml_base = ref None in
+  let add_function (_, content, asym, _) =
     let asym =
       match !asym with
       | Some asym -> asym
       | _ -> raise (Query (Datamodel ("Attribute hasn't been resolved")))
     in
-    let (_,uri,local) = asym in
+    let (prefix,uri,local) = asym in
+    begin
+      if (asym = Namespace_symbols_builtin.xml_base)
+      then xml_base := Some content
+    end;
     if (Hashtbl.mem local_attribute_hash (uri,local))
     then
       let caname = Namespace_symbols.rattr_name asym in
@@ -150,7 +155,8 @@ let check_duplicate_attributes attributes =
     else
       (Hashtbl.add local_attribute_hash (uri,local) ())
   in
-  List.iter add_function attributes
+  List.iter add_function attributes;
+  !xml_base
 
 let string_of_resolved_sax_event_desc rse = 
   match rse with

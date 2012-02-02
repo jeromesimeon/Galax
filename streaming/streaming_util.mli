@@ -42,6 +42,6 @@ val extract_special_attributes :
       (Whitespace.mode * sax_special_xml_attribute_forest * Dm_atomic.atomicAnyURI option * sax_xml_attribute_forest)
 
 (* Checks for duplicates in attributes -- Returns the original sequence of attributes or raises and error *)
-val check_duplicate_attributes : sax_xml_attribute_forest -> unit
+val check_duplicate_attributes : sax_xml_attribute_forest -> string option
 
 val string_of_resolved_sax_event_desc : sax_event_desc -> string

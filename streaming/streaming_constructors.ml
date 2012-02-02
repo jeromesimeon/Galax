@@ -192,7 +192,7 @@ let fix_in_scope_namespaces nsenv rsym atts =
   (* Namespace_context.print_binding_table "" Format.std_formatter required_bindings; *)
   (required_bindings,Namespace_context.patch_bindings nsenv required_bindings)
 
-let element_constructor_of_resolved base_uri rsym nsenv resolved_input_stream =
+let element_constructor_of_resolved (base_uri : Dm_atomic.atomicAnyURI option ref) rsym nsenv resolved_input_stream =
   let sym = Namespace_symbols.relem_name rsym in
 (*  let rsym = Namespace_symbols.relem_symbol sym in *)
   (* 2. Get the leading attributes in the resolved stream *)
@@ -200,9 +200,22 @@ let element_constructor_of_resolved base_uri rsym nsenv resolved_input_stream =
     Streaming_ops.consume_leading_attribute_events resolved_input_stream
   in
   (* 2.b. Check that attributes are not duplicated *)
-  let _ =
+  let xml_base =
     Streaming_util.check_duplicate_attributes leading_attributes
   in
+  (* 2.c Computes base_uri *)
+  let xml_base =
+    match xml_base with
+    | None -> ref None
+    | Some xb -> ref (Some (new Dm_atomic.atomicAnyURI (AnyURI._kinda_uri_of_string xb)))
+  in
+  let base_uri = Dm_atomic_util.resolve_atomicAnyURI base_uri xml_base in
+  let bus =
+    match !base_uri with
+    | None -> "[ABSENT]"
+    | Some bu -> AnyURI._string_of_uri (bu#getAtomicAnyURI())
+  in
+  Printf.printf "Constructed BaseURI: %s\n" bus; flush stdout;
   (* 3. Make sure that the rest of the stream contains proper nodes
         (no attributes, and returns the children of document nodes) *)
   let resolved_element_content_stream =
@@ -211,8 +224,6 @@ let element_constructor_of_resolved base_uri rsym nsenv resolved_input_stream =
   (* 4. Compute the in-scope namespaces (see XQuery Section 3.7.4
   In-scope Namespaces of a Constructed Element) *)
   let (bindings,in_scope_nsenv) = fix_in_scope_namespaces nsenv rsym leading_attributes in
-(*  Namespace_context.print_binding_table "" Format.std_formatter bindings;
-  Namespace_context.print_binding_table "" Format.std_formatter (Namespace_context.flatten_bindings in_scope_nsenv); *)
   (* 5. Builds a small stream to construct the element *)
   let small_expr = SElem(sym,Some bindings,in_scope_nsenv,leading_attributes,base_uri,[SHole],ref (Some rsym)) in
   let small_stream = Small_stream_context.resolved_xml_stream_of_sexpr small_expr in

@@ -1043,6 +1043,7 @@ streaming/sax_annot.cmo: ./base/error.cmi streaming/sax_annot.cmi
 streaming/sax_annot.cmx: ./base/error.cmx streaming/sax_annot.cmi
 streaming/streaming_util.cmo: ./base/whitespace.cmi \
     ./streaming/streaming_types.cmi ./streaming/sax_annot.cmi \
+    ./namespace/namespace_symbols_builtin.cmi \
     ./namespace/namespace_symbols.cmi ./namespace/namespace_resolve.cmi \
     ./namespace/namespace_names.cmi ./namespace/namespace_context.cmi \
     ./base/finfo.cmi ./base/error.cmi ./dm/atomic/dm_atomic.cmi \
@@ -1050,6 +1051,7 @@ streaming/streaming_util.cmo: ./base/whitespace.cmi \
     ./dm/base/cursor.cmi ./datatypes/anyURI.cmi streaming/streaming_util.cmi
 streaming/streaming_util.cmx: ./base/whitespace.cmx \
     ./streaming/streaming_types.cmi ./streaming/sax_annot.cmx \
+    ./namespace/namespace_symbols_builtin.cmx \
     ./namespace/namespace_symbols.cmx ./namespace/namespace_resolve.cmx \
     ./namespace/namespace_names.cmx ./namespace/namespace_context.cmx \
     ./base/finfo.cmx ./base/error.cmx ./dm/atomic/dm_atomic.cmx \
@@ -1130,7 +1132,8 @@ streaming/streaming_constructors.cmo: ./base/whitespace.cmi \
     ./namespace/namespace_names.cmi ./namespace/namespace_context.cmi \
     ./namespace/namespace_builtin.cmi ./base/galax_camomile.cmi \
     ./base/finfo.cmi ./base/error.cmi ./dm/atomic/dm_atomic_util.cmi \
-    ./dm/base/cursor.cmi streaming/streaming_constructors.cmi
+    ./dm/atomic/dm_atomic.cmi ./dm/base/cursor.cmi ./datatypes/anyURI.cmi \
+    streaming/streaming_constructors.cmi
 streaming/streaming_constructors.cmx: ./base/whitespace.cmx \
     ./streaming/streaming_util.cmx ./streaming/streaming_types.cmi \
     ./streaming/streaming_ops.cmx ./streaming/streaming_conv.cmx \
@@ -1140,7 +1143,8 @@ streaming/streaming_constructors.cmx: ./base/whitespace.cmx \
     ./namespace/namespace_names.cmx ./namespace/namespace_context.cmx \
     ./namespace/namespace_builtin.cmx ./base/galax_camomile.cmx \
     ./base/finfo.cmx ./base/error.cmx ./dm/atomic/dm_atomic_util.cmx \
-    ./dm/base/cursor.cmx streaming/streaming_constructors.cmi
+    ./dm/atomic/dm_atomic.cmx ./dm/base/cursor.cmx ./datatypes/anyURI.cmx \
+    streaming/streaming_constructors.cmi
 streaming/streaming_parse.cmo: ./streaming/streaming_util.cmi \
     ./streaming/streaming_types.cmi ./namespace/namespace_names.cmi \
     ./base/galax_io.cmi ./base/finfo.cmi ./base/error.cmi \
@@ -1577,18 +1581,18 @@ dm/dm.cmo: ./ast/xquery_type_core_ast.cmi ./ast/xquery_common_ast.cmi \
     ./ast/xquery_algebra_ast.cmi ./dm/base/nodeid.cmi \
     ./namespace/namespace_symbols.cmi ./namespace/namespace_context.cmi \
     ./namespace/namespace_builtin.cmi ./base/error.cmi ./dm/base/dm_types.cmi \
-    ./dm/dm_step.cmi ./dm/atomic/dm_atomic.cmi ./datatypes/decimal.cmi \
-    ./datatypes/datatypes_util.cmi ./datatypes/datatypes.cmi \
-    ./dm/cursor_descendant.cmi ./dm/base/cursor.cmi ./datatypes/anyURI.cmi \
-    dm/dm.cmi
+    ./dm/dm_step.cmi ./dm/atomic/dm_atomic_util.cmi ./dm/atomic/dm_atomic.cmi \
+    ./datatypes/decimal.cmi ./datatypes/datatypes_util.cmi \
+    ./datatypes/datatypes.cmi ./dm/cursor_descendant.cmi ./dm/base/cursor.cmi \
+    ./datatypes/anyURI.cmi dm/dm.cmi
 dm/dm.cmx: ./ast/xquery_type_core_ast.cmi ./ast/xquery_common_ast.cmx \
     ./ast/xquery_algebra_ast.cmi ./dm/base/nodeid.cmx \
     ./namespace/namespace_symbols.cmx ./namespace/namespace_context.cmx \
     ./namespace/namespace_builtin.cmx ./base/error.cmx ./dm/base/dm_types.cmx \
-    ./dm/dm_step.cmx ./dm/atomic/dm_atomic.cmx ./datatypes/decimal.cmx \
-    ./datatypes/datatypes_util.cmx ./datatypes/datatypes.cmi \
-    ./dm/cursor_descendant.cmx ./dm/base/cursor.cmx ./datatypes/anyURI.cmx \
-    dm/dm.cmi
+    ./dm/dm_step.cmx ./dm/atomic/dm_atomic_util.cmx ./dm/atomic/dm_atomic.cmx \
+    ./datatypes/decimal.cmx ./datatypes/datatypes_util.cmx \
+    ./datatypes/datatypes.cmi ./dm/cursor_descendant.cmx ./dm/base/cursor.cmx \
+    ./datatypes/anyURI.cmx dm/dm.cmi
 dm/dm_util.cmo: ./dm/base/nodeid.cmi ./namespace/namespace_symbols.cmi \
     ./namespace/namespace_names.cmi ./namespace/namespace_builtin.cmi \
     ./base/error.cmi ./dm/base/dm_types.cmi \

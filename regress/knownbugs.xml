@@ -12,11 +12,6 @@
 <bugs>
   <!-- Galax BUGS -->
   <!-- In Bugzilla -->
-  <bug id="42" in="galax" status="open">
-    <test-case name="Constr-cont-baseuri-2"/>
-    <test-case name="Constr-cont-baseuri-3"/>
-    <test-case name="Constr-cont-uripres-1"/>
-  </bug>
   <bug id="55" in="galax" status="open">
     <test-case name="surrogates01"/>
     <test-case name="surrogates02"/>
