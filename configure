@@ -18,7 +18,7 @@
 # value	 2:	on by command line ("forced")
 
 version="1.0"
-ocaml_version="3.12"
+ocaml_version="4.01"
 # Function:	print_options()
 # Description:
 #		Print the current values of all options
@@ -124,6 +124,7 @@ usage() {
 #		ocaml_pkglib:		This is where the OCaml pkg-lib is installed (default=$ocaml_lib/ocaml/pkg-lib)
 #		ocaml_pcre:			This is where the OCaml PCRE interface is installed (default=$ocaml_pkglib/pcre)
 #		ocaml_netstring:	This is where the OCaml netstring files are installed (default=$ocaml_pkglib/netstring)
+#		ocaml_netstring_pcre:	This is where the OCaml netstring files are installed (default=$ocaml_pkglib/netstring-pcre)
 #		ocaml_equeue:	    This is where the OCaml equeue files are installed (default=$ocaml_pkglib/equeue)
 #		ocaml_netclient:	This is where the OCaml netclient files are installed (default=$ocaml_pkglib/netclient)
 #		ocaml_netsys:	        This is where the OCaml netsys files are installed (default=$ocaml_pkglib/netstring)
@@ -191,6 +192,7 @@ ocaml_stdlib=
 ocaml_pkglib=
 ocaml_pcre=
 ocaml_netstring=
+ocaml_netstring_pcre=
 ocaml_equeue=
 ocaml_netclient=
 ocaml_netsys=
@@ -223,7 +225,7 @@ ccoption=
 
 poptions="local local_bin local_lib local_include"
 poptions="$poptions galax_home galax_bin galax_lib galax_camllib galax_usecases galax_examples galax_regress galax_config galax_capi galax_javaapi galax_man regression galax_regression"
-poptions="$poptions ocaml_home ocaml_bin ocaml_lib ocaml_stdlib ocaml_pkglib ocaml_pcre ocaml_netstring ocaml_equeue ocaml_netclient ocaml_netsys ocaml_pxp ocaml_pxp_utf8 ocaml_pxp_iso88591 ocaml_camomile ocaml_idl ocaml_idl_bin ocaml_libasmrun"
+poptions="$poptions ocaml_home ocaml_bin ocaml_lib ocaml_stdlib ocaml_pkglib ocaml_pcre ocaml_netstring ocaml_netstring_pcre ocaml_equeue ocaml_netclient ocaml_netsys ocaml_pxp ocaml_pxp_utf8 ocaml_pxp_iso88591 ocaml_camomile ocaml_idl ocaml_idl_bin ocaml_libasmrun"
 poptions="$poptions clib_bdb_lib clib_bdb_inc clib_bdb_name clib_pcre"
 poptions="$poptions java_home java_bin java_inc java_sysinc"
 poptions="$poptions regression galax_regression host_type ccoption"
@@ -261,6 +263,7 @@ help_ocaml_stdlib="The directory where OCaml standard library files are installe
 help_ocaml_pkglib="The directory where OCaml package library files are installed"
 help_ocaml_pcre="The directory where the OCaml PCRE library is installed"
 help_ocaml_netstring="The directory where the OCaml netstring library is installed"
+help_ocaml_netstring_pcre="The directory where the OCaml netstring-pcre library is installed"
 help_ocaml_netclient="The directory where the OCaml netclient library is installed"
 help_ocaml_equeue="The directory where the OCaml equeue library is installed"
 help_ocaml_netsys="The directory where the OCaml netsys library is installed"
@@ -677,6 +680,25 @@ then
 	echo "found"
 else
 	echo "ERROR: unable to find netstring_str.cmi in $ocaml_netstring"
+	exit 1
+fi
+
+printf "%s" "Checking for OCaml netstring-pcre library... "
+if [ -z "$ocaml_netstring_pcre" ]
+then
+	if [ -n "$ocaml_pkglib" -a -d "$ocaml_pkglib/netstring-pcre" -a -f "$ocaml_pkglib/netstring-pcre/netstring_pcre.cmi" ]
+	then
+		ocaml_netstring_pcre="$ocaml_pkglib/netstring-pcre"
+	elif [ -n "$tool_ocamlfind" ]
+	then
+		ocaml_netstring_pcre=`$tool_ocamlfind query netstring-pcre 2>/dev/null`
+	fi
+fi
+if [ -n "$ocaml_netstring_pcre" -a -f "$ocaml_netstring_pcre/netstring_pcre.cmi" ]
+then
+	echo "found"
+else
+	echo "ERROR: unable to find netstring_pcre.cmi in $ocaml_netstring_pcre"
 	exit 1
 fi
 
@@ -1590,6 +1612,7 @@ CONF_PACKAGE_SRC=$package_src
 #
 CONF_OCAML_LIBPCRE=$ocaml_pcre
 CONF_OCAML_LIBNETSTRING=$ocaml_netstring
+CONF_OCAML_LIBNETSTRING_PCRE=$ocaml_netstring_pcre
 CONF_OCAML_EQUEUE=$ocaml_equeue
 CONF_OCAML_LIBNETCLIENT=$ocaml_netclient
 CONF_OCAML_LIBNETSYS=$ocaml_netsys

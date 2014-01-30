@@ -271,7 +271,7 @@ let decimal_zero_test =
 let float_nan_zero_test =
   ((fun x ->
     if x == nan then raise_nan()
-    else if (x = infinity) or (x = -.infinity) then raise_infinity()
+    else if (x = infinity) || (x = -.infinity) then raise_infinity()
     else x),
    (fun x ->
      if x == nan then raise_nan()

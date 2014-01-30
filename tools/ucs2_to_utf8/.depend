@@ -1,9 +1,9 @@
-ucs2_to_utf8.cmo: types.cmo parser.cmi lexer.cmo
-ucs2_to_utf8.cmx: types.cmx parser.cmx lexer.cmx
-lexer.cmo: parser.cmi
-lexer.cmx: parser.cmx
-parser.cmo: types.cmo parser.cmi
-parser.cmx: types.cmx parser.cmi
-parser.cmi: types.cmo
-types.cmo:
-types.cmx:
+ucs2_to_utf8.cmo : types.cmo parser.cmi lexer.cmo
+ucs2_to_utf8.cmx : types.cmx parser.cmx lexer.cmx
+lexer.cmo : parser.cmi
+lexer.cmx : parser.cmx
+parser.cmo : types.cmo parser.cmi
+parser.cmx : types.cmx parser.cmi
+parser.cmi : types.cmo
+types.cmo :
+types.cmx :

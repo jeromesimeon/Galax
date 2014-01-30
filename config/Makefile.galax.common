@@ -124,6 +124,8 @@ OCAML_LIB_INCLUDES=\
 -I $(CONF_OCAML_STDLIB) \
 -I $(CONF_OCAML_LIBPCRE) \
 -I $(CONF_OCAML_LIBNETSTRING) \
+-I $(CONF_OCAML_LIBNETSTRING_PCRE) \
+-I $(CONF_OCAML_LIBNETSTRING_PCRE)/../stublibs \
 -I $(CONF_OCAML_EQUEUE) \
 -I $(CONF_OCAML_LIBNETCLIENT) \
 -I $(CONF_OCAML_LIBPXP) \
@@ -207,6 +209,7 @@ OCAML_LIBS+=netsys_oothr.cma netsys.cma
 endif
 OCAML_LIBS+=\
 netstring.cma \
+netstring-pcre.cma \
 equeue.cma \
 netclient.cma \
 pxp_engine.cma \
@@ -241,6 +244,7 @@ OCAML_OPTLIBS+=netsys_oothr.cmxa netsys.cmxa
 endif
 OCAML_OPTLIBS+=\
 netstring.cmxa \
+netstring-pcre.cmxa \
 equeue.cmxa \
 netclient.cmxa \
 pxp_engine.cmxa \

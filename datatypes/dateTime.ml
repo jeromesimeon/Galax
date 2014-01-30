@@ -182,7 +182,7 @@ let maximumDayInMonthFor(yearValue, monthValue) =
     false otherwise *)
 
 let leapyear year =
-  if (* year > 1582 &&*) (year mod 400 = 0 or (year mod 4 = 0 && not (year mod 100 = 0)))
+  if (* year > 1582 &&*) (year mod 400 = 0 || (year mod 4 = 0 && not (year mod 100 = 0)))
   then true
   else false
 
@@ -193,7 +193,7 @@ let valid_timezone dtd =
   match (abs(dtd.dtd_hours), abs(dtd.dtd_minutes)) with
   | (14, 0) -> ()
   | (hours, minutes) ->
-      if hours > 13 or minutes > 59
+      if hours > 13 || minutes > 59
       then raise (Query (Validation("Not a valid timezone")))
       else ()
 
@@ -232,9 +232,9 @@ let valid_date (yearopt, month, day) =
 
 (** Checks an hour minutes and second to determine if the time given is valid *)
 let valid_time (h, m, s) =
-  if (h < 0 or h > 23) or
-    (m < 0 or m > 59) or
-    (Decimal._decimal_lt s Decimal._decimal_zero) or
+  if (h < 0 || h > 23) ||
+    (m < 0 || m > 59) ||
+    (Decimal._decimal_lt s Decimal._decimal_zero) ||
     (Decimal._decimal_ge s sixty)
   then raise (Query (Validation("Not a valid time")))
   else ()
@@ -264,8 +264,8 @@ let create_timezone (tzrel, hours, minutes) =
     tz_rel =
     match tzrel with
     | Unknown -> Unknown
-    | _ -> if hours > 0 or minutes > 0 then Positive else
-      if hours < 0 or minutes < 0 then Negative
+    | _ -> if hours > 0 || minutes > 0 then Positive else
+      if hours < 0 || minutes < 0 then Negative
       else UTC }
     
 (** Creates a time *)
@@ -629,8 +629,8 @@ let mkdate (yearopt, month, day, dtd) =
     | Some dtd2 -> 
 	begin
 	  valid_timezone dtd2;
-	  let rel = if dtd2.dtd_hours > 0 or dtd2.dtd_minutes > 0 then Positive
-	  else if dtd2.dtd_hours < 0 or dtd2.dtd_minutes < 0 then Negative
+	  let rel = if dtd2.dtd_hours > 0 || dtd2.dtd_minutes > 0 then Positive
+	  else if dtd2.dtd_hours < 0 || dtd2.dtd_minutes < 0 then Negative
 	  else UTC in
 	  create_date (year, month, day, rel, dtd2.dtd_hours, dtd2.dtd_minutes)
 	end
@@ -674,8 +674,8 @@ let mktime (hour, minute, second, dtd) =
     | Some dtd2 ->
 	begin
 	  valid_timezone dtd2;
-	  let rel = if dtd2.dtd_hours > 0 or dtd2.dtd_minutes > 0 then Positive
-	  else if dtd2.dtd_hours < 0 or dtd2.dtd_minutes < 0 then Negative
+	  let rel = if dtd2.dtd_hours > 0 || dtd2.dtd_minutes > 0 then Positive
+	  else if dtd2.dtd_hours < 0 || dtd2.dtd_minutes < 0 then Negative
 	  else UTC in
 	  create_time (hour, minute, second, rel, dtd2.dtd_hours, dtd2.dtd_minutes)
 	end
@@ -690,8 +690,8 @@ let mktime_dtd (hour, minute, second, dtd) =
     | Some dtd2 ->
 	begin
 	  valid_timezone dtd2;
-	  let rel = if dtd2.dtd_hours > 0 or dtd2.dtd_minutes > 0 then Positive
-	  else if dtd2.dtd_hours < 0 or dtd2.dtd_minutes < 0 then Negative
+	  let rel = if dtd2.dtd_hours > 0 || dtd2.dtd_minutes > 0 then Positive
+	  else if dtd2.dtd_hours < 0 || dtd2.dtd_minutes < 0 then Negative
 	  else UTC in
 	  (dtd1, create_time (hour, minute, second, rel, dtd2.dtd_hours, dtd2.dtd_minutes))
 	end
@@ -708,8 +708,8 @@ let mktime_noerr (hour, minute, second, dtd) =
   | Some dtd2 -> 
       begin
 	valid_timezone dtd2;
-	let rel = if dtd2.dtd_hours > 0 or dtd2.dtd_minutes > 0 then Positive
-	else if dtd2.dtd_hours < 0 or dtd2.dtd_minutes < 0 then Negative
+	let rel = if dtd2.dtd_hours > 0 || dtd2.dtd_minutes > 0 then Positive
+	else if dtd2.dtd_hours < 0 || dtd2.dtd_minutes < 0 then Negative
 	else UTC in
 	create_time (hour, minute, second, rel, dtd2.dtd_hours, dtd2.dtd_minutes)
       end
@@ -725,8 +725,8 @@ let mkdateTime (date, time, dtd) =
     | Some dtd2 -> 
 	begin
 	  valid_timezone dtd2;
-	  let rel = if dtd2.dtd_hours > 0 or dtd2.dtd_minutes > 0 then Positive
-	  else if dtd2.dtd_hours < 0 or dtd2.dtd_minutes < 0 then Negative
+	  let rel = if dtd2.dtd_hours > 0 || dtd2.dtd_minutes > 0 then Positive
+	  else if dtd2.dtd_hours < 0 || dtd2.dtd_minutes < 0 then Negative
 	  else UTC in
 	  create_dateTime (date,
 			   time,
@@ -1225,9 +1225,9 @@ let time_from_dateTime dt = dt.dt_time
    @param dtd The dayTimeDuration
    @return Positive, Negative, or UTC depending on the offset *)
 let findOffset dtd =
-  if dtd.dtd_days > 0 or dtd.dtd_hours > 0 or dtd.dtd_minutes > 0 or 
+  if dtd.dtd_days > 0 || dtd.dtd_hours > 0 || dtd.dtd_minutes > 0 ||
     Decimal._decimal_gt dtd.dtd_seconds Decimal._decimal_zero then Positive
-  else if dtd.dtd_days < 0 or dtd.dtd_hours < 0 or dtd.dtd_minutes < 0 or 
+  else if dtd.dtd_days < 0 || dtd.dtd_hours < 0 || dtd.dtd_minutes < 0 ||
     Decimal._decimal_lt dtd.dtd_seconds Decimal._decimal_zero then Negative
   else UTC
 
@@ -1530,7 +1530,7 @@ let default_dateTime() =
    @param ymd The yearMonthDuration
    @return Positive or Negative depending on the yearMonthDuration *)
 let ymd_direction ymd =
-  if ymd.ymd_years > 0 or ymd.ymd_months > 0 then Positive
+  if ymd.ymd_years > 0 || ymd.ymd_months > 0 then Positive
   else Negative
 
 (** Add the specified number of months to a date consisting of a year and a month.

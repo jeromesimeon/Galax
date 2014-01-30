@@ -355,7 +355,7 @@ and atomicFloat ?ta:type_annotation v =
       | ATString ->
 	  ((new atomicString ~ta:at (serialize_float v')) :> atomicValue)
       | ATBoolean -> 
-	  (new atomicBoolean ~ta:at (if v' = 0.0 or Decimal.is_nan v' then false else true))
+	  (new atomicBoolean ~ta:at (if v' = 0.0 || Decimal.is_nan v' then false else true))
       | ATDecimal -> 
 	  (new atomicDecimal ~ta:at (Decimal._decimal_of_float v'))
       | ATFloat -> 
@@ -430,7 +430,7 @@ and atomicDouble ?ta:type_annotation v =
       | ATString ->
 	  ((new atomicString ~ta:at (serialize_double v') :> atomicValue))
       | ATBoolean -> 
-	  (new atomicBoolean ~ta:at (if v' = 0.0 or Decimal.is_nan v' then false else true))
+	  (new atomicBoolean ~ta:at (if v' = 0.0 || Decimal.is_nan v' then false else true))
       | ATDecimal ->
 	  (new atomicDecimal ~ta:at (Decimal._cast_double_to_decimal v'))
       | ATFloat -> 
@@ -636,8 +636,6 @@ and atomicDateTime ?ta:type_annotation v =
     method getAtomicDateTime () = v'
     method private eq a = 
 	  dateTime_equal None v' (a#getAtomicDateTime())
-    method private eq a = 
-	  dateTime_equal None v' (a#getAtomicDateTime())
     method private lteq a = 
 	  dateTime_lteq None v' (a#getAtomicDateTime())
     method private lt a = 
@@ -778,8 +776,6 @@ and atomicTime ?ta:type_annotation v =
     method erase_atomic_value () = DateTime.string_of_time v'
     method getAtomicValueKind () = ATTime
     method getAtomicTime () = v'
-    method private eq a = 
-	  time_equal None v' (a#getAtomicTime())
     method private eq a = 
 	  time_equal None v' (a#getAtomicTime())
     method private lteq a = 

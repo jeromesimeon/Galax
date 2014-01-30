@@ -71,8 +71,8 @@ module HTTP = struct
   (* Scan past "\r\n\r\n" *)
   let rec after_crlfcrlf result start =
     let cr = String.index_from result start '\r' in
-    if String.get result (cr+1) = '\n' &
-      String.get result (cr+2) = '\r' &
+    if String.get result (cr+1) = '\n' &&
+      String.get result (cr+2) = '\r' &&
       String.get result (cr+3) = '\n'
     then cr+4
     else after_crlfcrlf result (cr+1) 
@@ -272,7 +272,7 @@ o=University%20of%20Michigan,c=US??sub?sn=john
   let rec get_headers inchan =
     try
       let line = input_line inchan in
-      if (line = "" or line = "\r") then [] else
+      if (line = "" || line = "\r") then [] else
       (header_of_line line)::(get_headers inchan)
     with End_of_file -> []
 

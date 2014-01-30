@@ -215,7 +215,7 @@ let element_constructor_of_resolved (base_uri : Dm_atomic.atomicAnyURI option re
     | None -> "[ABSENT]"
     | Some bu -> AnyURI._string_of_uri (bu#getAtomicAnyURI())
   in
-  Printf.printf "Constructed BaseURI: %s\n" bus; flush stdout;
+  (* Printf.printf "Constructed BaseURI: %s\n" bus; flush stdout; *)
   (* 3. Make sure that the rest of the stream contains proper nodes
         (no attributes, and returns the children of document nodes) *)
   let resolved_element_content_stream =

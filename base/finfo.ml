@@ -119,7 +119,7 @@ let loc_in_file file_name pos =
       let ch =
 	input_char inch
       in
-      if ch = '\012' or ch = '\n' then begin
+      if ch = '\012' || ch = '\n' then begin
 	incr lineno;
 	linepos := 0
       end

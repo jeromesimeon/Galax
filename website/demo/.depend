@@ -1,9 +1,9 @@
-demo_conf.cmi:
-demo_conf.cmo: demo_conf.cmi
-demo_conf.cmx: demo_conf.cmi
-querycgi.cmo: demo_conf.cmi
-querycgi.cmx: demo_conf.cmx
-usecase.cmo: demo_conf.cmi
-usecase.cmx: demo_conf.cmx
-viewxml.cmo: demo_conf.cmi
-viewxml.cmx: demo_conf.cmx
+demo_conf.cmi :
+demo_conf.cmo : demo_conf.cmi
+demo_conf.cmx : demo_conf.cmi
+querycgi.cmo : demo_conf.cmi
+querycgi.cmx : demo_conf.cmx
+usecase.cmo : demo_conf.cmi
+usecase.cmx : demo_conf.cmx
+viewxml.cmo : demo_conf.cmi
+viewxml.cmx : demo_conf.cmx

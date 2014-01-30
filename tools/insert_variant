@@ -72,7 +72,7 @@ let edit_file variant extension name =
     while true do
       let line = input_line chin in
       (* We do not have Str here. *)
-      if String.length line >= 8 & String.sub line 0 8 = "#insert " then begin
+      if String.length line >= 8 && String.sub line 0 8 = "#insert " then begin
 	let insname = get_arg variant line in
 	(* Copy the file 'insname' to chout *)
 	let chcopy = open_in_bin insname in

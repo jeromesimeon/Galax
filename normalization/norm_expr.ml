@@ -291,7 +291,7 @@ let normalize_expr norm_context e =
 	      (cexpr_fs_dot (Some e) fi) :: []
 	    else if (rqname_equal rfname fn_substring && arity = 2) then
 	      celist @ (fmkcexpr (CEScalar (DoubleLiteral infinity)) (Some e) fi):: []
-	    else if ((rqname_equal rfname fn_matches or rqname_equal rfname fn_tokenize) && arity = 2) then
+	    else if ((rqname_equal rfname fn_matches || rqname_equal rfname fn_tokenize) && arity = 2) then
 	      celist @ (fmkcexpr (CEScalar (StringLiteral "")) (Some e) fi) :: []
 	    else if (rqname_equal rfname fn_replace && arity = 3) then
 	      celist @ (fmkcexpr (CEScalar (StringLiteral "")) (Some e) fi) :: []

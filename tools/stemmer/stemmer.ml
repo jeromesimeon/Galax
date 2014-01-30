@@ -166,10 +166,10 @@ let word_size word =
 let ends_with_cvc str =
   let len = (String.length str) in
   let vowel_or_y c =
-    (is_vowel c) or c = 'y'
+    (is_vowel c) || c = 'y'
   in
   let vowel_or_wxy c =
-    (vowel_or_y c) or c = 'x' or c = 'w'
+    (vowel_or_y c) || c = 'x' || c = 'w'
   in
     if len < 3 then
       false

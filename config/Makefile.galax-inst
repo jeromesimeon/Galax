@@ -42,6 +42,7 @@ OCAML_LIB_INCLUDES=\
 -I $(CONF_OCAML_STDLIB) \
 -I $(CONF_OCAML_LIBPCRE) \
 -I $(CONF_OCAML_LIBNETSTRING) \
+-I $(CONF_OCAML_LIBNETSTRING_PCRE) \
 -I $(CONF_OCAML_EQUEUE) \
 -I $(CONF_OCAML_LIBNETCLIENT) \
 -I $(CONF_OCAML_LIBNETSYS) \
@@ -107,6 +108,7 @@ pcre.cma \
 netsys.cma \
 equeue.cma \
 netstring.cma \
+netstring-pcre.cma \
 netclient.cma \
 pxp_engine.cma \
 pxp_lex_utf8.cma pxp_lex_link_utf8.cmo \
@@ -141,6 +143,7 @@ pcre.cmxa \
 netsys.cmxa \
 equeue.cmxa \
 netstring.cmxa \
+netstring-pcre.cmxa \
 netclient.cmxa \
 pxp_engine.cmxa \
 pxp_lex_utf8.cmxa pxp_lex_link_utf8.cmx \

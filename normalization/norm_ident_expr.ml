@@ -154,13 +154,13 @@ let normalize_ident_expr norm_context e =
 	    else if (rqname_equal rfname fn_substring && arity = 2) then
 	    (* Pass 1000000 as the length of the substring because I'm not sure how to get at the data right now. Change later *)
 	      celist @ (fmkcexpr (CEScalar(DoubleLiteral (double_of_untyped("1000000.0")))) (Some e) fi):: []
-	    else if ((rqname_equal rfname fn_matches or rqname_equal rfname fn_tokenize) && arity = 2) then
+	    else if ((rqname_equal rfname fn_matches || rqname_equal rfname fn_tokenize) && arity = 2) then
 	      celist @ (fmkcexpr (CEScalar(StringLiteral "")) (Some e) fi) :: []
 	    else if (rqname_equal rfname fn_replace && arity = 3) then
 	      celist @ (fmkcexpr (CEScalar(StringLiteral "")) (Some e) fi) :: []
 	    else if ((rqname_equal rfname fn_adjust_time_to_timezone 
-			or rqname_equal rfname fn_adjust_date_to_timezone
-			or rqname_equal rfname fn_adjust_dateTime_to_timezone)
+		    || rqname_equal rfname fn_adjust_date_to_timezone
+		    || rqname_equal rfname fn_adjust_dateTime_to_timezone)
 		       && arity = 1) then
 	      celist @ [cempty]
 	    else

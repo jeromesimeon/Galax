@@ -266,7 +266,7 @@ let make_part att_el nsenv =
 	    let rsym = get_rattr_symbol rsym in
 	    match rattr_name rsym with	_,_,name ->
               if name = "name" then get_ntx (Some t) d rest
-              else if name = "element" or name = "type" then
+              else if name = "element" || name = "type" then
 		begin
 		  let qn = uqname_element_of_string t in
 		    match qn with p, s ->
