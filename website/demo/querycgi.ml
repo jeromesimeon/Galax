@@ -29,7 +29,7 @@ open Galax
 open Format
 
 open Netcgi
-open Netcgi_types
+open Netcgi1_compat
 
 (* demo modules *)
 

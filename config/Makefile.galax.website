@@ -12,7 +12,7 @@
 
 include $(LOCALPREFIX)/config/Makefile.galax.common
 
-WGALAX_ALL_INCLUDES=$(GALAX_ALL_INCLUDES) -I $(CONF_OCAML_PKGLIB)/netcgi1
+WGALAX_ALL_INCLUDES=$(GALAX_ALL_INCLUDES) -I $(CONF_OCAML_PKGLIB)/netcgi2
 
 #########################################################################
 # Section:	Make rules

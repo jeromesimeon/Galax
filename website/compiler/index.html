@@ -3,57 +3,98 @@
 <html>
   <head>
     <link rev="made" href="mailto:galax-users@research.att.com">
-    <title>Galax: Compiler</title>
+    <title>Galax: An Implementation of XQuery</title>
     <meta name="DESCRIPTION" content="galax, xquery, query language, ocaml">
     <meta name="KEYWORDS" content="galax, xquery, query language, ocaml">
-    <link href="../galax.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <!-- modernizr enables HTML5 elements and feature detects -->
+    <script type="text/javascript" src="../js/modernizr-1.5.min.js"></script>
   </head>
 
   <body>
 
-    <table border="0" cellspacing="4" cellpadding="0" width="100%">
-      <tbody>
-      <tr>
-        <td colspan="2" valign="top">
-          </br><a href="../" class="title"><img src="../images/galax.gif" alt="[Galax]" border="0" hspace="4" vspace="5"></a></br>
-        </td>
-      </tr>
-      <tr>
-        <td valign="top" bgcolor="#ffd400" class="border">
-          <p>
-            <b><a href="index.html" class="title">Compiler</a></b>
-            </br>
-            <table border=0 cellspacing=4 cellpadding=0>
-              <tr><td>
-                &nbsp;<a href="#overview" class="title">Overview</a></br>
-                &nbsp;<a href="#parsing" class="title">Parsing</a></br>
-                &nbsp;<a href="#normalization" class="title">Normalization</a></br>
-                &nbsp;<a href="#rewriting" class="title">Rewriting</a></br>
-                &nbsp;<a href="#compilation" class="title">Compilation</a></br>
-                &nbsp;<a href="#algebra" class="title">Optimization</a></br>
-                &nbsp;<a href="#operations" class="title">Specialized&nbsp;Optimization</a></br>
-                &nbsp;<a href="#physical" class="title">Physical&nbsp;Layer</a></br>
-              </td></tr>
-            </table>
-            </p><p>
-            <b><a href="#operations" class="title">Specialized&nbsp;Optimizations</a></b>
-            </br>
-            <table border=0 cellspacing=4 cellpadding=0>
-              <tr><td>
-                &nbsp;<a href="#projection" class="title">Document&nbsp;Projection</a></br>
-                &nbsp;<a href="#treepatterns" class="title">Tree&nbsp;Patterns</a></br>
-              </td></tr>
-            </table>
-            </p>
-            <b>Tech.&nbsp;Center</b></br>
-	    <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
- 		&nbsp;<a href="research.html" class="title">Publications</a></br>
-		&nbsp;<a href="optimization/" class="title">Optimization</a></br>
-		&nbsp;<a href="static.html" class="title">Static&nbsp;Typing</a></br>
-	    </td></tr></tbody></table>
-        </td>
-
-        <td valign="top">
+  <div id="main">
+    <header>
+      <div id="logo">
+        <div id="logo_text">
+          <!-- class="logo_colour", allows you to change the colour of the text -->
+          <h1><a href="../index.html">Galax</a></h1>
+          <h2>XQuery Processor for OCaml</h2>
+        </div>
+      </div>
+      <nav>
+        <div id="menu_container">
+          <ul class="sf-menu" id="nav">
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../about.html">About</a>
+              <ul>
+                <li><a href="../about.html#xquery">About XQuery</a></li>
+                <li><a href="../about.html#galax">About Galax</a></li>
+                <li><a href="../about.html#team">Contributors</a></li>
+                <li><a href="../about.html#thanks">Acknowledgments</a></li>
+              </ul>
+            </li>
+            <li><a href="#">Downloads</a>
+              <ul>
+                <li><a href="http://sourceforge.net/projects/galax/files/galax-1.0.1-src.tar.gz/download">Galax 1.0.1 Source</a></li>
+                <li><a href="http://sourceforge.net/projects/galax/files/galax-1.0.1-linux.tgz/download">Galax 1.0.1 Linux</a></li>
+              </ul>
+            </li>
+            <li><a href="../doc.html">Documentation</a>
+              <ul>
+                <li><a href="../doc.html#xquery">W3C XQuery</a></li>
+                <li><a href="../doc.html#xmlschema">W3C XML Schema</a></li>
+                <li><a href="../doc.html#galaxdoc">Galax Documentation</a></li>
+              </ul>
+            </li>
+            <li><a href="research.html">Research</a>
+              <ul>
+                <li><a href="../research.html#language">Language Design</a></li>
+                <li><a href="../research.html#types">Type System</a></li>
+                <li><a href="../research.html#optimization">Optimization</a></li>
+                <li><a href="../research.html#storage">XML Storage</a></li>
+                <li><a href="../research.html#webservices">Web Services</a></li>
+                <li><a href="../research.html#updates">XML Updates</a></li>
+                <li><a href="../research.html#distributed">Distribution</a></li>
+              </ul>
+            </li>
+            <li><a href="../compiler/index.html">Compiler</a>
+              <ul>
+                <li><a href="../compiler/index.html#overview">Overview</a></li>
+                <li><a href="../compiler/index.html#parsing">Parsing</a></li>
+                <li><a href="../compiler/index.html#normalization">Normalization</a></li>
+                <li><a href="../compiler/index.html#rewriting">Rewritings</a></li>
+                <li><a href="../compiler/index.html#compilation">Compilation</a></li>
+                <li><a href="../compiler/index.html#algebra">Algebra</a></li>
+                <li><a href="../compiler/index.html#operations">Optimizations</a></li>
+                <li><a href="../compiler/index.html#projection">XML Projection</a></li>
+                <li><a href="../compiler/index.html#treepatterns">Tree Patterns</a></li>
+                <li><a href="../compiler/index.html#physical">Runtime</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <div id="site_content">
+      <div id="sidebar_container">
+        <div class="sidebar">
+          <h3>Latest News</h3>
+          <h4>New Website Launched</h4>
+          <h5>January 30th, 2014</h5>
+        </div>
+        <div class="sidebar">
+          <h3>Useful Links</h3>
+          <ul>
+            <li><a href="http://www.w3.org/XML/Query">W3C XQuery</a></li>
+            <li><a href="LICENSE">License</a></li>
+            <li><a href="https://github.com/jeromesimeon/Galax">Git Repository</a></li>
+            <li><a href="https://sourceforge.net/p/galax/bugs/">Bug Tracker</a></li>
+            <li><a href="http://dev.w3.org/2006/xquery-test-suite/PublicPagesStagingArea/XQTSReportSimple_XQTS_1_0_2.html">Conformance</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="content">
 
         <h1>The Galax Compiler</h1>
 
@@ -82,8 +123,6 @@
         optimization techniques described here are at various level of
         maturity. As a result, some of them are disabled by default in
         the main Galax public release.</p>
-
-        <hr/>
 
     	<h1><a name="overview"></a>Overview and Architecture</h1>
 
@@ -117,8 +156,6 @@
         compilation phase, as well as pointers to relevant
         documents.</p>
 
-    <hr/>
-
     <h1><a name="parsing"></a>Parsing</h1>
 
     <p>Galax follows a fairly traditional parsing, with XQuery
@@ -135,8 +172,6 @@
     lexing can be found in
     the <a href="http://www.w3.org/TR/xquery-xpath-parsing/">tokenizer
     note</a> both published by the W3C.</p>
-
-    <hr/>
 
     <h1><a name="normalization"></a>Normalization</h1>
 
@@ -164,8 +199,6 @@
     the official specification is key to prepare
     for <a href="#compilation" class="title">algebraic
     compilation</a>.</p>
-
-    <hr/>
 
     <h1><a name="rewriting"></a>Rewritings</h1>
 
@@ -198,8 +231,6 @@
     </ul>
 -->
 
-    <hr/>
-
     <h1><a name="compilation"></a>Compilation</h1>
 
     <p>Once the AST has been cleaned up, through rewriting, we compile
@@ -207,9 +238,7 @@
     used in based on a traditional NRA (Nested-Relational Algebra)
     extended to support XML operations.</p>
 
-    <hr/>
-
-    <h1><a name="algebra"></a>Optimization</h1>
+    <h1><a name="algebra"></a>Algebra</h1>
 
     <center>
       <img src="archi_algebra.gif"
@@ -233,9 +262,7 @@
       	  Fern&aacute;ndez. ICDE 2006.</li>
     </ul>
 
-    <hr/>
-
-    <h1><a name="operations"></a>Specialized XML Optimizations</h1>
+    <h1><a name="operations"></a>Optimizations</h1>
 
     <center>
       <img src="archi_operations.gif"
@@ -315,10 +342,7 @@
 
      </ul>
 
-    <hr/>
-
-    <h1><a name="physical"></a>Physical representation, storage and
-    indices</h1>
+    <h1><a name="physical"></a>Runtime</h1>
 
     <center>
       <img src="archi_physical.gif"
@@ -361,10 +385,26 @@
     data. Please come back to check on our progress!</p>
 -->
 
-    <hr/>
-          </td>
+      </div>
+    </div>
+    <div id="scroll">
+      <a title="Scroll to the top" class="top" href="#"><img src="../images/top.png" alt="top" /></a>
+    </div>
 
-        </tr></table>
-
+    <footer>
+      <p><img src="../images/galax_small.gif" alt="galax-logo" /></p>
+      <p><a href="../index.html">Home</a> | <a href="about.html">About</a> | <a href="../doc.html">Documentation</a> | <a href="../contact.php">Contact Us</a></p>
+      <p><a href="http://www.css3templates.co.uk">design from css3templates.co.uk</a></p>
+    </footer>
+  <!-- javascript at the bottom for fast page loading -->
+  <script type="text/javascript" src="../js/jquery.js"></script>
+  <script type="text/javascript" src="../js/jquery.easing-sooper.js"></script>
+  <script type="text/javascript" src="../js/jquery.sooperfish.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('ul.sf-menu').sooperfish();
+      $('.top').click(function() {$('html, body').animate({scrollTop:0}, 'fast'); return false;});
+    });
+  </script>
   </body>
 </html>

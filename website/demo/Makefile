@@ -47,10 +47,10 @@ $(OPTUSECASETARGET): $(USECASEOBJS:.cmo=.cmx)
 	$(OCAMLOPT) -linkall -o $@ $(OCAMLOPT_FLAGS) $(WGALAX_ALL_INCLUDES) $(GALAX_ALL_OPTLIBS) $(USECASEOBJS:.cmo=.cmx)
 
 $(CGITARGET): $(OBJS)
-	$(OCAMLC) -custom -linkall -o $@ $(OCAMLC_FLAGS) $(WGALAX_ALL_INCLUDES) -I $(CONF_OCAML_PKGLIB)/cgi $(GALAX_ALL_LIBS) $(CONF_OCAML_PKGLIB)/netcgi1/cgi.cma $(OBJS)
+	$(OCAMLC) -custom -linkall -o $@ $(OCAMLC_FLAGS) $(WGALAX_ALL_INCLUDES) -I $(CONF_OCAML_PKGLIB)/cgi $(GALAX_ALL_LIBS) $(CONF_OCAML_PKGLIB)/netcgi2/cgi.cma $(OBJS)
 
 $(OPTCGITARGET): $(OBJS:.cmo=.cmx)
-	$(OCAMLOPT) -linkall -o $@ $(OCAMLOPT_FLAGS) $(WGALAX_ALL_INCLUDES) -I $(CONF_OCAML_PKGLIB)/cgi  $(GALAX_ALL_OPTLIBS) $(CONF_OCAML_PKGLIB)/netcgi1/cgi.cmxa $(OBJS:.cmo=.cmx)
+	$(OCAMLOPT) -linkall -o $@ $(OCAMLOPT_FLAGS) $(WGALAX_ALL_INCLUDES) -I $(CONF_OCAML_PKGLIB)/cgi  $(GALAX_ALL_OPTLIBS) $(CONF_OCAML_PKGLIB)/netscgi2/cgi.cmxa $(OBJS:.cmo=.cmx)
 installdocs:
 	if test -d $(DEMOSITE); then : ; else $(MKDIR) $(DEMOSITE); fi
 	if test -d $(DEMOSITE)/docs; then rm -f $(DEMOSITE)/docs/*: ; else $(MKDIR) $(DEMOSITE)/docs; fi

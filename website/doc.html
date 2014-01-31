@@ -3,193 +3,152 @@
 <html>
   <head>
     <link rev="made" href="mailto:galax-users@research.att.com">
-    <title>Galax: Documentation</title>
+    <title>Galax: An Implementation of XQuery</title>
     <meta name="DESCRIPTION" content="galax, xquery, query language, ocaml">
     <meta name="KEYWORDS" content="galax, xquery, query language, ocaml">
-    <link href="galax.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <!-- modernizr enables HTML5 elements and feature detects -->
+    <script type="text/javascript" src="js/modernizr-1.5.min.js"></script>
   </head>
 
   <body>
 
-    <table border="0" cellspacing="4" cellpadding="0" width="100%">
-      <tbody>
-      <tr>
-        <td colspan="2" valign="top">
-          </br><img src="images/galax.gif" alt="[Galax]" border="0" hspace="4" vspace="5"></br>
-        </td>
-      </tr>
-      <tr>
-        <td valign="top" bgcolor="PowderBlue" class="border">
-	    <p>
-		<b><a href="./" class="title">Galax Home</a></b>
-            </p>
-	    <p>
-		<b><a href="doc.html" class="title">W3C Documentation</a></b>
-            </p>
+  <div id="main">
+    <header>
+      <div id="logo">
+        <div id="logo_text">
+          <!-- class="logo_colour", allows you to change the colour of the text -->
+          <h1><a href="index.html">Galax</a></h1>
+          <h2>XQuery Processor for OCaml</h2>
+        </div>
+      </div>
+      <nav>
+        <div id="menu_container">
+          <ul class="sf-menu" id="nav">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a>
+              <ul>
+                <li><a href="about.html#xquery">About XQuery</a></li>
+                <li><a href="about.html#galax">About Galax</a></li>
+                <li><a href="about.html#team">Contributors</a></li>
+                <li><a href="about.html#thanks">Acknowledgments</a></li>
+              </ul>
+            </li>
+            <li><a href="#">Downloads</a>
+              <ul>
+                <li><a href="http://sourceforge.net/projects/galax/files/galax-1.0.1-src.tar.gz/download">Galax 1.0.1 Source</a></li>
+                <li><a href="http://sourceforge.net/projects/galax/files/galax-1.0.1-linux.tgz/download">Galax 1.0.1 Linux</a></li>
+              </ul>
+            </li>
+            <li><a href="doc.html">Documentation</a>
+              <ul>
+                <li><a href="doc.html#xquery">W3C XQuery</a></li>
+                <li><a href="doc.html#xmlschema">W3C XML Schema</a></li>
+                <li><a href="doc.html#galaxdoc">Galax Documentation</a></li>
+              </ul>
+            </li>
+            <li><a href="research.html">Research</a>
+              <ul>
+                <li><a href="research.html#language">Language Design</a></li>
+                <li><a href="research.html#types">Type System</a></li>
+                <li><a href="research.html#optimization">Optimization</a></li>
+                <li><a href="research.html#storage">XML Storage</a></li>
+                <li><a href="research.html#webservices">Web Services</a></li>
+                <li><a href="research.html#updates">XML Updates</a></li>
+                <li><a href="research.html#distributed">Distribution</a></li>
+              </ul>
+            </li>
+            <li><a href="compiler/index.html">Compiler</a>
+              <ul>
+                <li><a href="compiler/index.html#overview">Overview</a></li>
+                <li><a href="compiler/index.html#parsing">Parsing</a></li>
+                <li><a href="compiler/index.html#normalization">Normalization</a></li>
+                <li><a href="compiler/index.html#rewriting">Rewritings</a></li>
+                <li><a href="compiler/index.html#compilation">Compilation</a></li>
+                <li><a href="compiler/index.html#algebra">Algebra</a></li>
+                <li><a href="compiler/index.html#operations">Optimizations</a></li>
+                <li><a href="compiler/index.html#projection">XML Projection</a></li>
+                <li><a href="compiler/index.html#treepatterns">Tree Patterns</a></li>
+                <li><a href="compiler/index.html#physical">Runtime</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <div id="site_content">
+      <div id="sidebar_container">
+        <div class="sidebar">
+          <h3>Latest News</h3>
+          <h4>New Website Launched</h4>
+          <h5>January 30th, 2014</h5>
+        </div>
+        <div class="sidebar">
+          <h3>Useful Links</h3>
+          <ul>
+            <li><a href="http://www.w3.org/XML/Query">W3C XQuery</a></li>
+            <li><a href="LICENSE">License</a></li>
+            <li><a href="https://github.com/jeromesimeon/Galax">Git Repository</a></li>
+            <li><a href="https://sourceforge.net/p/galax/bugs/">Bug Tracker</a></li>
+            <li><a href="http://dev.w3.org/2006/xquery-test-suite/PublicPagesStagingArea/XQTSReportSimple_XQTS_1_0_2.html">Conformance</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="content">
 
-	      <font size="1">
-		<b><a href="http://www.w3.org/XML/Query" class="title">W3C XQuery 1.0 / XPath 2.0</a></b>
-	      </font>
-	    <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
-              <font size="-1">
-		      &nbsp;<a href="http://www.w3.org/TR/xquery/">XQuery 1.0</a></br>
-		      &nbsp;<a href="http://www.w3.org/TR/xpath20/">XPath 2.0</a></br>
-		      &nbsp;<a href="http://www.w3.org/TR/xpath-datamodel/">Data Model</a></br>
-		      &nbsp;<a href="http://www.w3.org/TR/xpath-functions/">Functions&amp;Operators</a></br>
-		      &nbsp;<a href="http://www.w3.org/TR/xquery-semantics/">Formal&nbsp;Semantics</a></br>
-		      &nbsp;<a href="http://www.w3.org/TR/xmlquery-use-cases">Use&nbsp;Cases</a></br></br>
-		  </font></td></tr></tbody></table>
-
-	      <font size="1">
-		<b><a href="http://www.w3.org/XML/Schema" class="title">W3C XML Schema</a></b>
-	      </font>
-
-	    <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
-		    <font size="-1">
-		      &nbsp;<a href="http://www.w3.org/TR/xmlschema-0/">Part&nbsp;0:&nbsp;Primer</a></br>
-		      &nbsp;<a href="http://www.w3.org/TR/xmlschema-1/">Part&nbsp;1:&nbsp;Structures</a></br>
-                      &nbsp;<a href="http://www.w3.org/TR/xmlschema-2/">Part&nbsp;2:&nbsp;Datatypes</a></br><br/>
-		    </font>
-		  </td></tr></tbody></table>
-
-	    </p>
-
-	    <p>
-		<b><a href="doc.html#galaxdoc" class="title">Galax Documentation</a></b>
-
-	    <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
-		    <font size="-1">
-		      &nbsp;<a href="doc/index.html">User's Manual (HTML)</a></br>
-		      &nbsp;<a href="doc/manual.pdf">User's Manual (PDF)</a></br>
-		      &nbsp;<a href="doc.html#presentations">Presentations</a></br>
-<!--		      &nbsp;<a
-		    href="doc.html#align">XQuery&nbsp;1.0&nbsp;Alignment</a></br> 
-		      &nbsp;<a
-		    href="doc.html#release">V0.3.1&nbsp;Release&nbsp;Notes</a></br>
-		      &nbsp;<a href="doc.html#bugs">V0.3.1&nbsp;Bug&nbsp;Parade</a></br></br>
--->
-		    </font>
-		  </td></tr></tbody></table>
-	    </p>
-        </td>
-
-        <td valign="top">
-
-    <p>Most of Galax's user-level documentation are the W3C XQuery
-    documents. Galax documentation is listed below.</p>
-
-    <hr/>
-
-    <h1><a name="w3cdoc"></a>W3C Documentation</h1>
-
-    <h2>W3C XQuery 1.0 / XPath 2.0 Documentation</h2>
-
-      <table border=0 cellspacing=4 cellpadding=0>
-        <tbody>
-        <tr>
-          <td>
-            &nbsp;<a href="http://www.w3.org/TR/xquery/">XQuery 1.0:
-            An XML Query Language</a><br>
-      
-            &nbsp;<a href="http://www.w3.org/TR/xpath20/">XML Path
-            Language (XPath 2.0)</a><br>
-      
-            &nbsp;<a
-            href="http://www.w3.org/TR/xpath-datamodel/">XQuery 1.0
-            and XPath 2.0 Data Model</a><br>
-
-            &nbsp;<a
-            href="http://www.w3.org/TR/xpath-functions/">XQuery 1.0
-            and XPath 2.0 Functions &amp; Operators</a><br>
-
-            &nbsp;<a
-            href="http://www.w3.org/TR/xquery-semantics/">XQuery 1.0
-            Formal Semantics</a><br>
-
-            &nbsp;<a
-            href="http://www.w3.org/TR/xmlquery-use-cases/">XML Query
-            Use Cases</a><br>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-
-    <h2><a name="xmlschema"></a>W3C XML Schema Documentation</h2>
-
-      <table border=0 cellspacing=4 cellpadding=0>
-        <tbody><tr><td>
-          &nbsp;<a href="http://www.w3.org/TR/xmlschema-0/">XML
-          Schema Part 0: Primer</a><br>
-
-      	  &nbsp;<a href="http://www.w3.org/TR/xmlschema-1/">XML
-      	  Schema Part 1: Structures</a><br>
-
-      	  &nbsp;<a href="http://www.w3.org/TR/xmlschema-2/">XML
-      	  Schema Part 2: Datatypes</a><br>
-        </td></tr></tbody>
-     </table>
-
-    <hr/>
-
-    <h1><a name="galaxdoc"></a>Galax Documentation</h1>
-
-    <h2><a name="manual"></a>User's Manual</h2>
-    <ul>
-      <li>
-        <a href="doc/index.html"><font color="blue">HTML</font></a>
-      </li>
-      <li>
-        <a href="doc/manual.pdf"><font color="blue">PDF</font></a>
-      </li>
-    </ul>
-
-
-    <h2><a name="presentations"></a>Presentations</h2>
+    <h1>W3C XQuery 1.0 Specifications</h1>
 
     <ul>
-      <li>
-        <a href="slides/edbt-summer-school2004.pdf"><font color="blue">Build Your Own XQuery Processor (PDF)</font></a><br/>
-        EDBT Summer School, Sept 2004.  Survey of complete Galax architecture.
-      </li>
-<!--
-      <li>
-        <a href="slides/xsym2004.pdf"><font color="blue">Implementing XQuery 1.0 : The Story of Galax (PDF)</font></a><br/>
-        XSym 2004 Invited Talk, Sept 2004. Short version of EDBT talk.
-      </li>
-      <li>
-        <a href="slides/WWW2004-XQuery.pdf"><font color="blue">XQuery 1.0 and Web Applications (PDF)</font></a><br/>
-       WWW 2004 Tutorial, May 2004. Survey of XQuery 1.0 in context of Web application development.
-      </li>
-      <li>
-        <a href="slides/XQuerySurvey.ppt"><font color="blue">Introduction to
-      XQuery 1.0 (PPT)</font></a><br/> Sept 2004. General, short survey.
-      </li>
--->
+      <li><a href="http://www.w3.org/TR/xquery/">XQuery 1.0: An XML Query Language</a></li>
+      <li><a href="http://www.w3.org/TR/xpath20/">XML Path Language (XPath 2.0)</a></li>
+      <li><a href="http://www.w3.org/TR/xpath-datamodel/">XQuery 1.0 and XPath 2.0 Data Model</a></li>
+      <li><a href="http://www.w3.org/TR/xpath-functions/">XQuery 1.0 and XPath 2.0 Functions &amp; Operators</a></li>
+      <li><a href="http://www.w3.org/TR/xquery-semantics/">XQuery 1.0 Formal Semantics</a></li>
+      <li><a href="http://www.w3.org/TR/xmlquery-use-cases/">XML Query Use Cases</a></li>
     </ul>
 
-<!--
-    <h2><a name="align"></a>Alignment with XQuery 1.0</h2>
+    <ul>
+      <li><a href="http://www.w3.org/TR/xquery-update-10/">XQuery Update Facility 1.0</a></li>
+      <li><a href="http://www.w3.org/TR/xquery-sx-10/">XQuery Scripting Extension 1.0</a></li>
+    </ul>
 
-    <p>The <a href="STATUS">alignment status</a> document describes
-    how Galax is aligned with the December 2001 XQuery working
-    drafts.</p>
+    <h1><a name="xmlschema"></a>W3C XML Schema Specifications</h1>
 
-    <h2><a name="release"></a>Release Notes</h2>
+    <ul>
+      <li><a href="http://www.w3.org/TR/xmlschema-0/">XML Schema Part 0: Primer</a></li>
+      <li><a href="http://www.w3.org/TR/xmlschema-1/">XML Schema Part 1: Structures</a></li>
+      <li><a href="http://www.w3.org/TR/xmlschema-2/">XML Schema Part 2: Datatypes</a></li>
+    </ul>
 
-    <p>The <a href="RELEASE_NOTES">release notes</a> document describes
-    changes to Galax in version 0.3.1</p>
+    <h1><a name="galax"></a>Galax Documentation</h1>
 
-    <h2><a name="bugs"></a>Fixed and known bugs in Galax 0.4.0</h2>
+    <ul>
+      <li><a href="doc/index.html">Galax 1.0.1 User Manual (HTML)</a></li>
+      <li><a href="doc/manual.pdf">Galax 1.0.1 User Manual (PDF)</a></li>
+    </ul>
 
-    <p>The <a href="BUGS">BUGS</a> document lists fixed and known bugs in Galax 0.4.0</p>
+      </div>
+    </div>
+    <div id="scroll">
+      <a title="Scroll to the top" class="top" href="#"><img src="images/top.png" alt="top" /></a>
+    </div>
 
--->
+    <footer>
+      <p><img src="images/galax_small.gif" alt="galax-logo" /></p>
+      <p><a href="index.html">Home</a> | <a href="about.html">About</a> | <a href="doc.html">Documentation</a> | <a href="contact.php">Contact Us</a></p>
+      <p><a href="http://www.css3templates.co.uk">design from css3templates.co.uk</a></p>
+    </footer>
 
-    <p>Report bugs at <a href="http://sourceforge.net/tracker/?func=add&group_id=274294&atid=1165629">http://sourceforge.net/tracker/</a></p>
-    <hr/>
-              </td></tr>
-              </tbody>
-            </table>
+  <!-- javascript at the bottom for fast page loading -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/jquery.easing-sooper.js"></script>
+  <script type="text/javascript" src="js/jquery.sooperfish.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('ul.sf-menu').sooperfish();
+      $('.top').click(function() {$('html, body').animate({scrollTop:0}, 'fast'); return false;});
+    });
+  </script>
 
   </body>
 </html>

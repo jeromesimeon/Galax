@@ -3,50 +3,106 @@
 <html>
   <head>
     <link rev="made" href="mailto:galax-users@research.att.com">
-    <title>Galax: Overview</title>
+    <title>Galax: An Implementation of XQuery</title>
     <meta name="DESCRIPTION" content="galax, xquery, query language, ocaml">
     <meta name="KEYWORDS" content="galax, xquery, query language, ocaml">
-    <link href="galax.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <!-- modernizr enables HTML5 elements and feature detects -->
+    <script type="text/javascript" src="js/modernizr-1.5.min.js"></script>
   </head>
 
   <body>
 
-    <table border="0" cellspacing="4" cellpadding="0" width="100%">
-      <tbody>
-      <tr>
-        <td colspan="2" valign="top">
-          </br><a href="./" class="title"><img src="images/galax.gif" alt="[Galax]" border="0" hspace="4" vspace="5"></br>
-        </td>
-      </tr>
-      <tr>
-        <td valign="top" bgcolor="PowderBlue" class="border">
-          <p>
-            <b><a href="about.html" class="title">Overview</a></b>
-            </br>
+  <div id="main">
+    <header>
+      <div id="logo">
+        <div id="logo_text">
+          <!-- class="logo_colour", allows you to change the colour of the text -->
+          <h1><a href="index.html">Galax</a></h1>
+          <h2>XQuery Processor for OCaml</h2>
+        </div>
+      </div>
+      <nav>
+        <div id="menu_container">
+          <ul class="sf-menu" id="nav">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a>
+              <ul>
+                <li><a href="about.html#xquery">About XQuery</a></li>
+                <li><a href="about.html#galax">About Galax</a></li>
+                <li><a href="about.html#team">Contributors</a></li>
+                <li><a href="about.html#thanks">Acknowledgments</a></li>
+              </ul>
+            </li>
+            <li><a href="#">Downloads</a>
+              <ul>
+                <li><a href="http://sourceforge.net/projects/galax/files/galax-1.0.1-src.tar.gz/download">Galax 1.0.1 Source</a></li>
+                <li><a href="http://sourceforge.net/projects/galax/files/galax-1.0.1-linux.tgz/download">Galax 1.0.1 Linux</a></li>
+              </ul>
+            </li>
+            <li><a href="doc.html">Documentation</a>
+              <ul>
+                <li><a href="doc.html#xquery">W3C XQuery</a></li>
+                <li><a href="doc.html#xmlschema">W3C XML Schema</a></li>
+                <li><a href="doc.html#galaxdoc">Galax Documentation</a></li>
+              </ul>
+            </li>
+            <li><a href="research.html">Research</a>
+              <ul>
+                <li><a href="research.html#language">Language Design</a></li>
+                <li><a href="research.html#types">Type System</a></li>
+                <li><a href="research.html#optimization">Optimization</a></li>
+                <li><a href="research.html#storage">XML Storage</a></li>
+                <li><a href="research.html#webservices">Web Services</a></li>
+                <li><a href="research.html#updates">XML Updates</a></li>
+                <li><a href="research.html#distributed">Distribution</a></li>
+              </ul>
+            </li>
+            <li><a href="compiler/index.html">Compiler</a>
+              <ul>
+                <li><a href="compiler/index.html#overview">Overview</a></li>
+                <li><a href="compiler/index.html#parsing">Parsing</a></li>
+                <li><a href="compiler/index.html#normalization">Normalization</a></li>
+                <li><a href="compiler/index.html#rewriting">Rewritings</a></li>
+                <li><a href="compiler/index.html#compilation">Compilation</a></li>
+                <li><a href="compiler/index.html#algebra">Algebra</a></li>
+                <li><a href="compiler/index.html#operations">Optimizations</a></li>
+                <li><a href="compiler/index.html#projection">XML Projection</a></li>
+                <li><a href="compiler/index.html#treepatterns">Tree Patterns</a></li>
+                <li><a href="compiler/index.html#physical">Runtime</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <div id="site_content">
+      <div id="sidebar_container">
+        <div class="sidebar">
+          <h3>Latest News</h3>
+          <h4>New Website Launched</h4>
+          <h5>January 30th, 2014</h5>
+        </div>
+        <div class="sidebar">
+          <h3>Useful Links</h3>
+          <ul>
+            <li><a href="http://www.w3.org/XML/Query">W3C XQuery</a></li>
+            <li><a href="LICENSE">License</a></li>
+            <li><a href="https://github.com/jeromesimeon/Galax">Git Repository</a></li>
+            <li><a href="https://sourceforge.net/p/galax/bugs/">Bug Tracker</a></li>
+            <li><a href="http://dev.w3.org/2006/xquery-test-suite/PublicPagesStagingArea/XQTSReportSimple_XQTS_1_0_2.html">Conformance</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="content">
+         <h1><a name="xquery"></a>About XQuery</h1>
 
-            <table border=0 cellspacing=4 cellpadding=0>
-              <tbody>
-              <tr><td>
-                &nbsp;<a href="about.html#xquery" class="title">About&nbsp;XQuery</a></br>
-                &nbsp;<a href="about.html#galax" class="title">About&nbsp;Galax</a></br>
-                &nbsp;<a href="about.html#team"  class="title">Team</a></br>
-                &nbsp;<a href="about.html#thanks" class="title">Acknowledgments</a></br></br>
-              </td></tr>
-              </tbody>
-            </table>
-          </p>
-        </td>
-
-        <td valign="top">
-
-    <h1><a name="xquery"></a>About XQuery</h1>
-
-    <p>XQuery is a query language for XML. It is developed within the
-    W3C by the XML Query Working Group, as part of the XML
-    Activity. XQuery is a simple but powerful language that supports a
-    large variety of data-oriented and document-oriented XML
-    applications. From 1000 feet, the salient features of XQuery
-    are:</p>
+        <p>XQuery is a query language for XML. It is developed within
+        the W3C by the XML Query Working Group, as part of the XML
+        Activity. XQuery is a simple but powerful language that
+        supports a large variety of data-oriented and
+        document-oriented XML applications. From 1000 feet, the
+        salient features of XQuery are:</p>
 
     <ul>
       <li>The ability to write clearly and concisely advanced
@@ -59,50 +115,16 @@
       and enables early detection of errors in programs.</li>
     </ul>
 
-    <p>High-level requirements for XQuery can be found in the <a
-    href="http://www.w3.org/TR/xmlquery-req.html">XML Query
-    Requirements Documents</a>.</p>
-
-    <p>Many applications and XQuery examples can be found in the <a
-    href="http://www.w3.org/TR/xmlquery-use-cases.html">XML Query Use
-    Cases</a>.</p>
-
-    <p>More information on XQuery, and the W3C XML Query Working
-    Group, can be found on the <a
-    href="http://www.w3.org/XML/Query">W3C XML Query</a> homepage.</p>
-
-    <hr/>
-
     <h1><a name="galax"></a>About Galax</h1>
     
-    <h2>What is Galax?</h2>
-
     <p>Galax is an open-source implementation of XQuery. Our goal is
     for Galax to be a fully compliant implementation of the family of
-    XQuery working drafts. Galax implements the following
-    specifications from the XML Query Working Group:</p>
+    XQuery working drafts.</p>
 
-    <ul>
-      <li><a href="http://www.w3c.org/TR/xquery/">XQuery 1.0: An XML
-      Query Language</a></li>
-      <li><a href="http://www.w3c.org/TR/xpath20/">XML Path Language
-      (XPath 2.0)</a></li>
-      <li><a href="http://www.w3c.org/TR/query-datamodel/">XQuery 1.0
-      and XPath 2.0 Data Model</a></li>
-      <li><a href="http://www.w3c.org/TR/xquery-operators/"> XQuery
-      1.0 and XPath 2.0 Functions &amp; Operators</a></li>
-      <li><a href="http://www.w3c.org/TR/query-semantics/">XQuery 1.0
-      Formal Semantics</a></li>
-      <li><a href="http://www.w3.org/TR/xquery-update-10/">XQuery
-      Update Facility 1.0</a></li>
-      <li><a href="http://www.w3.org/TR/xquery-sx-10/">XQuery
-      Scripting Extension 1.0</a></li>
-    </ul>
-
-    <p>Galax does not currently
-    support <a href"http://www.w3.org/TR/xqueryx/">XQueryX</a>, the
-    XML syntax for XQuery. It is still based on the January 2007 W3C
-    Recommendations, and does not include fixes listed in
+    <p>Note that Galax does not
+    support <a href"http://www.w3.org/TR/xqueryx/">XQueryX</a>, and is
+    still based on the January 2007 W3C Recommendations. It does not
+    include fixes listed in
     the <a href="http://www.w3.org/XML/2007/qt-errata/xquery-errata.html">Errata
     for XQuery 1.0</a> document, or the more
     recent <a href"http://www.w3.org/TR/xquery-11/">XQuery
@@ -133,39 +155,15 @@
       <li>Anybody who needs a statically typed implementation of
       XQuery.</p> </ul>
 
-<!--
-    <h2>Who shouldn't use Galax?</h2>
+    <h1><a name="team"></a>Galax Contributors</h1>
 
-    <p>Galax is a versatile and extensible XQuery implementation, suitable for many
-    uses. But here are a few cases in which you might consider
-    <emph>not</emph> using Galax!</p>
-
-    <ul>
-      <li>If you need a pure Java-based XQuery engine, Galax is not
-      it. You can get a look at <a
-      href="http://xml.ipsi.fhg.de/xquerydemo">IPSI-XQuery</a> or <a
-      href="http://www.qexo.org/">Kawa-Query</a>.</li>
-
-      <li>If you need an XQuery implementation specially optimized for
-      your a particular database, you should contact your favorite database
-      vendor (or hook up Galax to it!).
-    </ul>
--->
-<!--
-    ??? Extensibility here ???
-    <h2>Using Galax with your own storage</h2>
--->
-    <hr/>
-
-    <h1><a name="team"></a>The Galax Team, past and present.</h1>
-
-    <h2>Project Lead</h2>
+    <h3>Project Lead</h3>
     <ul>
       <li><a href="http://www.research.att.com/~mff">Mary
       Fern&aacute;ndez</a>, AT&amp;T Labs Research.
       <li><a href="http://domino.research.ibm.com/comm/research_people.nsf/pages/jsimeon.index.html">J&eacute;r&ocirc;me Sim&eacute;on</a>, IBM T.J. Watson Research Center.</li>
     </ul>
-    <h2>Contributors</h2>
+    <h3>Contributors</h3>
     <ul>
       <li><a href="http://www.cs.uml.edu/~cchen/">Cindy Chen</a>, University of Massachusetts at Lowell.</li>
       <li><a href="http://www.comp.hkbu.edu.hk/~bchoi/">Byron Choi</a>, Hong Kong Baptist University.</li>
@@ -190,8 +188,6 @@
     us a note!</a></p>
 -->
 
-    <hr/>
-
     <h1><a name="thanks"></a>Acknowledgments</h1>
     <p>We would like to extend our thanks to:</p>
     <ul>
@@ -207,11 +203,28 @@
     <li>To the <a href="http://caml.inria.fr">Caml</a> team for
     developing the best programming language in the world.</li>
     </ul>
-    <hr/>
-              </td></tr>
-              </tbody>
-            </table>
+      </div>
+    </div>
+    <div id="scroll">
+      <a title="Scroll to the top" class="top" href="#"><img src="images/top.png" alt="top" /></a>
+    </div>
 
+    <footer>
+      <p><img src="images/galax_small.gif" alt="galax-logo" /></p>
+      <p><a href="index.html">Home</a> | <a href="about.html">About</a> | <a href="doc.html">Documentation</a> | <a href="contact.php">Contact Us</a></p>
+      <p><a href="http://www.css3templates.co.uk">design from css3templates.co.uk</a></p>
+    </footer>
+
+  <!-- javascript at the bottom for fast page loading -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/jquery.easing-sooper.js"></script>
+  <script type="text/javascript" src="js/jquery.sooperfish.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('ul.sf-menu').sooperfish();
+      $('.top').click(function() {$('html, body').animate({scrollTop:0}, 'fast'); return false;});
+    });
+  </script>
   </body>
 </html>
 

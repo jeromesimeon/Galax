@@ -3,53 +3,103 @@
 <html>
   <head>
     <link rev="made" href="mailto:galax-users@research.att.com">
-    <title>Galax: Research</title>
+    <title>Galax: An Implementation of XQuery</title>
     <meta name="DESCRIPTION" content="galax, xquery, query language, ocaml">
     <meta name="KEYWORDS" content="galax, xquery, query language, ocaml">
-    <link href="galax.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <!-- modernizr enables HTML5 elements and feature detects -->
+    <script type="text/javascript" src="js/modernizr-1.5.min.js"></script>
   </head>
 
   <body>
 
-    <table border="0" cellspacing="4" cellpadding="0" width="100%">
-      <tbody>
-      <tr>
-        <td colspan="2" valign="top">
-          </br><a href="./" class="title"><img src="images/galax.gif" alt="[Galax]" border="0" hspace="4" vspace="5"></a></br>
-        </td>
-      </tr>
-      <tr>
-        <td valign="top" bgcolor="PowderBlue" class="border">
-          <p>
-	      <b>Publications</b></br>
-	    <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
- 		&nbsp;<a href="#language" class="title">Design&nbsp;and&nbsp;Semantics</a></br>
-		&nbsp;<a href="#types" class="title">XML&nbsp;Types</a></br>
-		&nbsp;<a href="#optimization" class="title">Optimization</a></br>
-		&nbsp;<a href="#storage" class="title">Storage</a></br>
-		&nbsp;<a href="#webservices" class="title">Web&nbsp;Services</a></br>
-		&nbsp;<a href="#updates" class="title">XML&nbsp;Updates</a></br>
-		&nbsp;<a href="#distributed" class="title">Distributed&nbsp;XQuery</a></br>
-	    </td></tr></tbody></table>
-</p>
-          <p>
-	      <b>Tech.&nbsp;Center</b></br>
-	    <table border=0 cellspacing=4 cellpadding=0><tbody><tr><td>
- 		&nbsp;<a href="research.html" class="title">Publications</a></br>
-		&nbsp;<a href="static.html" class="title">Static&nbsp;Typing</a></br>
-		&nbsp;<a href="compiler" class="title">Compiler</a></br>
-	    </td></tr></tbody></table>
-</p>
-        </td>
+  <div id="main">
+    <header>
+      <div id="logo">
+        <div id="logo_text">
+          <!-- class="logo_colour", allows you to change the colour of the text -->
+          <h1><a href="index.html">Galax</a></h1>
+          <h2>XQuery Processor for OCaml</h2>
+        </div>
+      </div>
+      <nav>
+        <div id="menu_container">
+          <ul class="sf-menu" id="nav">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a>
+              <ul>
+                <li><a href="about.html#xquery">About XQuery</a></li>
+                <li><a href="about.html#galax">About Galax</a></li>
+                <li><a href="about.html#team">Contributors</a></li>
+                <li><a href="about.html#thanks">Acknowledgments</a></li>
+              </ul>
+            </li>
+            <li><a href="#">Downloads</a>
+              <ul>
+                <li><a href="http://sourceforge.net/projects/galax/files/galax-1.0.1-src.tar.gz/download">Galax 1.0.1 Source</a></li>
+                <li><a href="http://sourceforge.net/projects/galax/files/galax-1.0.1-linux.tgz/download">Galax 1.0.1 Linux</a></li>
+              </ul>
+            </li>
+            <li><a href="doc.html">Documentation</a>
+              <ul>
+                <li><a href="doc.html#xquery">W3C XQuery</a></li>
+                <li><a href="doc.html#xmlschema">W3C XML Schema</a></li>
+                <li><a href="doc.html#galaxdoc">Galax Documentation</a></li>
+              </ul>
+            </li>
+            <li><a href="research.html">Research</a>
+              <ul>
+                <li><a href="research.html#language">Language Design</a></li>
+                <li><a href="research.html#types">Type System</a></li>
+                <li><a href="research.html#optimization">Optimization</a></li>
+                <li><a href="research.html#storage">XML Storage</a></li>
+                <li><a href="research.html#webservices">Web Services</a></li>
+                <li><a href="research.html#updates">XML Updates</a></li>
+                <li><a href="research.html#distributed">Distribution</a></li>
+              </ul>
+            </li>
+            <li><a href="compiler/index.html">Compiler</a>
+              <ul>
+                <li><a href="compiler/index.html#overview">Overview</a></li>
+                <li><a href="compiler/index.html#parsing">Parsing</a></li>
+                <li><a href="compiler/index.html#normalization">Normalization</a></li>
+                <li><a href="compiler/index.html#rewriting">Rewritings</a></li>
+                <li><a href="compiler/index.html#compilation">Compilation</a></li>
+                <li><a href="compiler/index.html#algebra">Algebra</a></li>
+                <li><a href="compiler/index.html#operations">Optimizations</a></li>
+                <li><a href="compiler/index.html#projection">XML Projection</a></li>
+                <li><a href="compiler/index.html#treepatterns">Tree Patterns</a></li>
+                <li><a href="compiler/index.html#physical">Runtime</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <div id="site_content">
+      <div id="sidebar_container">
+        <div class="sidebar">
+          <h3>Latest News</h3>
+          <h4>New Website Launched</h4>
+          <h5>January 30th, 2014</h5>
+        </div>
+        <div class="sidebar">
+          <h3>Useful Links</h3>
+          <ul>
+            <li><a href="http://www.w3.org/XML/Query">W3C XQuery</a></li>
+            <li><a href="LICENSE">License</a></li>
+            <li><a href="https://github.com/jeromesimeon/Galax">Git Repository</a></li>
+            <li><a href="https://sourceforge.net/p/galax/bugs/">Bug Tracker</a></li>
+            <li><a href="http://dev.w3.org/2006/xquery-test-suite/PublicPagesStagingArea/XQTSReportSimple_XQTS_1_0_2.html">Conformance</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="content">
 
-        <td valign="top">
-
-    <p>This page contains pointers to research papers and technical
+    <p>This page contains links to research papers and technical
     reports written at various point during the design of XQuery, as
     well as during the development of Galax. Those articles typically
     focus on hard technical problems, or important design issues.</p>
-
-    <hr/>
 
     <h1><a name="language"></a>Design and Semantics</h1>
 
@@ -79,9 +129,7 @@
 
     </ul>
 
-    <hr/>
-
-    <h1><a name="types"></a>XML Types</h1>
+    <h1><a name="types"></a>Type System</h1>
     <ul>
     	  <li><a href="http://homepages.inf.ed.ac.uk/wadler/papers/xml-essence/xml-essence.pdf">The
     	  Essence of XML</a>, Philip Wadler, and J&eacute;r&ocirc;me
@@ -98,8 +146,6 @@
     	  Sim&eacute;on, in International Conference on Database
     	  Theory (ICDT'2001), January 2001, London, UK.</li>
     </ul>
-
-    <hr/>
 
     <h1><a name="optimization"></a>Optimization</h1>
     <ul>
@@ -136,8 +182,6 @@
       	  Germany, September 2003.</li>
     </ul>
 
-    <hr/>
-
     <h1><a name="storage"></a>XML Storage</h1>
     <ul>
       	  <li><a href="publications/simplest.pdf"> The Simplest XML
@@ -156,8 +200,6 @@
       	  J&eacute;r&ocirc;me Sim&eacute;on. ICDE 2002: 64-.</li>
     </ul>
 
-    <hr/>
-
     <h1><a name="webservices"></a>Web Services</h1>
     <ul>
       	  <li><a href="http://charlotte.ucsd.edu/~nonose/publications/2004/wsdl-www2004.pdf">XQuery
@@ -165,7 +207,6 @@
       	  Sim&eacute;on. WWW'2004, New York, NY.</li>
 
     </ul>
-    <hr/>
 
     <h1><a name="updates"></a>XML Updates</h1>
     <ul>
@@ -190,9 +231,8 @@
       	  Workshop, 2006.</li>
 
     </ul>
-    <hr/>
 
-    <h1><a name="distributed"></a>Distributed XQuery</h1>
+    <h1><a name="distributed"></a>Distribution</h1>
     <ul>
       	  <li><a href="http://www.cs.washington.edu/homes/kmorton/269.pdf">Highly
       	  distributed XQuery with DXQ</a>, Mary Fern&aacute;ndez,
@@ -204,10 +244,29 @@
       	  Fern&aacute;ndez, Trevor Jim, Kristi Morton, Nicola Onose,
       	  J&eacute;r&ocirc;me Sim&eacute;on. XIME-P 2007.</li>
     </ul>
-    <hr/>
-             </td></tr>
-              </tbody>
-            </table>
+
+      </div>
+    </div>
+    <div id="scroll">
+      <a title="Scroll to the top" class="top" href="#"><img src="images/top.png" alt="top" /></a>
+    </div>
+
+    <footer>
+      <p><img src="images/galax_small.gif" alt="galax-logo" /></p>
+      <p><a href="index.html">Home</a> | <a href="about.html">About</a> | <a href="doc.html">Documentation</a> | <a href="contact.php">Contact Us</a></p>
+      <p><a href="http://www.css3templates.co.uk">design from css3templates.co.uk</a></p>
+    </footer>
+
+  <!-- javascript at the bottom for fast page loading -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/jquery.easing-sooper.js"></script>
+  <script type="text/javascript" src="js/jquery.sooperfish.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('ul.sf-menu').sooperfish();
+      $('.top').click(function() {$('html, body').animate({scrollTop:0}, 'fast'); return false;});
+    });
+  </script>
 
   </body>
 </html>
