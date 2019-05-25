@@ -219,7 +219,7 @@ let initial_size =  1024
 let dummy_value  =  (new atomicString("INVALID"), None)
 
 let init compare =
-  { table        = Array.create initial_size dummy_value;
+  { table        = Array.make initial_size dummy_value;
     current_size = initial_size;
     compare      = compare;
     n_items      = ref 0 }
@@ -247,7 +247,7 @@ let sort_add bl (av, index) =
     begin 
       let new_size  = bl.current_size * 2 in (* Multiplicative instead? *)
       let old_table = bl.table in
-      bl.table <- Array.create new_size bl.table.(0); (* There has to be a better way to do this *)
+      bl.table <- Array.make new_size bl.table.(0); (* There has to be a better way to do this *)
       bl.current_size <- new_size;
       (* Copy over the items *)
       Array.blit old_table 0 bl.table 0 !n_items_ref;
@@ -263,7 +263,7 @@ let bulk_add bl value_seq =
   List.iter (single_add bl) value_seq
 
 let reset bl =
-  bl.table <- Array.create initial_size dummy_value;
+  bl.table <- Array.make initial_size dummy_value;
   bl.current_size <- initial_size;
   bl.n_items := 0
 

@@ -682,8 +682,8 @@ let rec fserialize_value_top serial_context ff () =
     end
 
 let setup_formatter_for_encoding serial_context ff =
-  let (out, flush, newline, spaces) =
-    pp_get_all_formatter_output_functions ff ()
+  let {out_string=out; out_flush=flush; out_newline=newline; out_spaces=spaces; out_indent=indent} =
+    pp_get_formatter_out_functions ff ()
   in
   let new_newline () =
     let newline_chars =
@@ -704,7 +704,7 @@ let setup_formatter_for_encoding serial_context ff =
     in
     out spaces 0 spaces_size
   in
-  pp_set_all_formatter_output_functions ff out flush new_newline new_spaces
+  pp_set_formatter_out_functions ff {out_string=out; out_flush=flush; out_newline=new_newline; out_spaces=new_spaces; out_indent=indent}
 
 
 (************************************)
@@ -754,7 +754,8 @@ let serialize_xml_stream proc_ctxt stream =
 
 let bserialize_xml_stream proc_ctxt stream =
   let buff = Buffer.create 50 in
-  bprintf buff "%a@?" (fserialize_xml_stream proc_ctxt) stream;
+  let to_b = Format.formatter_of_buffer buff in
+  Format.fprintf to_b "%a@?" (fserialize_xml_stream proc_ctxt) stream;
   let result = Buffer.contents buff in
   Buffer.reset buff;
   result
@@ -778,7 +779,8 @@ let serialize_resolved_xml_stream proc_ctxt resolved_stream =
 
 let bserialize_resolved_xml_stream proc_ctxt resolved_stream =
   let buff = Buffer.create 50 in
-  bprintf buff "%a@?" (fserialize_resolved_xml_stream proc_ctxt) resolved_stream;
+  let to_b = Format.formatter_of_buffer buff in
+  Format.fprintf to_b "%a@?" (fserialize_resolved_xml_stream proc_ctxt) resolved_stream;
   let result = Buffer.contents buff in
   Buffer.reset buff;
   result
@@ -803,7 +805,8 @@ let serialize_typed_xml_stream proc_ctxt typed_stream =
 
 let bserialize_typed_xml_stream proc_ctxt typed_stream =
   let buff = Buffer.create 50 in
-  bprintf buff "%a@?" (fserialize_typed_xml_stream proc_ctxt) typed_stream;
+  let to_b = Format.formatter_of_buffer buff in
+  Format.fprintf to_b "%a@?" (fserialize_typed_xml_stream proc_ctxt) typed_stream;
   let result = Buffer.contents buff in
   Buffer.reset buff;
   result
@@ -851,7 +854,8 @@ let serialize_datamodel proc_ctxt dmv =
 
 let bserialize_datamodel proc_ctxt dmv =
   let buff = Buffer.create 50 in
-  bprintf buff "%a@?" (fserialize_datamodel proc_ctxt) dmv;
+  let to_b = Format.formatter_of_buffer buff in
+  Format.fprintf to_b "%a@?" (fserialize_datamodel proc_ctxt) dmv;
   let result = Buffer.contents buff in
 (* print_string ("bserialize_datamodel "^(string_of_int(String.length result))^"\n");  *)
   Buffer.reset buff;

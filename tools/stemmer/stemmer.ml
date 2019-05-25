@@ -271,7 +271,7 @@ let stem in_word case =
   let word =
     (* stemming: case sensitive or insensitive *)
     if (case="s") then in_word 
-    else String.lowercase in_word 
+    else String.lowercase_ascii in_word 
   in
   let rec aux aux_word list =
     match list with

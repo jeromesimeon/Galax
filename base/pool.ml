@@ -63,19 +63,19 @@ module MakeNamePool (H: Hashtbl.HashedType) : (NamePool with type name = H.t) =
 
     let create_pool () =
       { name_table = Hashtbl.create 1439;
-	inverse_table = (Array.create 100 None);
+	inverse_table = (Array.make 100 None);
 	sym_counter = Id.create 0 }
 
     let init_pool np =
       Hashtbl.clear np.name_table;
-      np.inverse_table <- (Array.create 100 None);
+      np.inverse_table <- (Array.make 100 None);
       Id.init np.sym_counter 0
 
     let put_inverse_mapping np v = (* Adds a new symbol in the inverse table *)
       let sym = Id.next np.sym_counter in
       if sym >= Array.length np.inverse_table
       then
-	np.inverse_table <- Array.append np.inverse_table (Array.create 100 None)
+	np.inverse_table <- Array.append np.inverse_table (Array.make 100 None)
       else
 	();
       (np.inverse_table).(sym) <- Some v;

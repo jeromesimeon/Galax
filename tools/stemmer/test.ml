@@ -10,7 +10,7 @@ open StemmerC
 let _ =
   let rec aux failed chan =
     try
-      let word = String.lowercase (input_line chan) in
+      let word = String.lowercase_ascii (input_line chan) in
         if not (Stemmer.stem word = StemmerC.stem word) then
           begin
             print_string (word ^ " did not match ("^(Stemmer.stem word)^" != "^(StemmerC.stem word)^")\n");

@@ -121,7 +121,7 @@ let pxp_fix_write_data_string ~(from_enc:rep_encoding) ~to_enc os content =
     if to_enc = (from_enc :> encoding)
     then s
     else
-      Netconversion.recode_string
+      Netconversion.convert
         ~in_enc:(from_enc :> encoding)
         ~out_enc:to_enc
         ~subst:(fun n -> assert false)
@@ -140,7 +140,7 @@ let pxp_fix_write_data_string ~(from_enc:rep_encoding) ~to_enc os content =
     if to_enc = (from_enc :> encoding) then
       Pxp_types.write os content j l
     else begin
-      let s' = Netconversion.recode_string
+      let s' = Netconversion.convert
 	         ~in_enc:(from_enc :> encoding)
 	         ~out_enc:to_enc
 	         ~subst:(fun n ->

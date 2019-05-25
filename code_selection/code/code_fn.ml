@@ -894,7 +894,7 @@ let _fn_normalize_unicode code_ctxt alg_ctxt n =
   let p1,p2 = Args.get_array_param2 n in
   let s1 = get_optional_string p1 in
   let norm_fun =
-    let norm = String.uppercase (Whitespace.remove_whitespace (get_string p2)) in
+    let norm = String.uppercase_ascii (Whitespace.remove_whitespace (get_string p2)) in
     match norm with
     | "" -> (fun x -> x)
     | "NFC" -> Galax_camomile.nfc
@@ -920,7 +920,7 @@ let _fn_upper_case code_ctxt alg_ctxt n =
     ""
   else
     let s'  = normalize_optional_string s in
-    String.uppercase s' 
+    String.uppercase_ascii s' 
   in
   Cursor.cursor_of_singleton (_string string_result)
 
@@ -933,7 +933,7 @@ let _fn_lower_case code_ctxt alg_ctxt n =
     ""
   else
     let s'  = normalize_optional_string s in
-    String.lowercase s'
+    String.lowercase_ascii s'
   in
   Cursor.cursor_of_singleton (_string string_result)
 
@@ -2149,7 +2149,7 @@ let _fn_lang code_ctxt alg_ctxt n =
     match oactuallang with
     | None -> false
     | Some actuallang ->
-	if (String.lowercase actuallang) = (String.lowercase textlang)
+	if (String.lowercase_ascii actuallang) = (String.lowercase_ascii textlang)
 	then
 	  true
 	else
@@ -2159,7 +2159,7 @@ let _fn_lang code_ctxt alg_ctxt n =
 	    with
 	    | _ -> actuallang
 	  in
-	  (String.lowercase comparelang) = (String.lowercase textlang)
+	  (String.lowercase_ascii comparelang) = (String.lowercase_ascii textlang)
   in
   Cursor.cursor_of_singleton (_boolean result_bool)
 

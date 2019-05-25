@@ -126,7 +126,7 @@ module HTTP = struct
 
 (********** HTTP Client **************)
   let gen_request h p s meth extra = (* host port resource *)
-    let buf = String.create buflen in
+    let buf = Bytes.create buflen in
     let longbuf = Buffer.create buflen in
     let targetInetAddr = get_inet_socket_address h p in
     let sock = Unix.socket Unix.PF_INET Unix.SOCK_STREAM 0 in
@@ -144,14 +144,14 @@ module HTTP = struct
                 meth s' h p
     in
     (*  print_string ("Request:\n"^request); flush(stdout); *)
-    let _ = Unix.write sock request 0 (String.length request) in
+    let _ = Unix.write sock (Bytes.of_string request) 0 (String.length request) in
     let total_len = ref 0 in 
     (try
       while true do
         (* Printf.printf "Receiving...\n"; flush(stdout); *)
         let len = Unix.read sock buf 0 buflen in
         if len <= 0 then raise Break;
-        Buffer.add_substring longbuf buf 0 len;
+        Buffer.add_substring longbuf (Bytes.to_string buf) 0 len;
 	total_len := len + !total_len 
       done
     with 
@@ -165,8 +165,8 @@ module HTTP = struct
     process_response result
    
   let get url = 
-    let call = new Http_client.get url in
-    let pipeline = new Http_client.pipeline in
+    let call = new Nethttp_client.get url in
+    let pipeline = new Nethttp_client.pipeline in
     pipeline # add call;
     pipeline#run();
     match call#status with
@@ -256,9 +256,9 @@ o=University%20of%20Michigan,c=US??sub?sn=john
     match len with
       None -> None
     | Some l ->
-        let buf = String.create l in
+        let buf = Bytes.create l in
         really_input inchan buf 0 l;
-        Some(buf)
+        Some(Bytes.to_string buf)
 
    let get_header headers n =
      let rec loop x =

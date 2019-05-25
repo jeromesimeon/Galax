@@ -407,7 +407,7 @@ let obtain_occurs_attrs fi atts =
 	(*--VG!! OCaml's int_of_string handles more general input 
 	  than permitted by Schema ... *)
 	try Occurrence.UP_INT(int_of_string x)
-	with Failure "int_of_string" -> import_error fi 
+	with Failure _ -> import_error fi 
 	  ("Invalid attribute value: minOccurs=\"" ^ x ^ "\"")
   in
   let max = match probe_attr atts "maxOccurs" with 
@@ -417,7 +417,7 @@ let obtain_occurs_attrs fi atts =
 	(*--VG!! OCaml's int_of_string handles more general input 
 	  than permitted by Schema ... *)
 	try Occurrence.UP_INT(int_of_string x)
-	with Failure "int_of_string" -> import_error fi 
+	with Failure _ -> import_error fi 
 	  ("Invalid attribute value: maxOccurs=\"" ^ x ^ "\"")
   in (min,max)
 

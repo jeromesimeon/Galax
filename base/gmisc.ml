@@ -35,15 +35,15 @@
     try
       let inchan = open_in_bin file in
       let len = in_channel_length inchan in
-      let buf = String.create len in
+      let buf = Bytes.create len in
       really_input inchan buf 0 len;
       close_in inchan;
       (* Windows 95 terminates lines with carriage return as well as
          newline; this screws up the Unix version when it reads in
          files created under Windows.  So, we get rid of the carriage
          returns, not the ideal solution. *)
-      if Sys.os_type = "Win32" then buf
-      else Str.global_replace (Str.regexp "\r\n") "\n" buf
+      if Sys.os_type = "Win32" then Bytes.to_string buf
+      else Str.global_replace (Str.regexp "\r\n") "\n" (Bytes.to_string buf)
     with
       Sys_error err ->
         Printf.eprintf
@@ -80,7 +80,7 @@ let load_file f =
       | Some x ->
           get_them (x::l)
     in
-    Sort.list (<=) (get_them [])
+    List.sort compare (get_them [])
 
   (* Convert a shell-style regular expression, using the special characters,
      ?*[], to a caml-style regular expression. *)
@@ -370,7 +370,8 @@ let fprintf_stub c s f x =
 
 let bprintf_stub s f x =
   let buff = Buffer.create 50 in
-  Format.bprintf buff "%s%a@?" s f x;
+  let to_b = Format.formatter_of_buffer buff in
+  Format.fprintf to_b "%s%a@?" s f x;
   let result = Buffer.contents buff in
   Buffer.reset buff;
   result
@@ -544,7 +545,7 @@ let binary_of_hexString s =
       if md = 0 then dv
       else raise (Invalid_argument("Text: \"" ^ s ^ "\" not a hexBinary value (hex digit pairs)"))
    in
-    let news = String.make newl 'x' in
+    let news = Bytes.make newl 'x' in
     let (current,c1,c2) =
       if md = 0
       then
@@ -552,14 +553,14 @@ let binary_of_hexString s =
       else
 	(ref 1, ref '0', ref (String.get s 0))
     in
-    String.set news ((!current-1) / 2) (char_of_hex_char_pair !c1 !c2);
+    Bytes.set news ((!current-1) / 2) (char_of_hex_char_pair !c1 !c2);
     while (!current < l - 1) do
       c1 := (String.get s !current);
       c2 := (String.get s (!current+1));
       current := !current + 2;
-      String.set news ((!current-1) / 2) (char_of_hex_char_pair !c1 !c2)
+      Bytes.set news ((!current-1) / 2) (char_of_hex_char_pair !c1 !c2)
     done;
-    news
+    Bytes.to_string news
   end
 
 let string_of_hexBinary s =
@@ -567,16 +568,16 @@ let string_of_hexBinary s =
   begin
     let l = String.length s in
     let newl = l * 2 in
-    let news = String.make newl 'x' in
+    let news = Bytes.make newl 'x' in
     let current = ref 0 in
     while (!current < newl) do
       let i = Char.code (String.get s (!current / 2)) in
       let (c1,c2) = hex_char_pair_of_int i in
-      String.set news !current c1;
-      String.set news (!current+1) c2;
+      Bytes.set news !current c1;
+      Bytes.set news (!current+1) c2;
       current := !current+2
     done;
-    news
+    Bytes.to_string news
   end
 
 (*

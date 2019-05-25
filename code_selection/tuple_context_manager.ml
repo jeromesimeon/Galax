@@ -53,7 +53,7 @@ let debug_id = ref 0;;
 let build_context_manager () = 
   incr debug_id;
   { tuple_stack   = Stack.create ();
-    current_tuple = Array.create 1 empty_physical_xml;
+    current_tuple = Array.make 1 empty_physical_xml;
     last_slot     = ref 0;
     id            = !debug_id
   }
@@ -76,7 +76,7 @@ let build_tuple_exit_context cm =
 
 
 let instantiate_tuple_context_manager cm  = 
-  cm.current_tuple <- Array.create !(cm.last_slot) empty_physical_xml
+  cm.current_tuple <- Array.make !(cm.last_slot) empty_physical_xml
 
 let build_tuple_store_code tr = 
   let tcm, tl = tr in

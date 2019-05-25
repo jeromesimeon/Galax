@@ -510,7 +510,7 @@ module Atomic_Value_Type = struct
 
   let encode v = 
     let space          = needed_length v in 
-    let encoded_array  = Array.create space '0' in 
+    let encoded_array  = Array.make space '0' in 
       encode_inplace encoded_array 0 v;
       encoded_array
       

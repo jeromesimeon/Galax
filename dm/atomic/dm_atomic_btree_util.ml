@@ -147,7 +147,7 @@ let full_btree_index_add_to_main_array fbth item =
     begin 
       let new_size  = fbth.current_size * 2 in (* Multiplicative instead? *)
       let old_array = fbth.main_array in
-      fbth.main_array <- Array.create new_size fbth.main_array.(0); (* There has to be a better way to do this *)
+      fbth.main_array <- Array.make new_size fbth.main_array.(0); (* There has to be a better way to do this *)
       fbth.current_size <- new_size;
       (* Copy over the items *)
       Array.blit old_array 0 fbth.main_array 0 !n_items_ref;

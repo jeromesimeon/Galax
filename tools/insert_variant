@@ -1,6 +1,6 @@
 #!/bin/sh
 # (*
-exec /usr/local/bin/ocaml "$0" "$@"
+exec $(which ocaml) "$0" "$@"
 *) directory ".";;
 
 (* Note:
@@ -77,10 +77,10 @@ let edit_file variant extension name =
 	(* Copy the file 'insname' to chout *)
 	let chcopy = open_in_bin insname in
 	let n = in_channel_length chcopy in
-	let s = String.create n in
+	let s = Bytes.create n in
 	really_input chcopy s 0 n;
 	close_in chcopy;
-	output_string chout s;
+	output_string chout (Bytes.to_string s);
       end
       else begin
 	output_string chout line;

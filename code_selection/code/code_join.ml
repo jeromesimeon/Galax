@@ -81,7 +81,7 @@ let build_left_outer_tuple_join_code code_ctxt vn pred_desc =
   let annot = retrieve_annotation "build_left_outer_tuple_join_code" code_ctxt in 
   let materialize_fun, restore_fn, needed_names = materialize_cursor_to_dom_value_array code_ctxt annot () in
   let empty_right = 
-    Array.create (Array.length needed_names) empty_dom_sequence in
+    Array.make (Array.length needed_names) empty_dom_sequence in
   
   (fun conds eval alg_ctxt left_side_cursor right_side_cursor ->
        (* Materialize the right hand side of the product *)

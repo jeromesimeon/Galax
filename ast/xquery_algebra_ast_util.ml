@@ -436,7 +436,7 @@ let is_single_step_twig p =
  *   twig node how it was reached
  *)
 let get_axis_array pattern =
-  let axis_array = Array.create (Array.length pattern) Xquery_common_ast.Child  in
+  let axis_array = Array.make (Array.length pattern) Xquery_common_ast.Child  in
 
   let rec build_axis_array_aux i =
     let ch_t = match pattern.(i).child_twig with

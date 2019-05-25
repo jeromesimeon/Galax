@@ -123,7 +123,7 @@ $(TARGET): $(TARGETOBJS)
 #########################################################################
 
 updatedepend::
-   $(MAKE) .depend DEPDEPEND=1
+	$(MAKE) .depend DEPDEPEND=1
 
 clobber::
 	$(RM) .depend

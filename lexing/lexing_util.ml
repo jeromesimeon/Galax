@@ -87,13 +87,13 @@ type lexing_handler =
       mutable flag_item_type   : bool;
       mutable flag_slash       : bool;
       mutable depth            : int;
-      mutable string_buffer    : string;
+      mutable string_buffer    : bytes;
       mutable string_end       : int;
       mutable default_token    : bool;
       mutable buffered         : string array;
       mutable buffered_tokens  : token list }
 
-let initial_string_buffer () = String.create 256
+let initial_string_buffer () = Bytes.create 256
 
 let get_current_lex_state lh =
   Stack.top lh.current_lex_state
@@ -154,24 +154,24 @@ let reset_string lh =
   lh.string_end <- 0
 
 let add_char_to_string lh ch =
-  let len = String.length (lh.string_buffer) in
+  let len = Bytes.length (lh.string_buffer) in
   if lh.string_end >= len
   then
     begin
-      let newBuffer = String.create (len * 2) in
-      String.blit (lh.string_buffer) 0 newBuffer 0 len;
+      let newBuffer = Bytes.create (len * 2) in
+      Bytes.blit (lh.string_buffer) 0 newBuffer 0 len;
       lh.string_buffer <- newBuffer
     end;
-  String.unsafe_set lh.string_buffer lh.string_end ch;
+  Bytes.unsafe_set lh.string_buffer lh.string_end ch;
   lh.string_end <- succ lh.string_end
 
 let add_string_to_string lh str =
   String.iter (add_char_to_string lh) str
 
 let get_string lh =
-  let s = String.sub lh.string_buffer 0 lh.string_end in
+  let s = Bytes.sub lh.string_buffer 0 lh.string_end in
   lh.string_buffer <- initial_string_buffer ();
-  s
+  Bytes.to_string s
 
 
 (****************************)
@@ -399,7 +399,7 @@ let process_qname_string s =
 (* Check the validity of a PI target name *)
 
 let get_target_pi pi_target =
-  if (String.lowercase pi_target = "xml")
+  if (String.lowercase_ascii pi_target = "xml")
   then
     raise (Query (Parsing (Finfo.parsing_locinfo (),"Process instruction target cannot match ['X' 'x']['M' 'm']['L' 'l']")))
   else

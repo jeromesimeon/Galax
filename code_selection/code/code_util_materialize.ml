@@ -196,14 +196,14 @@ type array_materialize_fun  =
 type restore_function = Physical_value.dom_value array -> unit
 
 let initial_size    =  1024
-let dummy_value     =  Array.create 1 (materialized_of_list [])
+let dummy_value     =  Array.make 1 (materialized_of_list [])
 type array_handle   =
     { mutable table          : Physical_value.dom_value array array;
       mutable current_size   : int;
       n_items        : int ref}
 
 let array_init_table () =  
-  { table = Array.create initial_size dummy_value;
+  { table = Array.make initial_size dummy_value;
     current_size = initial_size;
     n_items      = ref 0;}
 
@@ -224,7 +224,7 @@ let array_add_tuple tbl eval alg_ctxt t =
       let new_size  = tbl.current_size * 2 in (* Multiplicative instead? *)
       Debug.print_materialization_debug("new_size = "^(string_of_int(new_size)));
       let old_table = tbl.table in
-      tbl.table <- Array.create new_size tbl.table.(0); (* There has to be a better way to do this *)
+      tbl.table <- Array.make new_size tbl.table.(0); (* There has to be a better way to do this *)
       tbl.current_size <- new_size;
 
       (* Copy over the items *)
@@ -248,7 +248,7 @@ let array_get_return       tbl =
   
   (* We need to trim this table for the return now, to keep out invalid values *)
   let n_items   = array_helper_get_items tbl in
-  let ret_array = Array.create n_items tbl.table.(0) in (* need something better here *)
+  let ret_array = Array.make n_items tbl.table.(0) in (* need something better here *)
     Array.blit tbl.table 0 ret_array 0 n_items;
     ret_array
 

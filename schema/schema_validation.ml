@@ -95,7 +95,7 @@ let rec gather_simple_content valid_ctxt buffer =
     match event.se_desc with
     | SAX_startDocument _
     | SAX_endDocument
-    | SAX_startEncl _
+    | SAX_startEncl
     | SAX_endEncl ->
 	raise (Query (Schema_Internal "Stream 'start' in simple type"))
     | SAX_startElement _ ->

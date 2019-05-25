@@ -22,7 +22,7 @@ module type SERVERKIND =
     val http_tcp_server : (* Expected to be an infinite loop *)
         bool -> (exn -> unit) -> (http_request -> unit) -> Unix.sockaddr -> unit
     val udp_server :      (* Expected to return immediately *)
-        bool -> (exn -> unit) -> (string -> unit) -> Unix.sockaddr -> unit
+        bool -> (exn -> unit) -> (bytes -> unit) -> Unix.sockaddr -> unit
   end
 
 module type GALAXSERVER =

@@ -2,6 +2,14 @@
 | Changelog |
  -----------
 
+May 22, 2019 - Max
+
+ o Now it compiles. Compilation prerequisites: make, libpcre, opam, the following opam packages: pxp camomile camlidl num pcre.
+
+May 8, 2019 - Max
+
+ o Making Galax compile with Ocaml 4.07 and most recent library dependencies. I am not there yet.
+
 February 1, 2012 - Jerome
 
  o Constructors:
