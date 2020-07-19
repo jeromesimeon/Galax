@@ -210,7 +210,7 @@ let element_constructor_of_resolved (base_uri : Dm_atomic.atomicAnyURI option re
     | Some xb -> ref (Some (new Dm_atomic.atomicAnyURI (AnyURI._kinda_uri_of_string xb)))
   in
   let base_uri = Dm_atomic_util.resolve_atomicAnyURI base_uri xml_base in
-  let bus =
+  let _ =
     match !base_uri with
     | None -> "[ABSENT]"
     | Some bu -> AnyURI._string_of_uri (bu#getAtomicAnyURI())

@@ -540,7 +540,7 @@ let build_function_code csc (fn,arity) vars =
        build_parameter_insert_code
  in
  (* Create the insert code array *)
- let insert_code_array = Array.create arity dummy_error_code in
+ let insert_code_array = Array.make arity dummy_error_code in
    begin
      for i = 0 to arity - 1 do
        insert_code_array.(i) <- local_build_code vcm i

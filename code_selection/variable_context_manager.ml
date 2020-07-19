@@ -61,13 +61,13 @@ let debug_id = ref 0;;
 let build_context_manager () = 
   incr debug_id;
   { variable_stack = Stack.create ();
-    current_variables = Array.create 1 (empty_xml_value());
+    current_variables = Array.make 1 (empty_xml_value());
     last_slot = ref 0;
     id = !debug_id }
 
 let instantiate_variable_context_manager cm = 
   Debug.print_dxq_debug ("Instantiating  context " ^ (string_of_int cm.id) ^ " with " ^ (string_of_int !(cm.last_slot)));  
-  cm.current_variables <- Array.create !(cm.last_slot) (empty_xml_value())
+  cm.current_variables <- Array.make !(cm.last_slot) (empty_xml_value())
 
 let build_variable_enter_context cm = 
   (fun () ->

@@ -103,7 +103,7 @@ let xqs_file_name xqfile soap_uri =
 (* file_copy() -- from Didier Remy's OS course *)
 let file_copy in_name out_name =
   let buffer_size = 8192 in
-  let buffer = String.create buffer_size in
+  let buffer = Bytes.create buffer_size in
   let fin = openfile in_name [O_RDONLY] 0 in
   let fout = openfile out_name [O_WRONLY; O_CREAT; O_TRUNC] 0o644 in
   let rec copy_loop () = 

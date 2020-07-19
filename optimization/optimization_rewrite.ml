@@ -101,9 +101,9 @@ let group_cons_dep new_op dep =
     | 1 -> (* assume just the apply *)
 	Array.append dep [|new_op|]
     | _ ->
-	let new_array = Array.create (len +1 ) new_op in
+	let new_array = Array.make (len +1 ) new_op in
 	  new_array.(0) <- dep.(0);
-	  (* unnecessary because of Array.create *)
+	  (* unnecessary because of Array.make *)
 	  new_array.(1) <- new_op; 
 	  Array.blit dep 1 new_array 2 (len - 2);
 	    new_array

@@ -111,7 +111,7 @@ $(OPTTARGET): $(UCS2_TO_UTF8OPTOBJS)
 #     are generated before we need them.
 #########################################################################
 updatedepend::
-   $(MAKE) .depend DEPDEPEND=1
+	$(MAKE) .depend DEPDEPEND=1
 
 clobber::
 	$(RM) .depend

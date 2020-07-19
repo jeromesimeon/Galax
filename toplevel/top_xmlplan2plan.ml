@@ -107,8 +107,9 @@ let go gargs =
   let options =
     [| Sys.argv.(0); "-optimization"; "off"; "-execute"; "logical" |]
   in
-  override_args proc_ctxt options;
-
+  (* TODO: ensure that ignoring the result is OK *)
+  let _ = override_args proc_ctxt options in
+  
   (* 3. Parses the command-line arguments *)
   let module_files = process_args proc_ctxt in
 

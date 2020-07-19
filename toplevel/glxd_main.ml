@@ -188,11 +188,11 @@ module ThreadServer : SERVERKIND =
 (* Format.eprintf "In UDP thread create\n%!"; *)
 	     Random.init (Thread.id (Thread.self()));
              let buflen = Galax_server_util.query_udp_buffer_length in
-             let buf = String.create buflen in
+             let buf = Bytes.create buflen in
              while true do
                try
                  let n = Unix.recv sock buf 0 buflen [] in
-                 f(String.sub buf 0 n); (* TODO: eliminate copy *)
+                 f(Bytes.sub buf 0 n); (* TODO: eliminate copy *)
                with e ->
 		 begin
                    Format.eprintf "Error: uncaught exception %s in udp loop\n%!"

@@ -203,7 +203,7 @@ let extract_ns_att s el =
       let ns_prefix =
 	match prefix with
 	| (NSPrefix "xmlns") ->
-	    let ln = String.lowercase localname in
+	    let ln = String.lowercase_ascii localname in
 	    if (ln = "xml" || ln = "xmlns") then 
 	      raise (Query (Namespace_Error ("Cannot redefine namespace prefix 'xml' or 'xmlns'")))
 	    else (NSPrefix localname)

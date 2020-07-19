@@ -1916,7 +1916,7 @@ and atomicUntyped ?ta:type_annotation v =
       | ATString ->
 	  ((new atomicString ~ta:at v') :> atomicValue)
       | ATBoolean -> 
-	  let us = String.lowercase v' in
+	  let us = String.lowercase_ascii v' in
 	  let nab = (new atomicBoolean ~ta:at (boolean_of_untyped us)) in
 	  (nab :> atomicValue)
       | ATDecimal -> 

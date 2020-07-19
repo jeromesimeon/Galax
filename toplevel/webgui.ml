@@ -167,7 +167,7 @@ module State = struct
   let set_log b = log_flag := b
   let log_mutex = Mutex.create()
 
-  let log_directory = Printf.sprintf "%s/webgui-%d" Filename.temp_dir_name (Unix.getpid())
+  let log_directory = Printf.sprintf "%s/webgui-%d" (Filename.get_temp_dir_name ()) (Unix.getpid())
   let log_file = Printf.sprintf "%s/webgui.log" log_directory 
 
   (* Uniquely named file for each cached message body *)
@@ -448,11 +448,11 @@ module ThreadServer = struct
        Thread.create (fun () ->
 	 try
            let buflen = Galax_server_util.gui_udp_buffer_length in
-           let buf = String.create buflen in
+           let buf = Bytes.create buflen in
            Printf.eprintf "Starting UDP loop\n%!";
            while true do
              let n = Unix.recv sock buf 0 buflen [] in
-             event_handler (String.sub buf 0 n); (* FIX: no copy *)
+             event_handler (Bytes.sub buf 0 n); (* FIX: no copy *)
              ()
            done
 	 with e ->
@@ -544,10 +544,10 @@ module Server = struct
     Printf.eprintf "Error in WebGUI %s: %s\n%!" f (Error.bprintf_error "" e)
 
   let gui_event_handler report =
-    message (Printf.sprintf "Report received: %s\n" report);
+    message (Printf.sprintf "Report received: %s\n" (Bytes.to_string report));
     try 
       begin
-	let ge = Gui.guievent_of_string report in
+	let ge = Gui.guievent_of_string (Bytes.to_string report) in
 	let log_entry =
 	  begin
 	    match ge with
@@ -800,7 +800,7 @@ module Server = struct
         begin match payload with
           None -> message "Error: received an empty report"
         | Some report ->
-            gui_event_handler report;
+            gui_event_handler (Bytes.of_string report);
             send_html_http_response outchan header "";
         end
     | Post("/submit") -> (* A query submitted by browser *)
@@ -920,7 +920,7 @@ module Server = struct
         try
           let report = http_query_response vhost phost port "/guistart" "POST" my_host_port in
           (* report should be a GuiNewNode *)
-          gui_event_handler report;
+          gui_event_handler (Bytes.of_string report);
         with _ -> Printf.fprintf stderr "Error contacting %s:%d\n" phost port)
       (!servers);
     flush stderr;

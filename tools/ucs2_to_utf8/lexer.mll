@@ -22,8 +22,9 @@ open Parser
 let comment_depth = ref 0;;
 
 let charint_of_lexeme l =
- String.set l 0 '0' ;
- int_of_string l
+ let s = Bytes.of_string l in
+ Bytes.set s 0 '0' ;
+ int_of_string (Bytes.to_string s)
 ;;
 }
 

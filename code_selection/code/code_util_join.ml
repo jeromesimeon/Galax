@@ -1044,7 +1044,7 @@ let build_common_cond code_select_fn code_ctxt join_op build_double build_op_typ
      hash evaluation predicates is there *)
   let built_cond =
     let init_built_cond =
-      Array.create
+      Array.make
 	array_len
 	(invalid_predicate_branch, invalid_predicate_branch, Invalid_Scan)
     in
@@ -1078,7 +1078,7 @@ type null_functions =
     (bool * (unit -> unit) * (unit -> unit) * Physical_value.dom_value array)
 
 let get_null_functions code_ctxt nm_option needed_names =
-  let empty_right = Array.create (Array.length needed_names) empty_dom_sequence in 
+  let empty_right = Array.make (Array.length needed_names) empty_dom_sequence in 
   match nm_option with
   | StandardJoin ->
       (false,

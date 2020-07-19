@@ -18,7 +18,7 @@
 # value	 2:	on by command line ("forced")
 
 version="1.0"
-ocaml_version="4.01"
+ocaml_version="4.07"
 # Function:	print_options()
 # Description:
 #		Print the current values of all options
@@ -725,7 +725,7 @@ fi
 printf "%s" "Checking for OCaml netclient library... "
 if [ -z "$ocaml_netclient" ]
 then
-	if [ -n "$ocaml_pkglib" -a -d "$ocaml_pkglib/netclient" -a -f "$ocaml_pkglib/netclient/http_client.cmi" ]
+	if [ -n "$ocaml_pkglib" -a -d "$ocaml_pkglib/netclient" -a -f "$ocaml_pkglib/netclient/nethttp_client.cmi" ]
 	then
 		ocaml_netclient="$ocaml_pkglib/netclient"
 	elif [ -n "$tool_ocamlfind" ]
@@ -733,11 +733,11 @@ then
 		ocaml_netclient=`$tool_ocamlfind query netclient 2>/dev/null`
 	fi
 fi
-if [ -n "$ocaml_netclient" -a -f "$ocaml_netclient/http_client.cmi" ]
+if [ -n "$ocaml_netclient" -a -f "$ocaml_netclient/nethttp_client.cmi" ]
 then
 	echo "found"
 else
-	echo "ERROR: unable to find http_client.cmi in $ocaml_netclient"
+	echo "ERROR: unable to find nethttp_client.cmi in $ocaml_netclient"
 	exit 1
 fi
 
@@ -838,7 +838,11 @@ then
 		ocaml_camomile=`$tool_ocamlfind query camomile 2>/dev/null`
 	fi
 fi
-if [ -n "$ocaml_camomile" -a -f "$ocaml_camomile/camomileLibraryDefault.cmi" ]
+if [ -n "$ocaml_camomile" -a -d "$ocaml_camomile/lib_default" -a -f "$ocaml_camomile/lib_default/camomileLibraryDefault.cmi" ]
+then
+	ocaml_camomile_version="1.0"
+	echo "found version 1.0"
+elif [ -n "$ocaml_camomile" -a -f "$ocaml_camomile/camomileLibraryDefault.cmi" ]
 then
 	ocaml_camomile_version="0.8"
 	echo "found version 0.8"
@@ -1619,7 +1623,9 @@ CONF_OCAML_LIBNETSYS=$ocaml_netsys
 CONF_OCAML_LIBPXP=$ocaml_pxp
 CONF_OCAML_LIBPXP_UTF8=$ocaml_pxp_utf8
 CONF_OCAML_LIBPXP_ISO88591=$ocaml_pxp_iso88591
-CONF_OCAML_LIBCAMOMILE=$ocaml_camomile
+CONF_OCAML_LIBCAMOMILE=$ocaml_camomile/library
+CONF_OCAML_LIBCAMOMILE_DEFAULT=$ocaml_camomile/lib_default
+CONF_OCAML_LIBCAMOMILE_DEFAULTCONFIG=$ocaml_camomile/default_config
 CONF_OCAML_STDLIB=$ocaml_stdlib
 CONF_OCAML_PKGLIB=$ocaml_pkglib
 CONF_OCAML_IDL=$ocaml_idl

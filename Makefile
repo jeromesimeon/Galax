@@ -384,10 +384,10 @@ ocaml-galax$(EXE):	$(GALAX_LIB)
 base/pervasive.xq: stdlib/pervasive.xq
 	$(CP) stdlib/pervasive.xq base/pervasive.xq
 
-base/pervasive.ml: tools/escaping/escaping$(EXE) base/pervasive.xq
+base/pervasive.ml: escaping base/pervasive.xq base/pervasive.cmi
 	tools/escaping/escaping$(EXE) base/pervasive.xq
 
-base/conf.ml: base/conf.mlp
+base/conf.ml: base/conf.mlp base/conf.cmi
 	@$(RM) base/conf.ml 
 	$(SED) -e 's|%%RELEASE%%|$(RELEASE)|' \
 	    -e 's|%%STATUS%%|$(STATUS)|' \
@@ -407,7 +407,7 @@ base/conf.ml: base/conf.mlp
 	    -e 's|%%GLXURI%%|$(GLXURI)|' \
             base/conf.mlp > base/conf.ml
 
-base/galax_camomile.ml: base/galax_camomile_$(CONF_CAMOMILEVERSION).ml
+base/galax_camomile.ml: base/galax_camomile_$(CONF_CAMOMILEVERSION).ml base/galax_camomile.cmi
 	$(CP) base/galax_camomile_$(CONF_CAMOMILEVERSION).ml base/galax_camomile.ml
 
 namespace/qname_lexer_utf8.mll:	tools/insert_variant namespace/pxp_lex_defs_utf8.def namespace/qname_lexer.src
@@ -488,7 +488,7 @@ namespace/pxp_lex_defs_utf8.def:	tools/charsets/pxp_lex_defs_utf8.def
 lexing/pxp_lex_defs_utf8.def:	tools/charsets/pxp_lex_defs_utf8.def
 	cd lexing ; $(LN) ../tools/charsets/pxp_lex_defs_utf8.def pxp_lex_defs_utf8.def
 
-tools/charsets/pxp_lex_defs_utf8.def:	tools/ucs2_to_utf8/ucs2_to_utf8$(EXE) tools/charsets/pxp_lex_defs_generic.def tools/charsets/pxp_lex_defs_drv_utf8.def
+tools/charsets/pxp_lex_defs_utf8.def:	ucs2_to_utf8 tools/charsets/pxp_lex_defs_generic.def tools/charsets/pxp_lex_defs_drv_utf8.def
 	tools/ucs2_to_utf8/ucs2_to_utf8$(EXE) tools/charsets/pxp_lex_defs_generic.def $@
 	$(CAT) tools/charsets/pxp_lex_defs_drv_utf8.def >> $@
 
@@ -515,10 +515,10 @@ clean::
 
 # Tools
 #
-tools/escaping/escaping$(EXE):
+escaping:
 	cd tools/escaping ; $(MAKE) escaping$(EXE)
 
-tools/ucs2_to_utf8/ucs2_to_utf8$(EXE):
+ucs2_to_utf8:
 	cd tools/ucs2_to_utf8 ; $(MAKE) ucs2_to_utf8$(EXE)
 
 install::
@@ -566,3 +566,12 @@ ifndef NODEPEND
 include .depend
 endif
 
+# temporary solution: explicitly list the dependencies not picked by ocamldep above; 
+# it probably skipped them because the source files don't exist at its invokation time.
+# better solution would be to run codegen _before_ dependency computation
+datatypes/datatypes_lexer.cmo: datatypes/datatypes_lexer.cmi
+schema/schema_import.cmo: schema/schema_import.cmi
+parsing/parse_xquery.cmo: parsing/parse_xquery.cmi
+wsdl/wsdl_load.cmo: wsdl/wsdl_load.cmi
+lexing/lexing_util.mli: parsing/parse_xquery.cmo
+parsing/parse_xquery.mly: parsing/parse_context.cmo

@@ -19,7 +19,7 @@ let needed_length_for_int = 4
 let serialized_int_size   = 4
 
 (* let shredded_jungle_string_of_int i =
-  let s = Array.create 4 (Char.chr 0) in
+  let s = Array.make 4 (Char.chr 0) in
     shredded_jungle_string_of_int_array s i *)
 let inplace_encode_int s offset i =
   let c3 = i land 255 in 
@@ -54,11 +54,11 @@ let copy_encode int =
 let length_bits_of_string str = String.length str 
 
 let string_of_bits p =
-  let l = String.make (Array.length p) char_pad in
+  let l = Bytes.make (Array.length p) char_pad in
     for i = 0 to (Array.length p) - 1 do
-      l.[i] <- p.(i)
+      Bytes.set l i p.(i)
     done;
-    l
+    Bytes.to_string l
 
 let bits_of_string l =
   let p = Array.make (String.length l) char_pad in 
@@ -69,11 +69,11 @@ let bits_of_string l =
 
 
 let inplace_decode_string p offset length =
-  let l = String.make length char_pad in
+  let l = Bytes.make length char_pad in
     for i = 0 to length - 1 do
-      l.[i] <- p.(i+offset)
+      Bytes.set l i p.(i+offset)
     done;
-    l
+    Bytes.to_string l
 
 let inplace_encode_string p offset l =
   for i = 0 to (String.length l) - 1 do
@@ -116,7 +116,7 @@ let inplace_encode_int64 a offset v =
     done
 
 (* Marshalling Hack to remove copies, one Int64 native copy *)
-let marshal_hack        = Marshal.to_string Int64.zero [] ;;
+let marshal_hack        = Marshal.to_bytes Int64.zero [] ;;
 let mARSHAL_BODY_OFFSET = 24
 
 let inplace_decode_int64 a offset = 
@@ -124,9 +124,9 @@ let inplace_decode_int64 a offset =
   (* let convert x = Int64.of_int (Char.code x) in *)
   try 
     for i = 0 to 7 do
-      marshal_hack.[i+mARSHAL_BODY_OFFSET] <- a.(offset+i)
+      Bytes.set marshal_hack (i+mARSHAL_BODY_OFFSET) a.(offset+i)
     done;
-    Marshal.from_string marshal_hack 0
+    Marshal.from_bytes marshal_hack 0
   with Invalid_argument _ ->
     raise (Failure ("FAILURE IN MARSHALLING CODE [Int64]"))
 (* Unrolled the loop by hand *)

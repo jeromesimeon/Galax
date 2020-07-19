@@ -172,7 +172,7 @@ let content_type_of_headers h =
     match 
       List.find (fun line -> match line with
                      ContentLength _ | Other _ -> false
-                   | Header (n,v) -> String.lowercase n = "content-type") h
+                   | Header (n,v) -> String.lowercase_ascii n = "content-type") h
     with
         Header(_,"application/xml+xhtml") -> XML_Encoding
       | Header(_,"application/x-www-form-urlencoded") -> URL_Encoding

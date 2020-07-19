@@ -39,7 +39,7 @@ let empty_typed_xml_stream    () = Cursor.cursor_of_list []
 
 let check_valid_processing_instruction target pi_content = 
   let target'= Datatypes_util.ncname_of_untyped target in 
-  if (String.lowercase(target') = "xml") then 
+  if (String.lowercase_ascii(target') = "xml") then 
     raise (Query(Constructor_Error("Invalid processing-instruction target: contains 'xml'")))
   else if (Regularexp.matches pi_content "\\?>" "") then 
     raise (Query(Constructor_Error("Invalid processing-instruction content: contains '?>'")))

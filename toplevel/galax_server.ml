@@ -61,8 +61,8 @@ module DNS = struct
     let slen = String.length s in
     let tlen = String.length t in
     if slen >= tlen then false else
-    let tsuffix = String.lowercase(String.sub t (tlen-slen) slen) in
-    if String.compare tsuffix (String.lowercase s) <> 0 then false else
+    let tsuffix = String.lowercase_ascii(String.sub t (tlen-slen) slen) in
+    if String.compare tsuffix (String.lowercase_ascii s) <> 0 then false else
     String.get t (tlen-slen-1) = '.'
 
   let dns_le s t =
@@ -70,9 +70,9 @@ module DNS = struct
     let slen = String.length s in
     let tlen = String.length t in
     if slen > tlen then false else
-    if slen = tlen then String.lowercase s = String.lowercase t else
-    let tsuffix = String.lowercase(String.sub t (tlen-slen) slen) in
-    if String.compare tsuffix (String.lowercase s) <> 0 then false else
+    if slen = tlen then String.lowercase_ascii s = String.lowercase_ascii t else
+    let tsuffix = String.lowercase_ascii(String.sub t (tlen-slen) slen) in
+    if String.compare tsuffix (String.lowercase_ascii s) <> 0 then false else
     String.get t (tlen-slen-1) = '.'
 
   let _ = farg2 "dns-lt"(fun comp_ctxt alg_ctxt (p1,p2) ->
@@ -190,7 +190,7 @@ module type SERVERKIND =
     val http_tcp_server : (* Expected to loop infinitely *)
         bool -> (exn -> unit) -> (http_request -> unit) -> Unix.sockaddr -> unit
     val udp_server :      (* Expected to return immediately *)
-        bool -> (exn -> unit) -> (string -> unit) -> Unix.sockaddr -> unit
+        bool -> (exn -> unit) -> (bytes -> unit) -> Unix.sockaddr -> unit
   end
 
 (************** SERVERKIND END ************************************)
@@ -299,11 +299,11 @@ module Server =
           Unix.lockf fd Unix.F_RLOCK 0; (* can block *)
           let inchan = Unix.in_channel_of_descr fd in
           let len = in_channel_length inchan in
-          let buf = String.create len in
+          let buf = Bytes.create len in
           really_input inchan buf 0 len;
           Unix.lockf fd Unix.F_ULOCK 0;
           Unix.close fd;
-          buf
+          Bytes.to_string buf
         with _ -> Printf.sprintf "(exception reading file %s)" file
       end
 
@@ -371,7 +371,7 @@ module Server =
 		Debug.print_dxq_debug ("UDP http_query_async symbolic_name:"^
 				       (symbolic_name())^" phost="^phost^" port="^(string_of_int port)^"\n");
 		let sockaddr = Galax_server_util.get_inet_socket_address phost port in
-		let _ = Unix.sendto udp_sock (hdr^query) 0 query_size [] sockaddr in
+		let _ = Unix.sendto udp_sock (Bytes.of_string (hdr^query)) 0 query_size [] sockaddr in
 		()
               end;
             send_gui_report (Debug.dxq_debug()) (Gui.GuiMessage(symbolic_name(), vhost, "*", plan_name, query));
@@ -421,7 +421,7 @@ module Server =
     let udp_handler eval =
       fun input -> (* TODO: perhaps eval in a new thread? *)
 	try
-	  let (connected_host, qs) = Gmisc.split_right_on_char input '\000' in
+	  let (connected_host, qs) = Gmisc.split_right_on_char (Bytes.to_string input) '\000' in
 	  inject_latency(connected_host);
 	  (try eval XQueryPlan qs (* NB: not XQueryPlanAsync WHY NOT???? *)
  	  with e -> report_query_error "UDP query" qs (server_error_msg e))

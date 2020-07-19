@@ -170,7 +170,7 @@ let print_tuple t =
  * for each node in a tree pattern
  *)
 let build_restore_array pattern code_ctxt =
-(*  let arr = Array.create (Array.length pattern) in *)
+(*  let arr = Array.make (Array.length pattern) in *)
   let create_restore_fun twig_node =
     match twig_node.out with
     | Some fld 

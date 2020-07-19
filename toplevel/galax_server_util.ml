@@ -187,7 +187,7 @@ module Gui = struct
 	      gui_report_tcp debug s)
             else
               ((* Printf.eprintf "UDP!\n%!";   *)
-	      let rlen = Unix.sendto udp_sock s 0 slen [] sa in 
+	      let rlen = Unix.sendto udp_sock (Bytes.of_string s) 0 slen [] sa in 
 	      if (rlen = -1) then Printf.eprintf "sendto returned -1\n%!"
 	      else if (rlen != slen) then Printf.eprintf "sendto sent %d expected %d\n%!" (rlen) (slen)
 	      else ())

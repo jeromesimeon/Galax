@@ -271,12 +271,12 @@ module Main_Memory_Btree_Functor
 
    let make_fresh_leaf_page () = 
      incr unique_id;
-     mk_leaf_node !unique_id Null Null (Array.create leaf_size None) 0
+     mk_leaf_node !unique_id Null Null (Array.make leaf_size None) 0
 
 
    let make_fresh_internal_page low = 
      incr unique_id;
-     mk_internal_node !unique_id low 1 INull INull (Array.create internal_size None)
+     mk_internal_node !unique_id low 1 INull INull (Array.make internal_size None)
 
 
    type btree_handle = { tree_root : page ref; }
